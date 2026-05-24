@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom Scrollbars for dark theme SCADA panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0F19;
+}
+::-webkit-scrollbar-thumb {
+  background: #1F2937;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* High-Performance SVG Flow Animation */
+@keyframes flow-forward {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes flow-reverse {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 24;
+  }
+}
+
+.flow-active-forward {
+  stroke-dasharray: 8, 8;
+  animation: flow-forward 0.8s linear infinite;
+}
+
+.flow-active-reverse {
+  stroke-dasharray: 8, 8;
+  animation: flow-reverse 0.8s linear infinite;
+}
+
+/* CRT monitor scanline and flickering overlay */
+@keyframes crt-flicker {
+  0% { opacity: 0.985; }
+  50% { opacity: 1.0; }
+  100% { opacity: 0.99; }
+}
+
+.scada-crt {
+  animation: crt-flicker 0.15s infinite;
+}
+
+.scada-crt::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+  z-index: 9999;
+  background-size: 100% 4px, 4px 100%;
+  pointer-events: none;
+}
+
+/* Cyberattack flashing red node overlay */
+@keyframes attack-flash {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+    stroke: #EF4444;
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.95));
+    stroke: #F87171;
+  }
+}
+
+.attack-targeted-node {
+  animation: attack-flash 0.8s infinite;
+}
+
+/* Breaker Trip ripple ring effect */
+@keyframes ripple-ring {
+  0% {
+    r: 4px;
+    opacity: 1;
+    stroke-width: 1.5;
+  }
+  100% {
+    r: 28px;
+    opacity: 0;
+    stroke-width: 0.5;
+  }
+}
+
+.trip-ripple {
+  animation: ripple-ring 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+/* Line Fault flashing animation */
+@keyframes fault-line-blink {
+  0%, 100% {
+    stroke: #EF4444;
+    stroke-width: 5;
+    opacity: 1;
+  }
+  50% {
+    stroke: #7F1D1D;
+    stroke-width: 4;
+    opacity: 0.4;
+  }
+}
+
+.faulted-line {
+  animation: fault-line-blink 0.6s step-end infinite;
+}
+
+/* Glow Propagation for Reconfigured Tie Lines */
+@keyframes propagation-glow {
+  0% {
+    stroke-dashoffset: 40;
+    stroke: #F59E0B;
+  }
+  50% {
+    stroke: #10B981;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    stroke: #10B981;
+  }
+}
+
+.propagate-healing {
+  stroke-dasharray: 10, 10;
+  animation: propagation-glow 2s ease-in-out infinite;
+}
+
+/* Replay Attack warning border flash */
+@keyframes replay-border-pulse {
+  0%, 100% {
+    border-color: #24314A;
+    box-shadow: 0 0 0 rgba(245, 158, 11, 0);
+  }
+  50% {
+    border-color: #F59E0B;
+    box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.15);
+  }
+}
+
+.replay-active-frame {
+  animation: replay-border-pulse 2s infinite;
+}
+
+/* Generic glowing classes */
+.scada-glow-green {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.12);
+}
+
+.scada-glow-red {
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.2);
+}
+
+.scada-text-glow-green {
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.scada-text-glow-red {
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.scada-text-glow-warning {
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+/* Number display styling */
+.font-scada-nums {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+}

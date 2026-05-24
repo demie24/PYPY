@@ -1,0 +1,91 @@
+version: '3.9'
+
+services:
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: smart_grid_mqtt
+    ports:
+      - "1884:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    restart: always
+    networks:
+      - grid-net
+
+  gateway:
+    build:
+      context: ./core
+      dockerfile: ./gateway/Dockerfile
+    container_name: smart_grid_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
+  digital_twin:
+    build:
+      context: ./core
+      dockerfile: ./digital_twin/Dockerfile
+    container_name: smart_grid_digital_twin
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
+  self_healing:
+    build:
+      context: ./core
+      dockerfile: ./self_healing/Dockerfile
+    container_name: smart_grid_self_healing
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
+  ai_detection:
+    image: python:3.10-slim
+    container_name: smart_grid_ai_detection
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python ai_detection/detector.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: ./Dockerfile
+    container_name: smart_grid_dashboard
+    ports:
+      - "3001:80"
+    depends_on:
+      - gateway
+    restart: always
+    networks:
+      - grid-net
+
+networks:
+  grid-net:
+    driver: bridge

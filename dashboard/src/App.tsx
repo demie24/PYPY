@@ -5,6 +5,7 @@ import { TelemetryCharts } from "./components/TelemetryCharts.tsx";
 import { AlertsPanel } from "./components/AlertsPanel.tsx";
 import { ThreatScorePanel } from "./components/ThreatScorePanel.tsx";
 import { ForecastPanel } from "./components/ForecastPanel.tsx";
+import { MultiBusForecastPanel } from "./components/MultiBusForecastPanel.tsx";
 
 import {
   Wifi,
@@ -23,6 +24,7 @@ export default function App() {
   const [threatData, setThreatData] = useState<any>(null);
   const [aiPrediction, setAiPrediction] = useState<any>(null);
   const [predictionHistory, setPredictionHistory] = useState<any[]>([]);
+  const [multiBusForecast, setMultiBusForecast] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -93,6 +95,9 @@ export default function App() {
           if (data.ai_prediction) {
             setAiPrediction(data.ai_prediction);
             setPredictionHistory([data.ai_prediction]);
+          }
+          if (data.ai_forecast_multi_bus) {
+            setMultiBusForecast(data.ai_forecast_multi_bus);
           }
         } 
         // Handle active MQTT stream broadcasts
@@ -180,6 +185,8 @@ export default function App() {
               if (next.length > 50) next.shift();
               return next;
             });
+          } else if (topic === "grid/ai_forecast_multi_bus") {
+            setMultiBusForecast(payload);
           }
         }
       } catch (err) {
@@ -258,6 +265,7 @@ export default function App() {
     setThreatData(null);
     setAiPrediction(null);
     setPredictionHistory([]);
+    setMultiBusForecast(null);
   };
 
   const handleToggleAutoDefense = (enabled: boolean) => {
@@ -414,9 +422,10 @@ export default function App() {
               flisrTripped={flisrTripped}
             />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 shrink-0">
             <TelemetryCharts history={history} />
             <ForecastPanel predictionHistory={predictionHistory} aiPrediction={aiPrediction} />
+            <MultiBusForecastPanel forecastData={multiBusForecast} />
           </div>
         </section>
 

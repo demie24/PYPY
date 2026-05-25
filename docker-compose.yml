@@ -134,6 +134,22 @@ services:
     networks:
       - grid-net
 
+  ai_prediction_multi_bus:
+    image: python:3.10-slim
+    container_name: smart_grid_ai_prediction_multi_bus
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt && python ai_prediction/multi_bus_inference.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
 networks:
   grid-net:
     driver: bridge

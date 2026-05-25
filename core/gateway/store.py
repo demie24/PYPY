@@ -13,6 +13,7 @@ class MemoryStore:
         self.latest_config: Dict[str, Any] = {}
         self.latest_threat: Optional[Dict[str, Any]] = None
         self.latest_ai_prediction: Optional[Dict[str, Any]] = None
+        self.latest_ai_forecast_multi_bus: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -33,6 +34,9 @@ class MemoryStore:
 
     def update_ai_prediction(self, ai_pred: Dict[str, Any]):
         self.latest_ai_prediction = ai_pred
+
+    def update_ai_forecast_multi_bus(self, ai_forecast: Dict[str, Any]):
+        self.latest_ai_forecast_multi_bus = ai_forecast
 
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
@@ -55,7 +59,8 @@ class MemoryStore:
             "alerts": self.alerts,
             "config": self.latest_config,
             "threat": self.latest_threat,
-            "ai_prediction": self.latest_ai_prediction
+            "ai_prediction": self.latest_ai_prediction,
+            "ai_forecast_multi_bus": self.latest_ai_forecast_multi_bus
         }
 
     def clear_alerts(self):

@@ -9,6 +9,11 @@ class TelemetryDataset(Dataset):
         self.window_size = window_size
         self.target_index = target_index
         
+        if isinstance(target_index, list):
+            self.target_indices = target_index
+        else:
+            self.target_indices = [target_index]
+        
         # Load CSV using built-in csv reader
         data = []
         if not os.path.exists(csv_path):
@@ -25,11 +30,11 @@ class TelemetryDataset(Dataset):
         if len(data) <= window_size:
             raise ValueError(f"Dataset has only {len(data)} samples, which is insufficient for window_size={window_size}")
             
-        # Feature indices exclude timestamp (index 0) and the selected target_index
-        self.feature_indices = [i for i in range(1, len(header)) if i != self.target_index]
+        # Feature indices exclude timestamp (index 0) and any target_indices
+        self.feature_indices = [i for i in range(1, len(header)) if i not in self.target_indices]
         
         X_raw = data[:, self.feature_indices]
-        y_raw = data[:, self.target_index]
+        y_raw = data[:, self.target_indices]
         
         # Fit or load min/max scaling values for features
         if min_vals is None:
@@ -47,17 +52,17 @@ class TelemetryDataset(Dataset):
         range_vals[range_vals == 0.0] = 1.0
         X_scaled = (X_raw - self.min_vals) / range_vals
         
-        # Normalize target:
+        # Normalize targets:
         # If target is threat score (index 29), map [0, 100] -> [0.0, 1.0]
-        # If target is voltage (index 5) or similar, keep unscaled since it lies in [0.0, 1.2] p.u.
-        if self.target_index == 29:
-            y_scaled = y_raw / 100.0
-        else:
-            y_scaled = y_raw
+        # Voltages are kept raw as they reside in [0.0, 1.2] p.u.
+        y_scaled = np.zeros_like(y_raw)
+        for idx, t_idx in enumerate(self.target_indices):
+            if t_idx == 29:
+                y_scaled[:, idx] = y_raw[:, idx] / 100.0
+            else:
+                y_scaled[:, idx] = y_raw[:, idx]
         
         # Construct sequential sliding windows
-        # X: shape (N - window_size, window_size, feature_dim)
-        # y: shape (N - window_size, 1) -> predicts target at step i + window_size
         self.X_seq = []
         self.y_seq = []
         
@@ -66,7 +71,9 @@ class TelemetryDataset(Dataset):
             self.y_seq.append(y_scaled[i + window_size])
             
         self.X_seq = np.array(self.X_seq, dtype=np.float32)
-        self.y_seq = np.array(self.y_seq, dtype=np.float32).reshape(-1, 1)
+        self.y_seq = np.array(self.y_seq, dtype=np.float32)
+        if len(self.target_indices) == 1:
+            self.y_seq = self.y_seq.reshape(-1, 1)
 
     def __len__(self):
         return len(self.X_seq)

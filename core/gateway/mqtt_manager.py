@@ -54,6 +54,7 @@ class MQTTManager:
             client.subscribe("grid/config")
             client.subscribe("grid/threat")
             client.subscribe("grid/ai_prediction")
+            client.subscribe("grid/ai_forecast_multi_bus")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -75,6 +76,8 @@ class MQTTManager:
                 store.update_threat(payload)
             elif topic == "grid/ai_prediction":
                 store.update_ai_prediction(payload)
+            elif topic == "grid/ai_forecast_multi_bus":
+                store.update_ai_forecast_multi_bus(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

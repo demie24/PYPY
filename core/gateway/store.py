@@ -11,6 +11,7 @@ class MemoryStore:
         self.events: List[Dict[str, Any]] = []
         self.alerts: List[Dict[str, Any]] = []
         self.latest_config: Dict[str, Any] = {}
+        self.latest_threat: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -25,6 +26,9 @@ class MemoryStore:
 
     def update_config(self, config: Dict[str, Any]):
         self.latest_config.update(config)
+
+    def update_threat(self, threat: Dict[str, Any]):
+        self.latest_threat = threat
 
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
@@ -45,7 +49,8 @@ class MemoryStore:
             "telemetry": self.latest_telemetry,
             "events": self.events,
             "alerts": self.alerts,
-            "config": self.latest_config
+            "config": self.latest_config,
+            "threat": self.latest_threat
         }
 
     def clear_alerts(self):

@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { GridDiagram } from "./components/GridDiagram.tsx";
 import { TelemetryCharts } from "./components/TelemetryCharts.tsx";
 import { AlertsPanel } from "./components/AlertsPanel.tsx";
+import { ThreatScorePanel } from "./components/ThreatScorePanel.tsx";
 
 import {
   Wifi,
@@ -18,6 +19,7 @@ export default function App() {
   const [history, setHistory] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [threatData, setThreatData] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -81,6 +83,9 @@ export default function App() {
             if (data.config.flisr_isolated_faults !== undefined) setFlisrIsolated(data.config.flisr_isolated_faults);
             if (data.config.flisr_reconfigured_breakers !== undefined) setFlisrReconfigured(data.config.flisr_reconfigured_breakers);
             if (data.config.flisr_tripped_by_relay !== undefined) setFlisrTripped(data.config.flisr_tripped_by_relay);
+          }
+          if (data.threat) {
+            setThreatData(data.threat);
           }
         } 
         // Handle active MQTT stream broadcasts
@@ -159,6 +164,8 @@ export default function App() {
             if (payload.flisr_tripped_by_relay !== undefined) {
               setFlisrTripped(payload.flisr_tripped_by_relay);
             }
+          } else if (topic === "grid/threat") {
+            setThreatData(payload);
           }
         }
       } catch (err) {
@@ -234,6 +241,32 @@ export default function App() {
     setFlisrIsolated([]);
     setFlisrReconfigured([]);
     setFlisrTripped([]);
+    setThreatData(null);
+  };
+
+  const handleToggleAutoDefense = (enabled: boolean) => {
+    sendControl({
+      command: "TOGGLE_AUTO_DEFENSE",
+      enabled
+    });
+  };
+
+  const handleExecuteAction = (action: string, target: string) => {
+    if (action === "ISOLATE_LINE" || action === "ACTIVATE_ISLANDING") {
+      sendControl({
+        command: "OPEN",
+        target
+      });
+    } else if (action === "ENGAGE_FLISR") {
+      sendConfig({
+        flisr_auto: true
+      });
+    } else if (action === "REJECT_TELEMETRY") {
+      sendControl({
+        command: "REJECT_TELEMETRY",
+        target
+      });
+    }
   };
 
   // Summarize live parameters
@@ -356,8 +389,14 @@ export default function App() {
 
         {/* Right column: Incident logs, Cyber attack injection console */}
         <section className="h-full flex flex-col justify-between gap-4 overflow-hidden">
+          <ThreatScorePanel 
+            threatData={threatData}
+            onExecuteAction={handleExecuteAction}
+            onToggleAutoDefense={handleToggleAutoDefense}
+          />
+
           {/* Timeline & Actions */}
-          <div className="flex-1 flex flex-col justify-between bg-scada-panel border border-scada-border rounded-lg p-4 max-h-[300px]">
+          <div className="flex-1 flex flex-col justify-between bg-scada-panel border border-scada-border rounded-lg p-4 max-h-[180px]">
             <h2 className="text-sm font-semibold tracking-wider text-scada-dimText uppercase mb-2 flex items-center gap-1.5 border-b border-scada-border pb-1.5">
               <Cpu size={16} className="text-scada-nominal" />
               Grid Event Logger
@@ -365,7 +404,7 @@ export default function App() {
             <div className="flex-1 overflow-y-auto space-y-1 font-mono text-[10px] pr-1">
               {events
                 .filter((ev) => ev.source !== "FLISR_ENGINE")
-                .slice(0, 15)
+                .slice(0, 8)
                 .map((ev, i) => (
                   <div key={i} className={`flex items-start gap-1 py-0.5 border-b border-scada-border/30 ${
                     ev.severity === "CRITICAL" ? "text-scada-trip" : ev.severity === "WARNING" ? "text-scada-warning" : "text-scada-dimText"

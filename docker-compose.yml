@@ -86,6 +86,38 @@ services:
     networks:
       - grid-net
 
+  threat_engine:
+    image: python:3.10-slim
+    container_name: smart_grid_threat_engine
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python threat_engine/scorer.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
+  data_collector:
+    image: python:3.10-slim
+    container_name: smart_grid_data_collector
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python data_collector/collector.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
 networks:
   grid-net:
     driver: bridge

@@ -124,7 +124,7 @@ services:
     working_dir: /app
     volumes:
       - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python ai_prediction/inference.py"
+    command: sh -c "pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt && python ai_prediction/inference.py"
     environment:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883

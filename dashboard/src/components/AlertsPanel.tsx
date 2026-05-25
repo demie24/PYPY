@@ -67,6 +67,23 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
       const key = `${entry.type}::${entry.suspect_node ?? entry.type}`;
       entry._count = seen[key]?.count ?? 1;
     }
+
+    // Prioritize by severity (CRITICAL > HIGH > WARNING) and then timestamp (newest first)
+    const severityWeight = (severity: string) => {
+      switch (severity) {
+        case "CRITICAL": return 3;
+        case "HIGH": return 2;
+        case "WARNING": return 1;
+        default: return 0;
+      }
+    };
+    result.sort((a, b) => {
+      const wA = severityWeight(a.severity);
+      const wB = severityWeight(b.severity);
+      if (wA !== wB) return wB - wA;
+      return b.timestamp - a.timestamp;
+    });
+
     return result.slice(0, 10);
   }, [alerts]);
 

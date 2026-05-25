@@ -8,7 +8,7 @@ import numpy as np
 import torch
 import paho.mqtt.client as mqtt
 
-from lstm_model import ThreatPredictorLSTM
+from model import TelemetryPredictorLSTM
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -19,7 +19,7 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 
 AI_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_PATH = os.path.abspath(os.path.join(AI_DIR, "..", "data_collector", "data", "telemetry_dataset.csv"))
-CHECKPOINT_PATH = os.path.join(AI_DIR, "models", "lstm_threat_predictor.pt")
+CHECKPOINT_PATH = os.path.join(AI_DIR, "models", "lstm_bus5_predictor.pt")
 
 class LiveInferenceEngine:
     def __init__(self):
@@ -39,7 +39,13 @@ class LiveInferenceEngine:
         self.min_vals = None
         self.max_vals = None
         
-        # Load topology mappings
+        # Target index is Bus_5 voltage magnitude (index 5)
+        self.target_index = 5
+        
+        # Prediction smoothing variable
+        self.prev_predicted_voltage = None
+        
+        # Line layout definitions
         self.line_ids = ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6", "L6_7", "L7_8", "L8_9"]
 
     def encode_flisr_state(self, state_str):
@@ -60,7 +66,7 @@ class LiveInferenceEngine:
             raise FileNotFoundError(f"Trained model checkpoint not found at: {CHECKPOINT_PATH}. Please run training first!")
             
         logger.info(f"Loading Threat Predictor model from: {CHECKPOINT_PATH}")
-        self.model = ThreatPredictorLSTM(input_dim=self.feature_dim, hidden_dim=64, num_layers=2, dropout=0.2)
+        self.model = TelemetryPredictorLSTM(input_dim=self.feature_dim, hidden_dim=64, num_layers=2, dropout=0.2)
         self.model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location="cpu"))
         self.model.eval()
         logger.info("Model loaded successfully.")
@@ -82,8 +88,8 @@ class LiveInferenceEngine:
                 
                 data = np.array(data, dtype=np.float32)
                 if len(data) >= 5:
-                    # Exclude timestamp (index 0) and threat_score (index 29)
-                    feature_indices = [i for i in range(1, len(header)) if i != 29]
+                    # Exclude timestamp (index 0) and target_index (index 5)
+                    feature_indices = [i for i in range(1, len(header)) if i != self.target_index]
                     X_raw = data[:, feature_indices]
                     self.min_vals = X_raw.min(axis=0)
                     self.max_vals = X_raw.max(axis=0)
@@ -94,29 +100,36 @@ class LiveInferenceEngine:
                 
         # Nominal fallback ranges (D = 30 features)
         logger.info("Dataset CSV absent or small. Initializing nominal scaling fallback ranges.")
-        # Voltages: nominal 1.0 (range 0.5 to 1.2)
-        v_min, v_max = [0.5] * 9, [1.2] * 9
+        # Voltages: nominal 1.0 (range 0.5 to 1.2) - excluding Bus_5 voltage which is target
+        v_min, v_max = [0.5] * 8, [1.2] * 8
         # Line capacity: nominal 40% (range 0.0 to 150.0%)
         l_min, l_max = [0.0] * 9, [150.0] * 9
         # Breaker states: binary [0, 1]
         b_min, b_max = [0.0] * 9, [1.0] * 9
         # Anomaly loss: [0.0, 0.05]
         a_min, a_max = [0.0], [0.05]
+        # Threat score: [0.0, 100.0]
+        t_min, t_max = [0.0], [100.0]
         # Attack active: [0.0, 1.0]
         atk_min, atk_max = [0.0], [1.0]
         # FLISR state: [0.0, 4.0]
         f_min, f_max = [0.0], [4.0]
         
-        self.min_vals = np.array(v_min + l_min + b_min + a_min + atk_min + f_min, dtype=np.float32)
-        self.max_vals = np.array(v_max + l_max + b_max + a_max + atk_max + f_max, dtype=np.float32)
+        self.min_vals = np.array(v_min + l_min + b_min + a_min + t_min + atk_min + f_min, dtype=np.float32)
+        self.max_vals = np.array(v_max + l_max + b_max + a_max + t_max + atk_max + f_max, dtype=np.float32)
 
     def process_telemetry(self, telemetry, client):
         try:
             # 1. Parse physical state features
             bus_voltages = []
+            actual_voltage = 1.0
             for i in range(1, 10):
                 bus_key = f"Bus_{i}"
-                bus_voltages.append(telemetry["state"]["buses"][bus_key]["voltage_pu"])
+                v_val = telemetry["state"]["buses"][bus_key]["voltage_pu"]
+                if i == self.target_index:
+                    actual_voltage = v_val
+                else:
+                    bus_voltages.append(v_val)
                 
             line_loads = []
             for lid in self.line_ids:
@@ -135,7 +148,7 @@ class LiveInferenceEngine:
                 bus_voltages + 
                 line_loads + 
                 breaker_states + 
-                [self.latest_anomaly_score, attack_active, flisr_val], 
+                [self.latest_anomaly_score, self.latest_threat_score, attack_active, flisr_val], 
                 dtype=np.float32
             )
             
@@ -156,51 +169,62 @@ class LiveInferenceEngine:
                 # Execute non-blocking inference
                 start_time = time.time()
                 with torch.no_grad():
-                    pred_scaled = self.model(tensor_input).item()
+                    pred_val = self.model(tensor_input).item()
                 latency_ms = (time.time() - start_time) * 1000
                 
-                # Rescale output to target range [0.0, 100.0]
-                predicted_threat = max(0.0, min(100.0, float(pred_scaled) * 100.0))
+                predicted_voltage = float(pred_val)
                 
-                # Verify that prediction does not output NaN
-                if np.isnan(predicted_threat):
-                    predicted_threat = self.latest_threat_score
-                    logger.warning("Model outputted NaN. Recovering with current threat score.")
+                # NaN / Inf protection
+                if np.isnan(predicted_voltage) or np.isinf(predicted_voltage):
+                    predicted_voltage = actual_voltage
+                    logger.warning("Prediction produced NaN/Inf. Reverting to actual voltage fallback.")
                 
-                # 6. Apply Cascade Risk Rules
-                if predicted_threat >= 76.0:
-                    cascade_risk = "CRITICAL"
-                elif predicted_threat >= 51.0:
-                    cascade_risk = "HIGH"
-                elif predicted_threat >= 26.0:
-                    cascade_risk = "MEDIUM"
+                # Prediction smoothing (Exponential Moving Average)
+                if self.prev_predicted_voltage is None:
+                    self.prev_predicted_voltage = predicted_voltage
                 else:
-                    cascade_risk = "LOW"
+                    alpha = 0.40
+                    predicted_voltage = self.prev_predicted_voltage + alpha * (predicted_voltage - self.prev_predicted_voltage)
+                    self.prev_predicted_voltage = predicted_voltage
+                
+                # Calculate delta metrics
+                pred_delta = predicted_voltage - actual_voltage
+                
+                # Voltage Instability Risk categories
+                # LOW: [0.95, 1.05] p.u.
+                # MEDIUM: [0.90, 0.95) or (1.05, 1.10] p.u.
+                # HIGH: [0.85, 0.90) or (1.10, 1.15] p.u.
+                # CRITICAL: < 0.85 or > 1.15 p.u.
+                if predicted_voltage < 0.85 or predicted_voltage > 1.15:
+                    risk = "CRITICAL"
+                elif (0.85 <= predicted_voltage < 0.90) or (1.10 < predicted_voltage <= 1.15):
+                    risk = "HIGH"
+                elif (0.90 <= predicted_voltage < 0.95) or (1.05 < predicted_voltage <= 1.10):
+                    risk = "MEDIUM"
+                else:
+                    risk = "LOW"
                     
-                # 7. Formulate Confidence Index
-                # Prediction confidence is high under steady states, lower under large transients
-                confidence = 0.96 - 0.15 * (abs(predicted_threat - self.latest_threat_score) / 100.0)
-                confidence = max(0.40, min(0.99, confidence))
+                # Calculate confidence score
+                confidence = max(0.40, min(0.99, 0.98 - 2.0 * abs(pred_delta)))
                 
-                # Determine instability trigger (true if score forecasts critical levels or escalates by > 20 points)
-                predicted_instability = (predicted_threat > 50.0) or ((predicted_threat - self.latest_threat_score) > 20.0)
-                
-                # 8. Publish compiled forecasting package
+                # 6. Publish forecast results
                 pred_payload = {
-                    "predicted_threat": round(predicted_threat, 2),
-                    "cascade_risk": cascade_risk,
-                    "prediction_confidence": round(confidence, 2),
-                    "predicted_instability": bool(predicted_instability),
-                    "timestamp": int(time.time() * 1000)
+                    "timestamp": int(time.time() * 1000),
+                    "predicted_bus5_voltage": round(float(predicted_voltage), 4),
+                    "actual_bus5_voltage": round(float(actual_voltage), 4),
+                    "prediction_delta": round(float(pred_delta), 4),
+                    "instability_risk": risk,
+                    "confidence": round(float(confidence), 2),
+                    "forecast_horizon_seconds": 10
                 }
                 
                 client.publish("grid/ai_prediction", json.dumps(pred_payload))
                 logger.info(
-                    f"AI Threat Forecast: {predicted_threat:.1f}% ({cascade_risk}) | "
+                    f"AI Voltage Forecast Bus_5: {predicted_voltage:.4f} p.u. (Risk: {risk}) | "
                     f"Confidence: {confidence:.2f} | Latency: {latency_ms:.2f}ms"
                 )
             else:
-                logger.info(f"Telemetry buffer filling: {len(self.history)}/{self.window_size} frames.")
+                logger.info(f"Telemetry buffer warming up: {len(self.history)}/{self.window_size} frames.")
                 
         except Exception as e:
             logger.error(f"Inference processing failure: {e}")
@@ -240,6 +264,7 @@ def on_message(client, userdata, msg):
                 engine.latest_threat_score = 0.0
                 engine.latest_flisr_state = "NORMAL"
                 engine.history.clear()
+                engine.prev_predicted_voltage = None
                 logger.info("AI Inference history and cache reset.")
                 
         elif topic == "grid/telemetry":
@@ -249,7 +274,6 @@ def on_message(client, userdata, msg):
         logger.error(f"Error handling message on {msg.topic}: {e}")
 
 if __name__ == "__main__":
-    # Prepare model and scaler ranges
     try:
         engine.load_model()
         engine.fit_scaler()
@@ -257,7 +281,7 @@ if __name__ == "__main__":
         logger.error(f"Inference Engine startup configuration failure: {e}")
         os._exit(1)
         
-    client = mqtt.Client(client_id="ai_threat_inference_engine")
+    client = mqtt.Client(client_id="ai_voltage_inference_engine")
     client.on_connect = on_connect
     client.on_message = on_message
     

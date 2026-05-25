@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Play, Square, ShieldAlert, RotateCcw, AlertTriangle, ShieldCheck, Clock } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Play, Square, ShieldAlert, RotateCcw, AlertTriangle, ShieldCheck, Clock, AlertCircle, CheckCircle2, Radio } from "lucide-react";
 
 interface AlertsPanelProps {
   events: any[];
@@ -25,7 +25,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
   flisrState,
   flisrIsolated,
   flisrReconfigured,
-  flisrTripped,
+  flisrTripped: _flisrTripped,
   onSendConfig,
   onSendAttack,
   onSendControl,
@@ -43,6 +43,44 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
 
   const attackRunning = activeAttack !== null;
   const isScenarioRunning = activeAttack === "SCENARIO";
+
+  // --- Phase 5B: Alert deduplication logic ---
+  // Collapse consecutive alerts from the same suspect_node within a 30s window
+  // into a single entry with a repeat counter.
+  const deduplicatedAlerts = useMemo(() => {
+    const seen: Record<string, { alert: any; count: number; lastTs: number }> = {};
+    const result: Array<any & { _count: number }> = [];
+    for (const alert of alerts) {
+      const key = `${alert.type}::${alert.suspect_node ?? alert.type}`;
+      const existing = seen[key];
+      if (existing && (alert.timestamp - existing.lastTs) < 30000 && existing.alert.severity === alert.severity) {
+        existing.count += 1;
+        existing.lastTs = alert.timestamp;
+      } else {
+        const entry = { ...alert, _count: 1 };
+        seen[key] = { alert: entry, count: 1, lastTs: alert.timestamp };
+        result.push(entry);
+      }
+    }
+    // Sync counts back
+    for (const entry of result) {
+      const key = `${entry.type}::${entry.suspect_node ?? entry.type}`;
+      entry._count = seen[key]?.count ?? 1;
+    }
+    return result.slice(0, 10);
+  }, [alerts]);
+
+  // --- Phase 5B: Severity summary counts ---
+  const severityCounts = useMemo(() => ({
+    CRITICAL: alerts.filter(a => a.severity === "CRITICAL").length,
+    HIGH: alerts.filter(a => a.severity === "HIGH").length,
+    WARNING: alerts.filter(a => a.severity === "WARNING").length,
+  }), [alerts]);
+
+  // --- Phase 5B: Compromised node count from attack_status ---
+  const compromisedCount = Object.keys(attackStatus?.compromised_nodes ?? {}).length;
+  const compromisedNames = Object.keys(attackStatus?.compromised_nodes ?? {});
+
 
   const startAttack = () => {
     onSendAttack({
@@ -426,22 +464,83 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
             <AlertTriangle size={16} className="text-scada-trip animate-pulse" />
             AI Intrusion Detection System
           </h2>
+
+          {/* Phase 5B: Severity summary badge strip */}
+          <div className="flex gap-1.5 mb-2">
+            <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${
+              severityCounts.CRITICAL > 0
+                ? "bg-red-500/15 border-red-500/40 text-red-400"
+                : "bg-scada-bg border-scada-border/30 text-gray-600"
+            }`}>
+              <AlertCircle size={9} />
+              CRIT {severityCounts.CRITICAL}
+            </span>
+            <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${
+              severityCounts.HIGH > 0
+                ? "bg-orange-500/15 border-orange-500/40 text-orange-400"
+                : "bg-scada-bg border-scada-border/30 text-gray-600"
+            }`}>
+              <AlertTriangle size={9} />
+              HIGH {severityCounts.HIGH}
+            </span>
+            <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${
+              severityCounts.WARNING > 0
+                ? "bg-yellow-500/15 border-yellow-500/40 text-yellow-400"
+                : "bg-scada-bg border-scada-border/30 text-gray-600"
+            }`}>
+              <Radio size={9} />
+              WARN {severityCounts.WARNING}
+            </span>
+            {alerts.length === 0 && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-emerald-500/10 border-emerald-500/30 text-scada-nominal">
+                <CheckCircle2 size={9} /> NOMINAL
+              </span>
+            )}
+          </div>
+
+          {/* Phase 5B: Compromised node count summary banner */}
+          {compromisedCount > 0 && (
+            <div className="mb-2 bg-red-900/20 border border-red-500/30 rounded px-2 py-1 text-[9px] font-mono text-red-300 flex items-center justify-between">
+              <span className="flex items-center gap-1">
+                <ShieldAlert size={10} className="animate-pulse" />
+                <span className="font-bold text-red-400">{compromisedCount} NODE{compromisedCount > 1 ? "S" : ""} COMPROMISED</span>
+              </span>
+              <span className="text-red-500/70 truncate max-w-[120px]">
+                {compromisedNames.slice(0, 3).join(", ")}{compromisedNames.length > 3 ? ` +${compromisedNames.length - 3}` : ""}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Alarms list container */}
-        <div className="flex-1 overflow-y-auto border border-scada-border bg-scada-bg rounded p-2 max-h-[200px]">
+        {/* Alarms list container with deduplication */}
+        <div className="flex-1 overflow-y-auto border border-scada-border bg-scada-bg rounded p-2 max-h-[170px]">
           <div className="space-y-1.5">
-            {alerts.slice(0, 10).map((alert, i) => (
+            {deduplicatedAlerts.map((alert, i) => (
               <div
                 key={i}
                 className={`text-[10px] font-mono p-1.5 rounded flex flex-col gap-0.5 border ${
                   alert.severity === "CRITICAL"
                     ? "bg-red-500/10 border-red-500/30 text-red-400 animate-pulse font-bold"
+                    : alert.severity === "HIGH"
+                    ? "bg-orange-500/10 border-orange-500/30 text-orange-300"
                     : "bg-yellow-500/10 border-yellow-500/30 text-yellow-400"
                 }`}
               >
                 <div className="flex justify-between items-center font-bold text-[9px] uppercase tracking-wider">
-                  <span>{alert.type}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`px-1 py-0.5 rounded text-[8px] ${
+                      alert.severity === "CRITICAL" ? "bg-red-500/30 text-red-300" :
+                      alert.severity === "HIGH" ? "bg-orange-500/30 text-orange-300" :
+                      "bg-yellow-500/30 text-yellow-300"
+                    }`}>{alert.severity}</span>
+                    <span className="text-white/70">{alert.type}</span>
+                    {/* Phase 5B: Repeat count badge */}
+                    {alert._count > 1 && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-white/10 text-gray-300 text-[8px] font-bold">
+                        ×{alert._count}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-scada-dimText font-semibold">
                     {new Date(alert.timestamp).toLocaleTimeString([], { hour12: false })}
                   </span>

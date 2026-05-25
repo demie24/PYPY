@@ -29,13 +29,21 @@ class NumPyAutoencoderDetector:
         self.threshold = 0.003
         self.loss_history = []
         self.under_attack = False
-        
+
         # Alert throttling & sliding window variables
-        self.anomaly_window = []  # sliding window of boolean flags
-        self.window_size = 3
+        # Window/confirm counts are relaxed during known attacks to reduce flood
+        self.anomaly_window = []   # sliding window of boolean flags
+        self.window_size = 3       # normal mode window
         self.confirm_count = 2     # number of anomalous flags in window to confirm
         self.last_alerts = {}      # maps suspect_node to {"timestamp": float, "severity": str}
-        self.cooldown_period = 8.0 # seconds before sending duplicate alert for same node
+        self.cooldown_period = 12.0   # seconds before duplicate alert for same node (Phase 5B: raised from 8s)
+
+        # Phase 5B: Attack-mode window inflation
+        # During a known active attack, inflate the sliding window requirement
+        # to avoid flooding with expected anomalies
+        self.attack_window_size = 6
+        self.attack_confirm_count = 5
+        self.attack_cooldown_period = 20.0  # longer suppression during active attacks
 
     def forward(self, x):
         # Hidden layer with tanh activation
@@ -137,13 +145,24 @@ def on_message(client, userdata, msg):
         elif msg.topic == "grid/telemetry":
             res = detector.process_telemetry(payload)
             if res:
+                # Phase 5B: Use attack-mode window parameters when under known active attack
+                # to avoid flooding on expected grid deviations
+                if detector.under_attack:
+                    w_size = detector.attack_window_size
+                    w_confirm = detector.attack_confirm_count
+                    cooldown = detector.attack_cooldown_period
+                else:
+                    w_size = detector.window_size
+                    w_confirm = detector.confirm_count
+                    cooldown = detector.cooldown_period
+
                 # 1. Update sliding window
                 detector.anomaly_window.append(res["is_anomaly"])
-                if len(detector.anomaly_window) > detector.window_size:
+                if len(detector.anomaly_window) > w_size:
                     detector.anomaly_window.pop(0)
                 
                 # 2. Confirm anomaly over window size
-                confirmed_anomaly = sum(1 for x in detector.anomaly_window if x) >= detector.confirm_count
+                confirmed_anomaly = sum(1 for x in detector.anomaly_window if x) >= w_confirm
                 
                 if confirmed_anomaly:
                     # Pinpoint target of anomaly by checking which bus has the highest reconstruction error
@@ -159,6 +178,19 @@ def on_message(client, userdata, msg):
                         severity = "HIGH"
                     else:
                         severity = "WARNING"
+
+                    # Phase 5B: Classify anomaly type from error pattern
+                    max_err = float(np.max(errors))
+                    mean_err = float(np.mean(errors))
+                    spread = float(np.std(errors))
+                    if spread > 0.02:       # Errors concentrated on 1-2 buses
+                        anomaly_class = "TARGETED_FDIA"
+                    elif mean_err > 0.05:   # Broad voltage collapse
+                        anomaly_class = "PHYSICAL_FAULT"
+                    elif max_err > 0.1:     # Large single-bus deviation
+                        anomaly_class = "SENSOR_ANOMALY"
+                    else:
+                        anomaly_class = "GRID_DEVIATION"
                         
                     # Check throttling / suppression
                     now = time.time()
@@ -168,7 +200,7 @@ def on_message(client, userdata, msg):
                     if last_alert:
                         time_since_last = now - last_alert["timestamp"]
                         # Suppress if within cooldown period and severity is not higher
-                        if time_since_last < detector.cooldown_period and severity == last_alert["severity"]:
+                        if time_since_last < cooldown and severity == last_alert["severity"]:
                             should_send = False
                             
                     if should_send:
@@ -179,15 +211,15 @@ def on_message(client, userdata, msg):
                         
                         alert = {
                             "timestamp": int(now * 1000),
-                            "type": "ANOMALY_DETECTION",
+                            "type": anomaly_class,
                             "severity": severity,
                             "loss": round(res["loss"], 6),
                             "threshold": round(res["threshold"], 6),
                             "suspect_node": suspect_bus,
-                            "msg": f"Anomalous grid state deviation detected on {suspect_bus} (Reconstruction error exceeds threshold)."
+                            "msg": f"[{anomaly_class}] Anomalous grid state on {suspect_bus} (reconstruction Δ={round(res['loss'], 5)}, ratio={ratio:.1f}x threshold)."
                         }
                         client.publish("grid/alerts", json.dumps(alert))
-                        logger.warning(f"AI Anomaly Alert triggered! Node: {suspect_bus}, Severity: {severity}, Loss: {res['loss']:.5f}")
+                        logger.warning(f"AI Anomaly Alert [{anomaly_class}]! Node: {suspect_bus}, Severity: {severity}, Loss: {res['loss']:.5f}")
     except Exception as e:
         logger.error(f"Error handling telemetry in detector: {e}")
 

@@ -16,6 +16,17 @@ class GridPhysicsEngine:
         # Track line currents from previous step to compute dynamic thermal reactance overloads
         self.prev_currents = {}
 
+        # Phase 5B: Cascade propagation smoothing
+        # Thermal reactance factors are blended with history to avoid instant jumps
+        # This simulates the thermal time constant of real conductors (~2-5 seconds).
+        self._prev_reactance_factors = {}
+        self._cascade_alpha = 0.40  # blend rate: 0.40 = 40% new value per step
+
+        # Phase 5B: Per-bus voltage stress history for neighbour load redistribution
+        # Neighbours see a lagged voltage effect rather than an instant step change.
+        self._bus_voltage_history = {}   # bus_idx -> list of recent V values
+        self._voltage_hist_len = 3        # number of history steps to average
+
     def solve(self, breakers: dict, active_loads: dict, generator_P: dict, generator_Q: dict):
         """
         Solves the DC Power Flow and computes voltage magnitudes, line currents, and power flows.
@@ -35,15 +46,21 @@ class GridPhysicsEngine:
         #
         # Apply thermal overcurrent stress: overloaded lines heat up, increasing reactance
         # Reactance increases linearly for currents above 1.8 p.u. (max 1.6x at 3.0 p.u.)
+        # Phase 5B: Blended thermal reactance factors (smoothed cascade propagation)
+        # Reactance builds up gradually over multiple steps rather than instantly.
         reactance_factors = {}
         for line in self.topo.lines:
             lid = line["id"]
             prev_i = self.prev_currents.get(lid, 0.0)
             if prev_i > 1.8:
-                factor = 1.0 + 0.5 * (prev_i - 1.8)
-                reactance_factors[lid] = min(1.6, factor)
+                target_factor = min(1.6, 1.0 + 0.5 * (prev_i - 1.8))
             else:
-                reactance_factors[lid] = 1.0
+                target_factor = 1.0
+            # Blend toward target factor at cascade_alpha rate
+            prev_factor = self._prev_reactance_factors.get(lid, 1.0)
+            blended = prev_factor + self._cascade_alpha * (target_factor - prev_factor)
+            reactance_factors[lid] = blended
+            self._prev_reactance_factors[lid] = blended
 
         B = np.zeros((self.num_buses, self.num_buses))
         for line in self.topo.lines:
@@ -123,6 +140,22 @@ class GridPhysicsEngine:
 
         # Clip voltages to reasonable physical boundaries (0.0 to 1.2)
         V = np.clip(V, 0.0, 1.2)
+
+        # Phase 5B: Voltage history smoothing for neighbour stress propagation
+        # Each bus voltage is blended with its recent history to simulate
+        # the propagation delay of voltage stress through the network.
+        for i in range(self.num_buses):
+            hist = self._bus_voltage_history.get(i, [])
+            hist.append(float(V[i]))
+            if len(hist) > self._voltage_hist_len:
+                hist.pop(0)
+            self._bus_voltage_history[i] = hist
+            # Only apply smoothing to load buses (generators hold their setpoints)
+            if i not in self.topo.generators and len(hist) >= 2:
+                # Weighted average: most-recent gets higher weight
+                weights = np.linspace(0.5, 1.0, len(hist))
+                V[i] = float(np.average(hist, weights=weights))
+                V[i] = max(0.0, min(1.2, V[i]))
 
         # 6. Compute Line active/reactive power flows and currents
         line_flows = {}

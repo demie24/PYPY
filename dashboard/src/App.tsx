@@ -94,6 +94,17 @@ export default function App() {
               if (next.length > 50) next.shift();
               return next;
             });
+
+            // Phase 5B: Authoritative attack state from telemetry payload
+            // This is the ground-truth source - always in sync with backend
+            const atkStatus = payload?.attack_status;
+            if (atkStatus) {
+              const backendAtk = atkStatus.active_attack || null;
+              setActiveAttack(backendAtk);
+              if (!backendAtk) {
+                setAttackTarget(null);
+              }
+            }
           } else if (topic === "grid/events") {
             setEvents((prev) => {
               const next = [payload, ...prev];
@@ -114,6 +125,20 @@ export default function App() {
             }
           } else if (topic === "grid/alerts") {
             setAlerts((prev) => {
+              // Ingestion-level deduplication: drop alerts where an identical
+              // type+suspect_node already exists within a 15-second window.
+              // This is the second gate — catches anything the backend cooldown misses.
+              const DEDUP_WINDOW_MS = 15_000;
+              const incomingKey = `${payload.type}::${payload.suspect_node ?? payload.type}`;
+              const isDuplicate = prev.some((a) => {
+                const aKey = `${a.type}::${a.suspect_node ?? a.type}`;
+                return (
+                  aKey === incomingKey &&
+                  a.severity === payload.severity &&
+                  payload.timestamp - a.timestamp < DEDUP_WINDOW_MS
+                );
+              });
+              if (isDuplicate) return prev; // Drop silently
               const next = [payload, ...prev];
               if (next.length > 100) next.pop();
               return next;

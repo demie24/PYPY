@@ -18,7 +18,7 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
   flisrState,
   flisrIsolated,
   flisrReconfigured,
-  flisrTripped
+  flisrTripped: _flisrTripped
 }) => {
   const [hoveredEl, setHoveredEl] = useState<{ type: "bus" | "line"; id: string; data: any } | null>(null);
 

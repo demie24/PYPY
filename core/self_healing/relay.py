@@ -24,10 +24,17 @@ class ProtectiveRelay:
         # Track tripped breakers to prevent repeated actions
         self.tripped_devices: List[str] = []
 
+        # Phase 5B: Post-trip recovery lockout
+        # After a breaker trips, suppress re-trip for N frames even if current recovers
+        # This prevents rapid oscillation during FLISR reconfiguration transients.
+        self.trip_recovery_counter: Dict[str, int] = {}
+        self.trip_recovery_lockout_frames: int = 5
+
     def reset_trips(self):
         self.tripped_devices.clear()
         self.overcurrent_counters.clear()
         self.undervoltage_counters.clear()
+        self.trip_recovery_counter.clear()
         logger.info("Relay protection tripped devices state reset.")
 
     def evaluate_telemetry(self, telemetry: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -48,14 +55,23 @@ class ProtectiveRelay:
             # Only evaluate lines that are closed
             if breakers.get(lid) != "CLOSED":
                 self.overcurrent_counters[lid] = 0
+                # Phase 5B: Decrement recovery lockout counter while breaker is OPEN
+                if self.trip_recovery_counter.get(lid, 0) > 0:
+                    self.trip_recovery_counter[lid] -= 1
                 continue
                 
             current = line_data.get("current_pu", 0.0)
+
+            # Phase 5B: Skip if still within post-trip recovery lockout window
+            if self.trip_recovery_counter.get(lid, 0) > 0:
+                self.trip_recovery_counter[lid] -= 1
+                continue
             
             # ANSI 50: Instantaneous Overcurrent Trip
             if current >= self.instantaneous_overcurrent_threshold:
                 if lid not in self.tripped_devices:
                     self.tripped_devices.append(lid)
+                    self.trip_recovery_counter[lid] = self.trip_recovery_lockout_frames
                     commands.append(self._create_trip_command(lid, "ANSI 50 (Instantaneous Overcurrent)", current, timestamp))
                     logger.warning(f"ANSI 50 Instantaneous Overcurrent trip triggered on line {lid}. Current: {current} p.u.")
                 continue
@@ -66,6 +82,7 @@ class ProtectiveRelay:
                 if self.overcurrent_counters[lid] >= self.timed_overcurrent_delay_frames:
                     if lid not in self.tripped_devices:
                         self.tripped_devices.append(lid)
+                        self.trip_recovery_counter[lid] = self.trip_recovery_lockout_frames
                         commands.append(self._create_trip_command(lid, "ANSI 51 (Timed Overcurrent)", current, timestamp))
                         logger.warning(f"ANSI 51 Timed Overcurrent trip triggered on line {lid}. Current: {current} p.u. for {self.timed_overcurrent_delay_frames} frames")
             else:
@@ -110,19 +127,31 @@ class ProtectiveRelay:
     def _find_feeding_breaker(self, bus_id: str, breakers: Dict[str, str]) -> str:
         """
         Finds a line breaker connected to this bus. Simplified mapping for IEEE 9-bus.
+        - Bus 4 (junction) is fed by L1_4; connects to Bus 5 via L4_5, Bus 9 via L4_9
         - Bus 5 index 4 is fed by line L4_5 and line L5_6
         - Bus 6 index 5 is fed by line L5_6 and L6_7
         - Bus 8 index 7 is fed by line L7_8 and L8_9
+        - Bus 9 (junction) is fed by L3_9; connects to Bus 4 via L4_9, Bus 8 via L8_9
         """
         bus_num = int(bus_id.split("_")[1])
-        if bus_num == 5:
-            # Trip L4_5 if CLOSED
+        # Bus 4 - junction; trip its main infeed L1_4
+        if bus_num == 4:
+            if breakers.get("L1_4") == "CLOSED": return "L1_4"
+            if breakers.get("L4_5") == "CLOSED": return "L4_5"
+        # Bus 5 - load bus; trip upstream L4_5 first, then L5_6
+        elif bus_num == 5:
             if breakers.get("L4_5") == "CLOSED": return "L4_5"
             if breakers.get("L5_6") == "CLOSED": return "L5_6"
+        # Bus 6 - load bus; trip upstream L5_6 first, then L6_7
         elif bus_num == 6:
             if breakers.get("L5_6") == "CLOSED": return "L5_6"
             if breakers.get("L6_7") == "CLOSED": return "L6_7"
+        # Bus 8 - load bus; trip upstream L8_9 first, then L7_8
         elif bus_num == 8:
             if breakers.get("L8_9") == "CLOSED": return "L8_9"
             if breakers.get("L7_8") == "CLOSED": return "L7_8"
+        # Bus 9 - junction; trip its main infeed L3_9
+        elif bus_num == 9:
+            if breakers.get("L3_9") == "CLOSED": return "L3_9"
+            if breakers.get("L4_9") == "CLOSED": return "L4_9"
         return ""

@@ -20,6 +20,7 @@ export default function App() {
   const [events, setEvents] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [threatData, setThreatData] = useState<any>(null);
+  const [aiPrediction, setAiPrediction] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -86,6 +87,9 @@ export default function App() {
           }
           if (data.threat) {
             setThreatData(data.threat);
+          }
+          if (data.ai_prediction) {
+            setAiPrediction(data.ai_prediction);
           }
         } 
         // Handle active MQTT stream broadcasts
@@ -166,6 +170,8 @@ export default function App() {
             }
           } else if (topic === "grid/threat") {
             setThreatData(payload);
+          } else if (topic === "grid/ai_prediction") {
+            setAiPrediction(payload);
           }
         }
       } catch (err) {
@@ -242,6 +248,7 @@ export default function App() {
     setFlisrReconfigured([]);
     setFlisrTripped([]);
     setThreatData(null);
+    setAiPrediction(null);
   };
 
   const handleToggleAutoDefense = (enabled: boolean) => {
@@ -339,6 +346,22 @@ export default function App() {
               <span className="text-scada-warning font-bold text-sm animate-pulse scada-text-glow-warning">DEGRADED</span>
             ) : (
               <span className="text-scada-nominal font-bold text-sm scada-text-glow-green">NOMINAL</span>
+            )}
+          </div>
+
+          <div className="flex flex-col items-end">
+            <span className="text-[9px] text-scada-dimText uppercase">AI Forecast (t+10s)</span>
+            {aiPrediction ? (
+              <span className={`font-bold text-sm tracking-wide font-scada-nums ${
+                aiPrediction.predicted_threat >= 76.0 ? "text-red-500 animate-pulse scada-text-glow-red" :
+                aiPrediction.predicted_threat >= 51.0 ? "text-orange-500" :
+                aiPrediction.predicted_threat >= 26.0 ? "text-yellow-500 scada-text-glow-warning" :
+                "text-scada-nominal scada-text-glow-green"
+              }`}>
+                {aiPrediction.predicted_threat.toFixed(0)}% ({aiPrediction.cascade_risk})
+              </span>
+            ) : (
+              <span className="text-gray-500 font-bold text-sm animate-pulse">WARMING UP...</span>
             )}
           </div>
 

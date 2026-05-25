@@ -5,3 +5,4 @@ dist/
 .vite/
 dashboard/dist/
 dashboard/node_modules/
+*.pt

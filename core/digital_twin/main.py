@@ -91,9 +91,11 @@ class SmartGridDigitalTwin:
         Bypassed if breaker communication is blocked by active DoS.
         """
         if target == "SYSTEM" and command == "RESET_ALARMS":
-            logger.info("Resetting digital twin simulator transient and thermal state.")
+            logger.info("Resetting digital twin simulator transient and thermal state and breakers.")
             self.prev_telemetry = None
             self.physics.prev_currents = {}
+            self.breakers = {line["id"]: "CLOSED" for line in self.topo.lines}
+            self.breakers["L7_8"] = "OPEN"
             return
 
         # 1. Check if the target breaker is jammed by DoS

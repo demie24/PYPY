@@ -28,6 +28,8 @@ class DatasetCollector:
         # State caches
         self.latest_anomaly_score = 0.0
         self.latest_threat_score = 0.0
+        self.latest_cascade_probability = 0.0
+        self.latest_propagation_risk = 0  # 0=LOW, 1=MEDIUM, 2=HIGH
         self.latest_flisr_state = "NORMAL"
         
         # Line layout definitions
@@ -42,7 +44,13 @@ class DatasetCollector:
             "anomaly_score",
             "threat_score",
             "attack_active",
-            "flisr_state_encoded"
+            "flisr_state_encoded",
+            "attack_type",
+            "fdia_active",
+            "replay_active",
+            "breaker_attack_active",
+            "cascade_probability",
+            "propagation_risk_encoded"
         ]
         
         self._initialize_csv()
@@ -90,8 +98,58 @@ class DatasetCollector:
                 status = telemetry["state"]["breakers"].get(lid, "CLOSED")
                 breaker_states.append(1 if status == "CLOSED" else 0)
                 
-            # 5. Extract active attack status flag
-            attack_active = 1 if telemetry.get("attack_status", {}).get("active_attack") is not None else 0
+            # 5. Extract active attack status flag and encode specific attack type
+            attack_status = telemetry.get("attack_status", {})
+            active_attack = attack_status.get("active_attack")
+            attack_active = 1 if active_attack is not None else 0
+            
+            fdia_active = 0
+            replay_active = 0
+            breaker_attack_active = 0
+            attack_type = 0  # 0=NORMAL, 1=FDIA, 2=REPLAY, 3=TRIP, 4=DOS, 5=SENSOR_SPOOFING
+            
+            if active_attack:
+                compromised = attack_status.get("compromised_nodes", {})
+                if active_attack == "FDIA":
+                    fdia_active = 1
+                    attack_type = 1
+                elif active_attack == "REPLAY":
+                    replay_active = 1
+                    attack_type = 2
+                elif active_attack == "TRIP":
+                    breaker_attack_active = 1
+                    attack_type = 3
+                elif active_attack == "SCENARIO":
+                    for node, comp in compromised.items():
+                        ctype = comp.get("type")
+                        if ctype == "FDIA":
+                            fdia_active = 1
+                            attack_type = 1
+                        elif ctype == "REPLAY":
+                            replay_active = 1
+                            attack_type = 2
+                        elif ctype in ["BREAKER_MANIPULATION", "TRIP"]:
+                            breaker_attack_active = 1
+                            attack_type = 3
+                        elif ctype == "DOS":
+                            attack_type = 4
+                        elif ctype == "SENSOR_SPOOFING":
+                            attack_type = 5
+                else:
+                    active_str = str(active_attack).upper()
+                    if "FDIA" in active_str:
+                        fdia_active = 1
+                        attack_type = 1
+                    elif "REPLAY" in active_str:
+                        replay_active = 1
+                        attack_type = 2
+                    elif "TRIP" in active_str or "BREAKER" in active_str:
+                        breaker_attack_active = 1
+                        attack_type = 3
+                    elif "DOS" in active_str:
+                        attack_type = 4
+                    elif "SENSOR" in active_str:
+                        attack_type = 5
             
             # 6. Construct synchronized sample row
             row_data = [
@@ -102,7 +160,13 @@ class DatasetCollector:
                 self.latest_anomaly_score,
                 self.latest_threat_score,
                 attack_active,
-                self.encode_flisr_state(self.latest_flisr_state)
+                self.encode_flisr_state(self.latest_flisr_state),
+                attack_type,
+                fdia_active,
+                replay_active,
+                breaker_attack_active,
+                self.latest_cascade_probability,
+                self.latest_propagation_risk
             ]
             
             # 7. Append sample row to CSV
@@ -111,7 +175,7 @@ class DatasetCollector:
                 writer.writerow(row_data)
                 
             # 8. Append feature vector (excluding timestamp) to rolling buffer
-            # Feature size: 9 buses + 9 line loads + 9 breaker states + 1 anomaly + 1 threat + 1 attack + 1 flisr = 31 features
+            # Feature size: 9 buses + 9 line loads + 9 breaker states + 1 anomaly + 1 threat + 1 attack + 1 flisr + 6 new = 37 features
             feature_vector = row_data[1:]
             self.buffer.append(feature_vector)
             
@@ -152,8 +216,12 @@ def on_message(client, userdata, msg):
             collector.latest_anomaly_score = float(payload.get("loss", 0.0))
 
         elif topic == "grid/threat":
-            # Record the latest threat scoring index
+            # Record the latest threat scoring index and additional metrics
             collector.latest_threat_score = int(payload.get("threat_score", 0))
+            collector.latest_cascade_probability = float(payload.get("cascade_probability", 0.0))
+            risk_str = payload.get("propagation_risk", "LOW").upper()
+            risk_mapping = {"LOW": 0, "MEDIUM": 1, "HIGH": 2}
+            collector.latest_propagation_risk = risk_mapping.get(risk_str, 0)
 
         elif topic == "grid/config":
             # Record latest FLISR FSM state
@@ -166,6 +234,8 @@ def on_message(client, userdata, msg):
             if cmd == "RESET_ALARMS":
                 collector.latest_anomaly_score = 0.0
                 collector.latest_threat_score = 0.0
+                collector.latest_cascade_probability = 0.0
+                collector.latest_propagation_risk = 0
                 collector.latest_flisr_state = "NORMAL"
                 collector.buffer.clear()
                 logger.info("Dataset Collector cache and memory buffer reset.")

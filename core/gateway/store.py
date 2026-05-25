@@ -14,6 +14,9 @@ class MemoryStore:
         self.latest_threat: Optional[Dict[str, Any]] = None
         self.latest_ai_prediction: Optional[Dict[str, Any]] = None
         self.latest_ai_forecast_multi_bus: Optional[Dict[str, Any]] = None
+        self.latest_physics_validation: Optional[Dict[str, Any]] = None
+        self.latest_trust_scores: Optional[Dict[str, Any]] = None
+        self.latest_adaptive_filter: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -38,6 +41,18 @@ class MemoryStore:
     def update_ai_forecast_multi_bus(self, ai_forecast: Dict[str, Any]):
         self.latest_ai_forecast_multi_bus = ai_forecast
 
+    def update_ai_threat_forecast(self, ai_threat: Dict[str, Any]):
+        self.latest_ai_threat_forecast = ai_threat
+
+    def update_physics_validation(self, physics_val: Dict[str, Any]):
+        self.latest_physics_validation = physics_val
+
+    def update_trust_scores(self, trust_scores: Dict[str, Any]):
+        self.latest_trust_scores = trust_scores
+
+    def update_adaptive_filter(self, adaptive_filter: Dict[str, Any]):
+        self.latest_adaptive_filter = adaptive_filter
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -60,7 +75,11 @@ class MemoryStore:
             "config": self.latest_config,
             "threat": self.latest_threat,
             "ai_prediction": self.latest_ai_prediction,
-            "ai_forecast_multi_bus": self.latest_ai_forecast_multi_bus
+            "ai_forecast_multi_bus": self.latest_ai_forecast_multi_bus,
+            "ai_threat_forecast": self.latest_ai_threat_forecast,
+            "physics_validation": self.latest_physics_validation,
+            "trust_scores": self.latest_trust_scores,
+            "adaptive_filter": self.latest_adaptive_filter
         }
 
     def clear_alerts(self):

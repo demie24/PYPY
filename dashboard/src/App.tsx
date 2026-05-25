@@ -6,6 +6,9 @@ import { AlertsPanel } from "./components/AlertsPanel.tsx";
 import { ThreatScorePanel } from "./components/ThreatScorePanel.tsx";
 import { ForecastPanel } from "./components/ForecastPanel.tsx";
 import { MultiBusForecastPanel } from "./components/MultiBusForecastPanel.tsx";
+import { ThreatAwareForecastPanel } from "./components/ThreatAwareForecastPanel.tsx";
+import { PhysicsValidationPanel } from "./components/PhysicsValidationPanel.tsx";
+import { TrustAnalysisPanel } from "./components/TrustAnalysisPanel.tsx";
 
 import {
   Wifi,
@@ -25,6 +28,10 @@ export default function App() {
   const [aiPrediction, setAiPrediction] = useState<any>(null);
   const [predictionHistory, setPredictionHistory] = useState<any[]>([]);
   const [multiBusForecast, setMultiBusForecast] = useState<any>(null);
+  const [threatAwareForecast, setThreatAwareForecast] = useState<any>(null);
+  const [physicsValidation, setPhysicsValidation] = useState<any>(null);
+  const [trustScores, setTrustScores] = useState<any>(null);
+  const [adaptiveFilter, setAdaptiveFilter] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -98,6 +105,18 @@ export default function App() {
           }
           if (data.ai_forecast_multi_bus) {
             setMultiBusForecast(data.ai_forecast_multi_bus);
+          }
+          if (data.ai_threat_forecast) {
+            setThreatAwareForecast(data.ai_threat_forecast);
+          }
+          if (data.physics_validation) {
+            setPhysicsValidation(data.physics_validation);
+          }
+          if (data.trust_scores) {
+            setTrustScores(data.trust_scores);
+          }
+          if (data.adaptive_filter) {
+            setAdaptiveFilter(data.adaptive_filter);
           }
         } 
         // Handle active MQTT stream broadcasts
@@ -187,6 +206,14 @@ export default function App() {
             });
           } else if (topic === "grid/ai_forecast_multi_bus") {
             setMultiBusForecast(payload);
+          } else if (topic === "grid/ai_threat_forecast") {
+            setThreatAwareForecast(payload);
+          } else if (topic === "grid/physics_validation") {
+            setPhysicsValidation(payload);
+          } else if (topic === "grid/trust_scores") {
+            setTrustScores(payload);
+          } else if (topic === "grid/adaptive_filter") {
+            setAdaptiveFilter(payload);
           }
         }
       } catch (err) {
@@ -266,6 +293,10 @@ export default function App() {
     setAiPrediction(null);
     setPredictionHistory([]);
     setMultiBusForecast(null);
+    setThreatAwareForecast(null);
+    setPhysicsValidation(null);
+    setTrustScores(null);
+    setAdaptiveFilter(null);
   };
 
   const handleToggleAutoDefense = (enabled: boolean) => {
@@ -422,10 +453,13 @@ export default function App() {
               flisrTripped={flisrTripped}
             />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 shrink-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 shrink-0">
             <TelemetryCharts history={history} />
             <ForecastPanel predictionHistory={predictionHistory} aiPrediction={aiPrediction} />
             <MultiBusForecastPanel forecastData={multiBusForecast} />
+            <ThreatAwareForecastPanel forecastData={threatAwareForecast} />
+            <PhysicsValidationPanel validationData={physicsValidation} />
+            <TrustAnalysisPanel trustScores={trustScores} filterData={adaptiveFilter} />
           </div>
         </section>
 

@@ -150,6 +150,38 @@ services:
     networks:
       - grid-net
 
+  ai_prediction_threat_aware:
+    image: python:3.10-slim
+    container_name: smart_grid_ai_prediction_threat_aware
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt && python ai_prediction/threat_aware_inference.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
+  physics_validation:
+    image: python:3.10-slim
+    container_name: smart_grid_physics_validation
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python physics_validation/validation_engine.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
 networks:
   grid-net:
     driver: bridge

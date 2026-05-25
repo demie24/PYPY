@@ -46,3 +46,55 @@ class MultiBusPredictorLSTM(nn.Module):
         with torch.no_grad():
             output = self.forward(x)
         return output
+
+class ThreatAwarePredictorLSTM(nn.Module):
+    def __init__(self, input_dim, output_dim=5, hidden_dim=64, num_layers=2, dropout=0.2):
+        """
+        Lightweight multi-output LSTM Network with a dual head for forecasting 
+        voltage trajectories AND classifying cyber-induced instability.
+        """
+        super(ThreatAwarePredictorLSTM, self).__init__()
+        self.hidden_dim = hidden_dim
+        self.num_layers = num_layers
+        
+        # Shared temporal encoder (LSTM)
+        self.lstm = nn.LSTM(
+            input_size=input_dim,
+            hidden_size=hidden_dim,
+            num_layers=num_layers,
+            batch_first=True,
+            dropout=dropout if num_layers > 1 else 0.0
+        )
+        
+        # Regression head: predicts voltages for target buses
+        self.fc_regression = nn.Linear(hidden_dim, output_dim)
+        
+        # Classification head: predicts logit of cyber-induced instability
+        self.fc_classification = nn.Linear(hidden_dim, 1)
+
+    def forward(self, x):
+        # Initialize hidden and cell states on matching device
+        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).to(x.device)
+        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).to(x.device)
+        
+        # LSTM forward pass
+        out, _ = self.lstm(x, (h0, c0))
+        
+        # Decode the hidden state of the last time step in the sequence
+        last_step_out = out[:, -1, :]
+        
+        # Dual-head projections
+        voltages = self.fc_regression(last_step_out)
+        cyber_logits = self.fc_classification(last_step_out)
+        
+        return voltages, cyber_logits
+
+    def predict(self, x):
+        """
+        Helper method to run prediction in evaluation mode returning voltages and probabilities.
+        """
+        self.eval()
+        with torch.no_grad():
+            voltages, cyber_logits = self.forward(x)
+            cyber_prob = torch.sigmoid(cyber_logits)
+        return voltages, cyber_prob

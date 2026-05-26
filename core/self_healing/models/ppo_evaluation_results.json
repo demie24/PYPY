@@ -1,0 +1,8 @@
+{
+    "agent_type": "PPO",
+    "num_trials": 10,
+    "mean_reward": -48.76524385914672,
+    "std_reward": 155.68692650872907,
+    "mean_violations": 9.9,
+    "restoration_rate": 1.0
+}

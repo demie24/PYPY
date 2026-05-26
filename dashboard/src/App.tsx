@@ -11,6 +11,9 @@ import { PhysicsValidationPanel } from "./components/PhysicsValidationPanel.tsx"
 import { TrustAnalysisPanel } from "./components/TrustAnalysisPanel.tsx";
 import { OrchestratorPanel } from "./components/OrchestratorPanel.tsx";
 import { SystemHealthPanel } from "./components/SystemHealthPanel.tsx";
+import { PinnForecastPanel } from "./components/PinnForecastPanel.tsx";
+import { PreRlPanel } from "./components/PreRlPanel.tsx";
+import { CyberDefensePanel } from "./components/CyberDefensePanel.tsx";
 
 import {
   Wifi,
@@ -39,11 +42,14 @@ export default function App() {
   const [predictionHistory, setPredictionHistory] = useState<any[]>([]);
   const [multiBusForecast, setMultiBusForecast] = useState<any>(null);
   const [threatAwareForecast, setThreatAwareForecast] = useState<any>(null);
+  const [pinnForecast, setPinnForecast] = useState<any>(null);
   const [physicsValidation, setPhysicsValidation] = useState<any>(null);
   const [trustScores, setTrustScores] = useState<any>(null);
   const [adaptiveFilter, setAdaptiveFilter] = useState<any>(null);
   const [aiOrchestrator, setAiOrchestrator] = useState<any>(null);
   const [recommendedActions, setRecommendedActions] = useState<any>(null);
+  const [preRlData, setPreRlData] = useState<any>(null);
+  const [defenseData, setDefenseData] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -71,13 +77,16 @@ export default function App() {
     forecast: 1,
     multibus: 1,
     threat_aware: 1,
+    pinn: 1,
     physics: 1,
     trust: 1,
     orchestrator: 1,
-    health: 1
+    health: 1,
+    pre_rl: 1,
+    cyber_defense: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "physics", "trust", "orchestrator", "health"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense"
   ]);
 
   // Timeline Replay States
@@ -95,11 +104,14 @@ export default function App() {
       aiPrediction,
       multiBusForecast,
       threatAwareForecast,
+      pinnForecast,
       physicsValidation,
       trustScores,
       adaptiveFilter,
       aiOrchestrator,
       recommendedActions,
+      preRlData,
+      defenseData,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -194,6 +206,12 @@ export default function App() {
               setThreatAwareForecast(payload);
             }
           }
+          if (data.pinn_forecast && typeof data.pinn_forecast === "object") {
+            const payload = data.pinn_forecast;
+            if (payload.horizons !== undefined && payload.timestamp !== undefined) {
+              setPinnForecast(payload);
+            }
+          }
           if (data.physics_validation) {
             setPhysicsValidation(data.physics_validation);
           }
@@ -208,6 +226,12 @@ export default function App() {
           }
           if (data.recommended_actions) {
             setRecommendedActions(data.recommended_actions);
+          }
+          if (data.pre_rl) {
+            setPreRlData(data.pre_rl);
+          }
+          if (data.defense) {
+            setDefenseData(data.defense);
           }
         } 
         // Handle active MQTT stream broadcasts
@@ -259,11 +283,14 @@ export default function App() {
               aiPrediction: currentStates.aiPrediction,
               multiBusForecast: currentStates.multiBusForecast,
               threatAwareForecast: currentStates.threatAwareForecast,
+              pinnForecast: currentStates.pinnForecast,
               physicsValidation: currentStates.physicsValidation,
               trustScores: currentStates.trustScores,
               adaptiveFilter: currentStates.adaptiveFilter,
               aiOrchestrator: currentStates.aiOrchestrator,
               recommendedActions: currentStates.recommendedActions,
+              preRlData: currentStates.preRlData,
+              defenseData: currentStates.defenseData,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -367,6 +394,14 @@ export default function App() {
                 console.warn("Invalid ai_threat_forecast payload received:", payload);
               }
             }
+          } else if (topic === "grid/pinn_forecast") {
+            if (payload && typeof payload === "object") {
+              if (payload.horizons !== undefined && payload.timestamp !== undefined) {
+                setPinnForecast(payload);
+              } else {
+                console.warn("Invalid pinn_forecast payload received:", payload);
+              }
+            }
           } else if (topic === "grid/physics_validation") {
             setPhysicsValidation(payload);
           } else if (topic === "grid/trust_scores") {
@@ -377,6 +412,10 @@ export default function App() {
             setAiOrchestrator(payload);
           } else if (topic === "grid/recommended_actions") {
             setRecommendedActions(payload);
+          } else if (topic === "grid/pre_rl") {
+            setPreRlData(payload);
+          } else if (topic === "grid/defense") {
+            setDefenseData(payload);
           }
         }
       } catch (err) {
@@ -424,6 +463,27 @@ export default function App() {
         payload
       }));
     }
+  };
+
+  const sendPreRlControl = (command: string, target: string, extraPayload: any = {}) => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        topic: "grid/pre_rl/control",
+        payload: {
+          command,
+          target,
+          ...extraPayload
+        }
+      }));
+    }
+  };
+
+  const sendGeneralControl = (command: string, target: string, extraPayload: any = {}) => {
+    sendControl({
+      command,
+      target,
+      ...extraPayload
+    });
   };
 
   const sendAttack = (payload: any) => {
@@ -548,6 +608,7 @@ export default function App() {
   const dispAiPrediction = currentFrame ? currentFrame.aiPrediction : aiPrediction;
   const dispMultiBusForecast = currentFrame ? currentFrame.multiBusForecast : multiBusForecast;
   const dispThreatAwareForecast = currentFrame ? currentFrame.threatAwareForecast : threatAwareForecast;
+  const dispPinnForecast = currentFrame ? currentFrame.pinnForecast : pinnForecast;
   const dispPhysicsValidation = currentFrame ? currentFrame.physicsValidation : physicsValidation;
   const dispTrustScores = currentFrame ? currentFrame.trustScores : trustScores;
   const dispAdaptiveFilter = currentFrame ? currentFrame.adaptiveFilter : adaptiveFilter;
@@ -558,6 +619,8 @@ export default function App() {
   const dispFlisrReconfigured = currentFrame ? currentFrame.flisrReconfigured : flisrReconfigured;
   const dispFlisrTripped = currentFrame ? currentFrame.flisrTripped : flisrTripped;
   const dispActiveAttack = currentFrame ? currentFrame.activeAttack : activeAttack;
+  const dispPreRlData = currentFrame ? currentFrame.preRlData : preRlData;
+  const dispDefenseData = currentFrame ? currentFrame.defenseData : defenseData;
 
   const dispHistory = useMemo(() => {
     if (!isReplaying || !currentFrame || !dispTelemetry) return history;
@@ -655,6 +718,10 @@ export default function App() {
         title = "Cyber-Aware Predictor";
         content = <ThreatAwareForecastPanel forecastData={dispThreatAwareForecast} />;
         break;
+      case "pinn":
+        title = "Physics-Informed AI Forecast";
+        content = <PinnForecastPanel pinnForecastData={dispPinnForecast} />;
+        break;
       case "physics":
         title = "Physics Validator";
         content = <PhysicsValidationPanel validationData={dispPhysicsValidation} />;
@@ -683,6 +750,24 @@ export default function App() {
             msgRate={msgRate}
             aiOrchestrator={dispAiOrchestrator}
             telemetry={dispTelemetry}
+          />
+        );
+        break;
+      case "pre_rl":
+        title = "Autonomous Pre-RL Safety & Control";
+        content = (
+          <PreRlPanel
+            preRlData={dispPreRlData}
+            onSendControl={sendPreRlControl}
+          />
+        );
+        break;
+      case "cyber_defense":
+        title = "Autonomous Cyber Defense";
+        content = (
+          <CyberDefensePanel
+            defenseData={dispDefenseData}
+            onSendControl={sendGeneralControl}
           />
         );
         break;

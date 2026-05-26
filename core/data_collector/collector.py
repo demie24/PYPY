@@ -38,9 +38,23 @@ class DatasetCollector:
         # CSV headers
         self.headers = [
             "timestamp",
+            # Bus voltages (9)
             "bus_1_v", "bus_2_v", "bus_3_v", "bus_4_v", "bus_5_v", "bus_6_v", "bus_7_v", "bus_8_v", "bus_9_v",
-            "line_L1_4_load", "line_L2_7_load", "line_L3_9_load", "line_L4_5_load", "line_L4_9_load", "line_L5_6_load", "line_L6_7_load", "line_L7_8_load", "line_L8_9_load",
+            # Bus voltage angles (9)
+            "bus_1_angle", "bus_2_angle", "bus_3_angle", "bus_4_angle", "bus_5_angle", "bus_6_angle", "bus_7_angle", "bus_8_angle", "bus_9_angle",
+            # Bus active power injections (9)
+            "bus_1_P", "bus_2_P", "bus_3_P", "bus_4_P", "bus_5_P", "bus_6_P", "bus_7_P", "bus_8_P", "bus_9_P",
+            # Bus reactive power injections (9)
+            "bus_1_Q", "bus_2_Q", "bus_3_Q", "bus_4_Q", "bus_5_Q", "bus_6_Q", "bus_7_Q", "bus_8_Q", "bus_9_Q",
+            # Line active power flows (9)
+            "line_L1_4_P", "line_L2_7_P", "line_L3_9_P", "line_L4_5_P", "line_L4_9_P", "line_L5_6_P", "line_L6_7_P", "line_L7_8_P", "line_L8_9_P",
+            # Line reactive power flows (9)
+            "line_L1_4_Q", "line_L2_7_Q", "line_L3_9_Q", "line_L4_5_Q", "line_L4_9_Q", "line_L5_6_Q", "line_L6_7_Q", "line_L7_8_Q", "line_L8_9_Q",
+            # Line currents in p.u. (9)
+            "line_L1_4_I", "line_L2_7_I", "line_L3_9_I", "line_L4_5_I", "line_L4_9_I", "line_L5_6_I", "line_L6_7_I", "line_L7_8_I", "line_L8_9_I",
+            # Breaker states (9)
             "breaker_L1_4", "breaker_L2_7", "breaker_L3_9", "breaker_L4_5", "breaker_L4_9", "breaker_L5_6", "breaker_L6_7", "breaker_L7_8", "breaker_L8_9",
+            # Cyber indicators & decision states (10)
             "anomaly_score",
             "threat_score",
             "attack_active",
@@ -87,10 +101,38 @@ class DatasetCollector:
                 bus_key = f"Bus_{i}"
                 bus_voltages.append(telemetry["state"]["buses"][bus_key]["voltage_pu"])
                 
-            # 3. Extract Line Loads
-            line_loads = []
+            # 2b. Extract Bus Angles
+            bus_angles = []
+            for i in range(1, 10):
+                bus_key = f"Bus_{i}"
+                bus_angles.append(telemetry["state"]["buses"][bus_key]["angle_rad"])
+
+            # 2c. Extract Bus Active Power Injections (P_mw)
+            bus_Ps = []
+            for i in range(1, 10):
+                bus_key = f"Bus_{i}"
+                bus_Ps.append(telemetry["state"]["buses"][bus_key]["P_mw"])
+
+            # 2d. Extract Bus Reactive Power Injections (Q_mvar)
+            bus_Qs = []
+            for i in range(1, 10):
+                bus_key = f"Bus_{i}"
+                bus_Qs.append(telemetry["state"]["buses"][bus_key]["Q_mvar"])
+
+            # 3. Extract Line Active Power Flows (P_mw)
+            line_Ps = []
             for lid in self.line_ids:
-                line_loads.append(telemetry["state"]["lines"][lid]["capacity_pct"])
+                line_Ps.append(telemetry["state"]["lines"][lid]["P_mw"])
+
+            # 3b. Extract Line Reactive Power Flows (Q_mvar)
+            line_Qs = []
+            for lid in self.line_ids:
+                line_Qs.append(telemetry["state"]["lines"][lid]["Q_mvar"])
+
+            # 3c. Extract Line Currents (current_pu)
+            line_Is = []
+            for lid in self.line_ids:
+                line_Is.append(telemetry["state"]["lines"][lid]["current_pu"])
                 
             # 4. Extract Breaker States (CLOSED=1, OPEN=0)
             breaker_states = []
@@ -155,7 +197,12 @@ class DatasetCollector:
             row_data = [
                 ts,
                 *bus_voltages,
-                *line_loads,
+                *bus_angles,
+                *bus_Ps,
+                *bus_Qs,
+                *line_Ps,
+                *line_Qs,
+                *line_Is,
                 *breaker_states,
                 self.latest_anomaly_score,
                 self.latest_threat_score,
@@ -175,7 +222,7 @@ class DatasetCollector:
                 writer.writerow(row_data)
                 
             # 8. Append feature vector (excluding timestamp) to rolling buffer
-            # Feature size: 9 buses + 9 line loads + 9 breaker states + 1 anomaly + 1 threat + 1 attack + 1 flisr + 6 new = 37 features
+            # Feature size: 82 features (excluding timestamp)
             feature_vector = row_data[1:]
             self.buffer.append(feature_vector)
             

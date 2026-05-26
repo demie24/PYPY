@@ -511,7 +511,7 @@ export default function App() {
       <main className="flex-1 grid grid-cols-1 xl:grid-cols-3 gap-4 my-4 overflow-hidden">
         {/* Left and Middle column: Grid Diagram + Telemetry Charts */}
         <section className="xl:col-span-2 flex flex-col justify-between gap-4 h-full overflow-hidden">
-          <div className="flex-1">
+          <div className="shrink-0">
             <GridDiagram 
               telemetry={telemetry} 
               onToggleBreaker={toggleBreaker} 
@@ -522,14 +522,23 @@ export default function App() {
               flisrTripped={flisrTripped}
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4 shrink-0">
-            <TelemetryCharts history={history} />
-            <ForecastPanel predictionHistory={predictionHistory} aiPrediction={aiPrediction} />
-            <MultiBusForecastPanel forecastData={multiBusForecast} />
-            <ThreatAwareForecastPanel forecastData={threatAwareForecast} />
-            <PhysicsValidationPanel validationData={physicsValidation} />
-            <TrustAnalysisPanel trustScores={trustScores} filterData={adaptiveFilter} />
-            <OrchestratorPanel orchestratorData={aiOrchestrator} actionsData={recommendedActions} onExecuteAction={handleExecuteAction} />
+          
+          {/* Lower AI Analytics Layout - Responsive Two-Row Grid System */}
+          <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 scrollbar-thin">
+            {/* Row 1: Forecasting & Telemetry */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 shrink-0">
+              <TelemetryCharts history={history} />
+              <ForecastPanel predictionHistory={predictionHistory} aiPrediction={aiPrediction} />
+              <MultiBusForecastPanel forecastData={multiBusForecast} />
+            </div>
+
+            {/* Row 2: Cyber-Physical Security, Trust & Decision Orchestration */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 shrink-0">
+              <ThreatAwareForecastPanel forecastData={threatAwareForecast} />
+              <PhysicsValidationPanel validationData={physicsValidation} />
+              <TrustAnalysisPanel trustScores={trustScores} filterData={adaptiveFilter} />
+              <OrchestratorPanel orchestratorData={aiOrchestrator} actionsData={recommendedActions} onExecuteAction={handleExecuteAction} />
+            </div>
           </div>
         </section>
 

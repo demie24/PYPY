@@ -182,6 +182,22 @@ services:
     networks:
       - grid-net
 
+  ai_orchestrator:
+    image: python:3.10-slim
+    container_name: smart_grid_ai_orchestrator
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python orchestrator/ai_orchestrator.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
 networks:
   grid-net:
     driver: bridge

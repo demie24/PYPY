@@ -9,6 +9,7 @@ import { MultiBusForecastPanel } from "./components/MultiBusForecastPanel.tsx";
 import { ThreatAwareForecastPanel } from "./components/ThreatAwareForecastPanel.tsx";
 import { PhysicsValidationPanel } from "./components/PhysicsValidationPanel.tsx";
 import { TrustAnalysisPanel } from "./components/TrustAnalysisPanel.tsx";
+import { OrchestratorPanel } from "./components/OrchestratorPanel.tsx";
 
 import {
   Wifi,
@@ -32,6 +33,8 @@ export default function App() {
   const [physicsValidation, setPhysicsValidation] = useState<any>(null);
   const [trustScores, setTrustScores] = useState<any>(null);
   const [adaptiveFilter, setAdaptiveFilter] = useState<any>(null);
+  const [aiOrchestrator, setAiOrchestrator] = useState<any>(null);
+  const [recommendedActions, setRecommendedActions] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -99,15 +102,31 @@ export default function App() {
           if (data.threat) {
             setThreatData(data.threat);
           }
-          if (data.ai_prediction) {
-            setAiPrediction(data.ai_prediction);
-            setPredictionHistory([data.ai_prediction]);
+          if (data.ai_prediction && typeof data.ai_prediction === "object") {
+            const payload = data.ai_prediction;
+            const isValid = 
+              (payload.predicted_bus5_voltage !== undefined && payload.instability_risk !== undefined) ||
+              (payload.predicted_threat !== undefined && payload.cascade_risk !== undefined);
+            if (isValid) {
+              setAiPrediction(payload);
+              setPredictionHistory([payload]);
+            }
           }
-          if (data.ai_forecast_multi_bus) {
-            setMultiBusForecast(data.ai_forecast_multi_bus);
+          if (data.ai_forecast_multi_bus && typeof data.ai_forecast_multi_bus === "object") {
+            const payload = data.ai_forecast_multi_bus;
+            const isValid = payload.forecasts !== undefined && payload.timestamp !== undefined && payload.overall_status !== undefined;
+            if (isValid) {
+              setMultiBusForecast(payload);
+            }
           }
-          if (data.ai_threat_forecast) {
-            setThreatAwareForecast(data.ai_threat_forecast);
+          if (data.ai_threat_forecast && typeof data.ai_threat_forecast === "object") {
+            const payload = data.ai_threat_forecast;
+            const isValid = (payload.cyber_instability_probability !== undefined || payload.predicted_threat !== undefined) &&
+                            payload.status !== undefined &&
+                            payload.timestamp !== undefined;
+            if (isValid) {
+              setThreatAwareForecast(payload);
+            }
           }
           if (data.physics_validation) {
             setPhysicsValidation(data.physics_validation);
@@ -117,6 +136,12 @@ export default function App() {
           }
           if (data.adaptive_filter) {
             setAdaptiveFilter(data.adaptive_filter);
+          }
+          if (data.ai_orchestrator) {
+            setAiOrchestrator(data.ai_orchestrator);
+          }
+          if (data.recommended_actions) {
+            setRecommendedActions(data.recommended_actions);
           }
         } 
         // Handle active MQTT stream broadcasts
@@ -198,22 +223,51 @@ export default function App() {
           } else if (topic === "grid/threat") {
             setThreatData(payload);
           } else if (topic === "grid/ai_prediction") {
-            setAiPrediction(payload);
-            setPredictionHistory((prev) => {
-              const next = [...prev, payload];
-              if (next.length > 50) next.shift();
-              return next;
-            });
+            if (payload && typeof payload === "object") {
+              const isValid = 
+                (payload.predicted_bus5_voltage !== undefined && payload.instability_risk !== undefined) ||
+                (payload.predicted_threat !== undefined && payload.cascade_risk !== undefined);
+              if (isValid) {
+                setAiPrediction(payload);
+                setPredictionHistory((prev) => {
+                  const next = [...prev, payload];
+                  if (next.length > 50) next.shift();
+                  return next;
+                });
+              } else {
+                console.warn("Invalid ai_prediction payload received:", payload);
+              }
+            }
           } else if (topic === "grid/ai_forecast_multi_bus") {
-            setMultiBusForecast(payload);
+            if (payload && typeof payload === "object") {
+              const isValid = payload.forecasts !== undefined && payload.timestamp !== undefined && payload.overall_status !== undefined;
+              if (isValid) {
+                setMultiBusForecast(payload);
+              } else {
+                console.warn("Invalid ai_forecast_multi_bus payload received:", payload);
+              }
+            }
           } else if (topic === "grid/ai_threat_forecast") {
-            setThreatAwareForecast(payload);
+            if (payload && typeof payload === "object") {
+              const isValid = (payload.cyber_instability_probability !== undefined || payload.predicted_threat !== undefined) &&
+                              payload.status !== undefined &&
+                              payload.timestamp !== undefined;
+              if (isValid) {
+                setThreatAwareForecast(payload);
+              } else {
+                console.warn("Invalid ai_threat_forecast payload received:", payload);
+              }
+            }
           } else if (topic === "grid/physics_validation") {
             setPhysicsValidation(payload);
           } else if (topic === "grid/trust_scores") {
             setTrustScores(payload);
           } else if (topic === "grid/adaptive_filter") {
             setAdaptiveFilter(payload);
+          } else if (topic === "grid/ai_orchestrator") {
+            setAiOrchestrator(payload);
+          } else if (topic === "grid/recommended_actions") {
+            setRecommendedActions(payload);
           }
         }
       } catch (err) {
@@ -297,6 +351,8 @@ export default function App() {
     setPhysicsValidation(null);
     setTrustScores(null);
     setAdaptiveFilter(null);
+    setAiOrchestrator(null);
+    setRecommendedActions(null);
   };
 
   const handleToggleAutoDefense = (enabled: boolean) => {
@@ -399,15 +455,28 @@ export default function App() {
 
           <div className="flex flex-col items-end">
             <span className="text-[9px] text-scada-dimText uppercase">AI Forecast (t+10s)</span>
-            {aiPrediction ? (
-              <span className={`font-bold text-sm tracking-wide font-scada-nums ${
-                aiPrediction.predicted_threat >= 76.0 ? "text-red-500 animate-pulse scada-text-glow-red" :
-                aiPrediction.predicted_threat >= 51.0 ? "text-orange-500" :
-                aiPrediction.predicted_threat >= 26.0 ? "text-yellow-500 scada-text-glow-warning" :
-                "text-scada-nominal scada-text-glow-green"
-              }`}>
-                {aiPrediction.predicted_threat.toFixed(0)}% ({aiPrediction.cascade_risk})
-              </span>
+            {aiPrediction && (aiPrediction.predicted_bus5_voltage !== undefined || aiPrediction.predicted_threat !== undefined) ? (
+              <>
+                {aiPrediction.predicted_bus5_voltage !== undefined ? (
+                  <span className={`font-bold text-sm tracking-wide font-scada-nums ${
+                    aiPrediction.instability_risk === "CRITICAL" ? "text-red-500 animate-pulse scada-text-glow-red" :
+                    aiPrediction.instability_risk === "HIGH" ? "text-orange-500" :
+                    aiPrediction.instability_risk === "MEDIUM" ? "text-yellow-500 scada-text-glow-warning" :
+                    "text-scada-nominal scada-text-glow-green"
+                  }`}>
+                    {typeof aiPrediction.predicted_bus5_voltage === "number" ? aiPrediction.predicted_bus5_voltage.toFixed(4) : "1.0000"} pu ({aiPrediction.instability_risk ?? "LOW"})
+                  </span>
+                ) : (
+                  <span className={`font-bold text-sm tracking-wide font-scada-nums ${
+                    (aiPrediction.predicted_threat ?? 0) >= 76.0 ? "text-red-500 animate-pulse scada-text-glow-red" :
+                    (aiPrediction.predicted_threat ?? 0) >= 51.0 ? "text-orange-500" :
+                    (aiPrediction.predicted_threat ?? 0) >= 26.0 ? "text-yellow-500 scada-text-glow-warning" :
+                    "text-scada-nominal scada-text-glow-green"
+                  }`}>
+                    {typeof aiPrediction.predicted_threat === "number" ? aiPrediction.predicted_threat.toFixed(0) : "0"}% ({aiPrediction.cascade_risk ?? "LOW"})
+                  </span>
+                )}
+              </>
             ) : (
               <span className="text-gray-500 font-bold text-sm animate-pulse">WARMING UP...</span>
             )}
@@ -453,13 +522,14 @@ export default function App() {
               flisrTripped={flisrTripped}
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 shrink-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4 shrink-0">
             <TelemetryCharts history={history} />
             <ForecastPanel predictionHistory={predictionHistory} aiPrediction={aiPrediction} />
             <MultiBusForecastPanel forecastData={multiBusForecast} />
             <ThreatAwareForecastPanel forecastData={threatAwareForecast} />
             <PhysicsValidationPanel validationData={physicsValidation} />
             <TrustAnalysisPanel trustScores={trustScores} filterData={adaptiveFilter} />
+            <OrchestratorPanel orchestratorData={aiOrchestrator} actionsData={recommendedActions} onExecuteAction={handleExecuteAction} />
           </div>
         </section>
 

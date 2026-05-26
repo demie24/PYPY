@@ -17,6 +17,8 @@ class MemoryStore:
         self.latest_physics_validation: Optional[Dict[str, Any]] = None
         self.latest_trust_scores: Optional[Dict[str, Any]] = None
         self.latest_adaptive_filter: Optional[Dict[str, Any]] = None
+        self.latest_ai_orchestrator: Optional[Dict[str, Any]] = None
+        self.latest_recommended_actions: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -53,6 +55,12 @@ class MemoryStore:
     def update_adaptive_filter(self, adaptive_filter: Dict[str, Any]):
         self.latest_adaptive_filter = adaptive_filter
 
+    def update_ai_orchestrator(self, ai_orchestrator: Dict[str, Any]):
+        self.latest_ai_orchestrator = ai_orchestrator
+
+    def update_recommended_actions(self, recommended_actions: Dict[str, Any]):
+        self.latest_recommended_actions = recommended_actions
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -79,7 +87,9 @@ class MemoryStore:
             "ai_threat_forecast": self.latest_ai_threat_forecast,
             "physics_validation": self.latest_physics_validation,
             "trust_scores": self.latest_trust_scores,
-            "adaptive_filter": self.latest_adaptive_filter
+            "adaptive_filter": self.latest_adaptive_filter,
+            "ai_orchestrator": self.latest_ai_orchestrator,
+            "recommended_actions": self.latest_recommended_actions
         }
 
     def clear_alerts(self):

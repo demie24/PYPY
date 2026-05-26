@@ -10,7 +10,8 @@ interface BusForecast {
 interface ThreatAwareForecastData {
   timestamp: number;
   forecasts: Record<string, BusForecast>;
-  cyber_instability_probability: number;
+  cyber_instability_probability?: number;
+  predicted_threat?: number;
   status: string; // "NORMAL" | "SUSPICIOUS" | "CYBER-CRITICAL"
   confidence: number;
   forecast_horizon_seconds: number;
@@ -32,15 +33,24 @@ export const ThreatAwareForecastPanel: React.FC<ThreatAwareForecastPanelProps> =
     }
   };
 
-  const hasData = forecastData !== null && forecastData.forecasts !== undefined;
-  const cyberProb = hasData ? forecastData.cyber_instability_probability : 0.0;
-  const status = hasData ? forecastData.status : "NORMAL";
-  const confidence = hasData ? forecastData.confidence : 0.0;
+  const hasData = forecastData !== null && forecastData !== undefined;
+  
+  const cyberProb = hasData 
+    ? (forecastData.cyber_instability_probability !== undefined 
+        ? forecastData.cyber_instability_probability 
+        : (forecastData.predicted_threat !== undefined 
+            ? (forecastData.predicted_threat > 1.0 ? forecastData.predicted_threat / 100 : forecastData.predicted_threat)
+            : 0.0))
+    : 0.0;
+
+  const status = hasData ? (forecastData.status ?? "NORMAL") : "NORMAL";
+  const confidence = hasData ? (forecastData.confidence ?? 0.0) : 0.0;
 
   // Evaluate if physical voltage deviation is occurring without cyber indicators
-  const hasVoltageDeviation = hasData && Object.values(forecastData.forecasts).some(
-    (f) => f.predicted < 0.95 || f.predicted > 1.05
-  );
+  const hasVoltageDeviation = hasData && forecastData.forecasts ? Object.values(forecastData.forecasts).some(
+    (f) => f && (typeof f.predicted === "number" && (f.predicted < 0.95 || f.predicted > 1.05))
+  ) : false;
+
   const isPhysicalInstability = hasVoltageDeviation && cyberProb < 0.30;
   const isCyberInstability = hasVoltageDeviation && cyberProb >= 0.30;
 
@@ -83,7 +93,7 @@ export const ThreatAwareForecastPanel: React.FC<ThreatAwareForecastPanelProps> =
                   cyberProb >= 0.70 ? "text-red-400 scada-text-glow-red font-extrabold" :
                   cyberProb >= 0.30 ? "text-yellow-400" : "text-scada-nominal"
                 }`}>
-                  {(cyberProb * 100).toFixed(1)}%
+                  {typeof cyberProb === "number" ? (cyberProb * 100).toFixed(1) : "0.0"}%
                 </span>
                 <span className="text-[8px] text-scada-dimText font-mono">prob</span>
               </div>
@@ -97,7 +107,7 @@ export const ThreatAwareForecastPanel: React.FC<ThreatAwareForecastPanelProps> =
               <div className="flex justify-between text-[8px] font-mono font-semibold text-scada-dimText">
                 <span>CYBER ATTACK PROBABILITY GAUGE:</span>
                 <span className={cyberProb >= 0.30 ? "text-yellow-400 font-bold" : ""}>
-                  {(cyberProb * 100).toFixed(0)}%
+                  {typeof cyberProb === "number" ? (cyberProb * 100).toFixed(0) : "0"}%
                 </span>
               </div>
               <div className="w-full h-1.5 bg-scada-bg rounded overflow-hidden border border-scada-border/40">
@@ -116,7 +126,7 @@ export const ThreatAwareForecastPanel: React.FC<ThreatAwareForecastPanelProps> =
               <div className="flex justify-between text-[8px] font-mono font-semibold text-scada-dimText">
                 <span>AI FORECAST CONFIDENCE:</span>
                 <span className="text-white font-bold font-scada-nums">
-                  {(confidence * 100).toFixed(0)}%
+                  {typeof confidence === "number" ? (confidence * 100).toFixed(0) : "0"}%
                 </span>
               </div>
               <div className="w-full h-1.5 bg-scada-bg rounded overflow-hidden border border-scada-border/40">
@@ -166,7 +176,7 @@ export const ThreatAwareForecastPanel: React.FC<ThreatAwareForecastPanelProps> =
             <div className="flex items-center gap-1">
               <span>UPDATED:</span>
               <span className="text-white font-scada-nums">
-                {new Date(forecastData.timestamp).toLocaleTimeString([], { hour12: false })}
+                {forecastData.timestamp ? new Date(forecastData.timestamp).toLocaleTimeString([], { hour12: false }) : "N/A"}
               </span>
             </div>
           </div>

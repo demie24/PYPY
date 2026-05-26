@@ -92,14 +92,18 @@ export const MultiBusForecastPanel: React.FC<MultiBusForecastPanelProps> = ({ fo
                 {Object.entries(forecastData.forecasts).map(([busName, data]) => (
                   <tr key={busName} className="hover:bg-white/5 transition-colors">
                     <td className="py-1.5 font-bold text-white uppercase">{busName.replace("_", " ")}</td>
-                    <td className="py-1.5 text-right font-scada-nums font-bold text-cyan-400">{data.actual.toFixed(4)}</td>
-                    <td className="py-1.5 text-right font-scada-nums font-bold text-amber-400">{data.predicted.toFixed(4)}</td>
-                    <td className={`py-1.5 text-right font-scada-nums font-bold ${getDeltaColor(data.delta)}`}>
-                      {data.delta >= 0 ? "+" : ""}{data.delta.toFixed(4)}
+                    <td className="py-1.5 text-right font-scada-nums font-bold text-cyan-400">
+                      {typeof data?.actual === "number" ? data.actual.toFixed(4) : "1.0000"}
+                    </td>
+                    <td className="py-1.5 text-right font-scada-nums font-bold text-amber-400">
+                      {typeof data?.predicted === "number" ? data.predicted.toFixed(4) : "1.0000"}
+                    </td>
+                    <td className={`py-1.5 text-right font-scada-nums font-bold ${getDeltaColor(data?.delta ?? 0.0)}`}>
+                      {(data?.delta ?? 0.0) >= 0 ? "+" : ""}{typeof data?.delta === "number" ? data.delta.toFixed(4) : "0.0000"}
                     </td>
                     <td className="py-1.5 text-center">
-                      <span className={`px-2 py-0.5 border rounded-[3px] text-[8px] tracking-wider uppercase font-semibold ${getStatusStyle(data.status)}`}>
-                        {data.status}
+                      <span className={`px-2 py-0.5 border rounded-[3px] text-[8px] tracking-wider uppercase font-semibold ${getStatusStyle(data?.status ?? "NORMAL")}`}>
+                        {data?.status ?? "NORMAL"}
                       </span>
                     </td>
                   </tr>

@@ -59,6 +59,8 @@ class MQTTManager:
             client.subscribe("grid/physics_validation")
             client.subscribe("grid/trust_scores")
             client.subscribe("grid/adaptive_filter")
+            client.subscribe("grid/ai_orchestrator")
+            client.subscribe("grid/recommended_actions")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -90,6 +92,10 @@ class MQTTManager:
                 store.update_trust_scores(payload)
             elif topic == "grid/adaptive_filter":
                 store.update_adaptive_filter(payload)
+            elif topic == "grid/ai_orchestrator":
+                store.update_ai_orchestrator(payload)
+            elif topic == "grid/recommended_actions":
+                store.update_recommended_actions(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

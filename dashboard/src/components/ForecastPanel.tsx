@@ -107,8 +107,8 @@ export const ForecastPanel: React.FC<ForecastPanelProps> = ({
             {/* Risk Indicator */}
             <div className="flex flex-col">
               <span className="text-scada-dimText uppercase text-[8px]">Instability Risk:</span>
-              <span className={`mt-0.5 px-2 py-0.5 border rounded text-[9px] uppercase tracking-widest text-center ${getRiskStyle(aiPrediction.instability_risk)}`}>
-                {aiPrediction.instability_risk}
+              <span className={`mt-0.5 px-2 py-0.5 border rounded text-[9px] uppercase tracking-widest text-center ${getRiskStyle(aiPrediction?.instability_risk ?? "LOW")}`}>
+                {aiPrediction?.instability_risk ?? "LOW"}
               </span>
             </div>
 
@@ -117,13 +117,13 @@ export const ForecastPanel: React.FC<ForecastPanelProps> = ({
               <div className="flex flex-col">
                 <span className="text-gray-500 text-[7px] uppercase font-sans font-semibold">Actual</span>
                 <span className="text-cyan-400 font-bold font-scada-nums text-[10px]">
-                  {aiPrediction.actual_bus5_voltage.toFixed(4)}
+                  {typeof aiPrediction?.actual_bus5_voltage === "number" ? aiPrediction.actual_bus5_voltage.toFixed(4) : "1.0000"}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-gray-500 text-[7px] uppercase font-sans font-semibold">Forecast</span>
                 <span className="text-amber-400 font-bold font-scada-nums text-[10px]">
-                  {aiPrediction.predicted_bus5_voltage.toFixed(4)}
+                  {typeof aiPrediction?.predicted_bus5_voltage === "number" ? aiPrediction.predicted_bus5_voltage.toFixed(4) : "1.0000"}
                 </span>
               </div>
             </div>
@@ -133,8 +133,8 @@ export const ForecastPanel: React.FC<ForecastPanelProps> = ({
               <span className="text-scada-dimText uppercase flex items-center gap-1">
                 <TrendingDown size={10} /> Prediction Δ:
               </span>
-              <span className={`font-bold font-scada-nums text-[10px] ${getDeltaColor(aiPrediction.prediction_delta)}`}>
-                {aiPrediction.prediction_delta >= 0 ? "+" : ""}{aiPrediction.prediction_delta.toFixed(4)}
+              <span className={`font-bold font-scada-nums text-[10px] ${getDeltaColor(aiPrediction?.prediction_delta ?? 0.0)}`}>
+                {aiPrediction?.prediction_delta >= 0 ? "+" : ""}{typeof aiPrediction?.prediction_delta === "number" ? aiPrediction.prediction_delta.toFixed(4) : "0.0000"}
               </span>
             </div>
 
@@ -143,17 +143,17 @@ export const ForecastPanel: React.FC<ForecastPanelProps> = ({
               <div className="flex justify-between text-scada-dimText uppercase mb-0.5 text-[8px]">
                 <span>AI Confidence:</span>
                 <span className="text-white font-bold font-scada-nums text-[9px]">
-                  {Math.round(aiPrediction.confidence * 100)}%
+                  {Math.round((aiPrediction?.confidence ?? 1.0) * 100)}%
                 </span>
               </div>
               <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/30">
                 <div 
                   className={`h-full transition-all duration-300 ${
-                    aiPrediction.confidence >= 0.85 ? "bg-scada-nominal" :
-                    aiPrediction.confidence >= 0.70 ? "bg-yellow-500" :
+                    (aiPrediction?.confidence ?? 1.0) >= 0.85 ? "bg-scada-nominal" :
+                    (aiPrediction?.confidence ?? 1.0) >= 0.70 ? "bg-yellow-500" :
                     "bg-red-500"
                   }`} 
-                  style={{ width: `${aiPrediction.confidence * 100}%` }}
+                  style={{ width: `${(aiPrediction?.confidence ?? 1.0) * 100}%` }}
                 ></div>
               </div>
             </div>
@@ -161,7 +161,7 @@ export const ForecastPanel: React.FC<ForecastPanelProps> = ({
             {/* Timestamp */}
             <div className="text-[7px] text-gray-500 flex justify-between items-center border-t border-scada-border/10 pt-1">
               <span>UPDATED:</span>
-              <span>{new Date(aiPrediction.timestamp).toLocaleTimeString([], { hour12: false })}</span>
+              <span>{new Date(aiPrediction?.timestamp ?? Date.now()).toLocaleTimeString([], { hour12: false })}</span>
             </div>
           </div>
         </div>

@@ -5,7 +5,9 @@ logger = logging.getLogger("orchestrator.decision_engine")
 
 class OrchestrationDecisionEngine:
     def __init__(self):
-        pass
+        self.current_state = "NORMAL"
+        self.state_candidate = "NORMAL"
+        self.candidate_count = 0
 
     def evaluate(self, grid_state):
         """
@@ -111,17 +113,34 @@ class OrchestrationDecisionEngine:
             cascade_prob = float(threat_data.get("cascade_probability", 0.0))
             
         if stability_score < 40.0 or grid_conf < 40.0:
-            global_state = "EMERGENCY_MODE"
+            raw_state = "EMERGENCY_MODE"
         elif active_attack or cyber_prob >= 0.50 or (physics_val and physics_val.get("physics_state") == "CYBER_ATTACK_INSTABILITY"):
-            global_state = "CYBER_ATTACK"
+            raw_state = "CYBER_ATTACK"
         elif stability_score < 75.0 and overloads_penalty > 0.0 and cascade_prob >= 0.40:
-            global_state = "CASCADE_RISK"
+            raw_state = "CASCADE_RISK"
         elif flisr_state in ["RESTORATION", "ISOLATION", "RESTORED"]:
-            global_state = "AUTONOMOUS_RECOVERY"
+            raw_state = "AUTONOMOUS_RECOVERY"
         elif open_breakers_count > 0 or (trust_scores and any(t.get("trust_score", 100.0) < 70.0 for t in trust_scores.get("details", {}).values())):
-            global_state = "DEGRADED"
+            raw_state = "DEGRADED"
         else:
-            global_state = "NORMAL"
+            raw_state = "NORMAL"
+
+        # State transition hysteresis (requires 3 consecutive ticks to transition)
+        if raw_state == self.current_state:
+            self.state_candidate = raw_state
+            self.candidate_count = 0
+        else:
+            if raw_state == self.state_candidate:
+                self.candidate_count += 1
+            else:
+                self.state_candidate = raw_state
+                self.candidate_count = 1
+                
+            if self.candidate_count >= 3:
+                self.current_state = raw_state
+                self.candidate_count = 0
+                
+        global_state = self.current_state
             
         # 4. Compute Global Risk Level
         if global_state in ["EMERGENCY_MODE", "CYBER_ATTACK"] and stability_score < 50.0:

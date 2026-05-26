@@ -60,9 +60,16 @@ async def websocket_endpoint(websocket: WebSocket):
                 payload = message.get("payload")
                 
                 if topic and payload is not None:
-                    # Forward control commands directly to MQTT broker
-                    mqtt_manager.publish(topic, payload)
-                    logger.info(f"Dashboard control forwarded to MQTT [{topic}]: {payload}")
+                    if topic == "grid/ping":
+                        pong_response = {
+                            "type": "PONG",
+                            "payload": payload
+                        }
+                        await websocket.send_text(json.dumps(pong_response))
+                    else:
+                        # Forward control commands directly to MQTT broker
+                        mqtt_manager.publish(topic, payload)
+                        logger.info(f"Dashboard control forwarded to MQTT [{topic}]: {payload}")
                 else:
                     logger.warning("WebSocket command received missing 'topic' or 'payload' parameter.")
             except json.JSONDecodeError:

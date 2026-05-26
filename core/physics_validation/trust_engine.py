@@ -27,6 +27,14 @@ class TrustEngine:
         # Recovery/Decay rates
         self.recovery_alpha = 0.05
         
+        # Transient suppression states
+        self.prev_breakers = {}
+        self.transient_suppression_counter = 3
+        
+        # Stateful operator telemetry rejections
+        self.distrusted_nodes = set()
+
+        
     def update(self, telemetry, physics_report, ai_threat_prob):
         """
         Updates trust scores based on live telemetry, physics reports, and AI threat scores.
@@ -38,6 +46,18 @@ class TrustEngine:
         except KeyError as e:
             logger.error(f"Cannot update trust score, missing telemetry key: {e}")
             return
+            
+        # Check for breaker switching transients to suppress false anomaly detections
+        if self.prev_breakers:
+            changes = sum(1 for lid, stat in breakers.items() if self.prev_breakers.get(lid) and self.prev_breakers[lid] != stat)
+            if changes > 0:
+                self.transient_suppression_counter = 2
+        self.prev_breakers = breakers.copy()
+
+        transient_active = False
+        if self.transient_suppression_counter > 0:
+            self.transient_suppression_counter -= 1
+            transient_active = True
             
         kcl_details = physics_report.get("kcl_details", {})
         kvl_details = physics_report.get("kvl_details", {})
@@ -92,9 +112,13 @@ class TrustEngine:
             
             # Target Trust
             target_trust = self.stability_scores[bus] * self.consistency_scores[bus] * (1.0 - self.suspicion_scores[bus])
+            if bus in self.distrusted_nodes:
+                target_trust = 0.0
             
             # Asymmetric decay/recovery
             current_trust = self.trust_scores[bus]
+            if transient_active:
+                target_trust = current_trust
             if target_trust < current_trust:
                 # Fast degradation
                 self.trust_scores[bus] = target_trust
@@ -145,9 +169,13 @@ class TrustEngine:
             
             # Target Trust
             target_trust = self.stability_scores[line] * self.consistency_scores[line] * (1.0 - self.suspicion_scores[line])
+            if line in self.distrusted_nodes:
+                target_trust = 0.0
             
             # Asymmetric decay/recovery
             current_trust = self.trust_scores[line]
+            if transient_active:
+                target_trust = current_trust
             if target_trust < current_trust:
                 self.trust_scores[line] = target_trust
             else:
@@ -156,6 +184,13 @@ class TrustEngine:
             # Rolling anomaly frequency
             is_anomalous = 1.0 if (self.consistency_scores[line] < 0.90 or self.stability_scores[line] < 0.90) else 0.0
             self.anomaly_frequencies[line] = self.anomaly_frequencies[line] + 0.1 * (is_anomalous - self.anomaly_frequencies[line])
+
+    def reject_node(self, node: str):
+        """
+        Manually forces a node's trust score to 0 statefully.
+        """
+        self.distrusted_nodes.add(node)
+        self.trust_scores[node] = 0.0
 
     def get_scores(self):
         """

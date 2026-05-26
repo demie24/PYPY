@@ -73,7 +73,8 @@ def on_message(client, userdata, msg):
                 # Send breaker trip command to grid/control
                 control_payload = {
                     "command": cmd["command"],
-                    "target": node
+                    "target": node,
+                    "source": "RELAY"
                 }
                 client.publish("grid/control", json.dumps(control_payload))
 
@@ -103,7 +104,7 @@ def on_message(client, userdata, msg):
                         "severity": "CRITICAL",
                         "suspect_node": node,
                         "msg": f"Breaker {node} tripped by Relay Protection (threshold breach)."
-                    }
+                     }
                     client.publish("grid/alerts", json.dumps(alarm_payload))
 
                 # Phase 5B: Set settle counter after relay trip so FLISR waits
@@ -122,7 +123,8 @@ def on_message(client, userdata, msg):
                     # Send reconfiguration action (e.g. closing tie-breaker)
                     control_payload = {
                         "command": cmd["command"],
-                        "target": cmd["target"]
+                        "target": cmd["target"],
+                        "source": "FLISR"
                     }
                     client.publish("grid/control", json.dumps(control_payload))
                     

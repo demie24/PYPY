@@ -77,6 +77,12 @@ class SmartGridDigitalTwin:
         mqtt_broker = os.getenv("MQTT_BROKER", "localhost")
         mqtt_port = int(os.getenv("MQTT_PORT", 1883))
         
+        # PYPY Stabilization Arc States
+        self.attack_steps = {}
+        self.breaker_lockouts = {}
+        self.scheduled_actions = []
+        self.attacker_retrips = {}
+        
         self.publisher = TelemetryPublisher(
             broker=mqtt_broker,
             port=mqtt_port,
@@ -85,17 +91,95 @@ class SmartGridDigitalTwin:
             on_config_cmd=self.handle_config_cmd
         )
 
-    def handle_control_cmd(self, target: str, command: str):
+    def _is_safe_topology_after_action(self, target: str, action: str) -> bool:
+        # Simulate breakers state after action
+        temp_breakers = self.breakers.copy()
+        new_status = "CLOSED" if action == "CLOSE" else "OPEN"
+        temp_breakers[target] = new_status
+        
+        # Build adjacency list of buses (0-indexed)
+        adj = {i: [] for i in range(self.topo.num_buses)}
+        for line in self.topo.lines:
+            lid = line["id"]
+            if temp_breakers.get(lid, "CLOSED") == "CLOSED":
+                adj[line["from"]].append(line["to"])
+                adj[line["to"]].append(line["from"])
+                
+        # Find connected components
+        visited = [False] * self.topo.num_buses
+        components = []
+        for i in range(self.topo.num_buses):
+            if not visited[i]:
+                comp = []
+                queue = [i]
+                visited[i] = True
+                while queue:
+                    curr = queue.pop(0)
+                    comp.append(curr)
+                    for neighbor in adj[curr]:
+                        if not visited[neighbor]:
+                            visited[neighbor] = True
+                            queue.append(neighbor)
+                components.append(comp)
+                
+        # Check if any component has loads but NO generator
+        for comp in components:
+            has_load = any(idx in self.topo.loads for idx in comp)
+            has_gen = any(idx in self.topo.generators for idx in comp)
+            if has_load and not has_gen:
+                return False
+        return True
+
+    def handle_control_cmd(self, target: str, command: str, payload: Dict[str, Any] = None):
         """
         Callback for remote control command: sets breaker status.
         Bypassed if breaker communication is blocked by active DoS.
         """
         if target == "SYSTEM" and command == "RESET_ALARMS":
-            logger.info("Resetting digital twin simulator transient and thermal state and breakers.")
+            logger.info("Resetting digital twin simulator transient and thermal state, breakers, and active attacks.")
             self.prev_telemetry = None
             self.physics.prev_currents = {}
             self.breakers = {line["id"]: "CLOSED" for line in self.topo.lines}
             self.breakers["L7_8"] = "OPEN"
+            self.breaker_lockouts.clear()
+            self.scheduled_actions.clear()
+            self.attacker_retrips.clear()
+            self.attack_steps.clear()
+            self.active_attack = None
+            self.attack_config = {}
+            self.active_scenario = None
+            self.active_compromises = {}
+            self.sensor_drifts = {}
+            return
+
+        if command == "REJECT_TELEMETRY":
+            logger.info(f"Operator distrusted sensor {target}. Triggering attacker adaptive escalation loop.")
+            if self.active_attack:
+                neighbors = {
+                    "Bus_5": ["Bus_4", "Bus_6"],
+                    "Bus_4": ["Bus_1", "Bus_5", "Bus_9"],
+                    "Bus_6": ["Bus_5", "Bus_7"],
+                    "Bus_9": ["Bus_3", "Bus_4", "Bus_8"],
+                    "Bus_8": ["Bus_7", "Bus_9"],
+                    "Bus_7": ["Bus_2", "Bus_6", "Bus_8"],
+                    "L4_5": ["L1_4", "L5_6"],
+                    "L5_6": ["L4_5", "L6_7"],
+                    "L7_8": ["L6_7", "L8_9"]
+                }
+                candidates = neighbors.get(target, ["Bus_5"])
+                for cand in candidates:
+                    if cand not in self.active_compromises:
+                        self.active_compromises[cand] = {
+                            "type": "FDIA" if "Bus" in cand else "SENSOR_SPOOFING",
+                            "config": {"bias": 0.12, "scale": 1.05, "noise": 0.04}
+                        }
+                        logger.warning(f"[ATTACK ESCALATION] Attacker retaliated by compromising neighbor {cand}!")
+                        self.publisher.publish_event(
+                            source="ATTACK_ORCHESTRATOR",
+                            event_desc=f"Attacker Escalation: retaliated against distrust on '{target}' by compromising neighbor '{cand}'",
+                            severity="CRITICAL"
+                        )
+                        break
             return
 
         # 1. Check if the target breaker is jammed by DoS
@@ -110,17 +194,63 @@ class SmartGridDigitalTwin:
                 )
                 return
 
-        # 2. Execute control action if normal
+        # 2. Extract sender source from payload
+        source = payload.get("source", "OPERATOR") if payload else "OPERATOR"
+
+        # 3. Check Lockout state
+        if command == "CLOSE" and self.breaker_lockouts.get(target, False):
+            logger.warning(f"Control command BLOCKED: Breaker {target} is locked out by relay protection. Reset alarms first.")
+            self.publisher.publish_event(
+                source="SCADA_GATEWAY",
+                event_desc=f"Control command BLOCKED: Breaker {target} is locked out by relay protection.",
+                severity="WARNING"
+            )
+            return
+
+        # 4. Check safe topology for manual operator trip
+        if command == "OPEN" and source == "OPERATOR" and target in self.breakers:
+            if not self._is_safe_topology_after_action(target, "OPEN"):
+                logger.warning(f"Control command BLOCKED: Opening breaker {target} would isolate critical loads.")
+                self.publisher.publish_event(
+                    source="SCADA_GATEWAY",
+                    event_desc=f"Control command BLOCKED: Manual trip of '{target}' would isolate load components with no generator.",
+                    severity="WARNING"
+                )
+                return
+
+        # 5. Execute control action if allowed
         if target in self.breakers:
             new_status = "CLOSED" if command == "CLOSE" else "OPEN"
             if self.breakers[target] != new_status:
+                # If command is OPEN and comes from RELAY, lock it out statefully
+                if new_status == "OPEN" and source == "RELAY":
+                    self.breaker_lockouts[target] = True
+                    logger.warning(f"Breaker {target} tripped by protective relay and LOCKED OUT statefully.")
+                
                 self.breakers[target] = new_status
-                logger.info(f"Breaker control executed: {target} set to {new_status}")
+                logger.info(f"Breaker control executed: {target} set to {new_status} (Source: {source})")
                 self.publisher.publish_event(
                     source="SCADA_GATEWAY",
-                    event_desc=f"Breaker switch '{target}' commanded to {command}",
+                    event_desc=f"Breaker switch '{target}' commanded to {command} by {source}",
                     severity="INFO"
                 )
+
+                # Attacker Persistence logic for BREAKER_MANIPULATION cyberattacks
+                if command == "CLOSE" and target in self.active_compromises:
+                    comp = self.active_compromises[target]
+                    if comp.get("type") == "BREAKER_MANIPULATION":
+                        retrips = self.attacker_retrips.get(target, 0)
+                        if retrips < 3:
+                            self.attacker_retrips[target] = retrips + 1
+                            # Schedule re-trip command in 3 sweeps
+                            re_trip_time = time.time() + 3.0
+                            self.scheduled_actions.append((re_trip_time, target, "OPEN"))
+                            logger.warning(f"[ATTACK PERSISTENCE] Operator closed compromised breaker {target}. Re-trip scheduled in 3s (attempt {retrips+1}/3).")
+                            self.publisher.publish_event(
+                                source="ATTACK_ORCHESTRATOR",
+                                event_desc=f"Attacker Persistence: detected closure of compromised breaker '{target}'. Scheduling re-trip.",
+                                severity="WARNING"
+                            )
         else:
             logger.warning(f"Control command received for invalid breaker target: {target}")
 
@@ -145,6 +275,13 @@ class SmartGridDigitalTwin:
                 event_desc=f"Cyber Attack activated: {self.active_attack} targeting {self.attack_config.get('target')}",
                 severity="CRITICAL"
             )
+            
+            if self.active_attack == "BREAKER_MANIPULATION":
+                target = self.attack_config.get("target")
+                cmd = self.attack_config.get("command", "OPEN")
+                if target in self.breakers:
+                    self.breakers[target] = cmd
+                    logger.info(f"[ATTACK EVENT] Forced single-node breaker manipulation on {target} -> {cmd}")
             
         elif action == "START_SCENARIO":
             scen_name = payload.get("scenario_name", "coordinated_cascade")
@@ -209,6 +346,25 @@ class SmartGridDigitalTwin:
         """
         Calculates power flow, creates JSON telemetry payload, and applies cyber tampering.
         """
+        # 0. Process Scheduled Re-trip Actions
+        now = time.time()
+        for act in list(self.scheduled_actions):
+            exec_time, tgt, cmd = act
+            if now >= exec_time:
+                self.scheduled_actions.remove(act)
+                if cmd == "OPEN" and self.breakers.get(tgt) == "CLOSED":
+                    self.breakers[tgt] = "OPEN"
+                    logger.warning(f"[ATTACK PERSISTENCE] Attacker re-tripped breaker {tgt}!")
+                    self.publisher.publish_event(
+                        source="ATTACK_ORCHESTRATOR",
+                        event_desc=f"Attacker Persistence: compromised breaker '{tgt}' re-tripped automatically.",
+                        severity="CRITICAL"
+                    )
+
+        # Increment attack steps for active compromises
+        for tgt in self.active_compromises:
+            self.attack_steps[tgt] = self.attack_steps.get(tgt, 0) + 1
+
         # 1. Update Scenario Timeline Scheduler
         if self.active_attack == "SCENARIO" and self.active_scenario:
             stages = self.active_scenario["stages"]
@@ -400,8 +556,9 @@ class SmartGridDigitalTwin:
             
             # 1. False Data Injection Attack (FDIA)
             if stype == "FDIA":
-                bias = config.get("bias", 0.0)
-                scale = config.get("scale", 1.0)
+                ramp = min(1.0, self.attack_steps.get(target, 1) / 5.0)
+                bias = config.get("bias", 0.0) * ramp
+                scale = 1.0 + (config.get("scale", 1.0) - 1.0) * ramp
                 
                 if target in telemetry["state"]["buses"]:
                     orig_val = telemetry["state"]["buses"][target]["voltage_pu"]
@@ -415,6 +572,8 @@ class SmartGridDigitalTwin:
             
             # 2. Denial of Service (DoS)
             elif stype == "DOS":
+                if self.attack_steps.get(target, 1) <= 2:
+                    continue  # Delay DoS impact by 2 sweeps
                 if target in telemetry["state"]["buses"]:
                     telemetry["state"]["buses"][target]["voltage_pu"] = 0.0
                     telemetry["state"]["buses"][target]["P_mw"] = 0.0
@@ -435,8 +594,9 @@ class SmartGridDigitalTwin:
             
             # 3. Sensor Spoofing (Drifts & White Noise)
             elif stype == "SENSOR_SPOOFING":
-                noise_lvl = config.get("noise", 0.02)
-                drift_rate = config.get("drift", 0.0)
+                ramp = min(1.0, self.attack_steps.get(target, 1) / 5.0)
+                noise_lvl = config.get("noise", 0.02) * ramp
+                drift_rate = config.get("drift", 0.0) * ramp
                 
                 # Accumulate drift over time
                 self.sensor_drifts[target] = self.sensor_drifts.get(target, 0.0) + drift_rate

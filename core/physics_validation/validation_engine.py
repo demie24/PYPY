@@ -75,9 +75,9 @@ class PhysicsValidationEngine:
             global_grid_confidence = avg_trust * (1.0 - phys_score / 100.0) * (1.0 - ai_prob)
             global_grid_confidence_pct = round(global_grid_confidence * 100, 2)
             
-            # Trusted state flag and degraded observability indicators
-            trusted_state = (global_grid_confidence >= 0.70) and (not impossible_state) and (ai_prob < 0.50)
-            degraded_observability = any(t < 0.70 for t in trust_scores.values())
+            # Trusted state flag and degraded observability indicators (downgraded threshold to 60.0)
+            trusted_state = (global_grid_confidence >= 0.65) and (not impossible_state) and (ai_prob < 0.50)
+            degraded_observability = any(t < 60.0 for t in trust_scores.values())
             
             # 7. Compile outputs and publish
             timestamp_ms = int(time.time() * 1000)
@@ -93,6 +93,7 @@ class PhysicsValidationEngine:
                 "impossible_violations": raw_report["impossible_violations"],
                 "ai_threat_prob": ai_prob,
                 "global_grid_confidence": global_grid_confidence_pct,
+                "final_operational_confidence_index": global_grid_confidence_pct,
                 "trusted_state": trusted_state,
                 "degraded_observability": degraded_observability
             }
@@ -152,6 +153,11 @@ def on_message(client, userdata, msg):
                 engine.trust_engine = TrustEngine()
                 engine.adaptive_filter = AdaptiveTelemetryFilter()
                 logger.info("Physics Validation and Trust engine states reset.")
+            elif cmd == "REJECT_TELEMETRY":
+                tgt = payload.get("target")
+                if tgt:
+                    engine.trust_engine.reject_node(tgt)
+                    logger.info(f"Operator rejected telemetry for {tgt}. Trust score forced to 0.0.")
                 
         elif topic == "grid/telemetry":
             engine.process_telemetry(payload, client)

@@ -21,6 +21,7 @@ class AIOrchestrator:
     def __init__(self):
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
+        self.defense_mode = "ADVISORY"
         
         # Unified grid state cache
         self.state_cache = {
@@ -58,6 +59,8 @@ class AIOrchestrator:
                 self.state_cache["flisr_state"] = payload["flisr_state"]
             if "flisr_auto" in payload:
                 self.state_cache["flisr_auto"] = payload["flisr_auto"]
+            if "defense_mode" in payload:
+                self.defense_mode = payload["defense_mode"]
 
     def run_cycle(self, client):
         """
@@ -82,7 +85,8 @@ class AIOrchestrator:
                 "global_risk_level": report["global_risk_level"],
                 "stability_score": report["stability_score"],
                 "restoration_confidence": report["restoration_confidence"],
-                "active_subsystems_reasoning": report["active_subsystems_reasoning"]
+                "active_subsystems_reasoning": report["active_subsystems_reasoning"],
+                "defense_mode": self.defense_mode
             }
             client.publish("grid/ai_orchestrator", json.dumps(orchestrator_payload))
             
@@ -92,6 +96,34 @@ class AIOrchestrator:
                 "recommendations": actions
             }
             client.publish("grid/recommended_actions", json.dumps(recommended_actions_payload))
+
+            # 4.5. Autonomous Emergency Defense Execution (when in EMERGENCY_DEFENSE mode)
+            if self.defense_mode == "EMERGENCY_DEFENSE" and report["global_state"] == "EMERGENCY_MODE" and report["stability_score"] < 30.0:
+                for act in actions:
+                    if act["priority"] in ["CRITICAL", "HIGH"] and act["action"] in ["TELEMETRY_DISTRUST", "BREAKER_LOCKOUT", "ISOLATE_LINE"]:
+                        cmd = None
+                        if act["action"] == "TELEMETRY_DISTRUST":
+                            cmd = "REJECT_TELEMETRY"
+                        elif act["action"] in ["BREAKER_LOCKOUT", "ISOLATE_LINE"]:
+                            cmd = "OPEN"
+                        
+                        if cmd:
+                            logger.warning(f"[AUTONOMOUS DEFENSE] Automatically executing action {act['action']} targeting {act['target']}")
+                            control_payload = {
+                                "command": cmd,
+                                "target": act["target"],
+                                "source": "ORCHESTRATOR"
+                            }
+                            client.publish("grid/control", json.dumps(control_payload))
+                            
+                            # Log auto-execution event
+                            event_payload = {
+                                "timestamp": timestamp_ms,
+                                "source": "AI_ORCHESTRATOR",
+                                "event": f"Autonomous Action: automatically executed '{act['action']}' on target '{act['target']}' (Stability: {report['stability_score']:.1f}%)",
+                                "severity": "CRITICAL"
+                            }
+                            client.publish("grid/events", json.dumps(event_payload))
             
             logger.info(
                 f"AI Orchestration cycle | Global State: {report['global_state']} | "
@@ -118,6 +150,7 @@ class AIOrchestrator:
         }
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
+        self.defense_mode = "ADVISORY"
         logger.info("AI Orchestrator cache and engines reset.")
 
 orchestrator = AIOrchestrator()
@@ -146,6 +179,13 @@ def on_message(client, userdata, msg):
             cmd = payload.get("command")
             if cmd == "RESET_ALARMS":
                 orchestrator.reset()
+            elif cmd == "TOGGLE_AUTO_DEFENSE":
+                enabled = payload.get("enabled", False)
+                orchestrator.defense_mode = "EMERGENCY_DEFENSE" if enabled else "ADVISORY"
+                logger.info(f"Orchestrator defense mode updated to: {orchestrator.defense_mode}")
+            elif cmd == "SET_DEFENSE_MODE":
+                orchestrator.defense_mode = payload.get("mode", "ADVISORY")
+                logger.info(f"Orchestrator defense mode updated to: {orchestrator.defense_mode}")
         else:
             orchestrator.update_state(topic, payload)
             

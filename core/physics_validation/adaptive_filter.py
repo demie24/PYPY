@@ -62,17 +62,59 @@ class AdaptiveTelemetryFilter:
                     "Q_mvar": q_raw
                 }
                 
+            # Define 0-indexed line topological reactances and target buses (1-indexed matching telemetry names)
+            connections = [
+                {"id": "L1_4", "from": "Bus_1", "to": "Bus_4", "X": 0.0576},
+                {"id": "L2_7", "from": "Bus_2", "to": "Bus_7", "X": 0.0625},
+                {"id": "L3_9", "from": "Bus_3", "to": "Bus_9", "X": 0.0586},
+                {"id": "L4_5", "from": "Bus_4", "to": "Bus_5", "X": 0.085},
+                {"id": "L4_9", "from": "Bus_4", "to": "Bus_9", "X": 0.092},
+                {"id": "L5_6", "from": "Bus_5", "to": "Bus_6", "X": 0.161},
+                {"id": "L6_7", "from": "Bus_6", "to": "Bus_7", "X": 0.072},
+                {"id": "L7_8", "from": "Bus_7", "to": "Bus_8", "X": 0.161},
+                {"id": "L8_9", "from": "Bus_8", "to": "Bus_9", "X": 0.1008}
+            ]
+
             # Filter action decision
             if trust < self.trust_threshold or v_raw < 0.85 or v_raw > 1.15:
-                # REJECT: Trust is too low, use LKG or default nominal values
-                action = "REJECTED"
+                # REJECT: Trust is too low, attempt state reconstruction using KVL
+                estimates = []
+                for conn in connections:
+                    if conn["from"] == bus_name:
+                        neigh = conn["to"]
+                        if trust_scores.get(neigh, 1.0) >= 0.60 and breakers.get(conn["id"], "CLOSED") == "CLOSED" and trust_scores.get(conn["id"], 1.0) >= 0.60:
+                            v_neigh = float(buses[neigh].get("voltage_pu", 1.0))
+                            q_flow = float(lines.get(conn["id"], {}).get("Q_mvar", 0.0)) / 100.0
+                            v_est = v_neigh + q_flow * conn["X"]
+                            estimates.append(v_est)
+                    elif conn["to"] == bus_name:
+                        neigh = conn["from"]
+                        if trust_scores.get(neigh, 1.0) >= 0.60 and breakers.get(conn["id"], "CLOSED") == "CLOSED" and trust_scores.get(conn["id"], 1.0) >= 0.60:
+                            v_neigh = float(buses[neigh].get("voltage_pu", 1.0))
+                            q_flow = float(lines.get(conn["id"], {}).get("Q_mvar", 0.0)) / 100.0
+                            v_est = v_neigh - q_flow * conn["X"]
+                            estimates.append(v_est)
+                
+                if estimates:
+                    v_filt = sum(estimates) / len(estimates)
+                    action = "RECONSTRUCTED"
+                    logger.info(f"Reconstructed telemetry for {bus_name} using KVL. Estimated: {v_filt:.4f} p.u. (Raw was {v_raw:.4f})")
+                else:
+                    action = "REJECTED"
+                    lkg = self.lkg_buses.get(bus_name, {
+                        "voltage_pu": 1.0,
+                        "angle_rad": 0.0,
+                        "P_mw": 0.0,
+                        "Q_mvar": 0.0
+                    })
+                    v_filt = lkg["voltage_pu"]
+                
                 lkg = self.lkg_buses.get(bus_name, {
                     "voltage_pu": 1.0,
                     "angle_rad": 0.0,
                     "P_mw": 0.0,
                     "Q_mvar": 0.0
                 })
-                v_filt = lkg["voltage_pu"]
                 theta_filt = lkg["angle_rad"]
                 p_filt = lkg["P_mw"]
                 q_filt = lkg["Q_mvar"]

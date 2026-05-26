@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 
 import { GridDiagram } from "./components/GridDiagram.tsx";
 import { TelemetryCharts } from "./components/TelemetryCharts.tsx";
@@ -10,13 +10,22 @@ import { ThreatAwareForecastPanel } from "./components/ThreatAwareForecastPanel.
 import { PhysicsValidationPanel } from "./components/PhysicsValidationPanel.tsx";
 import { TrustAnalysisPanel } from "./components/TrustAnalysisPanel.tsx";
 import { OrchestratorPanel } from "./components/OrchestratorPanel.tsx";
+import { SystemHealthPanel } from "./components/SystemHealthPanel.tsx";
 
 import {
   Wifi,
   Cpu,
   Zap,
   AlertOctagon,
-  MonitorPlay
+  MonitorPlay,
+  Play as PlayIcon,
+  Pause,
+  ChevronLeft,
+  ChevronRight,
+  Minimize2,
+  Maximize2,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 
 export default function App() {
@@ -49,6 +58,57 @@ export default function App() {
   const [activeAttack, setActiveAttack] = useState<string | null>(null);
   const [, setAttackTarget] = useState<string | null>(null);
 
+  // --- Phase A: HMI Operational Stabilization States ---
+  const [wsLatency, setWsLatency] = useState<number>(0);
+  const [reconnectCount, setReconnectCount] = useState<number>(0);
+  const [msgRate, setMsgRate] = useState<number>(1.0);
+  const [annotations, setAnnotations] = useState<Record<string, string>>({});
+
+  // Collapsible and Resizable Panel states
+  const [collapsedPanels, setCollapsedPanels] = useState<Set<string>>(new Set());
+  const [panelSizes, setPanelSizes] = useState<Record<string, number>>({
+    telemetry: 1,
+    forecast: 1,
+    multibus: 1,
+    threat_aware: 1,
+    physics: 1,
+    trust: 1,
+    orchestrator: 1,
+    health: 1
+  });
+  const [panelOrder, setPanelOrder] = useState<string[]>([
+    "telemetry", "forecast", "multibus", "threat_aware", "physics", "trust", "orchestrator", "health"
+  ]);
+
+  // Timeline Replay States
+  const [isReplaying, setIsReplaying] = useState<boolean>(false);
+  const [replayIndex, setReplayIndex] = useState<number>(0);
+  const [replayFrames, setReplayFrames] = useState<any[]>([]);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  // Refs for state values to prevent stale closures in websocket onmessage callback
+  const stateRef = useRef<any>({});
+  useEffect(() => {
+    stateRef.current = {
+      telemetry,
+      threatData,
+      aiPrediction,
+      multiBusForecast,
+      threatAwareForecast,
+      physicsValidation,
+      trustScores,
+      adaptiveFilter,
+      aiOrchestrator,
+      recommendedActions,
+      flisrState,
+      flisrIsolated,
+      flisrReconfigured,
+      flisrTripped,
+      activeAttack
+    };
+  }); // Run on every render
+
+  const telemTimesRef = useRef<number[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<any>(null);
 
@@ -68,6 +128,12 @@ export default function App() {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        
+        if (data.type === "PONG") {
+          const sentTime = data.payload;
+          setWsLatency(Date.now() - sentTime);
+          return;
+        }
         
         // Handle initial cache load (Bootstrap)
         if (data.type === "BOOTSTRAP") {
@@ -149,6 +215,22 @@ export default function App() {
           const { topic, payload } = data;
           
           if (topic === "grid/telemetry") {
+            // Track telemetry message rate
+            const now = Date.now();
+            const telemTimes = telemTimesRef.current;
+            telemTimes.push(now);
+            if (telemTimes.length > 10) {
+              telemTimes.shift();
+            }
+            if (telemTimes.length > 1) {
+              const diffs = [];
+              for (let i = 1; i < telemTimes.length; i++) {
+                diffs.push(telemTimes[i] - telemTimes[i-1]);
+              }
+              const avgDiff = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+              setMsgRate(avgDiff > 0 ? 1000 / avgDiff : 0);
+            }
+
             setTelemetry(payload);
             setHistory((prev) => {
               const next = [...prev, payload];
@@ -159,13 +241,40 @@ export default function App() {
             // Phase 5B: Authoritative attack state from telemetry payload
             // This is the ground-truth source - always in sync with backend
             const atkStatus = payload?.attack_status;
+            let backendAtk = null;
             if (atkStatus) {
-              const backendAtk = atkStatus.active_attack || null;
+              backendAtk = atkStatus.active_attack || null;
               setActiveAttack(backendAtk);
               if (!backendAtk) {
                 setAttackTarget(null);
               }
             }
+
+            // Save state snapshot to historical replay buffer
+            const currentStates = stateRef.current;
+            const newFrame = {
+              timestamp: Date.now(),
+              telemetry: payload,
+              threatData: currentStates.threatData,
+              aiPrediction: currentStates.aiPrediction,
+              multiBusForecast: currentStates.multiBusForecast,
+              threatAwareForecast: currentStates.threatAwareForecast,
+              physicsValidation: currentStates.physicsValidation,
+              trustScores: currentStates.trustScores,
+              adaptiveFilter: currentStates.adaptiveFilter,
+              aiOrchestrator: currentStates.aiOrchestrator,
+              recommendedActions: currentStates.recommendedActions,
+              flisrState: currentStates.flisrState,
+              flisrIsolated: currentStates.flisrIsolated,
+              flisrReconfigured: currentStates.flisrReconfigured,
+              flisrTripped: currentStates.flisrTripped,
+              activeAttack: currentStates.activeAttack || backendAtk
+            };
+            setReplayFrames((prev) => {
+              const next = [...prev, newFrame];
+              if (next.length > 100) next.shift();
+              return next;
+            });
           } else if (topic === "grid/events") {
             setEvents((prev) => {
               const next = [payload, ...prev];
@@ -278,6 +387,7 @@ export default function App() {
     ws.onclose = () => {
       console.log("WebSocket disconnected. Retrying connection...");
       setConnected(false);
+      setReconnectCount(prev => prev + 1);
       reconnectTimeoutRef.current = setTimeout(connectWebSocket, 3000);
     };
 
@@ -289,9 +399,20 @@ export default function App() {
 
   useEffect(() => {
     connectWebSocket();
+    
+    const pingInterval = setInterval(() => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({
+          topic: "grid/ping",
+          payload: Date.now()
+        }));
+      }
+    }, 3000);
+
     return () => {
       if (wsRef.current) wsRef.current.close();
       if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
+      clearInterval(pingInterval);
     };
   }, []);
 
@@ -398,6 +519,233 @@ export default function App() {
   const hasActiveTrips = () => {
     if (!telemetry?.state?.breakers) return false;
     return Object.values(telemetry.state.breakers).some((v) => v === "OPEN");
+  };
+
+  // Timeline player interval logic
+  useEffect(() => {
+    let interval: any = null;
+    if (isReplaying && isPlaying) {
+      interval = setInterval(() => {
+        setReplayIndex((prev) => {
+          if (prev >= replayFrames.length - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isReplaying, isPlaying, replayFrames.length]);
+
+  // Derived/displayed variables based on timeline index
+  const currentFrame = isReplaying && replayFrames[replayIndex] ? replayFrames[replayIndex] : null;
+
+  const dispTelemetry = currentFrame ? currentFrame.telemetry : telemetry;
+  const dispThreatData = currentFrame ? currentFrame.threatData : threatData;
+  const dispAiPrediction = currentFrame ? currentFrame.aiPrediction : aiPrediction;
+  const dispMultiBusForecast = currentFrame ? currentFrame.multiBusForecast : multiBusForecast;
+  const dispThreatAwareForecast = currentFrame ? currentFrame.threatAwareForecast : threatAwareForecast;
+  const dispPhysicsValidation = currentFrame ? currentFrame.physicsValidation : physicsValidation;
+  const dispTrustScores = currentFrame ? currentFrame.trustScores : trustScores;
+  const dispAdaptiveFilter = currentFrame ? currentFrame.adaptiveFilter : adaptiveFilter;
+  const dispAiOrchestrator = currentFrame ? currentFrame.aiOrchestrator : aiOrchestrator;
+  const dispRecommendedActions = currentFrame ? currentFrame.recommendedActions : recommendedActions;
+  const dispFlisrState = currentFrame ? currentFrame.flisrState : flisrState;
+  const dispFlisrIsolated = currentFrame ? currentFrame.flisrIsolated : flisrIsolated;
+  const dispFlisrReconfigured = currentFrame ? currentFrame.flisrReconfigured : flisrReconfigured;
+  const dispFlisrTripped = currentFrame ? currentFrame.flisrTripped : flisrTripped;
+  const dispActiveAttack = currentFrame ? currentFrame.activeAttack : activeAttack;
+
+  const dispHistory = useMemo(() => {
+    if (!isReplaying || !currentFrame || !dispTelemetry) return history;
+    return history.filter((h) => h.timestamp <= dispTelemetry.timestamp);
+  }, [isReplaying, currentFrame, history, dispTelemetry]);
+
+  const dispPredictionHistory = useMemo(() => {
+    if (!isReplaying || !currentFrame || !dispTelemetry) return predictionHistory;
+    return predictionHistory.filter((p) => p.timestamp <= dispTelemetry.timestamp);
+  }, [isReplaying, currentFrame, predictionHistory, dispTelemetry]);
+
+  const dispEvents = useMemo(() => {
+    if (!isReplaying || !currentFrame) return events;
+    return events.filter((e) => e.timestamp <= currentFrame.timestamp);
+  }, [isReplaying, currentFrame, events]);
+
+  const dispAlerts = useMemo(() => {
+    if (!isReplaying || !currentFrame) return alerts;
+    return alerts.filter((a) => a.timestamp <= currentFrame.timestamp);
+  }, [isReplaying, currentFrame, alerts]);
+
+  // Collapsible and resizable panel handlers
+  const toggleCollapse = (id: string) => {
+    setCollapsedPanels((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const cycleSize = (id: string) => {
+    setPanelSizes((prev) => {
+      const current = prev[id] || 1;
+      let next = 1;
+      if (current === 1) next = 2;
+      else if (current === 2) next = 3;
+      else if (current === 3) next = 4;
+      return { ...prev, [id]: next };
+    });
+  };
+
+  const movePanel = (id: string, direction: "left" | "right") => {
+    setPanelOrder((prev) => {
+      const idx = prev.indexOf(id);
+      if (idx === -1) return prev;
+      const nextIdx = direction === "left" ? idx - 1 : idx + 1;
+      if (nextIdx < 0 || nextIdx >= prev.length) return prev;
+      const nextOrder = [...prev];
+      nextOrder[idx] = prev[nextIdx];
+      nextOrder[nextIdx] = id;
+      return nextOrder;
+    });
+  };
+
+  const getColSpanClass = (span: number) => {
+    if (span === 2) return "col-span-1 md:col-span-2";
+    if (span === 3) return "col-span-1 md:col-span-2 lg:col-span-3";
+    if (span === 4) return "col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4";
+    return "col-span-1";
+  };
+
+  const handleAddAnnotation = (key: string, note: string) => {
+    setAnnotations((prev) => ({
+      ...prev,
+      [key]: note
+    }));
+  };
+
+  const renderPanel = (panelId: string) => {
+    const isCollapsed = collapsedPanels.has(panelId);
+    const size = panelSizes[panelId] || 1;
+    const colSpanClass = getColSpanClass(size);
+    
+    let title = "";
+    let content: React.ReactNode = null;
+    
+    switch (panelId) {
+      case "telemetry":
+        title = "Real-Time Telemetry";
+        content = <TelemetryCharts history={dispHistory} />;
+        break;
+      case "forecast":
+        title = "AI Voltage Forecast";
+        content = <ForecastPanel predictionHistory={dispPredictionHistory} aiPrediction={dispAiPrediction} />;
+        break;
+      case "multibus":
+        title = "Multi-Bus Forecast";
+        content = <MultiBusForecastPanel forecastData={dispMultiBusForecast} />;
+        break;
+      case "threat_aware":
+        title = "Cyber-Aware Predictor";
+        content = <ThreatAwareForecastPanel forecastData={dispThreatAwareForecast} />;
+        break;
+      case "physics":
+        title = "Physics Validator";
+        content = <PhysicsValidationPanel validationData={dispPhysicsValidation} />;
+        break;
+      case "trust":
+        title = "Telemetry Trust & Filtering";
+        content = <TrustAnalysisPanel trustScores={dispTrustScores} filterData={dispAdaptiveFilter} />;
+        break;
+      case "orchestrator":
+        title = "AI Orchestration";
+        content = (
+          <OrchestratorPanel
+            orchestratorData={dispAiOrchestrator}
+            actionsData={dispRecommendedActions}
+            onExecuteAction={handleExecuteAction}
+          />
+        );
+        break;
+      case "health":
+        title = "System Health & Diagnostics";
+        content = (
+          <SystemHealthPanel
+            connected={connected}
+            wsLatency={wsLatency}
+            reconnectCount={reconnectCount}
+            msgRate={msgRate}
+            aiOrchestrator={dispAiOrchestrator}
+            telemetry={dispTelemetry}
+          />
+        );
+        break;
+      default:
+        return null;
+    }
+
+    return (
+      <div
+        key={panelId}
+        className={`${colSpanClass} transition-all duration-300 relative group flex flex-col`}
+        style={{ minHeight: isCollapsed ? "42px" : "300px" }}
+      >
+        <div className="absolute top-2.5 right-12 z-30 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-scada-bg/85 border border-scada-border/40 rounded px-1.5 py-0.5 font-mono text-[7px] text-scada-dimText">
+          <button
+            onClick={() => movePanel(panelId, "left")}
+            className="hover:text-white transition-colors"
+            title="Move Left"
+          >
+            <ArrowLeft size={10} />
+          </button>
+          <button
+            onClick={() => movePanel(panelId, "right")}
+            className="hover:text-white transition-colors border-l border-scada-border/30 pl-1"
+            title="Move Right"
+          >
+            <ArrowRight size={10} />
+          </button>
+          <button
+            onClick={() => cycleSize(panelId)}
+            className="hover:text-white transition-colors border-l border-scada-border/30 pl-1 flex items-center gap-0.5"
+            title="Cycle Width"
+          >
+            {size === 1 ? <Maximize2 size={9} /> : <Minimize2 size={9} />}
+            <span>W{size}</span>
+          </button>
+          <button
+            onClick={() => toggleCollapse(panelId)}
+            className="hover:text-white transition-colors border-l border-scada-border/30 pl-1"
+            title={isCollapsed ? "Expand Panel" : "Collapse Panel"}
+          >
+            {isCollapsed ? "EXP" : "COL"}
+          </button>
+        </div>
+
+        {isCollapsed ? (
+          <div className="bg-scada-panel border border-scada-border rounded-lg p-2.5 px-3 h-[42px] flex justify-between items-center text-xs font-mono font-bold tracking-wider text-scada-dimText uppercase scada-glow-green">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></span>
+              {title}
+            </span>
+            <button
+              onClick={() => toggleCollapse(panelId)}
+              className="text-[8px] text-scada-nominal border border-scada-nominal/30 hover:bg-scada-nominal/10 px-2 py-0.5 rounded transition-all font-bold font-mono"
+            >
+              EXPAND
+            </button>
+          </div>
+        ) : (
+          content
+        )}
+      </div>
+    );
   };
 
   return (
@@ -513,31 +861,139 @@ export default function App() {
         <section className="xl:col-span-2 flex flex-col justify-between gap-4 h-full overflow-hidden">
           <div className="shrink-0">
             <GridDiagram 
-              telemetry={telemetry} 
+              telemetry={dispTelemetry} 
               onToggleBreaker={toggleBreaker} 
-              attackStatus={telemetry?.attack_status}
-              flisrState={flisrState}
-              flisrIsolated={flisrIsolated}
-              flisrReconfigured={flisrReconfigured}
-              flisrTripped={flisrTripped}
+              attackStatus={dispTelemetry?.attack_status}
+              flisrState={dispFlisrState}
+              flisrIsolated={dispFlisrIsolated}
+              flisrReconfigured={dispFlisrReconfigured}
+              flisrTripped={dispFlisrTripped}
             />
           </div>
           
-          {/* Lower AI Analytics Layout - Responsive Two-Row Grid System */}
+          {/* Lower AI Analytics Layout - Dynamic Collapsible Grid */}
           <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 scrollbar-thin">
-            {/* Row 1: Forecasting & Telemetry */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 shrink-0">
-              <TelemetryCharts history={history} />
-              <ForecastPanel predictionHistory={predictionHistory} aiPrediction={aiPrediction} />
-              <MultiBusForecastPanel forecastData={multiBusForecast} />
+            {/* Timeline Replay Control Bar */}
+            <div className="bg-scada-panel border border-scada-border rounded-lg p-2 px-4 flex flex-wrap gap-4 items-center justify-between font-mono text-xs shrink-0 select-none">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className={`w-2.5 h-2.5 rounded-full ${
+                    isReplaying 
+                      ? "bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.7)]" 
+                      : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]"
+                  }`}></span>
+                  <span className={`font-bold tracking-widest uppercase ${
+                    isReplaying ? "text-amber-400" : "text-emerald-400"
+                  }`}>
+                    {isReplaying ? "HISTORICAL REPLAY" : "LIVE STREAMING"}
+                  </span>
+                </div>
+                <span className="text-[10px] text-scada-dimText">
+                  {replayFrames.length} Frames Buffer
+                </span>
+              </div>
+
+              {/* Player Controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  disabled={replayFrames.length === 0}
+                  onClick={() => {
+                    setIsReplaying(true);
+                    setIsPlaying(false);
+                    setReplayIndex((prev) => Math.max(0, prev - 1));
+                  }}
+                  className="p-1 rounded border border-scada-border bg-scada-bg hover:text-white transition-colors disabled:opacity-50"
+                  title="Step Backward"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+
+                {isReplaying && isPlaying ? (
+                  <button
+                    onClick={() => setIsPlaying(false)}
+                    className="p-1 px-2.5 rounded border border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-all font-bold flex items-center gap-1"
+                    title="Pause Playback"
+                  >
+                    <Pause size={12} /> PAUSE
+                  </button>
+                ) : (
+                  <button
+                    disabled={replayFrames.length === 0}
+                    onClick={() => {
+                      setIsReplaying(true);
+                      setIsPlaying(true);
+                    }}
+                    className={`p-1 px-2.5 rounded border transition-all font-bold flex items-center gap-1 ${
+                      isReplaying 
+                        ? "border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20" 
+                        : "border-scada-border bg-scada-bg hover:text-white"
+                    } disabled:opacity-50`}
+                    title="Start Playback"
+                  >
+                    <PlayIcon size={12} /> PLAY
+                  </button>
+                )}
+
+                <button
+                  disabled={replayFrames.length === 0}
+                  onClick={() => {
+                    setIsReplaying(true);
+                    setIsPlaying(false);
+                    setReplayIndex((prev) => Math.min(replayFrames.length - 1, prev + 1));
+                  }}
+                  className="p-1 rounded border border-scada-border bg-scada-bg hover:text-white transition-colors disabled:opacity-50"
+                  title="Step Forward"
+                >
+                  <ChevronRight size={14} />
+                </button>
+
+                {isReplaying && (
+                  <button
+                    onClick={() => {
+                      setIsReplaying(false);
+                      setIsPlaying(false);
+                      setReplayIndex(replayFrames.length - 1);
+                    }}
+                    className="p-1 px-2 rounded border border-emerald-500/50 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 font-bold transition-all"
+                  >
+                    RESUME LIVE
+                  </button>
+                )}
+              </div>
+
+              {/* Scrubber slider */}
+              <div className="flex-1 min-w-[200px] flex items-center gap-3">
+                <input
+                  type="range"
+                  min={0}
+                  max={Math.max(0, replayFrames.length - 1)}
+                  value={isReplaying ? replayIndex : replayFrames.length - 1}
+                  disabled={replayFrames.length === 0}
+                  onChange={(e) => {
+                    setIsReplaying(true);
+                    setIsPlaying(false);
+                    setReplayIndex(parseInt(e.target.value));
+                  }}
+                  className="w-full accent-amber-500 h-1 bg-scada-border rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+                />
+                <span className="font-bold text-scada-dimText w-[90px] text-right font-scada-nums">
+                  {replayFrames.length > 0 
+                    ? `F ${isReplaying ? replayIndex + 1 : replayFrames.length}/${replayFrames.length}` 
+                    : "NO DATA"}
+                </span>
+              </div>
+
+              {/* Frame Timestamp info */}
+              <div className="text-[10px] text-scada-dimText font-mono min-w-[120px] text-right">
+                {isReplaying && currentFrame 
+                  ? new Date(currentFrame.timestamp).toLocaleTimeString([], { hour12: false }) 
+                  : "LIVE STREAM"}
+              </div>
             </div>
 
-            {/* Row 2: Cyber-Physical Security, Trust & Decision Orchestration */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 shrink-0">
-              <ThreatAwareForecastPanel forecastData={threatAwareForecast} />
-              <PhysicsValidationPanel validationData={physicsValidation} />
-              <TrustAnalysisPanel trustScores={trustScores} filterData={adaptiveFilter} />
-              <OrchestratorPanel orchestratorData={aiOrchestrator} actionsData={recommendedActions} onExecuteAction={handleExecuteAction} />
+            {/* Dynamic Grid of Panels */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
+              {panelOrder.map((panelId) => renderPanel(panelId))}
             </div>
           </div>
         </section>
@@ -545,7 +1001,7 @@ export default function App() {
         {/* Right column: Incident logs, Cyber attack injection console */}
         <section className="h-full flex flex-col justify-between gap-4 overflow-hidden">
           <ThreatScorePanel 
-            threatData={threatData}
+            threatData={dispThreatData}
             onExecuteAction={handleExecuteAction}
             onToggleAutoDefense={handleToggleAutoDefense}
           />
@@ -557,7 +1013,7 @@ export default function App() {
               Grid Event Logger
             </h2>
             <div className="flex-1 overflow-y-auto space-y-1 font-mono text-[10px] pr-1">
-              {events
+              {dispEvents
                 .filter((ev) => ev.source !== "FLISR_ENGINE")
                 .slice(0, 8)
                 .map((ev, i) => (
@@ -571,7 +1027,7 @@ export default function App() {
                     <span className="text-scada-text">{ev.event}</span>
                   </div>
                 ))}
-              {events.length === 0 && (
+              {dispEvents.length === 0 && (
                 <p className="text-scada-dimText italic">No logs recorded. Awaiting telemetry stream...</p>
               )}
             </div>
@@ -580,20 +1036,22 @@ export default function App() {
           {/* Alerts and Attacks */}
           <div className="flex-shrink-0">
             <AlertsPanel
-              events={events}
-              alerts={alerts}
+              events={dispEvents}
+              alerts={dispAlerts}
               flisrAuto={flisrAuto}
-              flisrState={flisrState}
-              flisrIsolated={flisrIsolated}
-              flisrReconfigured={flisrReconfigured}
-              flisrTripped={flisrTripped}
+              flisrState={dispFlisrState}
+              flisrIsolated={dispFlisrIsolated}
+              flisrReconfigured={dispFlisrReconfigured}
+              flisrTripped={dispFlisrTripped}
               onSendConfig={sendConfig}
               onSendAttack={sendAttack}
               onSendControl={handleResetAlarms}
               recording={recording}
               setRecording={setRecording}
-              activeAttack={activeAttack}
-              attackStatus={telemetry?.attack_status}
+              activeAttack={dispActiveAttack}
+              attackStatus={dispTelemetry?.attack_status}
+              annotations={annotations}
+              onAddAnnotation={handleAddAnnotation}
             />
           </div>
         </section>

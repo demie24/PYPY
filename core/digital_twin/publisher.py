@@ -79,9 +79,9 @@ class TelemetryPublisher:
                 target = payload.get("target")
                 if cmd == "RESET_ALARMS":
                     if self.on_control_cmd:
-                        self.on_control_cmd("SYSTEM", "RESET_ALARMS")
+                        self.on_control_cmd("SYSTEM", "RESET_ALARMS", payload)
                 elif cmd and target and self.on_control_cmd:
-                    self.on_control_cmd(target, cmd)
+                    self.on_control_cmd(target, cmd, payload)
                     
             elif topic == "grid/attack":
                 if self.on_attack_cmd:

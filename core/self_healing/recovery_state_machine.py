@@ -1,0 +1,243 @@
+import os
+import sys
+import time
+import json
+import logging
+from typing import Dict, List, Any
+
+# Setup import paths
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(CURRENT_DIR)
+
+from topology_recovery_engine import TopologyRecoveryEngine
+from restoration_planner import RestorationPlanner
+from restoration_validator import RestorationValidator
+from rollback_guard import RollbackGuard
+
+logger = logging.getLogger("self_healing.recovery_state_machine")
+
+class RecoveryStateMachine:
+    """
+    Manages Layer 6 Autonomous Restoration states.
+    Transitions through: NORMAL -> ISOLATE -> STABILIZE -> REROUTE -> RESTORE -> VERIFY -> ROLLBACK.
+    """
+    def __init__(self):
+        self.state = "NORMAL"
+        
+        self.topo_engine = TopologyRecoveryEngine()
+        self.validator = RestorationValidator()
+        self.planner = RestorationPlanner(self.topo_engine, self.validator)
+        self.rollback_guard = RollbackGuard()
+        
+        # State tracking buffers
+        self.timeline: List[Dict[str, Any]] = []
+        self.action_logs: List[Dict[str, Any]] = []
+        self.planned_sequence: List[Dict[str, Any]] = []
+        self.executed_sequence: List[Dict[str, Any]] = []
+        
+        self.state_timer = 0
+        
+        # Initialize log
+        self.log_event("Autonomous Restoration System online. Monitoring grid state...", "INFO")
+        
+    def log_event(self, msg: str, severity: str = "INFO"):
+        event = {
+            "timestamp": int(time.time() * 1000),
+            "event": msg,
+            "severity": severity
+        }
+        self.timeline.append(event)
+        if len(self.timeline) > 50:
+            self.timeline.pop(0)
+        logger.info(f"[{severity}] {msg}")
+        
+    def log_action(self, action: str, target: str, status: str):
+        log = {
+            "timestamp": int(time.time() * 1000),
+            "action": action,
+            "target": target,
+            "status": status
+        }
+        self.action_logs.append(log)
+        if len(self.action_logs) > 50:
+            self.action_logs.pop(0)
+            
+    def transition_to(self, new_state: str):
+        self.log_event(f"State transition: {self.state} -> {new_state}", "WARNING")
+        self.state = new_state
+        self.state_timer = 0
+        
+    def reset(self):
+        self.state = "NORMAL"
+        self.timeline.clear()
+        self.action_logs.clear()
+        self.planned_sequence.clear()
+        self.executed_sequence.clear()
+        self.rollback_guard.reset()
+        self.log_event("Restoration state machine reset by operator.", "INFO")
+        
+    def update(self, telemetry: Dict[str, Any], client, faulted_breakers: list = None) -> List[Dict[str, Any]]:
+        """
+        Executes a state evaluation step based on incoming 1.0 Hz telemetry tick.
+        Returns a list of proposed commands to be published.
+        """
+        if not telemetry:
+            return []
+
+        self.state_timer += 1
+        state_data = telemetry.get("state", {})
+        breakers = state_data.get("breakers", {})
+        buses = state_data.get("buses", {})
+        
+        commands = []
+        
+        # Analyze grid topology
+        topo_analysis = self.topo_engine.analyze_topology(telemetry)
+        isolated_segments = topo_analysis["isolated_segments"]
+        
+        # Run state logic
+        if self.state == "NORMAL":
+            # Monitor for de-energized load sectors
+            has_isolated_loads = False
+            for comp in isolated_segments:
+                if any(self.topo_engine.topo.loads.get(b) is not None for b in comp):
+                    has_isolated_loads = True
+                    break
+                    
+            if has_isolated_loads:
+                self.log_event("Isolated load buses detected. Entering ISOLATE state.", "WARNING")
+                self.transition_to("ISOLATE")
+                
+        elif self.state == "ISOLATE":
+            # In ISOLATE, we verify that protective relays have finished opening relevant breakers.
+            # Wait at least 1-2 frames for isolation to register and stabilize.
+            if self.state_timer >= 2:
+                self.log_event("Fault isolation verification complete. Proceeding to stabilization.", "INFO")
+                self.transition_to("STABILIZE")
+                
+        elif self.state == "STABILIZE":
+            # Wait for physical parameters (voltages/transients) to settle post-trip
+            if self.state_timer >= 3:
+                self.log_event("Grid parameters stabilized. Moving to alternate route planning.", "INFO")
+                self.transition_to("REROUTE")
+                
+        elif self.state == "REROUTE":
+            # Calculate restoration sequences
+            sequence = self.planner.plan_restoration(telemetry, faulted_breakers)
+            if sequence:
+                self.planned_sequence = sequence
+                self.executed_sequence = []
+                self.log_event(f"Restoration planner generated sequence with {len(sequence)} actions.", "INFO")
+                for step in sequence:
+                    self.log_event(f"Plan step: {step['command']} {step['target']} ({step['reason']})", "INFO")
+                self.transition_to("RESTORE")
+            else:
+                self.log_event("No viable restoration sequence discovered. Returning to monitor.", "WARNING")
+                self.transition_to("NORMAL")
+                
+        elif self.state == "RESTORE":
+            # Progressively close planned breakers (one command per cycle)
+            if len(self.executed_sequence) < len(self.planned_sequence):
+                next_step = self.planned_sequence[len(self.executed_sequence)]
+                cmd = next_step["command"]
+                target = next_step["target"]
+                
+                # Check for lockout before executing restoration
+                if self.rollback_guard.is_locked_out(target):
+                    self.log_event(f"Skipped execution on locked breaker: {target}.", "WARNING")
+                    self.log_action(cmd, target, "BLOCKED")
+                    self.transition_to("ROLLBACK")
+                else:
+                    control_cmd = "CLOSED" if cmd == "CLOSE" else "OPEN"
+                    commands.append({
+                        "command": control_cmd,
+                        "target": target,
+                        "source": "L6_RECOVERY"
+                    })
+                    self.log_event(f"Issuing progressive command: {cmd} breaker {target}.", "WARNING")
+                    self.log_action(cmd, target, "EXECUTING")
+                    self.executed_sequence.append(next_step)
+            else:
+                self.log_event("All planned restoration commands issued. Moving to verification.", "INFO")
+                self.transition_to("VERIFY")
+                
+        elif self.state == "VERIFY":
+            # Monitor voltages and loadings for 3 frames to confirm stability
+            is_unstable = False
+            reasons = []
+            
+            for bus_idx in self.topo_engine.topo.loads.keys():
+                bus_name = f"Bus_{bus_idx + 1}"
+                v_pu = buses.get(bus_name, {}).get("voltage_pu", 1.0)
+                if v_pu < 0.88:
+                    is_unstable = True
+                    reasons.append(f"Voltage collapse on {bus_name}: {v_pu:.3f} p.u.")
+                    
+            lines = state_data.get("lines", {})
+            for lid, l_data in lines.items():
+                loading = l_data.get("capacity_pct", 0.0)
+                if loading > 110.0:
+                    is_unstable = True
+                    reasons.append(f"Line overload on {lid}: {loading:.1f}%")
+                    
+            # Check for switching oscillations
+            loop_detected, reason = self.rollback_guard.detect_oscillation(self.action_logs)
+            if loop_detected:
+                is_unstable = True
+                reasons.append(f"Oscillation: {reason}")
+                
+            if is_unstable:
+                self.log_event(f"Verification FAILED: {', '.join(reasons)}. Reverting actions.", "CRITICAL")
+                self.transition_to("ROLLBACK")
+            elif self.state_timer >= 3:
+                self.log_event("Verification PASSED. Grid stabilized successfully.", "INFO")
+                for step in self.executed_sequence:
+                    self.log_action(step["command"], step["target"], "SUCCESS")
+                self.transition_to("NORMAL")
+                
+        elif self.state == "ROLLBACK":
+            # Undo all executed close actions in reverse order
+            rollback_commands = []
+            for step in reversed(self.executed_sequence):
+                if step["command"] == "CLOSE":
+                    target = step["target"]
+                    rollback_commands.append({
+                        "command": "OPEN",
+                        "target": target,
+                        "source": "ROLLBACK_GUARD"
+                    })
+                    self.log_event(f"Rolling back closed breaker: {target}.", "CRITICAL")
+                    self.log_action("OPEN", target, "ROLLBACK")
+                    # Place a lockout on this breaker
+                    self.rollback_guard.lockout(target, duration=60.0)
+                    
+            for r_cmd in rollback_commands:
+                client.publish("grid/control", json.dumps(r_cmd))
+                
+            self.executed_sequence.clear()
+            self.transition_to("NORMAL")
+            
+        # Compute recovery confidence meter (0-100)
+        total_voltages = [buses[f"Bus_{i+1}"].get("voltage_pu", 1.0) for i in range(9) if f"Bus_{i+1}" in buses]
+        mean_voltage = sum(total_voltages)/len(total_voltages) if total_voltages else 1.0
+        confidence = max(0, min(100, int((1.0 - abs(mean_voltage - 1.0) * 4) * 100)))
+        if self.state == "ROLLBACK":
+            confidence = 10
+            
+        # Compile and publish Layer 6 telemetry
+        payload = {
+            "timestamp": int(time.time() * 1000),
+            "state": self.state,
+            "timeline": self.timeline,
+            "action_logs": self.action_logs,
+            "confidence": confidence,
+            "isolated_segments": [[f"Bus_{b+1}" for b in seg] for seg in isolated_segments],
+            "active_sequence": self.planned_sequence,
+            "rollback_guard_status": {
+                "lockout_breakers": list(self.rollback_guard.lockouts.keys()),
+                "rollback_count": self.rollback_guard.rollback_count
+            }
+        }
+        client.publish("grid/l6_recovery", json.dumps(payload))
+        
+        return commands

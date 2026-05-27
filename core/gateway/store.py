@@ -23,6 +23,7 @@ class MemoryStore:
         self.latest_recommended_actions: Optional[Dict[str, Any]] = None
         self.latest_pre_rl: Optional[Dict[str, Any]] = None
         self.latest_defense: Optional[Dict[str, Any]] = None
+        self.latest_l6_recovery: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -74,6 +75,9 @@ class MemoryStore:
     def update_defense(self, defense: Dict[str, Any]):
         self.latest_defense = defense
 
+    def update_l6_recovery(self, l6_recovery: Dict[str, Any]):
+        self.latest_l6_recovery = l6_recovery
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -105,7 +109,8 @@ class MemoryStore:
             "ai_orchestrator": self.latest_ai_orchestrator,
             "recommended_actions": self.latest_recommended_actions,
             "pre_rl": self.latest_pre_rl,
-            "defense": self.latest_defense
+            "defense": self.latest_defense,
+            "l6_recovery": self.latest_l6_recovery
         }
 
     def clear_alerts(self):

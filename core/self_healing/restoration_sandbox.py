@@ -120,9 +120,9 @@ class RestorationSandbox:
         original_breakers = copy.deepcopy(self.breakers)
         
         # Apply hypothetical action changes to local breakers
-        if action_name in ["ISOLATE_LINE", "OPEN_BREAKER"] and target in self.breakers:
+        if action_name in ["ISOLATE_LINE", "OPEN_BREAKER", "OPEN"] and target in self.breakers:
             self.breakers[target] = "OPEN"
-        elif action_name in ["RECONNECT_LINE", "REROUTE_FLOW"] and target in self.breakers:
+        elif action_name in ["RECONNECT_LINE", "REROUTE_FLOW", "CLOSE"] and target in self.breakers:
             self.breakers[target] = "CLOSED"
         elif action_name == "ISOLATE_BUS":
             # Open all lines connected to target bus
@@ -197,9 +197,9 @@ class RestorationSandbox:
                 
             # Permanently apply safe changes in rehearsal state for subsequent steps
             if res["allowed"]:
-                if name in ["ISOLATE_LINE", "OPEN_BREAKER"] and target in self.breakers:
+                if name in ["ISOLATE_LINE", "OPEN_BREAKER", "OPEN"] and target in self.breakers:
                     self.breakers[target] = "OPEN"
-                elif name in ["RECONNECT_LINE", "REROUTE_FLOW"] and target in self.breakers:
+                elif name in ["RECONNECT_LINE", "REROUTE_FLOW", "CLOSE"] and target in self.breakers:
                     self.breakers[target] = "CLOSED"
                 elif name == "ISOLATE_BUS":
                     try:

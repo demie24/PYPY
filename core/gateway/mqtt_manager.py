@@ -64,6 +64,7 @@ class MQTTManager:
             client.subscribe("grid/recommended_actions")
             client.subscribe("grid/pre_rl")
             client.subscribe("grid/defense")
+            client.subscribe("grid/l6_recovery")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -105,6 +106,8 @@ class MQTTManager:
                 store.update_pre_rl(payload)
             elif topic == "grid/defense":
                 store.update_defense(payload)
+            elif topic == "grid/l6_recovery":
+                store.update_l6_recovery(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

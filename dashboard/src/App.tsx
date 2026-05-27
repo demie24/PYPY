@@ -14,6 +14,7 @@ import { SystemHealthPanel } from "./components/SystemHealthPanel.tsx";
 import { PinnForecastPanel } from "./components/PinnForecastPanel.tsx";
 import { PreRlPanel } from "./components/PreRlPanel.tsx";
 import { CyberDefensePanel } from "./components/CyberDefensePanel.tsx";
+import { Layer6Panel } from "./components/Layer6Panel.tsx";
 
 import {
   Wifi,
@@ -48,8 +49,8 @@ export default function App() {
   const [adaptiveFilter, setAdaptiveFilter] = useState<any>(null);
   const [aiOrchestrator, setAiOrchestrator] = useState<any>(null);
   const [recommendedActions, setRecommendedActions] = useState<any>(null);
-  const [preRlData, setPreRlData] = useState<any>(null);
   const [defenseData, setDefenseData] = useState<any>(null);
+  const [l6Recovery, setL6Recovery] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -58,6 +59,8 @@ export default function App() {
   const [flisrState, setFlisrState] = useState<string>("NORMAL");
   const [flisrIsolated, setFlisrIsolated] = useState<string[]>([]);
   const [flisrReconfigured, setFlisrReconfigured] = useState<string[]>([]);
+  const [flisrTripped, setFlisrTripped] = useState<string[]>([]);
+  const [preRlData, setPreRlData] = useState<any>(null);
 
   // Cyber attack visual state tracking
   const [activeAttack, setActiveAttack] = useState<string | null>(null);
@@ -82,10 +85,11 @@ export default function App() {
     orchestrator: 1,
     health: 1,
     pre_rl: 1,
-    cyber_defense: 2
+    cyber_defense: 2,
+    l6_recovery: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery"
   ]);
 
   // Timeline Replay States
@@ -111,9 +115,11 @@ export default function App() {
       recommendedActions,
       preRlData,
       defenseData,
+      l6Recovery,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
+      flisrTripped,
       activeAttack
     };
   }); // Run on every render
@@ -173,6 +179,7 @@ export default function App() {
             if (data.config.flisr_auto !== undefined) setFlisrAuto(data.config.flisr_auto);
             if (data.config.flisr_isolated_faults !== undefined) setFlisrIsolated(data.config.flisr_isolated_faults);
             if (data.config.flisr_reconfigured_breakers !== undefined) setFlisrReconfigured(data.config.flisr_reconfigured_breakers);
+            if (data.config.flisr_tripped_by_relay !== undefined) setFlisrTripped(data.config.flisr_tripped_by_relay);
           }
           if (data.threat) {
             setThreatData(data.threat);
@@ -229,6 +236,9 @@ export default function App() {
           }
           if (data.defense) {
             setDefenseData(data.defense);
+          }
+          if (data.l6_recovery) {
+            setL6Recovery(data.l6_recovery);
           }
         } 
         // Handle active MQTT stream broadcasts
@@ -288,9 +298,11 @@ export default function App() {
               recommendedActions: currentStates.recommendedActions,
               preRlData: currentStates.preRlData,
               defenseData: currentStates.defenseData,
+              l6Recovery: currentStates.l6Recovery,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
+              flisrTripped: currentStates.flisrTripped,
               activeAttack: currentStates.activeAttack || backendAtk
             };
             setReplayFrames((prev) => {
@@ -350,6 +362,7 @@ export default function App() {
               setFlisrReconfigured(payload.flisr_reconfigured_breakers);
             }
             if (payload.flisr_tripped_by_relay !== undefined) {
+              setFlisrTripped(payload.flisr_tripped_by_relay);
             }
           } else if (topic === "grid/threat") {
             setThreatData(payload);
@@ -411,6 +424,8 @@ export default function App() {
             setPreRlData(payload);
           } else if (topic === "grid/defense") {
             setDefenseData(payload);
+          } else if (topic === "grid/l6_recovery") {
+            setL6Recovery(payload);
           }
         }
       } catch (err) {
@@ -518,6 +533,8 @@ export default function App() {
     setFlisrState("NORMAL");
     setFlisrIsolated([]);
     setFlisrReconfigured([]);
+    setFlisrTripped([]);
+    setPreRlData(null);
     setThreatData(null);
     setAiPrediction(null);
     setPredictionHistory([]);
@@ -611,9 +628,11 @@ export default function App() {
   const dispFlisrState = currentFrame ? currentFrame.flisrState : flisrState;
   const dispFlisrIsolated = currentFrame ? currentFrame.flisrIsolated : flisrIsolated;
   const dispFlisrReconfigured = currentFrame ? currentFrame.flisrReconfigured : flisrReconfigured;
+  const dispFlisrTripped = currentFrame ? currentFrame.flisrTripped : flisrTripped;
   const dispActiveAttack = currentFrame ? currentFrame.activeAttack : activeAttack;
   const dispPreRlData = currentFrame ? currentFrame.preRlData : preRlData;
   const dispDefenseData = currentFrame ? currentFrame.defenseData : defenseData;
+  const dispL6Recovery = currentFrame ? currentFrame.l6Recovery : l6Recovery;
 
   const dispHistory = useMemo(() => {
     if (!isReplaying || !currentFrame || !dispTelemetry) return history;
@@ -760,6 +779,15 @@ export default function App() {
         content = (
           <CyberDefensePanel
             defenseData={dispDefenseData}
+            onSendControl={sendGeneralControl}
+          />
+        );
+        break;
+      case "l6_recovery":
+        title = "Layer 6 Autonomous Restoration Core";
+        content = (
+          <Layer6Panel
+            l6RecoveryData={dispL6Recovery}
             onSendControl={sendGeneralControl}
           />
         );
@@ -945,6 +973,7 @@ export default function App() {
               flisrState={dispFlisrState}
               flisrIsolated={dispFlisrIsolated}
               flisrReconfigured={dispFlisrReconfigured}
+              flisrTripped={dispFlisrTripped}
             />
           </div>
           
@@ -1119,6 +1148,7 @@ export default function App() {
               flisrState={dispFlisrState}
               flisrIsolated={dispFlisrIsolated}
               flisrReconfigured={dispFlisrReconfigured}
+              flisrTripped={dispFlisrTripped}
               onSendConfig={sendConfig}
               onSendAttack={sendAttack}
               onSendControl={handleResetAlarms}

@@ -16,6 +16,9 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 # Instantiate modules
 relay = ProtectiveRelay()
 flisr = FLISREngine()
+from recovery_state_machine import RecoveryStateMachine
+l6_fsm = RecoveryStateMachine()
+
 
 # Phase 5B: Rate limiting state
 # Only run the full relay+FLISR evaluation every N telemetry frames.
@@ -145,6 +148,12 @@ def on_message(client, userdata, msg):
                 }
                 client.publish("grid/config", json.dumps(config_update))
 
+            # Run Layer 6 Autonomous Restoration Core state machine
+            l6_commands = l6_fsm.update(payload, client)
+            for cmd in l6_commands:
+                logger.info(f"Layer 6 Recovery proposed action: {cmd['command']} on {cmd['target']}")
+                client.publish("grid/control/proposed", json.dumps(cmd))
+
         elif topic == "grid/events":
             prev_state = flisr.state
             # Pass events into FLISR to track breaker trips and start healing state machine
@@ -165,6 +174,7 @@ def on_message(client, userdata, msg):
                 logger.info("Operator triggered system alarm reset.")
                 relay.reset_trips()
                 flisr.reset()
+                l6_fsm.reset()
                 _alert_cooldown.clear()  # Allow fresh alerts for next test run
                 
                 # Also command simulator to restore normally open L7_8 configuration
@@ -173,6 +183,15 @@ def on_message(client, userdata, msg):
                     "target": "L7_8"
                 }
                 client.publish("grid/control", json.dumps(restore_payload))
+            elif cmd == "RESET_L6_RECOVERY":
+                logger.info("Operator triggered Layer 6 recovery reset.")
+                l6_fsm.reset()
+            elif cmd == "TRIGGER_L6_RECOVERY":
+                logger.info("Operator manually triggered Layer 6 recovery sequence.")
+                l6_fsm.transition_to("ISOLATE")
+            elif cmd == "ROLLBACK_L6_RECOVERY":
+                logger.info("Operator manually triggered Layer 6 rollback.")
+                l6_fsm.transition_to("ROLLBACK")
 
                 # Publish reset FLISR state to grid/config
                 config_update = {

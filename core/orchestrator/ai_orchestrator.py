@@ -136,6 +136,12 @@ class AIOrchestrator:
             self.state_cache["l6_agent_confidence"] = payload
         elif topic == "hardware/device_health":
             self.state_cache["hardware_device_health"] = payload
+        elif topic == "hardware/faults":
+            self.state_cache["hardware_faults"] = payload
+        elif topic == "hardware/relay_faults":
+            self.state_cache["hardware_relay_faults"] = payload
+        elif topic == "hardware/anomalies":
+            self.state_cache["hardware_anomalies"] = payload
         elif topic == "grid/pre_rl":
             op_override = payload.get("operator_override", {})
             self.override_state["pause_autonomous"] = op_override.get("pause_autonomous", False)
@@ -158,6 +164,19 @@ class AIOrchestrator:
             
         if self.override_state.get("pause_autonomous", False):
             return False, "Autonomous execution paused by operator override."
+
+        # Stuck/Welded/Desynced Relays Check
+        relay_faults = self.state_cache.get("hardware_relay_faults") or {}
+        stuck_breakers = relay_faults.get("stuck", [])
+        welded_breakers = relay_faults.get("welded", [])
+        desynced_breakers = relay_faults.get("desynced", [])
+        
+        if target in stuck_breakers:
+            return False, f"Blocked proposed command on {target}: Relay is stuck at hardware layer."
+        if target in welded_breakers:
+            return False, f"Blocked proposed command on {target}: Relay contacts welded CLOSED."
+        if target in desynced_breakers:
+            return False, f"Blocked proposed command on {target}: Relay desynchronized."
 
         # Evaluate current grid decision report
         report = self.decision_engine.evaluate(self.state_cache)
@@ -468,6 +487,9 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("grid/l6_distributed_state")
         client.subscribe("grid/l6_agent_confidence")
         client.subscribe("hardware/device_health")
+        client.subscribe("hardware/faults")
+        client.subscribe("hardware/relay_faults")
+        client.subscribe("hardware/anomalies")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 

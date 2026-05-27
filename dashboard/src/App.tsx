@@ -20,6 +20,8 @@ import { AutonomousSurvivalPanel } from "./components/AutonomousSurvivalPanel.ts
 import { PredictiveStabilizationPanel } from "./components/PredictiveStabilizationPanel.tsx";
 import { MultiAgentCoordinationPanel } from "./components/MultiAgentCoordinationPanel.tsx";
 import { HardwareFoundationPanel } from "./components/HardwareFoundationPanel.tsx";
+import { VirtualHardwareTwinPanel } from "./components/VirtualHardwareTwinPanel.tsx";
+
 
 import {
   Wifi,
@@ -77,6 +79,12 @@ export default function App() {
   const [hardwareSensor, setHardwareSensor] = useState<any>(null);
   const [hardwareDeviceHealth, setHardwareDeviceHealth] = useState<any>(null);
   const [hardwareCommandLog, setHardwareCommandLog] = useState<any>(null);
+  const [hardwareFaults, setHardwareFaults] = useState<any>(null);
+  const [hardwareRelayFaults, setHardwareRelayFaults] = useState<any>(null);
+  const [hardwareAnomalies, setHardwareAnomalies] = useState<any[]>([]);
+  const [hardwareVirtualDevices, setHardwareVirtualDevices] = useState<any>(null);
+  const [hardwareSpoofedTelemetry, setHardwareSpoofedTelemetry] = useState<any>(null);
+  const [hardwareFaultPropagation, setHardwareFaultPropagation] = useState<any>(null);
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
@@ -118,10 +126,11 @@ export default function App() {
     l6_survival: 2,
     l6_predictive_stabilization: 2,
     l6_multi_agent: 2,
-    l7_hardware: 2
+    l7_hardware: 2,
+    l7_twin: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin"
   ]);
 
   // Timeline Replay States
@@ -169,6 +178,12 @@ export default function App() {
       hardwareSensor,
       hardwareDeviceHealth,
       hardwareCommandLog,
+      hardwareFaults,
+      hardwareRelayFaults,
+      hardwareAnomalies,
+      hardwareVirtualDevices,
+      hardwareSpoofedTelemetry,
+      hardwareFaultPropagation,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -356,6 +371,24 @@ export default function App() {
           if (data.hardware_command_log) {
             setHardwareCommandLog(data.hardware_command_log);
           }
+          if (data.hardware_faults) {
+            setHardwareFaults(data.hardware_faults);
+          }
+          if (data.hardware_relay_faults) {
+            setHardwareRelayFaults(data.hardware_relay_faults);
+          }
+          if (data.hardware_anomalies) {
+            setHardwareAnomalies(data.hardware_anomalies);
+          }
+          if (data.hardware_virtual_devices) {
+            setHardwareVirtualDevices(data.hardware_virtual_devices);
+          }
+          if (data.hardware_spoofed_telemetry) {
+            setHardwareSpoofedTelemetry(data.hardware_spoofed_telemetry);
+          }
+          if (data.hardware_fault_propagation) {
+            setHardwareFaultPropagation(data.hardware_fault_propagation);
+          }
         } 
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
@@ -436,6 +469,12 @@ export default function App() {
               hardwareSensor: currentStates.hardwareSensor,
               hardwareDeviceHealth: currentStates.hardwareDeviceHealth,
               hardwareCommandLog: currentStates.hardwareCommandLog,
+              hardwareFaults: currentStates.hardwareFaults,
+              hardwareRelayFaults: currentStates.hardwareRelayFaults,
+              hardwareAnomalies: currentStates.hardwareAnomalies,
+              hardwareVirtualDevices: currentStates.hardwareVirtualDevices,
+              hardwareSpoofedTelemetry: currentStates.hardwareSpoofedTelemetry,
+              hardwareFaultPropagation: currentStates.hardwareFaultPropagation,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -605,6 +644,18 @@ export default function App() {
             setHardwareDeviceHealth(payload);
           } else if (topic === "hardware/command_log") {
             setHardwareCommandLog(payload);
+          } else if (topic === "hardware/faults") {
+            setHardwareFaults(payload);
+          } else if (topic === "hardware/relay_faults") {
+            setHardwareRelayFaults(payload);
+          } else if (topic === "hardware/anomalies") {
+            setHardwareAnomalies(payload);
+          } else if (topic === "hardware/virtual_devices") {
+            setHardwareVirtualDevices(payload);
+          } else if (topic === "hardware/spoofed_telemetry") {
+            setHardwareSpoofedTelemetry(payload);
+          } else if (topic === "hardware/fault_propagation") {
+            setHardwareFaultPropagation(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -846,6 +897,12 @@ export default function App() {
   const dispHardwareSensor = currentFrame ? currentFrame.hardwareSensor : hardwareSensor;
   const dispHardwareDeviceHealth = currentFrame ? currentFrame.hardwareDeviceHealth : hardwareDeviceHealth;
   const dispHardwareCommandLog = currentFrame ? currentFrame.hardwareCommandLog : hardwareCommandLog;
+  const dispHardwareRelayFaults = currentFrame ? currentFrame.hardwareRelayFaults : hardwareRelayFaults;
+  const dispHardwareAnomalies = currentFrame ? currentFrame.hardwareAnomalies : hardwareAnomalies;
+  const dispHardwareVirtualDevices = currentFrame ? currentFrame.hardwareVirtualDevices : hardwareVirtualDevices;
+  const dispHardwareSpoofedTelemetry = currentFrame ? currentFrame.hardwareSpoofedTelemetry : hardwareSpoofedTelemetry;
+  const dispHardwareFaultPropagation = currentFrame ? currentFrame.hardwareFaultPropagation : hardwareFaultPropagation;
+
 
   const dispHistory = useMemo(() => {
     if (!isReplaying || !currentFrame || !dispTelemetry) return history;
@@ -1062,6 +1119,19 @@ export default function App() {
             hardwareSensor={dispHardwareSensor}
             hardwareDeviceHealth={dispHardwareDeviceHealth}
             hardwareCommandLog={dispHardwareCommandLog}
+            onSendControl={sendControl}
+          />
+        );
+        break;
+      case "l7_twin":
+        title = "Virtual Hardware Twin Panel";
+        content = (
+          <VirtualHardwareTwinPanel
+            hardwareVirtualDevices={dispHardwareVirtualDevices}
+            hardwareRelayFaults={dispHardwareRelayFaults}
+            hardwareSpoofedTelemetry={dispHardwareSpoofedTelemetry}
+            hardwareAnomalies={dispHardwareAnomalies}
+            hardwareFaultPropagation={dispHardwareFaultPropagation}
             onSendControl={sendControl}
           />
         );

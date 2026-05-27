@@ -45,6 +45,12 @@ class MemoryStore:
         self.latest_hardware_sensor: Optional[Dict[str, Any]] = None
         self.latest_hardware_device_health: Optional[Dict[str, Any]] = None
         self.latest_hardware_command_log: Optional[Dict[str, Any]] = None
+        self.latest_hardware_faults: Optional[Dict[str, Any]] = None
+        self.latest_hardware_relay_faults: Optional[Dict[str, Any]] = None
+        self.latest_hardware_anomalies: Optional[List[Dict[str, Any]]] = None
+        self.latest_hardware_virtual_devices: Optional[Dict[str, Any]] = None
+        self.latest_hardware_spoofed_telemetry: Optional[Dict[str, Any]] = None
+        self.latest_hardware_fault_propagation: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -162,6 +168,24 @@ class MemoryStore:
     def update_hardware_command_log(self, payload: Dict[str, Any]):
         self.latest_hardware_command_log = payload
 
+    def update_hardware_faults(self, payload: Dict[str, Any]):
+        self.latest_hardware_faults = payload
+
+    def update_hardware_relay_faults(self, payload: Dict[str, Any]):
+        self.latest_hardware_relay_faults = payload
+
+    def update_hardware_anomalies(self, payload: List[Dict[str, Any]]):
+        self.latest_hardware_anomalies = payload
+
+    def update_hardware_virtual_devices(self, payload: Dict[str, Any]):
+        self.latest_hardware_virtual_devices = payload
+
+    def update_hardware_spoofed_telemetry(self, payload: Dict[str, Any]):
+        self.latest_hardware_spoofed_telemetry = payload
+
+    def update_hardware_fault_propagation(self, payload: Dict[str, Any]):
+        self.latest_hardware_fault_propagation = payload
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -215,7 +239,13 @@ class MemoryStore:
             "hardware_gpio": self.latest_hardware_gpio,
             "hardware_sensor": self.latest_hardware_sensor,
             "hardware_device_health": self.latest_hardware_device_health,
-            "hardware_command_log": self.latest_hardware_command_log
+            "hardware_command_log": self.latest_hardware_command_log,
+            "hardware_faults": self.latest_hardware_faults,
+            "hardware_relay_faults": self.latest_hardware_relay_faults,
+            "hardware_anomalies": self.latest_hardware_anomalies,
+            "hardware_virtual_devices": self.latest_hardware_virtual_devices,
+            "hardware_spoofed_telemetry": self.latest_hardware_spoofed_telemetry,
+            "hardware_fault_propagation": self.latest_hardware_fault_propagation
         }
 
     def clear_alerts(self):

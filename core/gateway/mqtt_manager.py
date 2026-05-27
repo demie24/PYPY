@@ -86,6 +86,12 @@ class MQTTManager:
             client.subscribe("hardware/sensor")
             client.subscribe("hardware/device_health")
             client.subscribe("hardware/command_log")
+            client.subscribe("hardware/faults")
+            client.subscribe("hardware/relay_faults")
+            client.subscribe("hardware/anomalies")
+            client.subscribe("hardware/virtual_devices")
+            client.subscribe("hardware/spoofed_telemetry")
+            client.subscribe("hardware/fault_propagation")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -171,6 +177,18 @@ class MQTTManager:
                 store.update_hardware_device_health(payload)
             elif topic == "hardware/command_log":
                 store.update_hardware_command_log(payload)
+            elif topic == "hardware/faults":
+                store.update_hardware_faults(payload)
+            elif topic == "hardware/relay_faults":
+                store.update_hardware_relay_faults(payload)
+            elif topic == "hardware/anomalies":
+                store.update_hardware_anomalies(payload)
+            elif topic == "hardware/virtual_devices":
+                store.update_hardware_virtual_devices(payload)
+            elif topic == "hardware/spoofed_telemetry":
+                store.update_hardware_spoofed_telemetry(payload)
+            elif topic == "hardware/fault_propagation":
+                store.update_hardware_fault_propagation(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

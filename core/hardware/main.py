@@ -5,11 +5,12 @@ import logging
 import threading
 import paho.mqtt.client as mqtt
 from hardware_state_manager import HardwareStateManager
-from esp32_bridge import ESP32Bridge
-from relay_controller import RelayController
-from plc_interface import PLCInterface
-from sensor_interface import SensorInterface
+from virtual_esp32 import VirtualESP32
+from virtual_relay_faults import VirtualRelayFaults
+from virtual_plc import VirtualPLC
+from virtual_sensor_faults import VirtualSensorFaults
 from hardware_command_router import HardwareCommandRouter
+from hardware_fault_orchestrator import HardwareFaultOrchestrator
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -20,11 +21,12 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 
 # Initialize HAL instances
 state_manager = HardwareStateManager()
-relay_controller = RelayController(state_manager)
-esp32_bridge = ESP32Bridge(state_manager, relay_controller)
-plc_interface = PLCInterface(state_manager, relay_controller)
-sensor_interface = SensorInterface(state_manager)
+relay_controller = VirtualRelayFaults(state_manager)
+esp32_bridge = VirtualESP32(state_manager, relay_controller)
+plc_interface = VirtualPLC(state_manager, relay_controller)
+sensor_interface = VirtualSensorFaults(state_manager)
 command_router = HardwareCommandRouter(state_manager, esp32_bridge, plc_interface, relay_controller)
+fault_orchestrator = HardwareFaultOrchestrator(state_manager, esp32_bridge, plc_interface, sensor_interface, relay_controller)
 
 # MQTT Callbacks
 def on_connect(client, userdata, flags, rc):
@@ -82,51 +84,41 @@ def on_message(client, userdata, msg):
             if cmd == "INJECT_HARDWARE_FAULT":
                 device = payload.get("device")
                 fault_type = payload.get("type")
+                target = payload.get("target", "all")
                 state = payload.get("state", False)
                 
-                # Apply fault injection
-                if device == "esp32":
-                    if fault_type == "comms_failure":
-                        esp32_bridge.set_comms_failure(state)
-                    elif fault_type == "latency_spike":
-                        esp32_bridge.set_latency_spike(state)
-                elif device == "plc":
-                    if fault_type == "comms_failure":
-                        plc_interface.set_comms_failure(state)
-                    elif fault_type == "latency_spike":
-                        plc_interface.set_latency_spike(state)
-                elif device == "sensor":
-                    if fault_type == "noise":
-                        sensor_interface.noise_enabled = state
-                    elif fault_type == "drift":
-                        sensor_interface.drift_enabled = state
-                        # If drift is enabled, set some random offsets
-                        if state:
-                            for sid in sensor_interface.drifts.keys():
-                                sensor_interface.set_calibration_drift(sid, round(random.uniform(-0.04, 0.04), 4))
+                # Delegate to orchestrator
+                fault_orchestrator.inject_fault(device, fault_type, target, state)
                 
                 # Publish event log
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
-                    "event": f"Hardware Fault Injection: device={device}, type={fault_type}, state={state}",
+                    "event": f"Hardware Fault Injection: device={device}, type={fault_type}, target={target}, state={state}",
                     "severity": "WARNING" if state else "INFO"
                 }
                 client.publish("grid/events", json.dumps(event_log))
                 
-            elif cmd == "RESET_ALARMS":
-                # Reset hardware trust and statuses
-                for dev_id in state_manager.devices.keys():
-                    state_manager.devices[dev_id]["trust"] = 1.0
-                    state_manager.devices[dev_id]["status"] = "ONLINE"
-                esp32_bridge.set_comms_failure(False)
-                esp32_bridge.set_latency_spike(False)
-                plc_interface.set_comms_failure(False)
-                plc_interface.set_latency_spike(False)
-                sensor_interface.noise_enabled = True
-                sensor_interface.drift_enabled = False
-                sensor_interface.packet_loss_rate = 0.0
-                logger.info("HAL Daemon metrics and injected faults reset.")
+            elif cmd == "LAUNCH_HARDWARE_SCENARIO":
+                scenario = payload.get("scenario")
+                fault_orchestrator.launch_scenario(scenario)
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"Launched Hardware Scenario: {scenario}",
+                    "severity": "WARNING"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "TERMINATE_HARDWARE_SCENARIO" or cmd == "RESET_ALARMS":
+                fault_orchestrator.clear_all_faults()
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": "Cleared all hardware faults and scenario states.",
+                    "severity": "INFO"
+                }
+                client.publish("grid/events", json.dumps(event_log))
                 
     except Exception as e:
         logger.error(f"Error handling message in HAL Daemon: {e}")
@@ -165,6 +157,11 @@ if __name__ == "__main__":
     # 1.0Hz main telemetry publishing loop
     while True:
         try:
+            # 0. Tick orchestrator and deferred queue components
+            plc_interface.process_write_queue()
+            fault_orchestrator.tick_scenario()
+            anomalies = fault_orchestrator.check_anomalies()
+            
             # 1. Heartbeats
             esp32_hb = esp32_bridge.run_heartbeat_cycle()
             plc_hb = plc_interface.run_heartbeat_cycle()
@@ -182,6 +179,38 @@ if __name__ == "__main__":
                 "gpio": state_manager.gpio.copy()
             }
             client.publish("hardware/gpio", json.dumps(gpio_payload))
+            
+            # 4. Virtual Twin Telemetry topics
+            client.publish("hardware/faults", json.dumps(fault_orchestrator.get_faults_payload()))
+            
+            relay_faults_payload = {
+                "timestamp": int(time.time() * 1000),
+                "stuck": list(relay_controller.stuck_relays.keys()),
+                "welded": list(relay_controller.welded_contacts),
+                "desynced": list(relay_controller.desynced_relays),
+                "oscillating": list(relay_controller.oscillating_relays.keys()),
+                "corrupted": list(relay_controller.corrupted_states.keys())
+            }
+            client.publish("hardware/relay_faults", json.dumps(relay_faults_payload))
+            
+            client.publish("hardware/anomalies", json.dumps(anomalies))
+            
+            virtual_devices_payload = {
+                "timestamp": int(time.time() * 1000),
+                "esp32": esp32_bridge.get_telemetry_payload(),
+                "plc": plc_interface.get_telemetry_payload()
+            }
+            client.publish("hardware/virtual_devices", json.dumps(virtual_devices_payload))
+            
+            spoofed_telemetry_payload = {
+                "timestamp": int(time.time() * 1000),
+                "spoofed_sensors": {k: v for k, v in sensor_interface.spoofing_biases.items()},
+                "corrupted_sensors": {k: v for k, v in sensor_interface.corruption_types.items()},
+                "fake_feedbacks": {k: v for k, v in sensor_interface.fake_breaker_feedback.items()}
+            }
+            client.publish("hardware/spoofed_telemetry", json.dumps(spoofed_telemetry_payload))
+            
+            client.publish("hardware/fault_propagation", json.dumps(fault_orchestrator.get_fault_propagation_status()))
             
             time.sleep(1.0)
         except KeyboardInterrupt:

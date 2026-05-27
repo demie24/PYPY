@@ -76,6 +76,11 @@ class MQTTManager:
             client.subscribe("grid/l6_survival_forecast")
             client.subscribe("grid/l6_proactive_actions")
             client.subscribe("grid/l6_self_preservation")
+            client.subscribe("grid/l6_agents")
+            client.subscribe("grid/l6_agent_consensus")
+            client.subscribe("grid/l6_agent_conflicts")
+            client.subscribe("grid/l6_distributed_state")
+            client.subscribe("grid/l6_agent_confidence")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -141,6 +146,16 @@ class MQTTManager:
                 store.update_l6_proactive_actions(payload)
             elif topic == "grid/l6_self_preservation":
                 store.update_l6_self_preservation(payload)
+            elif topic == "grid/l6_agents":
+                store.update_l6_agents(payload)
+            elif topic == "grid/l6_agent_consensus":
+                store.update_l6_agent_consensus(payload)
+            elif topic == "grid/l6_agent_conflicts":
+                store.update_l6_agent_conflicts(payload)
+            elif topic == "grid/l6_distributed_state":
+                store.update_l6_distributed_state(payload)
+            elif topic == "grid/l6_agent_confidence":
+                store.update_l6_agent_confidence(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

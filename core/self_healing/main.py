@@ -43,6 +43,9 @@ l6_survival = SurvivalOptimizer()
 l6_balancer = AutonomousBalancer()
 l6_guard = CriticalInfrastructureGuard()
 
+from orchestrator_agent import OrchestratorAgent
+l6_orchestrator = OrchestratorAgent(fsm=l6_fsm, memory=l6_memory, guard=l6_guard)
+
 from predictive_stability_engine import PredictiveStabilityEngine
 from proactive_rerouting_engine import ProactiveReroutingEngine
 from preemptive_isolation_engine import PreemptiveIsolationEngine
@@ -199,8 +202,10 @@ def on_message(client, userdata, msg):
             # Adaptive Recovery Memory transitions
             if fsm_state_before == "VERIFY" and l6_fsm.state == "NORMAL" and executed_before:
                 l6_memory.record_success(flisr.tripped_by_relay, executed_before)
+                l6_orchestrator.adapt_trust(success_sequence=executed_before)
             elif fsm_state_before == "ROLLBACK" and l6_fsm.state == "NORMAL" and executed_before:
                 l6_memory.record_failure(flisr.tripped_by_relay, executed_before)
+                l6_orchestrator.adapt_trust(rolled_back_sequence=executed_before)
 
             # Cascading Containment Analysis
             containment_data = l6_containment.analyze_cascading_risk(payload, payload.get("attack_status"))
@@ -337,6 +342,8 @@ def on_message(client, userdata, msg):
                             "source": modified_payload.get("source", "AUTONOMOUS_BALANCER")
                         }
                         client.publish("grid/control", json.dumps(control_cmd))
+                    else:
+                        l6_orchestrator.adapt_trust(safety_violation_cmd=b_cmd)
                 else:
                     client.publish("grid/control", json.dumps(b_cmd))
 
@@ -415,6 +422,9 @@ def on_message(client, userdata, msg):
                 "degraded_operation_duration": survival_forecast_res.get("degraded_operation_duration", 999.0)
             }
             client.publish("grid/l6_survival_forecast", json.dumps(survival_forecast_payload))
+
+            # 8. Evaluate Orchestrator Agent and publish consensus
+            l6_orchestrator.evaluate_and_publish(payload, client)
 
         elif topic == "grid/events":
             prev_state = flisr.state

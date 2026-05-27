@@ -18,6 +18,7 @@ import { Layer6Panel } from "./components/Layer6Panel.tsx";
 import { AdaptiveRecoveryPanel } from "./components/AdaptiveRecoveryPanel.tsx";
 import { AutonomousSurvivalPanel } from "./components/AutonomousSurvivalPanel.tsx";
 import { PredictiveStabilizationPanel } from "./components/PredictiveStabilizationPanel.tsx";
+import { MultiAgentCoordinationPanel } from "./components/MultiAgentCoordinationPanel.tsx";
 
 import {
   Wifi,
@@ -65,6 +66,11 @@ export default function App() {
   const [l6SurvivalForecast, setL6SurvivalForecast] = useState<any>(null);
   const [l6ProactiveActions, setL6ProactiveActions] = useState<any>(null);
   const [l6SelfPreservation, setL6SelfPreservation] = useState<any>(null);
+  const [l6Agents, setL6Agents] = useState<any>(null);
+  const [l6AgentConsensus, setL6AgentConsensus] = useState<any>(null);
+  const [l6AgentConflicts, setL6AgentConflicts] = useState<any>(null);
+  const [l6DistributedState, setL6DistributedState] = useState<any>(null);
+  const [l6AgentConfidence, setL6AgentConfidence] = useState<any>(null);
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
@@ -104,10 +110,11 @@ export default function App() {
     l6_recovery: 2,
     l6_adaptive_recovery: 2,
     l6_survival: 2,
-    l6_predictive_stabilization: 2
+    l6_predictive_stabilization: 2,
+    l6_multi_agent: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent"
   ]);
 
   // Timeline Replay States
@@ -145,6 +152,11 @@ export default function App() {
       l6SurvivalForecast,
       l6ProactiveActions,
       l6SelfPreservation,
+      l6Agents,
+      l6AgentConsensus,
+      l6AgentConflicts,
+      l6DistributedState,
+      l6AgentConfidence,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -302,6 +314,21 @@ export default function App() {
           if (data.l6_self_preservation) {
             setL6SelfPreservation(data.l6_self_preservation);
           }
+          if (data.l6_agents) {
+            setL6Agents(data.l6_agents);
+          }
+          if (data.l6_agent_consensus) {
+            setL6AgentConsensus(data.l6_agent_consensus);
+          }
+          if (data.l6_agent_conflicts) {
+            setL6AgentConflicts(data.l6_agent_conflicts);
+          }
+          if (data.l6_distributed_state) {
+            setL6DistributedState(data.l6_distributed_state);
+          }
+          if (data.l6_agent_confidence) {
+            setL6AgentConfidence(data.l6_agent_confidence);
+          }
         } 
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
@@ -372,6 +399,11 @@ export default function App() {
               l6SurvivalForecast: currentStates.l6SurvivalForecast,
               l6ProactiveActions: currentStates.l6ProactiveActions,
               l6SelfPreservation: currentStates.l6SelfPreservation,
+              l6Agents: currentStates.l6Agents,
+              l6AgentConsensus: currentStates.l6AgentConsensus,
+              l6AgentConflicts: currentStates.l6AgentConflicts,
+              l6DistributedState: currentStates.l6DistributedState,
+              l6AgentConfidence: currentStates.l6AgentConfidence,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -521,6 +553,16 @@ export default function App() {
             setL6ProactiveActions(payload);
           } else if (topic === "grid/l6_self_preservation") {
             setL6SelfPreservation(payload);
+          } else if (topic === "grid/l6_agents") {
+            setL6Agents(payload);
+          } else if (topic === "grid/l6_agent_consensus") {
+            setL6AgentConsensus(payload);
+          } else if (topic === "grid/l6_agent_conflicts") {
+            setL6AgentConflicts(payload);
+          } else if (topic === "grid/l6_distributed_state") {
+            setL6DistributedState(payload);
+          } else if (topic === "grid/l6_agent_confidence") {
+            setL6AgentConfidence(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -648,6 +690,11 @@ export default function App() {
     setL6AdaptiveRecovery(null);
     setL6Containment(null);
     setL6DegradedMode(null);
+    setL6Agents(null);
+    setL6AgentConsensus(null);
+    setL6AgentConflicts(null);
+    setL6DistributedState(null);
+    setL6AgentConfidence(null);
   };
 
   const handleToggleAutoDefense = (enabled: boolean) => {
@@ -747,6 +794,11 @@ export default function App() {
   const dispL6SurvivalForecast = currentFrame ? currentFrame.l6SurvivalForecast : l6SurvivalForecast;
   const dispL6ProactiveActions = currentFrame ? currentFrame.l6ProactiveActions : l6ProactiveActions;
   const dispL6SelfPreservation = currentFrame ? currentFrame.l6SelfPreservation : l6SelfPreservation;
+  const dispL6Agents = currentFrame ? currentFrame.l6Agents : l6Agents;
+  const dispL6AgentConsensus = currentFrame ? currentFrame.l6AgentConsensus : l6AgentConsensus;
+  const dispL6AgentConflicts = currentFrame ? currentFrame.l6AgentConflicts : l6AgentConflicts;
+  const dispL6DistributedState = currentFrame ? currentFrame.l6DistributedState : l6DistributedState;
+  const dispL6AgentConfidence = currentFrame ? currentFrame.l6AgentConfidence : l6AgentConfidence;
 
   const dispHistory = useMemo(() => {
     if (!isReplaying || !currentFrame || !dispTelemetry) return history;
@@ -939,6 +991,18 @@ export default function App() {
             selfPreservation={dispL6SelfPreservation}
             proactiveAutoMode={proactiveAutoMode}
             onSendControl={sendGeneralControl}
+          />
+        );
+        break;
+      case "l6_multi_agent":
+        title = "Layer 6 Distributed Multi-Agent Consensus";
+        content = (
+          <MultiAgentCoordinationPanel
+            agentsData={dispL6Agents}
+            consensusData={dispL6AgentConsensus}
+            conflictsData={dispL6AgentConflicts}
+            distributedStateData={dispL6DistributedState}
+            confidenceData={dispL6AgentConfidence}
           />
         );
         break;

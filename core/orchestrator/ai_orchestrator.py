@@ -10,6 +10,7 @@ from typing import Dict, Any, Tuple
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CURRENT_DIR)
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "self_healing", "rl")))
+sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "self_healing")))
 
 try:
     import rl_metrics
@@ -18,6 +19,7 @@ except ImportError:
 
 from decision_engine import OrchestrationDecisionEngine
 from action_recommender import ActionRecommender
+from orchestrator_agent import OrchestratorAgent
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("orchestrator.main")
@@ -30,6 +32,7 @@ class AIOrchestrator:
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
         self.defense_mode = "ADVISORY"
+        self.orchestrator_agent = OrchestratorAgent()
         
         # Unified grid state cache
         self.state_cache = {
@@ -54,7 +57,12 @@ class AIOrchestrator:
             "l6_predictive_stability": None,
             "l6_survival_forecast": None,
             "l6_proactive_actions": None,
-            "l6_self_preservation": None
+            "l6_self_preservation": None,
+            "l6_agents": None,
+            "l6_agent_consensus": None,
+            "l6_agent_conflicts": None,
+            "l6_distributed_state": None,
+            "l6_agent_confidence": None
         }
 
         # Operator overrides and control states
@@ -110,6 +118,22 @@ class AIOrchestrator:
             self.state_cache["l6_proactive_actions"] = payload
         elif topic == "grid/l6_self_preservation":
             self.state_cache["l6_self_preservation"] = payload
+        elif topic == "grid/l6_agents":
+            self.state_cache["l6_agents"] = payload
+            # Synchronize trust and weights statefully
+            for agent_info in payload.get("agents", []):
+                name = agent_info.get("agent_name")
+                if name in self.orchestrator_agent.agents:
+                    self.orchestrator_agent.agent_trust[name] = agent_info.get("trust", 1.0)
+                    self.orchestrator_agent.agent_weights[name] = agent_info.get("weight", 1.0)
+        elif topic == "grid/l6_agent_consensus":
+            self.state_cache["l6_agent_consensus"] = payload
+        elif topic == "grid/l6_agent_conflicts":
+            self.state_cache["l6_agent_conflicts"] = payload
+        elif topic == "grid/l6_distributed_state":
+            self.state_cache["l6_distributed_state"] = payload
+        elif topic == "grid/l6_agent_confidence":
+            self.state_cache["l6_agent_confidence"] = payload
         elif topic == "grid/pre_rl":
             op_override = payload.get("operator_override", {})
             self.override_state["pause_autonomous"] = op_override.get("pause_autonomous", False)
@@ -160,7 +184,66 @@ class AIOrchestrator:
                     return False, "Unsafe simultaneous recovery: recovery command rejected due to 3-second guard delay."
             self.last_breaker_operation_time = now
 
-        return True, "Passed all AI orchestrator coordination checks."
+        # 4. Multi-Agent Agent Consensus voting
+        # Build context for agent voting
+        telemetry = self.state_cache.get("telemetry") or {}
+        state_data = telemetry.get("state", {})
+        buses = state_data.get("buses", {})
+        
+        avg_freq = 60.0
+        v_dev_sum = 0.0
+        v_count = 0
+        for b_data in buses.values():
+            if "frequency_hz" in b_data:
+                avg_freq = min(avg_freq, b_data["frequency_hz"])
+            v = b_data.get("voltage_pu", 1.0)
+            if v > 0.0:
+                v_dev_sum += abs(1.0 - v)
+                v_count += 1
+        avg_v_dev = v_dev_sum / v_count if v_count > 0 else 0.0
+        
+        stability_score = stability
+        
+        collapse_probability = 0.0
+        predicted_overloads = []
+        if self.state_cache.get("l6_predictive_stability"):
+            collapse_probability = self.state_cache["l6_predictive_stability"].get("collapse_probability", 0.0)
+            predicted_overloads = self.state_cache["l6_predictive_stability"].get("predicted_overloads", [])
+        
+        success_probability = 100.0
+        if self.state_cache.get("l6_survival_forecast"):
+            success_probability = self.state_cache["l6_survival_forecast"].get("recovery_success_prob", 100.0)
+
+        context = {
+            "telemetry": telemetry,
+            "active_attack": telemetry.get("attack_status", {}).get("active_attack"),
+            "collapsed": self.state_cache.get("flisr_state") != "NORMAL",
+            "avg_freq": avg_freq,
+            "avg_v_dev": avg_v_dev,
+            "stability_score": stability_score,
+            "predicted_overloads": predicted_overloads,
+            "collapse_probability": collapse_probability,
+            "success_probability": success_probability
+        }
+        
+        # Update dynamic weights statefully based on context
+        self.orchestrator_agent.update_dynamic_weights(context)
+
+        # Run voting
+        proposal = {"command": cmd, "target": target, "source": source}
+        vote_res = self.orchestrator_agent.vote_on_proposal(proposal, context)
+        
+        # Check active cyber lockdown conflict before execution approval
+        if target in self.orchestrator_agent.active_lockdowns and cmd in ["CLOSE", "RECONNECT_LINE", "REROUTE_FLOW"]:
+            return False, f"Blocked by active cyber lockdown: CyberDefenseAgent vetoed proposed action {cmd} targeting compromised {target}."
+            
+        if not vote_res["approved"]:
+            veto_reason = ""
+            if vote_res.get("has_veto"):
+                veto_reason = f" Vetoed by {', '.join(vote_res['vetoed_by'])}."
+            return False, f"Agent consensus rejected proposal (score={vote_res['consensus_score']}).{veto_reason}"
+
+        return True, f"Passed all AI orchestrator and agent consensus checks (consensus score={vote_res['consensus_score']})."
 
     def run_cycle(self, client):
         """
@@ -334,12 +417,18 @@ class AIOrchestrator:
             "l6_predictive_stability": None,
             "l6_survival_forecast": None,
             "l6_proactive_actions": None,
-            "l6_self_preservation": None
+            "l6_self_preservation": None,
+            "l6_agents": None,
+            "l6_agent_consensus": None,
+            "l6_agent_conflicts": None,
+            "l6_distributed_state": None,
+            "l6_agent_confidence": None
         }
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
         self.defense_mode = "ADVISORY"
         self.last_breaker_operation_time = 0.0
+        self.orchestrator_agent = OrchestratorAgent()
         logger.info("AI Orchestrator cache and engines reset.")
 
 orchestrator = AIOrchestrator()
@@ -371,6 +460,11 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("grid/l6_survival_forecast")
         client.subscribe("grid/l6_proactive_actions")
         client.subscribe("grid/l6_self_preservation")
+        client.subscribe("grid/l6_agents")
+        client.subscribe("grid/l6_agent_consensus")
+        client.subscribe("grid/l6_agent_conflicts")
+        client.subscribe("grid/l6_distributed_state")
+        client.subscribe("grid/l6_agent_confidence")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 

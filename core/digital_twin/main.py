@@ -280,6 +280,83 @@ class SmartGridDigitalTwin:
                 logger.error(f"Failed to adjust generator {target}: {e}")
             return
 
+        if command == "WHAT_IF":
+            try:
+                sub_cmd = payload.get("sub_command") if payload else None
+                pct = payload.get("percentage", 0.0) if payload else 0.0
+                
+                # Clone the state
+                temp_breakers = self.breakers.copy()
+                temp_active_loads = copy.deepcopy(self.active_loads)
+                temp_generators_online = self.generators_online.copy()
+                temp_generator_P = self.generator_P.copy()
+                temp_generator_Q = self.generator_Q.copy()
+                
+                # Apply the proposed change
+                if sub_cmd in ["CLOSE", "OPEN"]:
+                    temp_breakers[target] = sub_cmd
+                elif sub_cmd == "SHED_LOAD":
+                    bus_idx = int(target.replace("Bus_", "")) - 1
+                    factor = max(0.0, min(1.0, 1.0 - (pct / 100.0)))
+                    if bus_idx in temp_active_loads:
+                        temp_active_loads[bus_idx]["P"] *= factor
+                        temp_active_loads[bus_idx]["Q"] *= factor
+                elif sub_cmd == "START_GEN":
+                    gen_idx = 0 if "1" in target else 1 if "2" in target else 2 if "3" in target else None
+                    if gen_idx is not None:
+                        temp_generators_online[gen_idx] = True
+                elif sub_cmd == "STOP_GEN":
+                    gen_idx = 0 if "1" in target else 1 if "2" in target else 2 if "3" in target else None
+                    if gen_idx is not None:
+                        temp_generators_online[gen_idx] = False
+                
+                # Run a 10-step what-if trajectory simulation
+                voltages_trajectory = []
+                loadings_trajectory = {}
+                frequency_trajectory = []
+                
+                for step in range(10):
+                    # Solve physics
+                    V_sim, _, _, _, line_flows_sim = self.physics.solve(
+                        temp_breakers, temp_active_loads, temp_generator_P, temp_generator_Q, temp_generators_online
+                    )
+                    
+                    # Estimate frequency
+                    components = self.physics._get_components(temp_breakers)
+                    avg_freq = 60.0
+                    for comp in components:
+                        online_gens = [b for b in comp if b in self.topo.generators and temp_generators_online.get(b, True)]
+                        if online_gens:
+                            comp_gen_p = sum(temp_generator_P[b] for b in online_gens) * 100.0
+                            comp_load_p = sum(temp_active_loads[b]["P"] for b in comp if b in self.topo.loads) * 100.0
+                            mismatch = comp_gen_p - comp_load_p
+                            avg_freq = 60.0 + mismatch * 0.02
+                            break
+                    
+                    voltages_trajectory.append([round(float(val), 4) for val in V_sim])
+                    frequency_trajectory.append(round(avg_freq, 2))
+                    
+                    for lid, flow in line_flows_sim.items():
+                        if lid not in loadings_trajectory:
+                            loadings_trajectory[lid] = []
+                        cap_pct = (flow["current"] / 3.0) * 100.0
+                        loadings_trajectory[lid].append(round(cap_pct, 1))
+                        
+                # Publish the response
+                response_payload = {
+                    "timestamp": int(time.time() * 1000),
+                    "target": target,
+                    "sub_command": sub_cmd,
+                    "voltages_trajectory": voltages_trajectory,
+                    "frequency_trajectory": frequency_trajectory,
+                    "loadings_trajectory": loadings_trajectory
+                }
+                self.publisher.client.publish("grid/whatif/response", json.dumps(response_payload))
+                logger.info(f"WHAT_IF simulation completed for action {sub_cmd} on {target}.")
+            except Exception as e:
+                logger.error(f"Failed to process WHAT_IF simulation: {e}")
+            return
+
         # 1. Check if the target breaker is jammed by DoS
         if target in self.active_compromises:
             comp = self.active_compromises[target]

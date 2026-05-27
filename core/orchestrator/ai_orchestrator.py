@@ -50,7 +50,11 @@ class AIOrchestrator:
             "l6_survival": None,
             "l6_islanding": None,
             "l6_blackstart": None,
-            "l6_balancing": None
+            "l6_balancing": None,
+            "l6_predictive_stability": None,
+            "l6_survival_forecast": None,
+            "l6_proactive_actions": None,
+            "l6_self_preservation": None
         }
 
         # Operator overrides and control states
@@ -98,6 +102,14 @@ class AIOrchestrator:
             self.state_cache["l6_blackstart"] = payload
         elif topic == "grid/l6_balancing":
             self.state_cache["l6_balancing"] = payload
+        elif topic == "grid/l6_predictive_stability":
+            self.state_cache["l6_predictive_stability"] = payload
+        elif topic == "grid/l6_survival_forecast":
+            self.state_cache["l6_survival_forecast"] = payload
+        elif topic == "grid/l6_proactive_actions":
+            self.state_cache["l6_proactive_actions"] = payload
+        elif topic == "grid/l6_self_preservation":
+            self.state_cache["l6_self_preservation"] = payload
         elif topic == "grid/pre_rl":
             op_override = payload.get("operator_override", {})
             self.override_state["pause_autonomous"] = op_override.get("pause_autonomous", False)
@@ -318,7 +330,11 @@ class AIOrchestrator:
             "l6_survival": None,
             "l6_islanding": None,
             "l6_blackstart": None,
-            "l6_balancing": None
+            "l6_balancing": None,
+            "l6_predictive_stability": None,
+            "l6_survival_forecast": None,
+            "l6_proactive_actions": None,
+            "l6_self_preservation": None
         }
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
@@ -351,6 +367,10 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("grid/l6_islanding")
         client.subscribe("grid/l6_blackstart")
         client.subscribe("grid/l6_balancing")
+        client.subscribe("grid/l6_predictive_stability")
+        client.subscribe("grid/l6_survival_forecast")
+        client.subscribe("grid/l6_proactive_actions")
+        client.subscribe("grid/l6_self_preservation")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 

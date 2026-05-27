@@ -17,6 +17,7 @@ import { CyberDefensePanel } from "./components/CyberDefensePanel.tsx";
 import { Layer6Panel } from "./components/Layer6Panel.tsx";
 import { AdaptiveRecoveryPanel } from "./components/AdaptiveRecoveryPanel.tsx";
 import { AutonomousSurvivalPanel } from "./components/AutonomousSurvivalPanel.tsx";
+import { PredictiveStabilizationPanel } from "./components/PredictiveStabilizationPanel.tsx";
 
 import {
   Wifi,
@@ -60,6 +61,11 @@ export default function App() {
   const [l6Islanding, setL6Islanding] = useState<any>(null);
   const [l6Blackstart, setL6Blackstart] = useState<any>(null);
   const [l6Balancing, setL6Balancing] = useState<any>(null);
+  const [l6PredictiveStability, setL6PredictiveStability] = useState<any>(null);
+  const [l6SurvivalForecast, setL6SurvivalForecast] = useState<any>(null);
+  const [l6ProactiveActions, setL6ProactiveActions] = useState<any>(null);
+  const [l6SelfPreservation, setL6SelfPreservation] = useState<any>(null);
+  const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -97,10 +103,11 @@ export default function App() {
     cyber_defense: 2,
     l6_recovery: 2,
     l6_adaptive_recovery: 2,
-    l6_survival: 2
+    l6_survival: 2,
+    l6_predictive_stabilization: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization"
   ]);
 
   // Timeline Replay States
@@ -134,6 +141,10 @@ export default function App() {
       l6Islanding,
       l6Blackstart,
       l6Balancing,
+      l6PredictiveStability,
+      l6SurvivalForecast,
+      l6ProactiveActions,
+      l6SelfPreservation,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -279,6 +290,18 @@ export default function App() {
           if (data.l6_balancing) {
             setL6Balancing(data.l6_balancing);
           }
+          if (data.l6_predictive_stability) {
+            setL6PredictiveStability(data.l6_predictive_stability);
+          }
+          if (data.l6_survival_forecast) {
+            setL6SurvivalForecast(data.l6_survival_forecast);
+          }
+          if (data.l6_proactive_actions) {
+            setL6ProactiveActions(data.l6_proactive_actions);
+          }
+          if (data.l6_self_preservation) {
+            setL6SelfPreservation(data.l6_self_preservation);
+          }
         } 
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
@@ -345,6 +368,10 @@ export default function App() {
               l6Islanding: currentStates.l6Islanding,
               l6Blackstart: currentStates.l6Blackstart,
               l6Balancing: currentStates.l6Balancing,
+              l6PredictiveStability: currentStates.l6PredictiveStability,
+              l6SurvivalForecast: currentStates.l6SurvivalForecast,
+              l6ProactiveActions: currentStates.l6ProactiveActions,
+              l6SelfPreservation: currentStates.l6SelfPreservation,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -486,6 +513,18 @@ export default function App() {
             setL6Blackstart(payload);
           } else if (topic === "grid/l6_balancing") {
             setL6Balancing(payload);
+          } else if (topic === "grid/l6_predictive_stability") {
+            setL6PredictiveStability(payload);
+          } else if (topic === "grid/l6_survival_forecast") {
+            setL6SurvivalForecast(payload);
+          } else if (topic === "grid/l6_proactive_actions") {
+            setL6ProactiveActions(payload);
+          } else if (topic === "grid/l6_self_preservation") {
+            setL6SelfPreservation(payload);
+          } else if (topic === "grid/config") {
+            if ("proactive_auto" in payload) {
+              setProactiveAutoMode(payload.proactive_auto);
+            }
           }
         }
       } catch (err) {
@@ -704,6 +743,10 @@ export default function App() {
   const dispL6Islanding = currentFrame ? currentFrame.l6Islanding : l6Islanding;
   const dispL6Blackstart = currentFrame ? currentFrame.l6Blackstart : l6Blackstart;
   const dispL6Balancing = currentFrame ? currentFrame.l6Balancing : l6Balancing;
+  const dispL6PredictiveStability = currentFrame ? currentFrame.l6PredictiveStability : l6PredictiveStability;
+  const dispL6SurvivalForecast = currentFrame ? currentFrame.l6SurvivalForecast : l6SurvivalForecast;
+  const dispL6ProactiveActions = currentFrame ? currentFrame.l6ProactiveActions : l6ProactiveActions;
+  const dispL6SelfPreservation = currentFrame ? currentFrame.l6SelfPreservation : l6SelfPreservation;
 
   const dispHistory = useMemo(() => {
     if (!isReplaying || !currentFrame || !dispTelemetry) return history;
@@ -882,6 +925,19 @@ export default function App() {
             islandingData={dispL6Islanding}
             blackstartData={dispL6Blackstart}
             balancingData={dispL6Balancing}
+            onSendControl={sendGeneralControl}
+          />
+        );
+        break;
+      case "l6_predictive_stabilization":
+        title = "Layer 6 Predictive Autonomous Stabilization";
+        content = (
+          <PredictiveStabilizationPanel
+            predictiveStability={dispL6PredictiveStability}
+            survivalForecast={dispL6SurvivalForecast}
+            proactiveActions={dispL6ProactiveActions}
+            selfPreservation={dispL6SelfPreservation}
+            proactiveAutoMode={proactiveAutoMode}
             onSendControl={sendGeneralControl}
           />
         );

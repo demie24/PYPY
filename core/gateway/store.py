@@ -31,6 +31,10 @@ class MemoryStore:
         self.latest_l6_islanding: Optional[Dict[str, Any]] = None
         self.latest_l6_blackstart: Optional[Dict[str, Any]] = None
         self.latest_l6_balancing: Optional[Dict[str, Any]] = None
+        self.latest_l6_predictive_stability: Optional[Dict[str, Any]] = None
+        self.latest_l6_survival_forecast: Optional[Dict[str, Any]] = None
+        self.latest_l6_proactive_actions: Optional[Dict[str, Any]] = None
+        self.latest_l6_self_preservation: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -106,6 +110,18 @@ class MemoryStore:
     def update_l6_balancing(self, payload: Dict[str, Any]):
         self.latest_l6_balancing = payload
 
+    def update_l6_predictive_stability(self, payload: Dict[str, Any]):
+        self.latest_l6_predictive_stability = payload
+
+    def update_l6_survival_forecast(self, payload: Dict[str, Any]):
+        self.latest_l6_survival_forecast = payload
+
+    def update_l6_proactive_actions(self, payload: Dict[str, Any]):
+        self.latest_l6_proactive_actions = payload
+
+    def update_l6_self_preservation(self, payload: Dict[str, Any]):
+        self.latest_l6_self_preservation = payload
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -145,7 +161,11 @@ class MemoryStore:
             "l6_survival": self.latest_l6_survival,
             "l6_islanding": self.latest_l6_islanding,
             "l6_blackstart": self.latest_l6_blackstart,
-            "l6_balancing": self.latest_l6_balancing
+            "l6_balancing": self.latest_l6_balancing,
+            "l6_predictive_stability": self.latest_l6_predictive_stability,
+            "l6_survival_forecast": self.latest_l6_survival_forecast,
+            "l6_proactive_actions": self.latest_l6_proactive_actions,
+            "l6_self_preservation": self.latest_l6_self_preservation
         }
 
     def clear_alerts(self):

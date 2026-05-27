@@ -147,7 +147,7 @@ class TestAIOrchestrator(unittest.TestCase):
             
         actions = self.action_recommender.recommend(mock_state, report)
         
-        self.assertEqual(report["global_state"], "CASCADE_RISK")
+        self.assertEqual(report["global_state"], "CASCADING_INSTABILITY")
         self.assertTrue(any(act["action"] == "ISOLATE_LINE" and act["target"] == "L5_6" for act in actions))
 
     def test_emergency_mode_state(self):
@@ -169,7 +169,7 @@ class TestAIOrchestrator(unittest.TestCase):
             
         actions = self.action_recommender.recommend(mock_state, report)
         
-        self.assertEqual(report["global_state"], "EMERGENCY_MODE")
+        self.assertEqual(report["global_state"], "EMERGENCY_STABILIZATION")
         self.assertEqual(report["global_risk_level"], "CRITICAL")
         self.assertTrue(any(act["action"] == "OPERATOR_ESCALATION" for act in actions))
 

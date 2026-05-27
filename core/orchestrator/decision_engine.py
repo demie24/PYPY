@@ -72,6 +72,15 @@ class OrchestrationDecisionEngine:
         # Subtract points for open breakers (excluding Normally Open tie-breaker L7_8)
         open_breakers_count = sum(1 for lid, stat in breakers.items() if lid != "L7_8" and stat == "OPEN")
         stability -= min(30.0, open_breakers_count * 10.0)
+
+        # Incorporate predictive stability collapse probability
+        pred_stability = grid_state.get("l6_predictive_stability")
+        collapse_prob_val = 0.0
+        horizon_val = 999.0
+        if pred_stability:
+            collapse_prob_val = float(pred_stability.get("collapse_probability", 0.0))
+            horizon_val = float(pred_stability.get("survivability_horizon", 999.0))
+            stability -= collapse_prob_val * 0.2
         
         stability_score = max(0.0, min(100.0, round(stability, 2)))
         
@@ -96,6 +105,10 @@ class OrchestrationDecisionEngine:
             if threat_aware_forecast:
                 cyber_prob = float(threat_aware_forecast.get("cyber_instability_probability", 0.0))
                 restoration_confidence -= cyber_prob * 30.0
+        
+        # Reduce restoration confidence under high predictive collapse risk
+        if collapse_prob_val > 0.0:
+            restoration_confidence -= collapse_prob_val * 0.25
                 
         restoration_confidence = max(0.0, min(100.0, round(restoration_confidence, 2)))
         
@@ -112,12 +125,12 @@ class OrchestrationDecisionEngine:
         if threat_data:
             cascade_prob = float(threat_data.get("cascade_probability", 0.0))
             
-        if stability_score < 40.0 or grid_conf < 40.0:
-            raw_state = "EMERGENCY_MODE"
+        if stability_score < 40.0 or grid_conf < 40.0 or collapse_prob_val >= 75.0 or horizon_val < 15.0:
+            raw_state = "EMERGENCY_STABILIZATION"
         elif active_attack or cyber_prob >= 0.50 or (physics_val and physics_val.get("physics_state") == "CYBER_ATTACK_INSTABILITY"):
             raw_state = "CYBER_ATTACK"
-        elif stability_score < 75.0 and overloads_penalty > 0.0 and cascade_prob >= 0.40:
-            raw_state = "CASCADE_RISK"
+        elif (stability_score < 75.0 and overloads_penalty > 0.0 and cascade_prob >= 0.40) or collapse_prob_val >= 40.0 or horizon_val < 45.0:
+            raw_state = "CASCADING_INSTABILITY"
         elif flisr_state in ["RESTORATION", "ISOLATION", "RESTORED"]:
             raw_state = "AUTONOMOUS_RECOVERY"
         elif open_breakers_count > 0 or (trust_scores and any(t.get("trust_score", 100.0) < 70.0 for t in trust_scores.get("details", {}).values())):
@@ -143,9 +156,9 @@ class OrchestrationDecisionEngine:
         global_state = self.current_state
             
         # 4. Compute Global Risk Level
-        if global_state in ["EMERGENCY_MODE", "CYBER_ATTACK"] and stability_score < 50.0:
+        if global_state in ["EMERGENCY_STABILIZATION", "CYBER_ATTACK"] and stability_score < 50.0:
             global_risk = "CRITICAL"
-        elif stability_score < 70.0 or global_state in ["CASCADE_RISK", "CYBER_ATTACK"]:
+        elif stability_score < 70.0 or global_state in ["CASCADING_INSTABILITY", "CYBER_ATTACK"]:
             global_risk = "HIGH"
         elif stability_score < 85.0 or global_state == "DEGRADED":
             global_risk = "MEDIUM"
@@ -197,6 +210,13 @@ class OrchestrationDecisionEngine:
             reasoning["flisr_state"] = "Grid reconfiguration committed. Alternate paths active."
         else:
             reasoning["flisr_state"] = f"Automatic FSM actively executing: {flisr_state} sequence."
+
+        # Add Predictive Stability Reasoning
+        if pred_stability:
+            policy = grid_state.get("l6_self_preservation", {}).get("active_policy", "NOMINAL")
+            reasoning["predictive_stability"] = f"Stability Horizon: {horizon_val}s. Collapse Prob: {collapse_prob_val}%. Preservation Policy: {policy}."
+        else:
+            reasoning["predictive_stability"] = "Predictive stability model warming up..."
             
         return {
             "global_state": global_state,

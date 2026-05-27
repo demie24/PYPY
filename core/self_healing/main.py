@@ -43,6 +43,21 @@ l6_survival = SurvivalOptimizer()
 l6_balancer = AutonomousBalancer()
 l6_guard = CriticalInfrastructureGuard()
 
+from predictive_stability_engine import PredictiveStabilityEngine
+from proactive_rerouting_engine import ProactiveReroutingEngine
+from preemptive_isolation_engine import PreemptiveIsolationEngine
+from survival_forecasting_engine import SurvivalForecastingEngine
+from self_preservation_policy_engine import SelfPreservationPolicyEngine
+
+l6_predictive_stability = PredictiveStabilityEngine()
+l6_proactive_rerouting = ProactiveReroutingEngine(l6_fsm.topo_engine)
+l6_preemptive_isolation = PreemptiveIsolationEngine(l6_fsm.topo_engine)
+l6_survival_forecasting = SurvivalForecastingEngine()
+l6_self_preservation = SelfPreservationPolicyEngine()
+
+proactive_auto_mode = True
+
+
 
 # Phase 5B: Rate limiting state
 # Only run the full relay+FLISR evaluation every N telemetry frames.
@@ -339,6 +354,68 @@ def on_message(client, userdata, msg):
             }
             client.publish("grid/l6_survival", json.dumps(survival_payload))
 
+            # 7.6. Predictive Autonomous Stabilization (Phase 6.4)
+            # 7.6.1. Predictive Stability Engine
+            pred_stability_res = l6_predictive_stability.evaluate_predictive_stability(payload, islanding_res.get("active_islands", []))
+            pred_stability_payload = {
+                "timestamp": int(time.time() * 1000),
+                "collapse_probability": pred_stability_res.get("collapse_probability", 0.0),
+                "survivability_horizon": pred_stability_res.get("survivability_horizon", 999.0),
+                "predicted_overloads": pred_stability_res.get("predicted_overloads", []),
+                "propagation_trajectory": pred_stability_res.get("propagation_trajectory", [])
+            }
+            client.publish("grid/l6_predictive_stability", json.dumps(pred_stability_payload))
+
+            # 7.6.2. Proactive Rerouting Engine
+            proactive_reroute_res = l6_proactive_rerouting.analyze_rerouting(payload, pred_stability_res)
+            
+            # 7.6.3. Preemptive Isolation Engine
+            preemptive_isolation_res = l6_preemptive_isolation.analyze_isolation(payload, pred_stability_res, payload.get("attack_status"))
+            
+            # Combine proactive actions (reroutes + preemptive isolations)
+            proactive_actions = proactive_reroute_res.get("recommended_rerouting", []) + preemptive_isolation_res.get("recommended_isolation", [])
+            proactive_actions_payload = {
+                "timestamp": int(time.time() * 1000),
+                "proactive_rerouting_active": proactive_reroute_res.get("proactive_rerouting_active", False),
+                "preemptive_isolation_active": preemptive_isolation_res.get("preemptive_isolation_active", False),
+                "proactive_actions": proactive_actions,
+                "side_effects": preemptive_isolation_res.get("side_effects", {})
+            }
+            client.publish("grid/l6_proactive_actions", json.dumps(proactive_actions_payload))
+
+            # 7.6.4. Self Preservation Policy Engine
+            self_preservation_res = l6_self_preservation.evaluate_policy(payload, pred_stability_res)
+            self_preservation_payload = {
+                "timestamp": int(time.time() * 1000),
+                "active_policy": self_preservation_res.get("active_policy", "NOMINAL"),
+                "preservation_rules": self_preservation_res.get("preservation_rules", []),
+                "proactive_commands": self_preservation_res.get("proactive_commands", [])
+            }
+            client.publish("grid/l6_self_preservation", json.dumps(self_preservation_payload))
+
+            # Combine preservation commands with general proactive actions
+            all_proactive_commands = proactive_actions + self_preservation_res.get("proactive_commands", [])
+
+            # Automatically execute or propose proactive commands
+            if proactive_auto_mode:
+                for p_cmd in all_proactive_commands:
+                    logger.info(f"Executing proactive action: {p_cmd['command']} on {p_cmd['target']} (reason: {p_cmd.get('reason')})")
+                    # Propose to orchestrator first
+                    client.publish("grid/control/proposed", json.dumps(p_cmd))
+            
+            # 7.6.5. Survival Forecasting Engine
+            survival_forecast_res = l6_survival_forecasting.forecast_survival(
+                payload, pred_stability_res, len(all_proactive_commands) > 0
+            )
+            survival_forecast_payload = {
+                "timestamp": int(time.time() * 1000),
+                "do_nothing_curve": survival_forecast_res.get("do_nothing_curve", []),
+                "mitigated_curve": survival_forecast_res.get("mitigated_curve", []),
+                "recovery_success_prob": survival_forecast_res.get("recovery_success_prob", 100.0),
+                "degraded_operation_duration": survival_forecast_res.get("degraded_operation_duration", 999.0)
+            }
+            client.publish("grid/l6_survival_forecast", json.dumps(survival_forecast_payload))
+
         elif topic == "grid/events":
             prev_state = flisr.state
             # Pass events into FLISR to track breaker trips and start healing state machine
@@ -362,6 +439,8 @@ def on_message(client, userdata, msg):
                 l6_fsm.reset()
                 l6_blackstart.reset()
                 l6_balancer.reset()
+                l6_self_preservation.proactive_shed_history.clear()
+                l6_self_preservation.active_policy = "NOMINAL"
                 _alert_cooldown.clear()  # Allow fresh alerts for next test run
                 
                 # Also command simulator to restore normally open L7_8 configuration
@@ -388,6 +467,11 @@ def on_message(client, userdata, msg):
                     "flisr_tripped_by_relay": flisr.tripped_by_relay
                 }
                 client.publish("grid/config", json.dumps(config_update))
+            elif cmd == "TOGGLE_PROACTIVE_AUTO":
+                global proactive_auto_mode
+                proactive_auto_mode = payload.get("proactive_auto", not proactive_auto_mode)
+                logger.info(f"Operator set Proactive Autonomous Mode to {proactive_auto_mode}")
+                client.publish("grid/config", json.dumps({"proactive_auto": proactive_auto_mode}))
 
         elif topic == "grid/config":
             # Update auto/manual configuration for self-healing
@@ -402,6 +486,12 @@ def on_message(client, userdata, msg):
                     "flisr_auto": flisr.auto_mode
                 }
                 client.publish("grid/config", json.dumps(config_update))
+            
+            if "proactive_auto" in payload:
+                global proactive_auto_mode
+                proactive_auto_mode = bool(payload["proactive_auto"])
+                logger.info(f"Operator set Proactive Autonomous Mode to {proactive_auto_mode}")
+                client.publish("grid/config", json.dumps({"proactive_auto": proactive_auto_mode}))
 
     except Exception as e:
         logger.error(f"Error handling message on {msg.topic}: {e}")

@@ -35,6 +35,11 @@ class SmartGridDigitalTwin:
         # Generator setpoints
         self.generator_P = {k: v["P_nom"] for k, v in self.topo.generators.items()}
         self.generator_Q = {k: v["Q_nom"] for k, v in self.topo.generators.items()}
+        self.generators_online = {0: True, 1: True, 2: True}
+        
+        # Island frequency states
+        self.island_frequencies = {}
+        self.island_freq_violations = {}
         
         # Configuration
         self.simulation_interval = 1.0 # seconds
@@ -152,6 +157,11 @@ class SmartGridDigitalTwin:
             self.active_compromises = {}
             self.sensor_drifts = {}
             self.load_shed_factors = {bus_idx: 1.0 for bus_idx in self.topo.loads.keys()}
+            self.generators_online = {0: True, 1: True, 2: True}
+            self.generator_P = {k: v["P_nom"] for k, v in self.topo.generators.items()}
+            self.generator_Q = {k: v["Q_nom"] for k, v in self.topo.generators.items()}
+            self.island_frequencies.clear()
+            self.island_freq_violations.clear()
             return
 
         if command == "REJECT_TELEMETRY":
@@ -197,6 +207,77 @@ class SmartGridDigitalTwin:
                 )
             except Exception as e:
                 logger.error(f"Failed to process SHED_LOAD command for target {target}: {e}")
+            return
+
+        if command == "START_GEN":
+            try:
+                gen_idx = None
+                if "1" in target:
+                    gen_idx = 0
+                elif "2" in target:
+                    gen_idx = 1
+                elif "3" in target:
+                    gen_idx = 2
+                
+                if gen_idx is not None:
+                    self.generators_online[gen_idx] = True
+                    self.generator_P[gen_idx] = self.topo.generators[gen_idx]["P_nom"]
+                    self.generator_Q[gen_idx] = self.topo.generators[gen_idx]["Q_nom"]
+                    logger.info(f"Generator {target} (index {gen_idx}) started online.")
+                    self.publisher.publish_event(
+                        source="SCADA_GATEWAY",
+                        event_desc=f"Generator '{target}' started online",
+                        severity="INFO"
+                    )
+            except Exception as e:
+                logger.error(f"Failed to start generator {target}: {e}")
+            return
+
+        if command == "STOP_GEN":
+            try:
+                gen_idx = None
+                if "1" in target:
+                    gen_idx = 0
+                elif "2" in target:
+                    gen_idx = 1
+                elif "3" in target:
+                    gen_idx = 2
+                
+                if gen_idx is not None:
+                    self.generators_online[gen_idx] = False
+                    logger.info(f"Generator {target} (index {gen_idx}) stopped offline.")
+                    self.publisher.publish_event(
+                        source="SCADA_GATEWAY",
+                        event_desc=f"Generator '{target}' stopped offline",
+                        severity="WARNING"
+                    )
+            except Exception as e:
+                logger.error(f"Failed to stop generator {target}: {e}")
+            return
+
+        if command == "ADJUST_GEN":
+            try:
+                gen_idx = None
+                if "1" in target:
+                    gen_idx = 0
+                elif "2" in target:
+                    gen_idx = 1
+                elif "3" in target:
+                    gen_idx = 2
+                
+                if gen_idx is not None:
+                    p_mw = payload.get("P_mw") if payload else None
+                    if p_mw is not None:
+                        p_pu = float(p_mw) / 100.0
+                        self.generator_P[gen_idx] = p_pu
+                        logger.info(f"Adjusted generator {target} (index {gen_idx}) P to {p_mw} MW ({p_pu:.3f} pu)")
+                        self.publisher.publish_event(
+                            source="SCADA_GATEWAY",
+                            event_desc=f"Generator '{target}' output adjusted to {p_mw:.1f} MW",
+                            severity="INFO"
+                        )
+            except Exception as e:
+                logger.error(f"Failed to adjust generator {target}: {e}")
             return
 
         # 1. Check if the target breaker is jammed by DoS
@@ -429,16 +510,96 @@ class SmartGridDigitalTwin:
             self.breakers, 
             self.active_loads, 
             self.generator_P, 
-            self.generator_Q
+            self.generator_Q,
+            self.generators_online
         )
         
+        # Calculate dynamic frequency per island and execute frequency trips
+        components = self.physics._get_components(self.breakers)
+        new_frequencies = {}
+        tripped_something = False
+        
+        for comp in components:
+            comp_key = ",".join(map(str, sorted(comp)))
+            
+            # Check online generators in this component
+            online_gens = [b for b in comp if b in self.topo.generators and self.generators_online.get(b, True)]
+            if not online_gens:
+                new_frequencies[comp_key] = 0.0
+                self.island_freq_violations[comp_key] = 0
+                continue
+                
+            # Mismatch in MW
+            comp_gen_p_mw = sum(self.generator_P[b] for b in online_gens) * 100.0
+            comp_load_p_mw = sum(self.active_loads[b]["P"] for b in comp if b in self.topo.loads) * 100.0
+            mismatch_mw = comp_gen_p_mw - comp_load_p_mw
+            
+            prev_freq = self.island_frequencies.get(comp_key, 60.0)
+            target_freq = 60.0 + mismatch_mw * 0.02
+            alpha = 0.30
+            freq = prev_freq + alpha * (target_freq - prev_freq)
+            freq = max(55.0, min(65.0, freq))
+            new_frequencies[comp_key] = freq
+            
+            # Check frequency breach limits
+            if freq < 57.5 or freq > 62.5:
+                v_count = self.island_freq_violations.get(comp_key, 0) + 1
+                self.island_freq_violations[comp_key] = v_count
+                if v_count >= 2:
+                    logger.warning(f"FREQUENCY BREACH: Island {comp_key} at {freq:.2f} Hz for 2 sweeps. Tripping.")
+                    self.publisher.publish_event( source="PROTECTION_RELAY",
+                        event_desc=f"Frequency protection trip: island {comp_key} frequency {freq:.2f} Hz breached threshold",
+                        severity="CRITICAL"
+                    )
+                    # Turn off generators in this component
+                    for b in comp:
+                        if b in self.topo.generators:
+                            self.generators_online[b] = False
+                    # Open line breakers in this component
+                    for line in self.topo.lines:
+                        if line["from"] in comp and line["to"] in comp:
+                            self.breakers[line["id"]] = "OPEN"
+                    tripped_something = True
+                    self.island_freq_violations[comp_key] = 0
+            else:
+                self.island_freq_violations[comp_key] = 0
+                
+        self.island_frequencies = new_frequencies
+        
+        # If any frequency breach tripped generators or lines, resolve physics so telemetry shows zeroed voltages
+        if tripped_something:
+            V, theta, P, Q, line_flows = self.physics.solve(
+                self.breakers, 
+                self.active_loads, 
+                self.generator_P, 
+                self.generator_Q,
+                self.generators_online
+            )
+            # Re-evaluate frequencies (they will now be 0 because generators are tripped)
+            components = self.physics._get_components(self.breakers)
+            for comp in components:
+                comp_key = ",".join(map(str, sorted(comp)))
+                online_gens = [b for b in comp if b in self.topo.generators and self.generators_online.get(b, True)]
+                if not online_gens:
+                    self.island_frequencies[comp_key] = 0.0
+
+        # Build bus frequencies mapping for telemetry bus representation
+        bus_frequencies = {}
+        for comp in components:
+            comp_key = ",".join(map(str, sorted(comp)))
+            freq = self.island_frequencies.get(comp_key, 60.0)
+            for b in comp:
+                bus_name = f"Bus_{b+1}"
+                bus_frequencies[bus_name] = round(freq, 2)
+
         # 4. Format telemetry payload
         telemetry = {
             "timestamp": int(time.time() * 1000),
             "state": {
                 "buses": {},
                 "lines": {},
-                "breakers": self.breakers.copy()
+                "breakers": self.breakers.copy(),
+                "generators_online": {f"Bus_{k+1}": v for k, v in self.generators_online.items()}
             }
         }
         
@@ -453,6 +614,7 @@ class SmartGridDigitalTwin:
                 "angle_rad": round(float(theta[i]), 4),
                 "is_load": is_load,
                 "is_gen": is_gen,
+                "frequency_hz": bus_frequencies.get(bus_name, 60.0),
                 "P_mw": round(float(self.active_loads[i]["P"] * 100) if is_load else float(P[i] * 100), 2),
                 "Q_mvar": round(float(self.active_loads[i]["Q"] * 100) if is_load else float(Q[i] * 100), 2)
             }

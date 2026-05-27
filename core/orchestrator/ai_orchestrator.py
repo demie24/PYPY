@@ -46,7 +46,11 @@ class AIOrchestrator:
             "l6_recovery": None,
             "l6_adaptive_recovery": None,
             "l6_containment": None,
-            "l6_degraded_mode": None
+            "l6_degraded_mode": None,
+            "l6_survival": None,
+            "l6_islanding": None,
+            "l6_blackstart": None,
+            "l6_balancing": None
         }
 
         # Operator overrides and control states
@@ -86,6 +90,14 @@ class AIOrchestrator:
             self.state_cache["l6_containment"] = payload
         elif topic == "grid/l6_degraded_mode":
             self.state_cache["l6_degraded_mode"] = payload
+        elif topic == "grid/l6_survival":
+            self.state_cache["l6_survival"] = payload
+        elif topic == "grid/l6_islanding":
+            self.state_cache["l6_islanding"] = payload
+        elif topic == "grid/l6_blackstart":
+            self.state_cache["l6_blackstart"] = payload
+        elif topic == "grid/l6_balancing":
+            self.state_cache["l6_balancing"] = payload
         elif topic == "grid/pre_rl":
             op_override = payload.get("operator_override", {})
             self.override_state["pause_autonomous"] = op_override.get("pause_autonomous", False)
@@ -114,7 +126,7 @@ class AIOrchestrator:
         stability = report.get("stability_score", 100.0)
         global_state = report.get("global_state", "NORMAL")
 
-        is_restoration = cmd == "CLOSED" or source in ["FLISR", "AI_RL_PPO_CONTROL"] or cmd in ["RECONNECT_LINE", "REROUTE_FLOW"]
+        is_restoration = cmd in ["CLOSE", "CLOSED"] or source in ["FLISR", "AI_RL_PPO_CONTROL", "BLACKSTART_ENGINE"] or cmd in ["RECONNECT_LINE", "REROUTE_FLOW"]
 
         # 1. Topology Survival: Reject restoration if stability is poor
         if is_restoration and stability < 70.0:
@@ -128,7 +140,7 @@ class AIOrchestrator:
             return False, f"Target {target} is locked down by active cyber defense containment."
 
         # 3. Simultaneous Action Protections: Enforce a 3-second guard delay between breaker commands
-        is_breaker_cmd = cmd in ["OPEN", "CLOSED"]
+        is_breaker_cmd = cmd in ["OPEN", "CLOSE", "CLOSED"]
         if is_breaker_cmd:
             now = time.time()
             if now - self.last_breaker_operation_time < 3.0:
@@ -302,7 +314,11 @@ class AIOrchestrator:
             "l6_recovery": None,
             "l6_adaptive_recovery": None,
             "l6_containment": None,
-            "l6_degraded_mode": None
+            "l6_degraded_mode": None,
+            "l6_survival": None,
+            "l6_islanding": None,
+            "l6_blackstart": None,
+            "l6_balancing": None
         }
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
@@ -331,6 +347,10 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("grid/l6_adaptive_recovery")
         client.subscribe("grid/l6_containment")
         client.subscribe("grid/l6_degraded_mode")
+        client.subscribe("grid/l6_survival")
+        client.subscribe("grid/l6_islanding")
+        client.subscribe("grid/l6_blackstart")
+        client.subscribe("grid/l6_balancing")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 

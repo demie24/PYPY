@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+from typing import List
 from grid_topology import GridTopology
 
 logger = logging.getLogger("digital_twin.physics")
@@ -27,27 +28,18 @@ class GridPhysicsEngine:
         self._bus_voltage_history = {}   # bus_idx -> list of recent V values
         self._voltage_hist_len = 3        # number of history steps to average
 
-    def solve(self, breakers: dict, active_loads: dict, generator_P: dict, generator_Q: dict):
+    def solve(self, breakers: dict, active_loads: dict, generator_P: dict, generator_Q: dict, generators_online: dict = None):
         """
         Solves the DC Power Flow and computes voltage magnitudes, line currents, and power flows.
-        
-        Parameters:
-        - breakers: dict of line_id -> "CLOSED" or "OPEN"
-        - active_loads: dict of bus_index -> {"P": float, "Q": float}
-        - generator_P: dict of generator_index -> float (P output setpoint)
-        - generator_Q: dict of generator_index -> float (Q output setpoint)
+        Supports multi-island simulation.
         """
+        if generators_online is None:
+            generators_online = {0: True, 1: True, 2: True}
+
         # 1. Connectivity analysis (BFS to find de-energized islands)
-        connected_buses = self._get_connected_buses(breakers)
+        connected_buses = self._get_connected_buses(breakers, generators_online)
         
         # 2. Formulate the B' susceptance matrix
-        # B_ij = -1/X_ij (for line i-j)
-        # B_ii = sum(1/X_ik) + shunt
-        #
-        # Apply thermal overcurrent stress: overloaded lines heat up, increasing reactance
-        # Reactance increases linearly for currents above 1.8 p.u. (max 1.6x at 3.0 p.u.)
-        # Phase 5B: Blended thermal reactance factors (smoothed cascade propagation)
-        # Reactance builds up gradually over multiple steps rather than instantly.
         reactance_factors = {}
         for line in self.topo.lines:
             lid = line["id"]
@@ -56,7 +48,6 @@ class GridPhysicsEngine:
                 target_factor = min(1.6, 1.0 + 0.5 * (prev_i - 1.8))
             else:
                 target_factor = 1.0
-            # Blend toward target factor at cascade_alpha rate
             prev_factor = self._prev_reactance_factors.get(lid, 1.0)
             blended = prev_factor + self._cascade_alpha * (target_factor - prev_factor)
             reactance_factors[lid] = blended
@@ -73,60 +64,71 @@ class GridPhysicsEngine:
                 B[f, t] -= b_val
                 B[t, f] -= b_val
                 
-        # Add shunt to diagonal for numerical stability (handles singular cases of islanding)
         for i in range(self.num_buses):
             B[i, i] += self.shunt
             
         # 3. Formulate Net Active Power Injection Vector P
         P = np.zeros(self.num_buses)
-        
-        # Load injections (Load is negative injection)
         for bus_idx, load in active_loads.items():
             P[bus_idx] -= load["P"]
-            
-        # Generator injections (Gen is positive injection)
         for gen_idx, gen in self.topo.generators.items():
-            if gen_idx != self.slack: # Slack bus injection is solved as residual
+            if generators_online.get(gen_idx, True):
                 P[gen_idx] += generator_P.get(gen_idx, gen["P_nom"])
                 
-        # 4. Partition and Solve for Voltage Angles (theta)
-        # Set slack bus angle theta_slack = 0
-        # P_noslack = B_noslack * theta_noslack -> theta_noslack = B_noslack^-1 * P_noslack
-        noslack_indices = [i for i in range(self.num_buses) if i != self.slack]
-        B_noslack = B[np.ix_(noslack_indices, noslack_indices)]
-        P_noslack = P[noslack_indices]
-        
+        # 4. Partition and Solve for Voltage Angles (theta) per island component
         theta = np.zeros(self.num_buses)
-        try:
-            theta_noslack = np.linalg.solve(B_noslack, P_noslack)
-            theta[noslack_indices] = theta_noslack
-        except np.linalg.LinAlgError:
-            logger.error("Failed to solve voltage angles (singular matrix).")
+        components = self._get_components(breakers)
+        
+        for comp in components:
+            comp_online_gens = [b for b in comp if b in self.topo.generators and generators_online.get(b, True)]
+            if not comp_online_gens:
+                # Island is de-energized
+                for bus in comp:
+                    theta[bus] = 0.0
+                continue
             
-        # Slack bus active power is solved as residual
-        P[self.slack] = B[self.slack, :].dot(theta)
+            # Select local slack bus: prefer index 0 (Bus_1) if online, otherwise lowest generator index in component
+            if 0 in comp_online_gens:
+                local_slack = 0
+            else:
+                local_slack = min(comp_online_gens)
+                
+            comp_noslack = [b for b in comp if b != local_slack]
+            if not comp_noslack:
+                theta[local_slack] = 0.0
+                continue
+                
+            B_comp = B[np.ix_(comp_noslack, comp_noslack)]
+            P_comp = P[comp_noslack]
+            
+            try:
+                theta_comp = np.linalg.solve(B_comp, P_comp)
+                theta[comp_noslack] = theta_comp
+                theta[local_slack] = 0.0
+                # Residual for local slack
+                P[local_slack] = B[local_slack, comp].dot(theta[comp])
+            except np.linalg.LinAlgError:
+                logger.error(f"Failed to solve local voltage angles for component {comp}")
         
         # 5. Formulate Net Reactive Power Injection Vector Q & Solve Voltages
-        # We estimate voltage magnitudes V using Decoupled Q-V equations: V = V_set - B^-1 * Q
         Q = np.zeros(self.num_buses)
         for bus_idx, load in active_loads.items():
             Q[bus_idx] -= load["Q"]
         for gen_idx, gen in self.topo.generators.items():
-            if gen_idx != self.slack:
+            if generators_online.get(gen_idx, True):
                 Q[gen_idx] += generator_Q.get(gen_idx, gen["Q_nom"])
                 
         # Active generator buses maintain their voltage setpoints
-        V = np.ones(self.num_buses)
+        V = np.zeros(self.num_buses)
         for gen_idx, gen in self.topo.generators.items():
-            V[gen_idx] = gen["V_set"]
+            if generators_online.get(gen_idx, True):
+                V[gen_idx] = gen["V_set"]
             
-        # For load / junction buses, calculate voltage drop
         load_indices = [i for i in range(self.num_buses) if i not in self.topo.generators]
         B_LL = B[np.ix_(load_indices, load_indices)]
         Q_L = Q[load_indices]
         
         try:
-            # V_L = 1.0 - B_LL^-1 * Q_L
             delta_V = np.linalg.solve(B_LL, -Q_L)
             V[load_indices] = 1.0 + delta_V
         except np.linalg.LinAlgError:
@@ -142,17 +144,13 @@ class GridPhysicsEngine:
         V = np.clip(V, 0.0, 1.2)
 
         # Phase 5B: Voltage history smoothing for neighbour stress propagation
-        # Each bus voltage is blended with its recent history to simulate
-        # the propagation delay of voltage stress through the network.
         for i in range(self.num_buses):
             hist = self._bus_voltage_history.get(i, [])
             hist.append(float(V[i]))
             if len(hist) > self._voltage_hist_len:
                 hist.pop(0)
             self._bus_voltage_history[i] = hist
-            # Only apply smoothing to load buses (generators hold their setpoints)
             if i not in self.topo.generators and len(hist) >= 2:
-                # Weighted average: most-recent gets higher weight
                 weights = np.linspace(0.5, 1.0, len(hist))
                 V[i] = float(np.average(hist, weights=weights))
                 V[i] = max(0.0, min(1.2, V[i]))
@@ -163,13 +161,8 @@ class GridPhysicsEngine:
             f, t, lid = line["from"], line["to"], line["id"]
             x_val = line["X"] * reactance_factors.get(lid, 1.0)
             if breakers.get(lid, "CLOSED") == "CLOSED" and f in connected_buses and t in connected_buses:
-                # Active Power Flow: P_ij = (theta_i - theta_j) / X_ij
                 p_flow = (theta[f] - theta[t]) / x_val
-                
-                # Reactive Power Flow: Q_ij = (V_i - V_j) / X_ij
                 q_flow = (V[f] - V[t]) / x_val
-                
-                # Current Magnitude: I_ij = sqrt(P_ij^2 + Q_ij^2) / V_i
                 voltage_divisor = V[f] if V[f] > 0.1 else 1.0
                 current = np.sqrt(p_flow**2 + q_flow**2) / voltage_divisor
             else:
@@ -183,23 +176,21 @@ class GridPhysicsEngine:
                 "current": float(current)
             }
             
-        # Save line currents for the next sweep's thermal calculation
         for lid, flow in line_flows.items():
             self.prev_currents[lid] = flow["current"]
             
         return V, theta, P, Q, line_flows
 
-    def _get_connected_buses(self, breakers: dict) -> set:
+    def _get_connected_buses(self, breakers: dict, generators_online: dict = None) -> set:
         """
         Executes a BFS search to find which buses are connected to active generators.
-        Buses disconnected from all generators are considered de-energized (islanded).
         """
-        # Starting nodes are generator buses (Bus 1, 2, 3 -> index 0, 1, 2)
-        generators = set(self.topo.generators.keys())
+        if generators_online is None:
+            generators_online = {0: True, 1: True, 2: True}
+        generators = set(i for i in self.topo.generators.keys() if generators_online.get(i, True))
         visited = set(generators)
         queue = list(generators)
         
-        # Build adjacency list based on closed breakers
         adj = {i: [] for i in range(self.num_buses)}
         for line in self.topo.lines:
             f, t, lid = line["from"], line["to"], line["id"]
@@ -207,7 +198,6 @@ class GridPhysicsEngine:
                 adj[f].append(t)
                 adj[t].append(f)
                 
-        # BFS Traversal
         while queue:
             node = queue.pop(0)
             for neighbor in adj[node]:
@@ -216,3 +206,32 @@ class GridPhysicsEngine:
                     queue.append(neighbor)
                     
         return visited
+
+    def _get_components(self, breakers: dict) -> List[List[int]]:
+        """
+        Calculates connected components (islands) of buses in the current grid state using BFS.
+        """
+        visited = set()
+        components = []
+        
+        adj = {i: [] for i in range(self.num_buses)}
+        for line in self.topo.lines:
+            f, t, lid = line["from"], line["to"], line["id"]
+            if breakers.get(lid, "CLOSED") == "CLOSED":
+                adj[f].append(t)
+                adj[t].append(f)
+                
+        for i in range(self.num_buses):
+            if i not in visited:
+                comp = []
+                queue = [i]
+                visited.add(i)
+                while queue:
+                    curr = queue.pop(0)
+                    comp.append(curr)
+                    for neighbor in adj[curr]:
+                        if neighbor not in visited:
+                            visited.add(neighbor)
+                            queue.append(neighbor)
+                components.append(comp)
+        return components

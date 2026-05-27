@@ -27,6 +27,10 @@ class MemoryStore:
         self.latest_l6_adaptive_recovery: Optional[Dict[str, Any]] = None
         self.latest_l6_containment: Optional[Dict[str, Any]] = None
         self.latest_l6_degraded_mode: Optional[Dict[str, Any]] = None
+        self.latest_l6_survival: Optional[Dict[str, Any]] = None
+        self.latest_l6_islanding: Optional[Dict[str, Any]] = None
+        self.latest_l6_blackstart: Optional[Dict[str, Any]] = None
+        self.latest_l6_balancing: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -90,6 +94,18 @@ class MemoryStore:
     def update_l6_degraded_mode(self, l6_degraded_mode: Dict[str, Any]):
         self.latest_l6_degraded_mode = l6_degraded_mode
 
+    def update_l6_survival(self, payload: Dict[str, Any]):
+        self.latest_l6_survival = payload
+
+    def update_l6_islanding(self, payload: Dict[str, Any]):
+        self.latest_l6_islanding = payload
+
+    def update_l6_blackstart(self, payload: Dict[str, Any]):
+        self.latest_l6_blackstart = payload
+
+    def update_l6_balancing(self, payload: Dict[str, Any]):
+        self.latest_l6_balancing = payload
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -125,7 +141,11 @@ class MemoryStore:
             "l6_recovery": self.latest_l6_recovery,
             "l6_adaptive_recovery": self.latest_l6_adaptive_recovery,
             "l6_containment": self.latest_l6_containment,
-            "l6_degraded_mode": self.latest_l6_degraded_mode
+            "l6_degraded_mode": self.latest_l6_degraded_mode,
+            "l6_survival": self.latest_l6_survival,
+            "l6_islanding": self.latest_l6_islanding,
+            "l6_blackstart": self.latest_l6_blackstart,
+            "l6_balancing": self.latest_l6_balancing
         }
 
     def clear_alerts(self):

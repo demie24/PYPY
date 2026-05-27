@@ -16,6 +16,7 @@ import { PreRlPanel } from "./components/PreRlPanel.tsx";
 import { CyberDefensePanel } from "./components/CyberDefensePanel.tsx";
 import { Layer6Panel } from "./components/Layer6Panel.tsx";
 import { AdaptiveRecoveryPanel } from "./components/AdaptiveRecoveryPanel.tsx";
+import { AutonomousSurvivalPanel } from "./components/AutonomousSurvivalPanel.tsx";
 
 import {
   Wifi,
@@ -55,6 +56,10 @@ export default function App() {
   const [l6AdaptiveRecovery, setL6AdaptiveRecovery] = useState<any>(null);
   const [l6Containment, setL6Containment] = useState<any>(null);
   const [l6DegradedMode, setL6DegradedMode] = useState<any>(null);
+  const [l6Survival, setL6Survival] = useState<any>(null);
+  const [l6Islanding, setL6Islanding] = useState<any>(null);
+  const [l6Blackstart, setL6Blackstart] = useState<any>(null);
+  const [l6Balancing, setL6Balancing] = useState<any>(null);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
   const [crtEnabled, setCrtEnabled] = useState<boolean>(true);
@@ -91,10 +96,11 @@ export default function App() {
     pre_rl: 1,
     cyber_defense: 2,
     l6_recovery: 2,
-    l6_adaptive_recovery: 2
+    l6_adaptive_recovery: 2,
+    l6_survival: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival"
   ]);
 
   // Timeline Replay States
@@ -124,6 +130,10 @@ export default function App() {
       l6AdaptiveRecovery,
       l6Containment,
       l6DegradedMode,
+      l6Survival,
+      l6Islanding,
+      l6Blackstart,
+      l6Balancing,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -257,6 +267,18 @@ export default function App() {
           if (data.l6_degraded_mode) {
             setL6DegradedMode(data.l6_degraded_mode);
           }
+          if (data.l6_survival) {
+            setL6Survival(data.l6_survival);
+          }
+          if (data.l6_islanding) {
+            setL6Islanding(data.l6_islanding);
+          }
+          if (data.l6_blackstart) {
+            setL6Blackstart(data.l6_blackstart);
+          }
+          if (data.l6_balancing) {
+            setL6Balancing(data.l6_balancing);
+          }
         } 
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
@@ -319,6 +341,10 @@ export default function App() {
               l6AdaptiveRecovery: currentStates.l6AdaptiveRecovery,
               l6Containment: currentStates.l6Containment,
               l6DegradedMode: currentStates.l6DegradedMode,
+              l6Survival: currentStates.l6Survival,
+              l6Islanding: currentStates.l6Islanding,
+              l6Blackstart: currentStates.l6Blackstart,
+              l6Balancing: currentStates.l6Balancing,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -452,6 +478,14 @@ export default function App() {
             setL6Containment(payload);
           } else if (topic === "grid/l6_degraded_mode") {
             setL6DegradedMode(payload);
+          } else if (topic === "grid/l6_survival") {
+            setL6Survival(payload);
+          } else if (topic === "grid/l6_islanding") {
+            setL6Islanding(payload);
+          } else if (topic === "grid/l6_blackstart") {
+            setL6Blackstart(payload);
+          } else if (topic === "grid/l6_balancing") {
+            setL6Balancing(payload);
           }
         }
       } catch (err) {
@@ -666,6 +700,10 @@ export default function App() {
   const dispL6AdaptiveRecovery = currentFrame ? currentFrame.l6AdaptiveRecovery : l6AdaptiveRecovery;
   const dispL6Containment = currentFrame ? currentFrame.l6Containment : l6Containment;
   const dispL6DegradedMode = currentFrame ? currentFrame.l6DegradedMode : l6DegradedMode;
+  const dispL6Survival = currentFrame ? currentFrame.l6Survival : l6Survival;
+  const dispL6Islanding = currentFrame ? currentFrame.l6Islanding : l6Islanding;
+  const dispL6Blackstart = currentFrame ? currentFrame.l6Blackstart : l6Blackstart;
+  const dispL6Balancing = currentFrame ? currentFrame.l6Balancing : l6Balancing;
 
   const dispHistory = useMemo(() => {
     if (!isReplaying || !currentFrame || !dispTelemetry) return history;
@@ -832,6 +870,18 @@ export default function App() {
             adaptiveRecoveryData={dispL6AdaptiveRecovery}
             containmentData={dispL6Containment}
             degradedModeData={dispL6DegradedMode}
+            onSendControl={sendGeneralControl}
+          />
+        );
+        break;
+      case "l6_survival":
+        title = "Layer 6 Autonomous Grid Survival";
+        content = (
+          <AutonomousSurvivalPanel
+            survivalData={dispL6Survival}
+            islandingData={dispL6Islanding}
+            blackstartData={dispL6Blackstart}
+            balancingData={dispL6Balancing}
             onSendControl={sendGeneralControl}
           />
         );

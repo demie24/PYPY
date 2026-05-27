@@ -68,6 +68,10 @@ class MQTTManager:
             client.subscribe("grid/l6_adaptive_recovery")
             client.subscribe("grid/l6_containment")
             client.subscribe("grid/l6_degraded_mode")
+            client.subscribe("grid/l6_survival")
+            client.subscribe("grid/l6_islanding")
+            client.subscribe("grid/l6_blackstart")
+            client.subscribe("grid/l6_balancing")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -117,6 +121,14 @@ class MQTTManager:
                 store.update_l6_containment(payload)
             elif topic == "grid/l6_degraded_mode":
                 store.update_l6_degraded_mode(payload)
+            elif topic == "grid/l6_survival":
+                store.update_l6_survival(payload)
+            elif topic == "grid/l6_islanding":
+                store.update_l6_islanding(payload)
+            elif topic == "grid/l6_blackstart":
+                store.update_l6_blackstart(payload)
+            elif topic == "grid/l6_balancing":
+                store.update_l6_balancing(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

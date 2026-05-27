@@ -29,6 +29,20 @@ l6_containment = CascadingContainmentEngine(l6_fsm.topo_engine)
 l6_memory = AdaptiveRecoveryMemory()
 l6_degraded = DegradedOperationManager()
 
+from islanding_engine import IslandingEngine
+from microgrid_manager import MicrogridManager
+from blackstart_engine import BlackstartEngine
+from survival_optimizer import SurvivalOptimizer
+from autonomous_balancer import AutonomousBalancer
+from critical_infrastructure_guard import CriticalInfrastructureGuard
+
+l6_islanding = IslandingEngine(l6_fsm.topo_engine)
+l6_microgrid = MicrogridManager(l6_fsm.topo_engine)
+l6_blackstart = BlackstartEngine()
+l6_survival = SurvivalOptimizer()
+l6_balancer = AutonomousBalancer()
+l6_guard = CriticalInfrastructureGuard()
+
 
 # Phase 5B: Rate limiting state
 # Only run the full relay+FLISR evaluation every N telemetry frames.
@@ -246,6 +260,85 @@ def on_message(client, userdata, msg):
             }
             client.publish("grid/l6_adaptive_recovery", json.dumps(adaptive_payload))
 
+            # 7. Run Layer 6 Autonomous Grid Survival Modules
+            # 7.1. Blackstart Sequencing
+            blackstart_res = l6_blackstart.evaluate_blackstart(payload)
+            blackstart_payload = {
+                "timestamp": int(time.time() * 1000),
+                "active_blackstart": blackstart_res.get("active_blackstart", False),
+                "blackstart_state": blackstart_res.get("blackstart_state", "COMPLETE"),
+                "step_description": blackstart_res.get("step_description", ""),
+                "progress_percentage": blackstart_res.get("progress_percentage", 100.0)
+            }
+            client.publish("grid/l6_blackstart", json.dumps(blackstart_payload))
+
+            # Trigger blackstart commands automatically if recommended
+            blackstart_cmd = blackstart_res.get("recommended_command")
+            if blackstart_cmd:
+                logger.info(f"Blackstart recovery action: {blackstart_cmd['command']} on {blackstart_cmd['target']}")
+                client.publish("grid/control", json.dumps(blackstart_cmd))
+
+            # 7.2. Islanding Splitting Engine
+            islanding_res = l6_islanding.analyze_islanding(payload, payload.get("attack_status"))
+            islanding_payload = {
+                "timestamp": int(time.time() * 1000),
+                "active_islands": islanding_res.get("active_islands", []),
+                "unstable_zones": islanding_res.get("unstable_zones", []),
+                "healthy_zones": islanding_res.get("healthy_zones", []),
+                "splitting_commands": islanding_res.get("splitting_commands", [])
+            }
+            client.publish("grid/l6_islanding", json.dumps(islanding_payload))
+
+            # Trigger automatic islanding splitting breaker trips if recommended
+            for split_cmd in islanding_res.get("splitting_commands", []):
+                logger.info(f"Islanding split emergency trip: OPEN on {split_cmd['target']}")
+                client.publish("grid/control", json.dumps(split_cmd))
+
+            # 7.3. Microgrid Stability Management
+            microgrid_res = l6_microgrid.evaluate_microgrids(payload, islanding_res.get("active_islands", []))
+
+            # 7.4. Autonomous Load-Generation Balancer
+            balancing_res = l6_balancer.balance_grid(payload, islanding_res.get("active_islands", []), l6_guard)
+            balancing_payload = {
+                "timestamp": int(time.time() * 1000),
+                "frequencies": balancing_res.get("frequencies", {}),
+                "mismatches": balancing_res.get("mismatches", {}),
+                "balancing_commands": balancing_res.get("balancing_commands", [])
+            }
+            client.publish("grid/l6_balancing", json.dumps(balancing_payload))
+
+            # Gate and issue balancing commands
+            for b_cmd in balancing_res.get("balancing_commands", []):
+                if b_cmd["command"] == "SHED_LOAD":
+                    approved, reason, modified_payload = l6_guard.gate_load_shed_command(
+                        b_cmd["target"], b_cmd.get("percentage", 0.0), payload
+                    )
+                    logger.info(f"Critical Guard gated SHED_LOAD for {b_cmd['target']}: approved={approved}, reason={reason}")
+                    if approved or "Redirected" in reason:
+                        control_cmd = {
+                            "command": "SHED_LOAD",
+                            "target": modified_payload["target"],
+                            "percentage": modified_payload["percentage"],
+                            "source": modified_payload.get("source", "AUTONOMOUS_BALANCER")
+                        }
+                        client.publish("grid/control", json.dumps(control_cmd))
+                else:
+                    client.publish("grid/control", json.dumps(b_cmd))
+
+            # 7.5. Survival Optimizer
+            survival_res = l6_survival.optimize_survival(
+                payload, 
+                islanding_res.get("active_islands", []), 
+                blackstart_res.get("active_blackstart", False)
+            )
+            survival_payload = {
+                "timestamp": int(time.time() * 1000),
+                "survivability_score": survival_res.get("survivability_score", 0.0),
+                "load_retention_pct": survival_res.get("load_retention_pct", 0.0),
+                "strategy_ranking": survival_res.get("strategy_ranking", [])
+            }
+            client.publish("grid/l6_survival", json.dumps(survival_payload))
+
         elif topic == "grid/events":
             prev_state = flisr.state
             # Pass events into FLISR to track breaker trips and start healing state machine
@@ -267,6 +360,8 @@ def on_message(client, userdata, msg):
                 relay.reset_trips()
                 flisr.reset()
                 l6_fsm.reset()
+                l6_blackstart.reset()
+                l6_balancer.reset()
                 _alert_cooldown.clear()  # Allow fresh alerts for next test run
                 
                 # Also command simulator to restore normally open L7_8 configuration

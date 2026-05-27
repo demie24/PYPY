@@ -38,6 +38,7 @@ class SmartGridDigitalTwin:
         
         # Configuration
         self.simulation_interval = 1.0 # seconds
+        self.load_shed_factors = {bus_idx: 1.0 for bus_idx in self.topo.loads.keys()}
         
         # Attack states
         self.active_attack = None
@@ -150,6 +151,7 @@ class SmartGridDigitalTwin:
             self.active_scenario = None
             self.active_compromises = {}
             self.sensor_drifts = {}
+            self.load_shed_factors = {bus_idx: 1.0 for bus_idx in self.topo.loads.keys()}
             return
 
         if command == "REJECT_TELEMETRY":
@@ -180,6 +182,21 @@ class SmartGridDigitalTwin:
                             severity="CRITICAL"
                         )
                         break
+            return
+
+        if command == "SHED_LOAD":
+            try:
+                bus_idx = int(target.replace("Bus_", "")) - 1
+                pct = payload.get("percentage", 0.0) if payload else 0.0
+                self.load_shed_factors[bus_idx] = max(0.0, min(1.0, 1.0 - (pct / 100.0)))
+                logger.info(f"Load shedding of {pct}% applied to bus '{target}' (factor={self.load_shed_factors[bus_idx]})")
+                self.publisher.publish_event(
+                    source="SCADA_GATEWAY",
+                    event_desc=f"Load shedding of {pct}% applied to bus '{target}'",
+                    severity="WARNING"
+                )
+            except Exception as e:
+                logger.error(f"Failed to process SHED_LOAD command for target {target}: {e}")
             return
 
         # 1. Check if the target breaker is jammed by DoS
@@ -401,10 +418,11 @@ class SmartGridDigitalTwin:
         for bus_idx in self.topo.loads.keys():
             nominal_p = self.topo.loads[bus_idx]["P_nom"]
             nominal_q = self.topo.loads[bus_idx]["Q_nom"]
+            factor = self.load_shed_factors.get(bus_idx, 1.0)
             
             # Fluctuations within +/- 3%
-            self.active_loads[bus_idx]["P"] = max(0.0, nominal_p + random.uniform(-0.03, 0.03))
-            self.active_loads[bus_idx]["Q"] = max(0.0, nominal_q + random.uniform(-0.015, 0.015))
+            self.active_loads[bus_idx]["P"] = max(0.0, (nominal_p + random.uniform(-0.03, 0.03)) * factor)
+            self.active_loads[bus_idx]["Q"] = max(0.0, (nominal_q + random.uniform(-0.015, 0.015)) * factor)
             
         # 3. Run DC power flow & voltage drop solver
         V, theta, P, Q, line_flows = self.physics.solve(

@@ -1,9 +1,10 @@
 import numpy as np
 from typing import Dict, Any, Tuple
+from recovery_reward_engine import RecoveryRewardEngine
 
 class RewardEngine:
     def __init__(self):
-        pass
+        self.recovery_reward_engine = RecoveryRewardEngine()
 
     def compute_reward(self, 
                        prev_state: np.ndarray, 
@@ -275,6 +276,14 @@ class RewardEngine:
                 matching = any(rec.get("action") == act_name for rec in recommended_actions)
                 if matching:
                     details["reward_defense_alignment"] = 20.0
+
+        # ==========================================
+        # 18. ADAPTIVE RESTORATION QUALITY REWARDS (Phase 6.2)
+        # ==========================================
+        _, rec_details = self.recovery_reward_engine.evaluate_restoration_quality(
+            prev_state, curr_state, action_id, rollback_occurred, step_count
+        )
+        details.update(rec_details)
 
         # Sum up total reward
         total_reward = sum(details.values())

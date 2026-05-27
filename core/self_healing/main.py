@@ -19,6 +19,16 @@ flisr = FLISREngine()
 from recovery_state_machine import RecoveryStateMachine
 l6_fsm = RecoveryStateMachine()
 
+from recovery_scoring_engine import RecoveryScoringEngine
+from cascading_containment_engine import CascadingContainmentEngine
+from adaptive_recovery_memory import AdaptiveRecoveryMemory
+from degraded_operation_manager import DegradedOperationManager
+
+l6_scorer = RecoveryScoringEngine()
+l6_containment = CascadingContainmentEngine(l6_fsm.topo_engine)
+l6_memory = AdaptiveRecoveryMemory()
+l6_degraded = DegradedOperationManager()
+
 
 # Phase 5B: Rate limiting state
 # Only run the full relay+FLISR evaluation every N telemetry frames.
@@ -149,10 +159,92 @@ def on_message(client, userdata, msg):
                 client.publish("grid/config", json.dumps(config_update))
 
             # Run Layer 6 Autonomous Restoration Core state machine
-            l6_commands = l6_fsm.update(payload, client)
+            fsm_state_before = l6_fsm.state
+            executed_before = list(l6_fsm.executed_sequence)
+
+            l6_commands = l6_fsm.update(payload, client, faulted_breakers=flisr.tripped_by_relay)
             for cmd in l6_commands:
                 logger.info(f"Layer 6 Recovery proposed action: {cmd['command']} on {cmd['target']}")
                 client.publish("grid/control/proposed", json.dumps(cmd))
+
+            # Adaptive Recovery Memory transitions
+            if fsm_state_before == "VERIFY" and l6_fsm.state == "NORMAL" and executed_before:
+                l6_memory.record_success(flisr.tripped_by_relay, executed_before)
+            elif fsm_state_before == "ROLLBACK" and l6_fsm.state == "NORMAL" and executed_before:
+                l6_memory.record_failure(flisr.tripped_by_relay, executed_before)
+
+            # Cascading Containment Analysis
+            containment_data = l6_containment.analyze_cascading_risk(payload, payload.get("attack_status"))
+            containment_payload = {
+                "timestamp": int(time.time() * 1000),
+                "propagation_zones": containment_data.get("propagation_zones", []),
+                "instability_spread_risk": containment_data.get("instability_spread_risk", 0.0),
+                "isolation_boundary": containment_data.get("isolation_boundary", [])
+            }
+            client.publish("grid/l6_containment", json.dumps(containment_payload))
+
+            # Degraded Operation Analysis & Load Shedding
+            degraded_data = l6_degraded.evaluate_grid_survival(payload)
+            degraded_payload = {
+                "timestamp": int(time.time() * 1000),
+                "active_degraded_mode": degraded_data.get("active_degraded_mode", False),
+                "critical_buses_secured": degraded_data.get("critical_buses_secured", []),
+                "load_shedding_active": degraded_data.get("load_shedding_active", False),
+                "load_shed_summary": degraded_data.get("load_shed_summary", {}),
+                "survival_commands": degraded_data.get("survival_commands", [])
+            }
+            client.publish("grid/l6_degraded_mode", json.dumps(degraded_payload))
+
+            # Execute load shedding commands if any
+            for scmd in degraded_data.get("survival_commands", []):
+                logger.info(f"Issuing load shedding command: {scmd['command']} on {scmd['target']} ({scmd['percentage']}%)")
+                client.publish("grid/control", json.dumps(scmd))
+
+            # Plan Scoring
+            state_data = payload.get("state", {})
+            buses = state_data.get("buses", {})
+            lines = state_data.get("lines", {})
+            
+            # Formulate simulated sandbox results for the scorer
+            sandbox_results = {
+                "predicted_voltages": [buses.get(f"Bus_{i+1}", {}).get("voltage_pu", 1.0) for i in range(9)],
+                "predicted_loadings": {lid: l_data.get("capacity_pct", 0.0)/100.0 for lid, l_data in lines.items()},
+                "cascade_risk": 0.0
+            }
+            
+            if l6_fsm.planned_sequence:
+                # Dry run using validator sandbox to evaluate sequence impact
+                step = l6_fsm.planned_sequence[0]
+                val_res = l6_fsm.validator.validate_action(payload, step["command"], step["target"])
+                sandbox_results = {
+                    "predicted_voltages": val_res.get("predicted_voltages", []),
+                    "predicted_loadings": val_res.get("predicted_loadings", {}),
+                    "cascade_risk": val_res.get("cascade_risk", 0.0)
+                }
+
+            # Extract instability risk probability from threat or forecast if available
+            pred_risk = 0.0
+            ai_pred = payload.get("ai_prediction", {})
+            if isinstance(ai_pred, dict):
+                pred_risk = 1.0 if ai_pred.get("instability_risk") == "CRITICAL" else 0.5 if ai_pred.get("instability_risk") in ["HIGH", "MEDIUM"] else 0.0
+
+            score_data = l6_scorer.score_plan(
+                payload,
+                l6_fsm.planned_sequence,
+                sandbox_results,
+                predicted_instability_prob=pred_risk,
+                historical_success_rate=l6_memory.get_sequence_confidence(l6_fsm.planned_sequence)
+            )
+
+            adaptive_payload = {
+                "timestamp": int(time.time() * 1000),
+                "optimization_score": score_data.get("optimization_score", 100.0),
+                "scores": score_data,
+                "historical_confidence": l6_memory.get_sequence_confidence(l6_fsm.planned_sequence),
+                "total_successful_runs": sum(len(seqs) for seqs in l6_memory.successful_sequences.values()),
+                "total_failed_runs": sum(len(seqs) for seqs in l6_memory.failed_attempts.values())
+            }
+            client.publish("grid/l6_adaptive_recovery", json.dumps(adaptive_payload))
 
         elif topic == "grid/events":
             prev_state = flisr.state

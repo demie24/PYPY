@@ -43,7 +43,10 @@ class AIOrchestrator:
             "flisr_state": "NORMAL",
             "flisr_auto": True,
             "defense": None,
-            "l6_recovery": None
+            "l6_recovery": None,
+            "l6_adaptive_recovery": None,
+            "l6_containment": None,
+            "l6_degraded_mode": None
         }
 
         # Operator overrides and control states
@@ -77,6 +80,12 @@ class AIOrchestrator:
             self.state_cache["defense"] = payload
         elif topic == "grid/l6_recovery":
             self.state_cache["l6_recovery"] = payload
+        elif topic == "grid/l6_adaptive_recovery":
+            self.state_cache["l6_adaptive_recovery"] = payload
+        elif topic == "grid/l6_containment":
+            self.state_cache["l6_containment"] = payload
+        elif topic == "grid/l6_degraded_mode":
+            self.state_cache["l6_degraded_mode"] = payload
         elif topic == "grid/pre_rl":
             op_override = payload.get("operator_override", {})
             self.override_state["pause_autonomous"] = op_override.get("pause_autonomous", False)
@@ -289,7 +298,11 @@ class AIOrchestrator:
             "threat": None,
             "flisr_state": "NORMAL",
             "flisr_auto": True,
-            "defense": None
+            "defense": None,
+            "l6_recovery": None,
+            "l6_adaptive_recovery": None,
+            "l6_containment": None,
+            "l6_degraded_mode": None
         }
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
@@ -315,6 +328,9 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("grid/pre_rl")
         client.subscribe("grid/defense")
         client.subscribe("grid/l6_recovery")
+        client.subscribe("grid/l6_adaptive_recovery")
+        client.subscribe("grid/l6_containment")
+        client.subscribe("grid/l6_degraded_mode")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 

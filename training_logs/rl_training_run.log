@@ -22050,3 +22050,936 @@
 2026-05-27 23:54:51,403 [WARNING] [StabilizationAgent] Vetoing CLOSE on L1_4 (capacity exceeds 110%)
 2026-05-27 23:54:51,404 [WARNING] [SurvivalAgent] Vetoing OPEN on L4_5 (would isolate critical hospital Bus 5)
 2026-05-27 23:54:51,404 [WARNING] [SurvivalAgent] Vetoing load shed on critical hospital Bus_5
+2026-05-28 00:38:03,734 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:03,735 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:38:03,735 [WARNING] Recorded failed recovery sequence for fault signature [L8_9]
+2026-05-28 00:38:03,736 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:03,736 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:38:03,737 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:38:03,737 [WARNING] Recorded failed recovery sequence for fault signature [L8_9]
+2026-05-28 00:38:03,737 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:03,737 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:03,738 [INFO] Dynamic Weights Coordination: Active attack detected. Scaled CyberDefenseAgent weight to 2.5
+2026-05-28 00:38:03,738 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:38:03,738 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:38:03,738 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:38:03,738 [WARNING] [CyberDefenseAgent] Vetoing CLOSE on L2_7 (connected bus Bus_7 compromised)
+2026-05-28 00:38:03,738 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:03,738 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:03,738 [INFO] Dynamic Weights Coordination: Grid stress/low stability detected. Scaled StabilizationAgent and SurvivalAgent weights to 2.0
+2026-05-28 00:38:03,738 [WARNING] [SurvivalAgent] Vetoing load shed on critical hospital Bus_5
+2026-05-28 00:38:03,738 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:03,738 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:03,738 [WARNING] [StabilizationAgent] Vetoing CLOSE on L1_4 (capacity exceeds 110%)
+2026-05-28 00:38:03,738 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,442 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,442 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,442 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,442 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,443 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L1_4) blocked. Reason: Action RECONNECT_LINE(L1_4) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:38:04,444 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,448 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,448 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,448 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,448 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,448 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,448 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,448 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:38:04,448 [INFO] AI Orchestration cycle | Global State: NORMAL | Stability: 100.0% | Mode: LOCAL_ATTACK | Recovery: CONTAINMENT_ENGAGED
+2026-05-28 00:38:04,448 [INFO] AI Orchestration cycle | Global State: NORMAL | Stability: 100.0% | Mode: COORDINATED_ATTACK | Recovery: CONTAINMENT_ENGAGED
+2026-05-28 00:38:04,449 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,452 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,453 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,453 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,453 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,453 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,453 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,453 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:38:04,453 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,457 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,457 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,457 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,457 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,457 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,457 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,457 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:38:04,457 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,461 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,462 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,462 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,462 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,462 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,466 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,467 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,467 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,467 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,468 [WARNING] [ADAPTIVE AI] Persistent anomaly detected. Escalating filters & containment sensitivity.
+2026-05-28 00:38:04,468 [WARNING] Dispatched telemetry isolation for Bus_4 (Priority: HIGH)
+2026-05-28 00:38:04,468 [WARNING] Dispatched breaker trip command to isolate line L4_5
+2026-05-28 00:38:04,468 [WARNING] Locking breaker L4_5 against autonomous restoration attempts.
+2026-05-28 00:38:04,468 [WARNING] Locking breaker L5_6 against autonomous restoration attempts.
+2026-05-28 00:38:04,468 [WARNING] [ESCALATION] Cyber-physical anomalies detected! Escalating: ADVISORY -> GRID_PRESERVATION
+2026-05-28 00:38:04,468 [INFO] [ESCALATION] Grid stabilized. De-escalating: GRID_PRESERVATION -> ADVISORY
+2026-05-28 00:38:04,468 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,472 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,472 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,473 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:04,477 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:04,477 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:04,477 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Restoration blocked by active cyber defense containment (mode: EMERGENCY_CONTAINMENT).
+2026-05-28 00:38:04,478 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,478 [INFO] [WARNING] Isolated load buses detected. Entering ISOLATE state.
+2026-05-28 00:38:04,478 [INFO] [WARNING] State transition: NORMAL -> ISOLATE
+2026-05-28 00:38:04,478 [INFO] [INFO] Fault isolation verification complete. Proceeding to stabilization.
+2026-05-28 00:38:04,478 [INFO] [WARNING] State transition: ISOLATE -> STABILIZE
+2026-05-28 00:38:04,478 [INFO] [INFO] Grid parameters stabilized. Moving to alternate route planning.
+2026-05-28 00:38:04,478 [INFO] [WARNING] State transition: STABILIZE -> REROUTE
+2026-05-28 00:38:04,479 [INFO] [INFO] Restoration planner generated sequence with 1 actions.
+2026-05-28 00:38:04,479 [INFO] [INFO] Plan step: CLOSE L7_8 (Reroute flow via tie-breaker L7_8 to restore de-energized subgrid segment.)
+2026-05-28 00:38:04,479 [INFO] [WARNING] State transition: REROUTE -> RESTORE
+2026-05-28 00:38:04,479 [INFO] [WARNING] Issuing progressive command: CLOSE breaker L7_8.
+2026-05-28 00:38:04,479 [INFO] [INFO] All planned restoration commands issued. Moving to verification.
+2026-05-28 00:38:04,479 [INFO] [WARNING] State transition: RESTORE -> VERIFY
+2026-05-28 00:38:04,480 [INFO] [INFO] Verification PASSED. Grid stabilized successfully.
+2026-05-28 00:38:04,480 [INFO] [WARNING] State transition: VERIFY -> NORMAL
+2026-05-28 00:38:04,480 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,480 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,480 [INFO] [WARNING] State transition: NORMAL -> VERIFY
+2026-05-28 00:38:04,480 [INFO] [CRITICAL] Verification FAILED: Voltage collapse on Bus_8: 0.800 p.u.. Reverting actions.
+2026-05-28 00:38:04,480 [INFO] [WARNING] State transition: VERIFY -> ROLLBACK
+2026-05-28 00:38:04,480 [INFO] [CRITICAL] Rolling back closed breaker: L7_8.
+2026-05-28 00:38:04,480 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 60.0 seconds.
+2026-05-28 00:38:04,480 [INFO] [WARNING] State transition: ROLLBACK -> NORMAL
+2026-05-28 00:38:04,480 [WARNING] Total grid collapse detected! Entering Blackstart COLLAPSED mode.
+2026-05-28 00:38:04,480 [WARNING] [CRITICAL INFRASTRUCTURE GUARD] Intercepted attempt to shed critical Bus_5. Redirecting command to lower priority Bus_6.
+2026-05-28 00:38:04,481 [WARNING] [CyberDefenseAgent] Vetoing CLOSE on L2_7 (connected bus Bus_7 compromised)
+2026-05-28 00:38:04,481 [WARNING] [CyberDefenseAgent] Vetoing RECONNECT_LINE on Bus_7 (target compromised)
+2026-05-28 00:38:04,481 [WARNING] [CyberDefenseAgent] Vetoing CLOSE from unauthenticated source UNTRUSTED_OP during active attack
+2026-05-28 00:38:04,481 [INFO] ESP32 comms failure injected state: True
+2026-05-28 00:38:04,481 [WARNING] ESP32 Write failed on pin_12: Communication offline.
+2026-05-28 00:38:04,505 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:38:04,506 [INFO] ESP32 latency spike injected state: True
+2026-05-28 00:38:04,531 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:38:04,532 [INFO] Hardware Router transaction: {'timestamp': 1779899884507, 'command': 'OPEN', 'target': 'L4_5', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:38:04,556 [INFO] ESP32 pin pin_12 written successfully to 1
+2026-05-28 00:38:04,556 [INFO] Hardware Router transaction: {'timestamp': 1779899884532, 'command': 'CLOSE', 'target': 'L4_5', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:38:04,584 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:38:04,584 [INFO] Hardware Router transaction: {'timestamp': 1779899884557, 'command': 'OPEN', 'target': 'L4_5', 'source': 'FLISR', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:38:04,630 [INFO] Relay L7_8 coil commanded to CLOSED. Contact transition started.
+2026-05-28 00:38:04,630 [INFO] PLC write single coil success on coil 8 (Relay L7_8) -> CLOSED
+2026-05-28 00:38:04,630 [INFO] Hardware Router transaction: {'timestamp': 1779899884584, 'command': 'CLOSE', 'target': 'L7_8', 'source': 'FLISR', 'device': 'plc', 'status': 'SUCCESS', 'details': 'Dispatched via PLC Modbus Write Single Coil.'}
+2026-05-28 00:38:04,644 [INFO] ESP32 pin pin_4 written successfully to 0
+2026-05-28 00:38:04,644 [INFO] Hardware Router transaction: {'timestamp': 1779899884630, 'command': 'OPEN', 'target': 'L1_4', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:38:04,657 [INFO] ESP32 pin pin_5 written successfully to 0
+2026-05-28 00:38:04,657 [INFO] Hardware Router transaction: {'timestamp': 1779899884644, 'command': 'OPEN', 'target': 'L2_7', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:38:04,657 [WARNING] Hardware command blocked: Interlock Blocked: Opening L3_9 would isolate the final generator transformer.
+2026-05-28 00:38:04,657 [INFO] Hardware Router transaction: {'timestamp': 1779899884657, 'command': 'OPEN', 'target': 'L3_9', 'source': 'SCADA', 'device': 'NONE', 'status': 'BLOCKED', 'details': 'Interlock Blocked: Opening L3_9 would isolate the final generator transformer.'}
+2026-05-28 00:38:04,657 [ERROR] Device offline timeout: esp32
+2026-05-28 00:38:04,658 [WARNING] Relay alignment mismatch on L4_5: coil=CLOSED, feedback=OPEN
+2026-05-28 00:38:04,658 [WARNING] Relay alignment mismatch on L7_8: coil=CLOSED, feedback=OPEN
+2026-05-28 00:38:04,666 [INFO] Loading Physics-Informed Predictor model from: /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/ai_prediction/models/lstm_pinn_cyber_physical_predictor.pt
+2026-05-28 00:38:04,673 [INFO] PINN model loaded successfully. Scaling parameters loaded.
+2026-05-28 00:38:04,674 [WARNING] [ONLINE ADAPTATION] Concept drift score high (20.95). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,674 [WARNING] [ONLINE ADAPTATION] Concept drift score high (22.72). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,674 [WARNING] [ONLINE ADAPTATION] Concept drift score high (24.38). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,674 [WARNING] [ONLINE ADAPTATION] Concept drift score high (25.94). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,675 [WARNING] [ONLINE ADAPTATION] Concept drift score high (27.41). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,675 [WARNING] [ONLINE ADAPTATION] Concept drift score high (28.79). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,675 [WARNING] [ONLINE ADAPTATION] Concept drift score high (30.17). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,675 [WARNING] [ONLINE ADAPTATION] Concept drift score high (31.49). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,676 [WARNING] [ONLINE ADAPTATION] Concept drift score high (32.73). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,676 [WARNING] [ONLINE ADAPTATION] Concept drift score high (33.91). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,676 [WARNING] [ONLINE ADAPTATION] Concept drift score high (35.09). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,676 [WARNING] [ONLINE ADAPTATION] Concept drift score high (36.22). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,677 [WARNING] [ONLINE ADAPTATION] Concept drift score high (37.29). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,677 [WARNING] [ONLINE ADAPTATION] Concept drift score high (38.32). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,677 [WARNING] [ONLINE ADAPTATION] Concept drift score high (39.30). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,677 [WARNING] [ONLINE ADAPTATION] Concept drift score high (40.23). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,677 [WARNING] [ONLINE ADAPTATION] Concept drift score high (41.13). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,678 [WARNING] [ONLINE ADAPTATION] Concept drift score high (41.98). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,678 [WARNING] [ONLINE ADAPTATION] Concept drift score high (42.80). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,678 [WARNING] [ONLINE ADAPTATION] Concept drift score high (43.59). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,678 [WARNING] [ONLINE ADAPTATION] Concept drift score high (44.35). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,678 [WARNING] [ONLINE ADAPTATION] Concept drift score high (45.07). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,679 [WARNING] [ONLINE ADAPTATION] Concept drift score high (45.77). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,679 [WARNING] [ONLINE ADAPTATION] Concept drift score high (46.44). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,679 [WARNING] [ONLINE ADAPTATION] Concept drift score high (47.09). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,679 [WARNING] [ONLINE ADAPTATION] Concept drift score high (47.71). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,679 [WARNING] [ONLINE ADAPTATION] Concept drift score high (48.31). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,680 [WARNING] [ONLINE ADAPTATION] Concept drift score high (48.89). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,680 [WARNING] [ONLINE ADAPTATION] Concept drift score high (49.45). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,680 [WARNING] [ONLINE ADAPTATION] Concept drift score high (49.99). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,680 [WARNING] [ONLINE ADAPTATION] Concept drift score high (50.52). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,681 [WARNING] [ONLINE ADAPTATION] Concept drift score high (51.55). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,681 [WARNING] [ONLINE ADAPTATION] Concept drift score high (52.57). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,681 [WARNING] [ONLINE ADAPTATION] Concept drift score high (53.60). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,681 [WARNING] [ONLINE ADAPTATION] Concept drift score high (54.63). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,682 [WARNING] [ONLINE ADAPTATION] Concept drift score high (55.66). Dynamic scaling bounds updated.
+2026-05-28 00:38:04,718 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,718 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,718 [INFO] Dynamic Weights Coordination: Active attack detected. Scaled CyberDefenseAgent weight to 2.5
+2026-05-28 00:38:04,718 [INFO] Dynamic Weights Coordination: Grid stress/low stability detected. Scaled StabilizationAgent and SurvivalAgent weights to 2.0
+2026-05-28 00:38:04,718 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,718 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,719 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:04,719 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:04,719 [WARNING] Trust Adjustment: Rollback occurred. Penalized RestorationAgent trust: 1.00 -> 0.80
+2026-05-28 00:38:04,719 [WARNING] Trust Adjustment: Safety violation occurred. Penalized StabilizationAgent trust: 1.00 -> 0.85
+2026-05-28 00:38:05,587 [INFO] PLC comms failure injected state: True
+2026-05-28 00:38:05,779 [INFO] Relay L7_8 coil commanded to CLOSED. Contact transition started.
+2026-05-28 00:38:05,779 [INFO] PLC write single coil success on coil 8 (Relay L7_8) -> CLOSED
+2026-05-28 00:38:05,780 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,782 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,782 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,782 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,782 [WARNING] Trusted Action Filter blocked command [ISOLATE_LINE] targeting L1_4. Details: Action REJECTED: Observability degraded: global confidence 20.0% is below limit 40.0%
+2026-05-28 00:38:05,782 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,783 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,783 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 1
+2026-05-28 00:38:05,783 [INFO] [ROLLBACK ENGINE] Checkpoint popped. Remaining: 0
+2026-05-28 00:38:05,783 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,784 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,784 [WARNING] Trusted Action Filter blocked command [RECONNECT_LINE] targeting L1_4. Details: Action REJECTED: Telemetry trust check failed: target L1_4 trust 30.0% is below limit 50.0%
+2026-05-28 00:38:05,784 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,784 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 1
+2026-05-28 00:38:05,784 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 2
+2026-05-28 00:38:05,784 [INFO] [ROLLBACK ENGINE] Undid 2 steps. Remaining checkpoints: 0
+2026-05-28 00:38:05,784 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,784 [WARNING] Trusted Action Filter blocked command [ISOLATE_LINE] targeting L4_5. Details: Action REJECTED: Anti-Islanding: Opening L4_5 would isolate Bus_5 from generators.
+2026-05-28 00:38:05,784 [WARNING] [PredictionAgent] Vetoing CLOSE on L7_8 (low success probability: 30.0%)
+2026-05-28 00:38:05,785 [WARNING] Blocking preemptive isolation on L5_6 because it would isolate critical hospital Bus 5
+2026-05-28 00:38:05,785 [WARNING] Blocking preemptive isolation on L6_7 because it would isolate critical hospital Bus 5
+2026-05-28 00:38:05,785 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:38:05,785 [WARNING] Relay switching blocked on L4_5: Anti-chattering lockout (elapsed: 0.00s).
+2026-05-28 00:38:05,785 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:38:05,785 [INFO] Relay L4_5 contacts fully latched to OPEN (transient completed).
+2026-05-28 00:38:05,785 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:38:05,785 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:05,785 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:05,785 [WARNING] [RestorationAgent] Vetoing restoration command CLOSE on L7_8 (grid collapsed, blackstart needed)
+2026-05-28 00:38:05,786 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:05,786 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:05,786 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 60.0 seconds.
+2026-05-28 00:38:05,786 [WARNING] [RestorationAgent] Vetoing CLOSE on L7_8 (breaker locked out)
+2026-05-28 00:38:05,786 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:38:05,786 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:38:05,786 [INFO] Starting DQN training loop for 5 episodes...
+2026-05-28 00:38:05,787 [INFO] Connected to MQTT broker at localhost:1883
+2026-05-28 00:38:05,788 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:05,792 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:05,792 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:05,795 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.195 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,797 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,798 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Action RECONNECT_LINE(L4_5) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:38:05,799 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,800 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,801 [INFO] Episode 1/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 94.59 | Avg (10): 94.59 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:38:05,803 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.164 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.164 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,804 [WARNING] [SANDBOX STEP BLOCKED] Action REROUTE_FLOW(L2_7) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.172 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.172 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,805 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,807 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,808 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,809 [INFO] Episode 2/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 98.72 | Avg (10): 96.65 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:38:05,810 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing_ep_2.pt
+2026-05-28 00:38:05,810 [INFO] Periodic checkpoint saved: dqn_self_healing_ep_2.pt
+2026-05-28 00:38:05,812 [INFO] Policy Engine recorded action execution on SYSTEM. Cooldown started.
+2026-05-28 00:38:05,813 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:38:05,816 [INFO] Policy Engine recorded action execution on Bus_1. Cooldown started.
+2026-05-28 00:38:05,817 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Action ENABLE_ISLANDING(ZONE_1) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:38:05,818 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Cooldown active for SYSTEM: 0.0s elapsed of 10.0s
+2026-05-28 00:38:05,819 [INFO] Episode 3/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: 229.36 | Avg (10): 140.89 | Rollbacks: 3 | Violations: 3 | Loss: 0.0000
+2026-05-28 00:38:05,821 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.194 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,823 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,825 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,826 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Action NO_ACTION(SYSTEM) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:38:05,827 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:05,827 [INFO] Episode 4/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 91.69 | Avg (10): 128.59 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:38:05,829 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing_ep_4.pt
+2026-05-28 00:38:05,829 [INFO] Periodic checkpoint saved: dqn_self_healing_ep_4.pt
+2026-05-28 00:38:05,831 [INFO] Policy Engine recorded action execution on L1_4. Cooldown started.
+2026-05-28 00:38:05,832 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:38:05,833 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:38:05,834 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L2_7) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:38:05,835 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:38:05,836 [INFO] Episode 5/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: -79.53 | Avg (10): 86.97 | Rollbacks: 4 | Violations: 4 | Loss: 0.0000
+2026-05-28 00:38:05,837 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing.pt
+2026-05-28 00:38:05,837 [INFO] Training completed. Final checkpoint saved to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing.pt
+2026-05-28 00:38:06,839 [INFO] Starting PPO training loop for 5 episodes...
+2026-05-28 00:38:06,840 [INFO] Connected to MQTT broker at localhost:1883
+2026-05-28 00:38:06,840 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:06,844 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:06,844 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:06,847 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.163 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.163 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,849 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.172 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.172 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,850 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,852 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,854 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,862 [INFO] Episode 1/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 96.71 | Avg (10): 96.71 | Rollbacks: 5 | Violations: 5 | Loss: 3368.8595
+2026-05-28 00:38:06,864 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.170 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.170 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,866 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.173 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.173 p.u. outside [0.85, 1.15], Anti-Islanding: Opening ZONE_1 would isolate Bus_5 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_6 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:38:06,868 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L2_7) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,871 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,873 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Action NO_ACTION(SYSTEM) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:38:06,880 [INFO] Episode 2/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 93.71 | Avg (10): 95.21 | Rollbacks: 5 | Violations: 5 | Loss: 3094.9801
+2026-05-28 00:38:06,882 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing_ep_2.pt
+2026-05-28 00:38:06,882 [INFO] Periodic checkpoint saved: ppo_self_healing_ep_2.pt
+2026-05-28 00:38:06,885 [INFO] Policy Engine recorded action execution on EMERGENCY_DEFENSE. Cooldown started.
+2026-05-28 00:38:06,887 [INFO] Policy Engine recorded action execution on L1_4. Cooldown started.
+2026-05-28 00:38:06,889 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:38:06,890 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:38:06,892 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:38:06,900 [INFO] Episode 3/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: -25.81 | Avg (10): 54.87 | Rollbacks: 3 | Violations: 3 | Loss: 3309.8018
+2026-05-28 00:38:06,902 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15], Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:38:06,904 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,906 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,908 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:38:06,910 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Action ENABLE_ISLANDING(ZONE_1) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:38:06,918 [INFO] Episode 4/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 91.12 | Avg (10): 63.93 | Rollbacks: 5 | Violations: 5 | Loss: 3217.1781
+2026-05-28 00:38:06,920 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing_ep_4.pt
+2026-05-28 00:38:06,920 [INFO] Periodic checkpoint saved: ppo_self_healing_ep_4.pt
+2026-05-28 00:38:06,922 [INFO] Policy Engine recorded action execution on Bus_1. Cooldown started.
+2026-05-28 00:38:06,925 [INFO] Policy Engine recorded action execution on SYSTEM. Cooldown started.
+2026-05-28 00:38:06,927 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Cooldown active for Bus_1: 0.0s elapsed of 10.0s
+2026-05-28 00:38:06,929 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Cooldown active for EMERGENCY_DEFENSE: 0.0s elapsed of 10.0s
+2026-05-28 00:38:06,931 [INFO] Policy Engine recorded action execution on L7_8. Cooldown started.
+2026-05-28 00:38:06,938 [INFO] Episode 5/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: 277.34 | Avg (10): 106.61 | Rollbacks: 2 | Violations: 2 | Loss: 24697.6374
+2026-05-28 00:38:06,940 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing.pt
+2026-05-28 00:38:06,940 [INFO] Training completed. Final checkpoint saved to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing.pt
+2026-05-28 00:38:07,942 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_ppo.pt
+2026-05-28 00:38:07,944 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_ppo.pt
+2026-05-28 00:38:07,945 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_dqn.pt
+2026-05-28 00:38:07,947 [INFO] [DQN AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_dqn.pt
+2026-05-28 00:38:07,949 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:38:07,954 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:38:07,954 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:38:07,955 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L4_5) blocked. Reason: Blocked by Safety Constraints: Anti-Islanding: Opening L4_5 would isolate Bus_5 from generators.
+2026-05-28 00:38:07,966 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 1.0 seconds.
+2026-05-28 00:38:09,067 [INFO] Calibration drift set for bus_5_v: 0.05
+2026-05-28 00:38:09,068 [WARNING] Simulated sensor sweep packet dropped (packet loss).
+2026-05-28 00:38:09,069 [WARNING] [StabilizationAgent] Vetoing CLOSE on L1_4 (capacity exceeds 110%)
+2026-05-28 00:38:09,069 [WARNING] [SurvivalAgent] Vetoing OPEN on L4_5 (would isolate critical hospital Bus 5)
+2026-05-28 00:38:09,069 [WARNING] [SurvivalAgent] Vetoing load shed on critical hospital Bus_5
+2026-05-28 00:39:12,144 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,144 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:39:12,144 [WARNING] Recorded failed recovery sequence for fault signature [L8_9]
+2026-05-28 00:39:12,145 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,145 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:39:12,146 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:39:12,146 [WARNING] Recorded failed recovery sequence for fault signature [L8_9]
+2026-05-28 00:39:12,146 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,146 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,147 [INFO] Dynamic Weights Coordination: Active attack detected. Scaled CyberDefenseAgent weight to 2.5
+2026-05-28 00:39:12,147 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:39:12,147 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:39:12,147 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:39:12,147 [WARNING] [CyberDefenseAgent] Vetoing CLOSE on L2_7 (connected bus Bus_7 compromised)
+2026-05-28 00:39:12,147 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,147 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,147 [INFO] Dynamic Weights Coordination: Grid stress/low stability detected. Scaled StabilizationAgent and SurvivalAgent weights to 2.0
+2026-05-28 00:39:12,147 [WARNING] [SurvivalAgent] Vetoing load shed on critical hospital Bus_5
+2026-05-28 00:39:12,148 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,148 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,148 [WARNING] [StabilizationAgent] Vetoing CLOSE on L1_4 (capacity exceeds 110%)
+2026-05-28 00:39:12,148 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,931 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,931 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,931 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,931 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,932 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L1_4) blocked. Reason: Action RECONNECT_LINE(L1_4) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:39:12,933 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,937 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,937 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,937 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,937 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,937 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,937 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,937 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:39:12,937 [INFO] AI Orchestration cycle | Global State: NORMAL | Stability: 100.0% | Mode: LOCAL_ATTACK | Recovery: CONTAINMENT_ENGAGED
+2026-05-28 00:39:12,937 [INFO] AI Orchestration cycle | Global State: NORMAL | Stability: 100.0% | Mode: COORDINATED_ATTACK | Recovery: CONTAINMENT_ENGAGED
+2026-05-28 00:39:12,938 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,941 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,941 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,941 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,942 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,942 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,942 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,942 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:39:12,942 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,945 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,946 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,946 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,946 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,946 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,946 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,946 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:39:12,946 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,950 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,950 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,950 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,950 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,951 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,954 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,954 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,954 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,955 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:12,955 [WARNING] [ADAPTIVE AI] Persistent anomaly detected. Escalating filters & containment sensitivity.
+2026-05-28 00:39:12,956 [WARNING] Dispatched telemetry isolation for Bus_4 (Priority: HIGH)
+2026-05-28 00:39:12,956 [WARNING] Dispatched breaker trip command to isolate line L4_5
+2026-05-28 00:39:12,956 [WARNING] Locking breaker L5_6 against autonomous restoration attempts.
+2026-05-28 00:39:12,956 [WARNING] Locking breaker L4_5 against autonomous restoration attempts.
+2026-05-28 00:39:12,956 [WARNING] [ESCALATION] Cyber-physical anomalies detected! Escalating: ADVISORY -> GRID_PRESERVATION
+2026-05-28 00:39:12,956 [INFO] [ESCALATION] Grid stabilized. De-escalating: GRID_PRESERVATION -> ADVISORY
+2026-05-28 00:39:12,956 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,960 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,960 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,961 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:12,964 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:12,964 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:12,965 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Restoration blocked by active cyber defense containment (mode: EMERGENCY_CONTAINMENT).
+2026-05-28 00:39:12,966 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,966 [INFO] [WARNING] Isolated load buses detected. Entering ISOLATE state.
+2026-05-28 00:39:12,966 [INFO] [WARNING] State transition: NORMAL -> ISOLATE
+2026-05-28 00:39:12,966 [INFO] [INFO] Fault isolation verification complete. Proceeding to stabilization.
+2026-05-28 00:39:12,966 [INFO] [WARNING] State transition: ISOLATE -> STABILIZE
+2026-05-28 00:39:12,966 [INFO] [INFO] Grid parameters stabilized. Moving to alternate route planning.
+2026-05-28 00:39:12,966 [INFO] [WARNING] State transition: STABILIZE -> REROUTE
+2026-05-28 00:39:12,967 [INFO] [INFO] Restoration planner generated sequence with 1 actions.
+2026-05-28 00:39:12,967 [INFO] [INFO] Plan step: CLOSE L7_8 (Reroute flow via tie-breaker L7_8 to restore de-energized subgrid segment.)
+2026-05-28 00:39:12,967 [INFO] [WARNING] State transition: REROUTE -> RESTORE
+2026-05-28 00:39:12,967 [INFO] [WARNING] Issuing progressive command: CLOSE breaker L7_8.
+2026-05-28 00:39:12,967 [INFO] [INFO] All planned restoration commands issued. Moving to verification.
+2026-05-28 00:39:12,967 [INFO] [WARNING] State transition: RESTORE -> VERIFY
+2026-05-28 00:39:12,967 [INFO] [INFO] Verification PASSED. Grid stabilized successfully.
+2026-05-28 00:39:12,967 [INFO] [WARNING] State transition: VERIFY -> NORMAL
+2026-05-28 00:39:12,968 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,968 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:12,968 [INFO] [WARNING] State transition: NORMAL -> VERIFY
+2026-05-28 00:39:12,968 [INFO] [CRITICAL] Verification FAILED: Voltage collapse on Bus_8: 0.800 p.u.. Reverting actions.
+2026-05-28 00:39:12,968 [INFO] [WARNING] State transition: VERIFY -> ROLLBACK
+2026-05-28 00:39:12,968 [INFO] [CRITICAL] Rolling back closed breaker: L7_8.
+2026-05-28 00:39:12,968 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 60.0 seconds.
+2026-05-28 00:39:12,968 [INFO] [WARNING] State transition: ROLLBACK -> NORMAL
+2026-05-28 00:39:12,968 [WARNING] Total grid collapse detected! Entering Blackstart COLLAPSED mode.
+2026-05-28 00:39:12,968 [WARNING] [CRITICAL INFRASTRUCTURE GUARD] Intercepted attempt to shed critical Bus_5. Redirecting command to lower priority Bus_6.
+2026-05-28 00:39:12,968 [WARNING] [CyberDefenseAgent] Vetoing CLOSE on L2_7 (connected bus Bus_7 compromised)
+2026-05-28 00:39:12,969 [WARNING] [CyberDefenseAgent] Vetoing RECONNECT_LINE on Bus_7 (target compromised)
+2026-05-28 00:39:12,969 [WARNING] [CyberDefenseAgent] Vetoing CLOSE from unauthenticated source UNTRUSTED_OP during active attack
+2026-05-28 00:39:12,969 [INFO] ESP32 comms failure injected state: True
+2026-05-28 00:39:12,969 [WARNING] ESP32 Write failed on pin_12: Communication offline.
+2026-05-28 00:39:12,985 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:39:12,985 [INFO] ESP32 latency spike injected state: True
+2026-05-28 00:39:13,008 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:39:13,009 [INFO] Hardware Router transaction: {'timestamp': 1779899952986, 'command': 'OPEN', 'target': 'L4_5', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:39:13,031 [INFO] ESP32 pin pin_12 written successfully to 1
+2026-05-28 00:39:13,031 [INFO] Hardware Router transaction: {'timestamp': 1779899953009, 'command': 'CLOSE', 'target': 'L4_5', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:39:13,051 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:39:13,051 [INFO] Hardware Router transaction: {'timestamp': 1779899953033, 'command': 'OPEN', 'target': 'L4_5', 'source': 'FLISR', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:39:13,079 [INFO] Relay L7_8 coil commanded to CLOSED. Contact transition started.
+2026-05-28 00:39:13,079 [INFO] PLC write single coil success on coil 8 (Relay L7_8) -> CLOSED
+2026-05-28 00:39:13,079 [INFO] Hardware Router transaction: {'timestamp': 1779899953051, 'command': 'CLOSE', 'target': 'L7_8', 'source': 'FLISR', 'device': 'plc', 'status': 'SUCCESS', 'details': 'Dispatched via PLC Modbus Write Single Coil.'}
+2026-05-28 00:39:13,093 [INFO] ESP32 pin pin_4 written successfully to 0
+2026-05-28 00:39:13,093 [INFO] Hardware Router transaction: {'timestamp': 1779899953079, 'command': 'OPEN', 'target': 'L1_4', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:39:13,112 [INFO] ESP32 pin pin_5 written successfully to 0
+2026-05-28 00:39:13,112 [INFO] Hardware Router transaction: {'timestamp': 1779899953093, 'command': 'OPEN', 'target': 'L2_7', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:39:13,112 [WARNING] Hardware command blocked: Interlock Blocked: Opening L3_9 would isolate the final generator transformer.
+2026-05-28 00:39:13,112 [INFO] Hardware Router transaction: {'timestamp': 1779899953112, 'command': 'OPEN', 'target': 'L3_9', 'source': 'SCADA', 'device': 'NONE', 'status': 'BLOCKED', 'details': 'Interlock Blocked: Opening L3_9 would isolate the final generator transformer.'}
+2026-05-28 00:39:13,112 [ERROR] Device offline timeout: esp32
+2026-05-28 00:39:13,112 [WARNING] Relay alignment mismatch on L4_5: coil=CLOSED, feedback=OPEN
+2026-05-28 00:39:13,112 [WARNING] Relay alignment mismatch on L7_8: coil=CLOSED, feedback=OPEN
+2026-05-28 00:39:13,122 [INFO] Loading Physics-Informed Predictor model from: /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/ai_prediction/models/lstm_pinn_cyber_physical_predictor.pt
+2026-05-28 00:39:13,129 [INFO] PINN model loaded successfully. Scaling parameters loaded.
+2026-05-28 00:39:13,129 [WARNING] [ONLINE ADAPTATION] Concept drift score high (20.95). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,129 [WARNING] [ONLINE ADAPTATION] Concept drift score high (22.72). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,129 [WARNING] [ONLINE ADAPTATION] Concept drift score high (24.38). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,129 [WARNING] [ONLINE ADAPTATION] Concept drift score high (25.94). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,130 [WARNING] [ONLINE ADAPTATION] Concept drift score high (27.41). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,130 [WARNING] [ONLINE ADAPTATION] Concept drift score high (28.79). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,130 [WARNING] [ONLINE ADAPTATION] Concept drift score high (30.17). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,130 [WARNING] [ONLINE ADAPTATION] Concept drift score high (31.49). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,130 [WARNING] [ONLINE ADAPTATION] Concept drift score high (32.73). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,130 [WARNING] [ONLINE ADAPTATION] Concept drift score high (33.91). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,131 [WARNING] [ONLINE ADAPTATION] Concept drift score high (35.09). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,131 [WARNING] [ONLINE ADAPTATION] Concept drift score high (36.22). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,131 [WARNING] [ONLINE ADAPTATION] Concept drift score high (37.29). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,131 [WARNING] [ONLINE ADAPTATION] Concept drift score high (38.32). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,131 [WARNING] [ONLINE ADAPTATION] Concept drift score high (39.30). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,132 [WARNING] [ONLINE ADAPTATION] Concept drift score high (40.23). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,132 [WARNING] [ONLINE ADAPTATION] Concept drift score high (41.13). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,132 [WARNING] [ONLINE ADAPTATION] Concept drift score high (41.98). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,132 [WARNING] [ONLINE ADAPTATION] Concept drift score high (42.80). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,132 [WARNING] [ONLINE ADAPTATION] Concept drift score high (43.59). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,133 [WARNING] [ONLINE ADAPTATION] Concept drift score high (44.35). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,133 [WARNING] [ONLINE ADAPTATION] Concept drift score high (45.07). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,133 [WARNING] [ONLINE ADAPTATION] Concept drift score high (45.77). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,133 [WARNING] [ONLINE ADAPTATION] Concept drift score high (46.44). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,133 [WARNING] [ONLINE ADAPTATION] Concept drift score high (47.09). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,134 [WARNING] [ONLINE ADAPTATION] Concept drift score high (47.71). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,134 [WARNING] [ONLINE ADAPTATION] Concept drift score high (48.31). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,134 [WARNING] [ONLINE ADAPTATION] Concept drift score high (48.89). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,134 [WARNING] [ONLINE ADAPTATION] Concept drift score high (49.45). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,135 [WARNING] [ONLINE ADAPTATION] Concept drift score high (49.99). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,135 [WARNING] [ONLINE ADAPTATION] Concept drift score high (50.52). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,135 [WARNING] [ONLINE ADAPTATION] Concept drift score high (51.55). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,135 [WARNING] [ONLINE ADAPTATION] Concept drift score high (52.57). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,136 [WARNING] [ONLINE ADAPTATION] Concept drift score high (53.60). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,136 [WARNING] [ONLINE ADAPTATION] Concept drift score high (54.63). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,136 [WARNING] [ONLINE ADAPTATION] Concept drift score high (55.66). Dynamic scaling bounds updated.
+2026-05-28 00:39:13,170 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:13,171 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:13,171 [INFO] Dynamic Weights Coordination: Active attack detected. Scaled CyberDefenseAgent weight to 2.5
+2026-05-28 00:39:13,171 [INFO] Dynamic Weights Coordination: Grid stress/low stability detected. Scaled StabilizationAgent and SurvivalAgent weights to 2.0
+2026-05-28 00:39:13,171 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:13,171 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:13,171 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:13,171 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:13,171 [WARNING] Trust Adjustment: Rollback occurred. Penalized RestorationAgent trust: 1.00 -> 0.80
+2026-05-28 00:39:13,171 [WARNING] Trust Adjustment: Safety violation occurred. Penalized StabilizationAgent trust: 1.00 -> 0.85
+2026-05-28 00:39:14,079 [INFO] PLC comms failure injected state: True
+2026-05-28 00:39:14,182 [INFO] Relay L7_8 coil commanded to CLOSED. Contact transition started.
+2026-05-28 00:39:14,182 [INFO] PLC write single coil success on coil 8 (Relay L7_8) -> CLOSED
+2026-05-28 00:39:14,183 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,183 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,184 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,184 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,184 [WARNING] Trusted Action Filter blocked command [ISOLATE_LINE] targeting L1_4. Details: Action REJECTED: Observability degraded: global confidence 20.0% is below limit 40.0%
+2026-05-28 00:39:14,184 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,185 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,185 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 1
+2026-05-28 00:39:14,185 [INFO] [ROLLBACK ENGINE] Checkpoint popped. Remaining: 0
+2026-05-28 00:39:14,185 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,185 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,185 [WARNING] Trusted Action Filter blocked command [RECONNECT_LINE] targeting L1_4. Details: Action REJECTED: Telemetry trust check failed: target L1_4 trust 30.0% is below limit 50.0%
+2026-05-28 00:39:14,185 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,186 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 1
+2026-05-28 00:39:14,186 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 2
+2026-05-28 00:39:14,186 [INFO] [ROLLBACK ENGINE] Undid 2 steps. Remaining checkpoints: 0
+2026-05-28 00:39:14,186 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,186 [WARNING] Trusted Action Filter blocked command [ISOLATE_LINE] targeting L4_5. Details: Action REJECTED: Anti-Islanding: Opening L4_5 would isolate Bus_5 from generators.
+2026-05-28 00:39:14,186 [WARNING] [PredictionAgent] Vetoing CLOSE on L7_8 (low success probability: 30.0%)
+2026-05-28 00:39:14,186 [WARNING] Blocking preemptive isolation on L5_6 because it would isolate critical hospital Bus 5
+2026-05-28 00:39:14,187 [WARNING] Blocking preemptive isolation on L6_7 because it would isolate critical hospital Bus 5
+2026-05-28 00:39:14,187 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:39:14,187 [WARNING] Relay switching blocked on L4_5: Anti-chattering lockout (elapsed: 0.00s).
+2026-05-28 00:39:14,187 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:39:14,187 [INFO] Relay L4_5 contacts fully latched to OPEN (transient completed).
+2026-05-28 00:39:14,187 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:39:14,187 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:14,187 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:14,187 [WARNING] [RestorationAgent] Vetoing restoration command CLOSE on L7_8 (grid collapsed, blackstart needed)
+2026-05-28 00:39:14,187 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:14,187 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:14,187 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 60.0 seconds.
+2026-05-28 00:39:14,187 [WARNING] [RestorationAgent] Vetoing CLOSE on L7_8 (breaker locked out)
+2026-05-28 00:39:14,188 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:39:14,188 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:39:14,188 [INFO] Starting DQN training loop for 5 episodes...
+2026-05-28 00:39:14,189 [INFO] Connected to MQTT broker at localhost:1883
+2026-05-28 00:39:14,189 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:14,194 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:14,194 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:14,197 [INFO] Policy Engine recorded action execution on EMERGENCY_DEFENSE. Cooldown started.
+2026-05-28 00:39:14,198 [INFO] Policy Engine recorded action execution on Bus_1. Cooldown started.
+2026-05-28 00:39:14,200 [INFO] Policy Engine recorded action execution on L1_4. Cooldown started.
+2026-05-28 00:39:14,201 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:39:14,203 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:39:14,203 [INFO] Episode 1/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: 28.97 | Avg (10): 28.97 | Rollbacks: 2 | Violations: 2 | Loss: 0.0000
+2026-05-28 00:39:14,205 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,206 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,208 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,209 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Action ISOLATE_LINE(L1_4) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:39:14,210 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,211 [INFO] Episode 2/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 91.13 | Avg (10): 60.05 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:39:14,213 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing_ep_2.pt
+2026-05-28 00:39:14,213 [INFO] Periodic checkpoint saved: dqn_self_healing_ep_2.pt
+2026-05-28 00:39:14,215 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Cooldown active for Bus_1: 0.0s elapsed of 10.0s
+2026-05-28 00:39:14,217 [INFO] Policy Engine recorded action execution on L7_8. Cooldown started.
+2026-05-28 00:39:14,218 [INFO] Policy Engine recorded action execution on SYSTEM. Cooldown started.
+2026-05-28 00:39:14,220 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Cooldown active for Bus_1: 0.0s elapsed of 10.0s
+2026-05-28 00:39:14,221 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Cooldown active for SYSTEM: 0.0s elapsed of 10.0s
+2026-05-28 00:39:14,222 [INFO] Episode 3/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: 238.45 | Avg (10): 119.52 | Rollbacks: 3 | Violations: 3 | Loss: 0.0000
+2026-05-28 00:39:14,224 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.194 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,225 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,226 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,228 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,229 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Action NO_ACTION(SYSTEM) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:39:14,230 [INFO] Episode 4/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 88.55 | Avg (10): 111.77 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:39:14,231 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing_ep_4.pt
+2026-05-28 00:39:14,231 [INFO] Periodic checkpoint saved: dqn_self_healing_ep_4.pt
+2026-05-28 00:39:14,232 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.199 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,233 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15], Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:39:14,235 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,236 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,237 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:14,238 [INFO] Episode 5/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 93.73 | Avg (10): 108.17 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:39:14,239 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing.pt
+2026-05-28 00:39:14,239 [INFO] Training completed. Final checkpoint saved to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing.pt
+2026-05-28 00:39:15,240 [INFO] Starting PPO training loop for 5 episodes...
+2026-05-28 00:39:15,241 [INFO] Connected to MQTT broker at localhost:1883
+2026-05-28 00:39:15,241 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:15,246 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:15,246 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:15,248 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.163 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.163 p.u. outside [0.85, 1.15], Anti-Islanding: Opening ZONE_1 would isolate Bus_5 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_6 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:39:15,250 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.172 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.172 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,252 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,253 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L2_7) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,255 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,263 [INFO] Episode 1/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 94.71 | Avg (10): 94.71 | Rollbacks: 5 | Violations: 5 | Loss: 3229.2933
+2026-05-28 00:39:15,266 [INFO] Policy Engine recorded action execution on L1_4. Cooldown started.
+2026-05-28 00:39:15,268 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:39:15,269 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:39:15,271 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5, Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:39:15,273 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:39:15,280 [INFO] Episode 2/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: -80.52 | Avg (10): 7.09 | Rollbacks: 4 | Violations: 4 | Loss: 3507.4169
+2026-05-28 00:39:15,282 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing_ep_2.pt
+2026-05-28 00:39:15,282 [INFO] Periodic checkpoint saved: ppo_self_healing_ep_2.pt
+2026-05-28 00:39:15,284 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.168 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.168 p.u. outside [0.85, 1.15], Anti-Islanding: Opening ZONE_1 would isolate Bus_5 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_6 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:39:15,285 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.173 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.173 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,287 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,289 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Action ISOLATE_LINE(L1_4) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:39:15,292 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,300 [INFO] Episode 3/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 96.02 | Avg (10): 36.74 | Rollbacks: 5 | Violations: 5 | Loss: 3310.6048
+2026-05-28 00:39:15,303 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.170 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.170 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,304 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.173 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.173 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,306 [WARNING] [SANDBOX STEP BLOCKED] Action REROUTE_FLOW(L2_7) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,308 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,310 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L2_7) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:39:15,320 [INFO] Episode 4/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 97.71 | Avg (10): 51.98 | Rollbacks: 5 | Violations: 5 | Loss: 3396.6899
+2026-05-28 00:39:15,322 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing_ep_4.pt
+2026-05-28 00:39:15,322 [INFO] Periodic checkpoint saved: ppo_self_healing_ep_4.pt
+2026-05-28 00:39:15,324 [INFO] Policy Engine recorded action execution on EMERGENCY_DEFENSE. Cooldown started.
+2026-05-28 00:39:15,327 [INFO] Policy Engine recorded action execution on Bus_1. Cooldown started.
+2026-05-28 00:39:15,328 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:39:15,330 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:39:15,331 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Action NO_ACTION(SYSTEM) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:39:15,338 [INFO] Episode 5/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: -25.81 | Avg (10): 36.42 | Rollbacks: 3 | Violations: 3 | Loss: 3312.8444
+2026-05-28 00:39:15,341 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing.pt
+2026-05-28 00:39:15,341 [INFO] Training completed. Final checkpoint saved to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing.pt
+2026-05-28 00:39:16,344 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_ppo.pt
+2026-05-28 00:39:16,347 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_ppo.pt
+2026-05-28 00:39:16,348 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_dqn.pt
+2026-05-28 00:39:16,350 [INFO] [DQN AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_dqn.pt
+2026-05-28 00:39:16,354 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:39:16,360 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:39:16,360 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:39:16,362 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L4_5) blocked. Reason: Blocked by Safety Constraints: Anti-Islanding: Opening L4_5 would isolate Bus_5 from generators.
+2026-05-28 00:39:16,379 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 1.0 seconds.
+2026-05-28 00:39:17,480 [INFO] Calibration drift set for bus_5_v: 0.05
+2026-05-28 00:39:17,481 [WARNING] Simulated sensor sweep packet dropped (packet loss).
+2026-05-28 00:39:17,481 [WARNING] [StabilizationAgent] Vetoing CLOSE on L1_4 (capacity exceeds 110%)
+2026-05-28 00:39:17,481 [WARNING] [SurvivalAgent] Vetoing OPEN on L4_5 (would isolate critical hospital Bus 5)
+2026-05-28 00:39:17,481 [WARNING] [SurvivalAgent] Vetoing load shed on critical hospital Bus_5
+2026-05-28 00:40:18,761 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:18,761 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:40:18,761 [WARNING] Recorded failed recovery sequence for fault signature [L8_9]
+2026-05-28 00:40:18,763 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:18,763 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:40:18,763 [INFO] Recorded successful restoration sequence for fault signature [L8_9]
+2026-05-28 00:40:18,763 [WARNING] Recorded failed recovery sequence for fault signature [L8_9]
+2026-05-28 00:40:18,764 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:18,764 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:18,764 [INFO] Dynamic Weights Coordination: Active attack detected. Scaled CyberDefenseAgent weight to 2.5
+2026-05-28 00:40:18,764 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:40:18,764 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:40:18,764 [WARNING] [CyberDefenseAgent] Vetoing OPEN from unauthenticated source None during active attack
+2026-05-28 00:40:18,765 [WARNING] [CyberDefenseAgent] Vetoing CLOSE on L2_7 (connected bus Bus_7 compromised)
+2026-05-28 00:40:18,765 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:18,765 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:18,765 [INFO] Dynamic Weights Coordination: Grid stress/low stability detected. Scaled StabilizationAgent and SurvivalAgent weights to 2.0
+2026-05-28 00:40:18,765 [WARNING] [SurvivalAgent] Vetoing load shed on critical hospital Bus_5
+2026-05-28 00:40:18,765 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:18,765 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:18,765 [WARNING] [StabilizationAgent] Vetoing CLOSE on L1_4 (capacity exceeds 110%)
+2026-05-28 00:40:18,765 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,530 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,531 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,531 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,531 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,532 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L1_4) blocked. Reason: Action RECONNECT_LINE(L1_4) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:40:19,533 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,537 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,537 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,537 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,537 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,537 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,537 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,537 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:40:19,538 [INFO] AI Orchestration cycle | Global State: NORMAL | Stability: 100.0% | Mode: LOCAL_ATTACK | Recovery: CONTAINMENT_ENGAGED
+2026-05-28 00:40:19,538 [INFO] AI Orchestration cycle | Global State: NORMAL | Stability: 100.0% | Mode: COORDINATED_ATTACK | Recovery: CONTAINMENT_ENGAGED
+2026-05-28 00:40:19,538 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,542 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,542 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,542 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,543 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,543 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,543 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,543 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:40:19,543 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,547 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,547 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,547 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,547 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,547 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,548 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,548 [INFO] AI Orchestrator cache and engines reset.
+2026-05-28 00:40:19,548 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,552 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,552 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,552 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,552 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,553 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,557 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,557 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,557 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,557 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,558 [WARNING] [ADAPTIVE AI] Persistent anomaly detected. Escalating filters & containment sensitivity.
+2026-05-28 00:40:19,559 [WARNING] Dispatched telemetry isolation for Bus_4 (Priority: HIGH)
+2026-05-28 00:40:19,559 [WARNING] Dispatched breaker trip command to isolate line L4_5
+2026-05-28 00:40:19,559 [WARNING] Locking breaker L4_5 against autonomous restoration attempts.
+2026-05-28 00:40:19,559 [WARNING] Locking breaker L5_6 against autonomous restoration attempts.
+2026-05-28 00:40:19,559 [WARNING] [ESCALATION] Cyber-physical anomalies detected! Escalating: ADVISORY -> GRID_PRESERVATION
+2026-05-28 00:40:19,559 [INFO] [ESCALATION] Grid stabilized. De-escalating: GRID_PRESERVATION -> ADVISORY
+2026-05-28 00:40:19,559 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,564 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,564 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,564 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:19,569 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:19,569 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:19,569 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Restoration blocked by active cyber defense containment (mode: EMERGENCY_CONTAINMENT).
+2026-05-28 00:40:19,570 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,570 [INFO] [WARNING] Isolated load buses detected. Entering ISOLATE state.
+2026-05-28 00:40:19,571 [INFO] [WARNING] State transition: NORMAL -> ISOLATE
+2026-05-28 00:40:19,571 [INFO] [INFO] Fault isolation verification complete. Proceeding to stabilization.
+2026-05-28 00:40:19,571 [INFO] [WARNING] State transition: ISOLATE -> STABILIZE
+2026-05-28 00:40:19,571 [INFO] [INFO] Grid parameters stabilized. Moving to alternate route planning.
+2026-05-28 00:40:19,571 [INFO] [WARNING] State transition: STABILIZE -> REROUTE
+2026-05-28 00:40:19,572 [INFO] [INFO] Restoration planner generated sequence with 1 actions.
+2026-05-28 00:40:19,572 [INFO] [INFO] Plan step: CLOSE L7_8 (Reroute flow via tie-breaker L7_8 to restore de-energized subgrid segment.)
+2026-05-28 00:40:19,572 [INFO] [WARNING] State transition: REROUTE -> RESTORE
+2026-05-28 00:40:19,572 [INFO] [WARNING] Issuing progressive command: CLOSE breaker L7_8.
+2026-05-28 00:40:19,572 [INFO] [INFO] All planned restoration commands issued. Moving to verification.
+2026-05-28 00:40:19,572 [INFO] [WARNING] State transition: RESTORE -> VERIFY
+2026-05-28 00:40:19,572 [INFO] [INFO] Verification PASSED. Grid stabilized successfully.
+2026-05-28 00:40:19,572 [INFO] [WARNING] State transition: VERIFY -> NORMAL
+2026-05-28 00:40:19,572 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,572 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,572 [INFO] [WARNING] State transition: NORMAL -> VERIFY
+2026-05-28 00:40:19,573 [INFO] [CRITICAL] Verification FAILED: Voltage collapse on Bus_8: 0.800 p.u.. Reverting actions.
+2026-05-28 00:40:19,573 [INFO] [WARNING] State transition: VERIFY -> ROLLBACK
+2026-05-28 00:40:19,573 [INFO] [CRITICAL] Rolling back closed breaker: L7_8.
+2026-05-28 00:40:19,573 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 60.0 seconds.
+2026-05-28 00:40:19,573 [INFO] [WARNING] State transition: ROLLBACK -> NORMAL
+2026-05-28 00:40:19,573 [WARNING] Total grid collapse detected! Entering Blackstart COLLAPSED mode.
+2026-05-28 00:40:19,573 [WARNING] [CRITICAL INFRASTRUCTURE GUARD] Intercepted attempt to shed critical Bus_5. Redirecting command to lower priority Bus_6.
+2026-05-28 00:40:19,573 [WARNING] [CyberDefenseAgent] Vetoing CLOSE on L2_7 (connected bus Bus_7 compromised)
+2026-05-28 00:40:19,573 [WARNING] [CyberDefenseAgent] Vetoing RECONNECT_LINE on Bus_7 (target compromised)
+2026-05-28 00:40:19,574 [WARNING] [CyberDefenseAgent] Vetoing CLOSE from unauthenticated source UNTRUSTED_OP during active attack
+2026-05-28 00:40:19,574 [INFO] ESP32 comms failure injected state: True
+2026-05-28 00:40:19,574 [WARNING] ESP32 Write failed on pin_12: Communication offline.
+2026-05-28 00:40:19,603 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:40:19,603 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:19,803 [INFO] Relay L4_5 contacts fully latched to OPEN (transient completed).
+2026-05-28 00:40:19,803 [INFO] ESP32 latency spike injected state: True
+2026-05-28 00:40:19,815 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:40:19,815 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:19,815 [INFO] Hardware Router transaction: {'timestamp': 1779900019803, 'command': 'OPEN', 'target': 'L4_5', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:40:19,815 [WARNING] Hardware command blocked: Anti-chattering lockout active. Switch blocked on L4_5.
+2026-05-28 00:40:19,815 [INFO] Hardware Router transaction: {'timestamp': 1779900019815, 'command': 'CLOSE', 'target': 'L4_5', 'source': 'SCADA', 'device': 'NONE', 'status': 'BLOCKED', 'details': 'Anti-chattering lockout active. Switch blocked on L4_5.'}
+2026-05-28 00:40:19,827 [INFO] ESP32 pin pin_12 written successfully to 0
+2026-05-28 00:40:19,828 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:19,828 [INFO] Hardware Router transaction: {'timestamp': 1779900019815, 'command': 'OPEN', 'target': 'L4_5', 'source': 'FLISR', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:40:19,851 [INFO] Relay L7_8 coil commanded to CLOSED. Contact transition started.
+2026-05-28 00:40:19,851 [INFO] PLC write single coil success on coil 8 (Relay L7_8) -> CLOSED
+2026-05-28 00:40:19,851 [INFO] Hardware Router transaction: {'timestamp': 1779900019828, 'command': 'CLOSE', 'target': 'L7_8', 'source': 'FLISR', 'device': 'plc', 'status': 'SUCCESS', 'details': 'Dispatched via PLC Modbus Write Single Coil.'}
+2026-05-28 00:40:19,866 [INFO] ESP32 pin pin_4 written successfully to 0
+2026-05-28 00:40:19,866 [INFO] Relay L1_4 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:19,866 [INFO] Hardware Router transaction: {'timestamp': 1779900019851, 'command': 'OPEN', 'target': 'L1_4', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:40:19,887 [INFO] ESP32 pin pin_5 written successfully to 0
+2026-05-28 00:40:19,887 [INFO] Relay L2_7 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:19,887 [INFO] Hardware Router transaction: {'timestamp': 1779900019866, 'command': 'OPEN', 'target': 'L2_7', 'source': 'SCADA', 'device': 'esp32', 'status': 'SUCCESS', 'details': 'Dispatched via ESP32 GPIO write.'}
+2026-05-28 00:40:19,887 [WARNING] Hardware command blocked: Interlock Blocked: Opening L3_9 would isolate the final generator transformer.
+2026-05-28 00:40:19,887 [INFO] Hardware Router transaction: {'timestamp': 1779900019887, 'command': 'OPEN', 'target': 'L3_9', 'source': 'SCADA', 'device': 'NONE', 'status': 'BLOCKED', 'details': 'Interlock Blocked: Opening L3_9 would isolate the final generator transformer.'}
+2026-05-28 00:40:19,887 [ERROR] Device offline timeout: esp32
+2026-05-28 00:40:19,887 [WARNING] Relay alignment mismatch on L4_5: coil=CLOSED, feedback=OPEN
+2026-05-28 00:40:19,887 [WARNING] Relay alignment mismatch on L7_8: coil=CLOSED, feedback=OPEN
+2026-05-28 00:40:19,896 [INFO] Loading Physics-Informed Predictor model from: /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/ai_prediction/models/lstm_pinn_cyber_physical_predictor.pt
+2026-05-28 00:40:19,904 [INFO] PINN model loaded successfully. Scaling parameters loaded.
+2026-05-28 00:40:19,904 [WARNING] [ONLINE ADAPTATION] Concept drift score high (20.95). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,904 [WARNING] [ONLINE ADAPTATION] Concept drift score high (22.72). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,905 [WARNING] [ONLINE ADAPTATION] Concept drift score high (24.38). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,905 [WARNING] [ONLINE ADAPTATION] Concept drift score high (25.94). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,905 [WARNING] [ONLINE ADAPTATION] Concept drift score high (27.41). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,905 [WARNING] [ONLINE ADAPTATION] Concept drift score high (28.79). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,905 [WARNING] [ONLINE ADAPTATION] Concept drift score high (30.17). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,906 [WARNING] [ONLINE ADAPTATION] Concept drift score high (31.49). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,906 [WARNING] [ONLINE ADAPTATION] Concept drift score high (32.73). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,906 [WARNING] [ONLINE ADAPTATION] Concept drift score high (33.91). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,906 [WARNING] [ONLINE ADAPTATION] Concept drift score high (35.09). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,907 [WARNING] [ONLINE ADAPTATION] Concept drift score high (36.22). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,907 [WARNING] [ONLINE ADAPTATION] Concept drift score high (37.29). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,907 [WARNING] [ONLINE ADAPTATION] Concept drift score high (38.32). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,907 [WARNING] [ONLINE ADAPTATION] Concept drift score high (39.30). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,908 [WARNING] [ONLINE ADAPTATION] Concept drift score high (40.23). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,908 [WARNING] [ONLINE ADAPTATION] Concept drift score high (41.13). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,908 [WARNING] [ONLINE ADAPTATION] Concept drift score high (41.98). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,909 [WARNING] [ONLINE ADAPTATION] Concept drift score high (42.80). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,909 [WARNING] [ONLINE ADAPTATION] Concept drift score high (43.59). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,909 [WARNING] [ONLINE ADAPTATION] Concept drift score high (44.35). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,909 [WARNING] [ONLINE ADAPTATION] Concept drift score high (45.07). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,910 [WARNING] [ONLINE ADAPTATION] Concept drift score high (45.77). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,910 [WARNING] [ONLINE ADAPTATION] Concept drift score high (46.44). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,910 [WARNING] [ONLINE ADAPTATION] Concept drift score high (47.09). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,910 [WARNING] [ONLINE ADAPTATION] Concept drift score high (47.71). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,911 [WARNING] [ONLINE ADAPTATION] Concept drift score high (48.31). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,911 [WARNING] [ONLINE ADAPTATION] Concept drift score high (48.89). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,911 [WARNING] [ONLINE ADAPTATION] Concept drift score high (49.45). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,911 [WARNING] [ONLINE ADAPTATION] Concept drift score high (49.99). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,912 [WARNING] [ONLINE ADAPTATION] Concept drift score high (50.52). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,912 [WARNING] [ONLINE ADAPTATION] Concept drift score high (51.55). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,912 [WARNING] [ONLINE ADAPTATION] Concept drift score high (52.57). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,912 [WARNING] [ONLINE ADAPTATION] Concept drift score high (53.60). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,913 [WARNING] [ONLINE ADAPTATION] Concept drift score high (54.63). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,913 [WARNING] [ONLINE ADAPTATION] Concept drift score high (55.66). Dynamic scaling bounds updated.
+2026-05-28 00:40:19,951 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,951 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,951 [INFO] Dynamic Weights Coordination: Active attack detected. Scaled CyberDefenseAgent weight to 2.5
+2026-05-28 00:40:19,951 [INFO] Dynamic Weights Coordination: Grid stress/low stability detected. Scaled StabilizationAgent and SurvivalAgent weights to 2.0
+2026-05-28 00:40:19,951 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,952 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,952 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:19,952 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:19,952 [WARNING] Trust Adjustment: Rollback occurred. Penalized RestorationAgent trust: 1.00 -> 0.80
+2026-05-28 00:40:19,952 [WARNING] Trust Adjustment: Safety violation occurred. Penalized StabilizationAgent trust: 1.00 -> 0.85
+2026-05-28 00:40:20,882 [INFO] PLC comms failure injected state: True
+2026-05-28 00:40:21,025 [INFO] Relay L7_8 coil commanded to CLOSED. Contact transition started.
+2026-05-28 00:40:21,025 [INFO] PLC write single coil success on coil 8 (Relay L7_8) -> CLOSED
+2026-05-28 00:40:21,025 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,026 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,027 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,027 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,027 [WARNING] Trusted Action Filter blocked command [ISOLATE_LINE] targeting L1_4. Details: Action REJECTED: Observability degraded: global confidence 20.0% is below limit 40.0%
+2026-05-28 00:40:21,027 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,028 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,028 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 1
+2026-05-28 00:40:21,028 [INFO] [ROLLBACK ENGINE] Checkpoint popped. Remaining: 0
+2026-05-28 00:40:21,028 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,028 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,028 [WARNING] Trusted Action Filter blocked command [RECONNECT_LINE] targeting L1_4. Details: Action REJECTED: Telemetry trust check failed: target L1_4 trust 30.0% is below limit 50.0%
+2026-05-28 00:40:21,028 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,028 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 1
+2026-05-28 00:40:21,028 [INFO] [ROLLBACK ENGINE] New checkpoint pushed. Total stored: 2
+2026-05-28 00:40:21,028 [INFO] [ROLLBACK ENGINE] Undid 2 steps. Remaining checkpoints: 0
+2026-05-28 00:40:21,029 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,029 [WARNING] Trusted Action Filter blocked command [ISOLATE_LINE] targeting L4_5. Details: Action REJECTED: Anti-Islanding: Opening L4_5 would isolate Bus_5 from generators.
+2026-05-28 00:40:21,029 [WARNING] [PredictionAgent] Vetoing CLOSE on L7_8 (low success probability: 30.0%)
+2026-05-28 00:40:21,029 [WARNING] Blocking preemptive isolation on L5_6 because it would isolate critical hospital Bus 5
+2026-05-28 00:40:21,029 [WARNING] Blocking preemptive isolation on L6_7 because it would isolate critical hospital Bus 5
+2026-05-28 00:40:21,030 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:21,030 [WARNING] Relay switching blocked on L4_5: Anti-chattering lockout (elapsed: 0.00s).
+2026-05-28 00:40:21,030 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:21,030 [INFO] Relay L4_5 contacts fully latched to OPEN (transient completed).
+2026-05-28 00:40:21,030 [INFO] Relay L4_5 coil commanded to OPEN. Contact transition started.
+2026-05-28 00:40:21,030 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:21,030 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:21,030 [WARNING] [RestorationAgent] Vetoing restoration command CLOSE on L7_8 (grid collapsed, blackstart needed)
+2026-05-28 00:40:21,030 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:21,030 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:21,030 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 60.0 seconds.
+2026-05-28 00:40:21,030 [WARNING] [RestorationAgent] Vetoing CLOSE on L7_8 (breaker locked out)
+2026-05-28 00:40:21,030 [INFO] [INFO] Autonomous Restoration System online. Monitoring grid state...
+2026-05-28 00:40:21,030 [INFO] No recovery memory file found. Starting with clean state.
+2026-05-28 00:40:21,031 [INFO] Starting DQN training loop for 5 episodes...
+2026-05-28 00:40:21,032 [INFO] Connected to MQTT broker at localhost:1883
+2026-05-28 00:40:21,032 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:21,037 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:21,037 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:21,040 [INFO] Policy Engine recorded action execution on Bus_1. Cooldown started.
+2026-05-28 00:40:21,042 [INFO] Policy Engine recorded action execution on SYSTEM. Cooldown started.
+2026-05-28 00:40:21,044 [INFO] Policy Engine recorded action execution on EMERGENCY_DEFENSE. Cooldown started.
+2026-05-28 00:40:21,047 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Cooldown active for SYSTEM: 0.0s elapsed of 10.0s
+2026-05-28 00:40:21,049 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Cooldown active for SYSTEM: 0.0s elapsed of 10.0s
+2026-05-28 00:40:21,049 [INFO] Episode 1/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: 275.36 | Avg (10): 275.36 | Rollbacks: 2 | Violations: 2 | Loss: 0.0000
+2026-05-28 00:40:21,051 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.194 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,053 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,054 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,056 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,057 [WARNING] [SANDBOX STEP BLOCKED] Action REROUTE_FLOW(L4_5) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,058 [INFO] Episode 2/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 88.69 | Avg (10): 182.02 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:40:21,060 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing_ep_2.pt
+2026-05-28 00:40:21,060 [INFO] Periodic checkpoint saved: dqn_self_healing_ep_2.pt
+2026-05-28 00:40:21,061 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.164 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.164 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,063 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.172 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.172 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,064 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:40:21,066 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,067 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,068 [INFO] Episode 3/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 98.72 | Avg (10): 154.25 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:40:21,070 [WARNING] [SANDBOX STEP BLOCKED] Action REROUTE_FLOW(L2_7) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.170 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.170 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,072 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.173 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.173 p.u. outside [0.85, 1.15], Anti-Islanding: Opening ZONE_1 would isolate Bus_5 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_6 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:40:21,073 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,075 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,076 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:21,077 [INFO] Episode 4/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 96.71 | Avg (10): 139.87 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:40:21,078 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing_ep_4.pt
+2026-05-28 00:40:21,078 [INFO] Periodic checkpoint saved: dqn_self_healing_ep_4.pt
+2026-05-28 00:40:21,080 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Cooldown active for SYSTEM: 0.0s elapsed of 10.0s
+2026-05-28 00:40:21,082 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Cooldown active for Bus_1: 0.0s elapsed of 10.0s
+2026-05-28 00:40:21,083 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Cooldown active for SYSTEM: 0.0s elapsed of 10.0s
+2026-05-28 00:40:21,085 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:40:21,086 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Action NO_ACTION(SYSTEM) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:40:21,086 [INFO] Episode 5/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: 135.98 | Avg (10): 139.09 | Rollbacks: 5 | Violations: 5 | Loss: 0.0000
+2026-05-28 00:40:21,088 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing.pt
+2026-05-28 00:40:21,088 [INFO] Training completed. Final checkpoint saved to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/dqn_self_healing.pt
+2026-05-28 00:40:22,089 [INFO] Starting PPO training loop for 5 episodes...
+2026-05-28 00:40:22,090 [INFO] Connected to MQTT broker at localhost:1883
+2026-05-28 00:40:22,090 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:22,095 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:22,095 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:22,099 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.195 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,101 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,103 [WARNING] [SANDBOX STEP BLOCKED] Action REROUTE_FLOW(L4_5) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,105 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L4_5) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,107 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_5: 1.200 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,122 [INFO] Episode 1/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 94.59 | Avg (10): 94.59 | Rollbacks: 5 | Violations: 5 | Loss: 3354.8548
+2026-05-28 00:40:22,126 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.164 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.164 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,129 [WARNING] [SANDBOX STEP BLOCKED] Action REROUTE_FLOW(L2_7) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.172 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.172 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,131 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_RESTORATION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,135 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15], Anti-Islanding: Opening ZONE_1 would isolate Bus_5 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_6 from generators., Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:40:22,137 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Voltage violation at Bus_6: 1.174 p.u. outside [0.85, 1.15], Voltage violation at Bus_7: 1.174 p.u. outside [0.85, 1.15]
+2026-05-28 00:40:22,151 [INFO] Episode 2/5 | Level: 1 | Scenario: LINE_FAULT | Steps: 5 | Reward: 98.72 | Avg (10): 96.65 | Rollbacks: 5 | Violations: 5 | Loss: 3421.2455
+2026-05-28 00:40:22,154 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing_ep_2.pt
+2026-05-28 00:40:22,154 [INFO] Periodic checkpoint saved: ppo_self_healing_ep_2.pt
+2026-05-28 00:40:22,158 [INFO] Policy Engine recorded action execution on Bus_1. Cooldown started.
+2026-05-28 00:40:22,161 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L1_4) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:40:22,163 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:40:22,165 [WARNING] [SANDBOX STEP BLOCKED] Action RECONNECT_LINE(L1_4) blocked. Reason: Action RECONNECT_LINE(L1_4) blocked by adaptive policy protection (repeated failed action).
+2026-05-28 00:40:22,167 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:40:22,176 [INFO] Episode 3/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: -80.52 | Avg (10): 37.60 | Rollbacks: 4 | Violations: 4 | Loss: 3483.2579
+2026-05-28 00:40:22,179 [INFO] Policy Engine recorded action execution on L1_4. Cooldown started.
+2026-05-28 00:40:22,181 [WARNING] [SANDBOX STEP BLOCKED] Action RESTORE_TELEMETRY_TRUST(Bus_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:40:22,183 [WARNING] [SANDBOX STEP BLOCKED] Action NO_ACTION(SYSTEM) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:40:22,185 [WARNING] [SANDBOX STEP BLOCKED] Action REROUTE_FLOW(L1_4) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5
+2026-05-28 00:40:22,186 [WARNING] [SANDBOX STEP BLOCKED] Action ENABLE_ISLANDING(ZONE_1) blocked. Reason: Blocked by Safety Constraints: Line overload on L2_7: 4.00 p.u. exceeds 2.5, Line overload on L5_6: 2.65 p.u. exceeds 2.5, Line overload on L6_7: 4.02 p.u. exceeds 2.5, Anti-Islanding: Opening ZONE_1 would isolate Bus_8 from generators.
+2026-05-28 00:40:22,196 [INFO] Episode 4/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: -82.39 | Avg (10): 7.60 | Rollbacks: 4 | Violations: 4 | Loss: 3452.4827
+2026-05-28 00:40:22,198 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing_ep_4.pt
+2026-05-28 00:40:22,198 [INFO] Periodic checkpoint saved: ppo_self_healing_ep_4.pt
+2026-05-28 00:40:22,201 [WARNING] [SANDBOX STEP BLOCKED] Action REJECT_TELEMETRY(Bus_1) blocked. Reason: Cooldown active for Bus_1: 0.0s elapsed of 10.0s
+2026-05-28 00:40:22,203 [INFO] Policy Engine recorded action execution on EMERGENCY_DEFENSE. Cooldown started.
+2026-05-28 00:40:22,205 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_BUS(Bus_1) blocked. Reason: Cooldown active for Bus_1: 0.0s elapsed of 10.0s
+2026-05-28 00:40:22,207 [WARNING] [SANDBOX STEP BLOCKED] Action ACTIVATE_DEFENSIVE_MODE(EMERGENCY_DEFENSE) blocked. Reason: Cooldown active for EMERGENCY_DEFENSE: 0.0s elapsed of 10.0s
+2026-05-28 00:40:22,209 [INFO] Policy Engine recorded action execution on SYSTEM. Cooldown started.
+2026-05-28 00:40:22,218 [INFO] Episode 5/5 | Level: 1 | Scenario: OVERLOAD | Steps: 5 | Reward: 230.39 | Avg (10): 52.16 | Rollbacks: 3 | Violations: 3 | Loss: 20132.1358
+2026-05-28 00:40:22,221 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing.pt
+2026-05-28 00:40:22,221 [INFO] Training completed. Final checkpoint saved to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/checkpoints/ppo_self_healing.pt
+2026-05-28 00:40:23,223 [INFO] [PPO AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_ppo.pt
+2026-05-28 00:40:23,225 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_ppo.pt
+2026-05-28 00:40:23,226 [INFO] [DQN AGENT] Checkpoint saved successfully to /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_dqn.pt
+2026-05-28 00:40:23,228 [INFO] [DQN AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/models/test_dqn.pt
+2026-05-28 00:40:23,230 [INFO] [TIMELINE EVENT] STATUS_UPDATE: Autonomous pre-RL restoration timeline tracker initialized.
+2026-05-28 00:40:23,235 [INFO] [PPO AGENT] Checkpoint loaded successfully from /home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity/core/self_healing/models/ppo_self_healing.pt
+2026-05-28 00:40:23,235 [INFO] [RL ENVIRONMENT] Successfully loaded trained PPO checkpoint for live inference.
+2026-05-28 00:40:23,237 [WARNING] [SANDBOX STEP BLOCKED] Action ISOLATE_LINE(L4_5) blocked. Reason: Blocked by Safety Constraints: Anti-Islanding: Opening L4_5 would isolate Bus_5 from generators.
+2026-05-28 00:40:23,249 [WARNING] [ROLLBACK GUARD] Locked out breaker L7_8 for 1.0 seconds.
+2026-05-28 00:40:24,350 [INFO] Calibration drift set for bus_5_v: 0.05
+2026-05-28 00:40:24,350 [WARNING] Simulated sensor sweep packet dropped (packet loss).
+2026-05-28 00:40:24,350 [WARNING] [StabilizationAgent] Vetoing CLOSE on L1_4 (capacity exceeds 110%)
+2026-05-28 00:40:24,351 [WARNING] [SurvivalAgent] Vetoing OPEN on L4_5 (would isolate critical hospital Bus 5)
+2026-05-28 00:40:24,351 [WARNING] [SurvivalAgent] Vetoing load shed on critical hospital Bus_5

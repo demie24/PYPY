@@ -40,6 +40,11 @@ class MemoryStore:
         self.latest_l6_agent_conflicts: Optional[Dict[str, Any]] = None
         self.latest_l6_distributed_state: Optional[Dict[str, Any]] = None
         self.latest_l6_agent_confidence: Optional[Dict[str, Any]] = None
+        self.latest_hardware_relay: Optional[Dict[str, Any]] = None
+        self.latest_hardware_gpio: Optional[Dict[str, Any]] = None
+        self.latest_hardware_sensor: Optional[Dict[str, Any]] = None
+        self.latest_hardware_device_health: Optional[Dict[str, Any]] = None
+        self.latest_hardware_command_log: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -142,6 +147,21 @@ class MemoryStore:
     def update_l6_agent_confidence(self, payload: Dict[str, Any]):
         self.latest_l6_agent_confidence = payload
 
+    def update_hardware_relay(self, payload: Dict[str, Any]):
+        self.latest_hardware_relay = payload
+
+    def update_hardware_gpio(self, payload: Dict[str, Any]):
+        self.latest_hardware_gpio = payload
+
+    def update_hardware_sensor(self, payload: Dict[str, Any]):
+        self.latest_hardware_sensor = payload
+
+    def update_hardware_device_health(self, payload: Dict[str, Any]):
+        self.latest_hardware_device_health = payload
+
+    def update_hardware_command_log(self, payload: Dict[str, Any]):
+        self.latest_hardware_command_log = payload
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -190,7 +210,12 @@ class MemoryStore:
             "l6_agent_consensus": self.latest_l6_agent_consensus,
             "l6_agent_conflicts": self.latest_l6_agent_conflicts,
             "l6_distributed_state": self.latest_l6_distributed_state,
-            "l6_agent_confidence": self.latest_l6_agent_confidence
+            "l6_agent_confidence": self.latest_l6_agent_confidence,
+            "hardware_relay": self.latest_hardware_relay,
+            "hardware_gpio": self.latest_hardware_gpio,
+            "hardware_sensor": self.latest_hardware_sensor,
+            "hardware_device_health": self.latest_hardware_device_health,
+            "hardware_command_log": self.latest_hardware_command_log
         }
 
     def clear_alerts(self):

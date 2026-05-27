@@ -81,6 +81,11 @@ class MQTTManager:
             client.subscribe("grid/l6_agent_conflicts")
             client.subscribe("grid/l6_distributed_state")
             client.subscribe("grid/l6_agent_confidence")
+            client.subscribe("hardware/relay")
+            client.subscribe("hardware/gpio")
+            client.subscribe("hardware/sensor")
+            client.subscribe("hardware/device_health")
+            client.subscribe("hardware/command_log")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -156,6 +161,16 @@ class MQTTManager:
                 store.update_l6_distributed_state(payload)
             elif topic == "grid/l6_agent_confidence":
                 store.update_l6_agent_confidence(payload)
+            elif topic == "hardware/relay":
+                store.update_hardware_relay(payload)
+            elif topic == "hardware/gpio":
+                store.update_hardware_gpio(payload)
+            elif topic == "hardware/sensor":
+                store.update_hardware_sensor(payload)
+            elif topic == "hardware/device_health":
+                store.update_hardware_device_health(payload)
+            elif topic == "hardware/command_log":
+                store.update_hardware_command_log(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

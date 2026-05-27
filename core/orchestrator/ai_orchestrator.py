@@ -134,6 +134,8 @@ class AIOrchestrator:
             self.state_cache["l6_distributed_state"] = payload
         elif topic == "grid/l6_agent_confidence":
             self.state_cache["l6_agent_confidence"] = payload
+        elif topic == "hardware/device_health":
+            self.state_cache["hardware_device_health"] = payload
         elif topic == "grid/pre_rl":
             op_override = payload.get("operator_override", {})
             self.override_state["pause_autonomous"] = op_override.get("pause_autonomous", False)
@@ -465,6 +467,7 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("grid/l6_agent_conflicts")
         client.subscribe("grid/l6_distributed_state")
         client.subscribe("grid/l6_agent_confidence")
+        client.subscribe("hardware/device_health")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 
@@ -489,7 +492,23 @@ def on_message(client, userdata, msg):
                     "source": "ORCHESTRATOR_APPROVED",
                     "original_source": source
                 }
-                client.publish("grid/control", json.dumps(forwarded_payload))
+                
+                # Check if hardware daemon is active and has good trust
+                hardware_active = False
+                device_health = orchestrator.state_cache.get("hardware_device_health")
+                if device_health:
+                    devices = device_health.get("devices", {})
+                    esp_trust = devices.get("esp32", {}).get("trust", 1.0)
+                    plc_trust = devices.get("plc", {}).get("trust", 1.0)
+                    if esp_trust >= 0.4 and plc_trust >= 0.4:
+                        hardware_active = True
+                        
+                if hardware_active:
+                    logger.info("Routing approved command through Hardware Abstraction Layer.")
+                    client.publish("hardware/control/execute", json.dumps(forwarded_payload))
+                else:
+                    logger.info("HAL offline or degraded. Routing approved command directly to Digital Twin.")
+                    client.publish("grid/control", json.dumps(forwarded_payload))
                 
                 # Log event
                 event_payload = {

@@ -19,6 +19,7 @@ import { AdaptiveRecoveryPanel } from "./components/AdaptiveRecoveryPanel.tsx";
 import { AutonomousSurvivalPanel } from "./components/AutonomousSurvivalPanel.tsx";
 import { PredictiveStabilizationPanel } from "./components/PredictiveStabilizationPanel.tsx";
 import { MultiAgentCoordinationPanel } from "./components/MultiAgentCoordinationPanel.tsx";
+import { HardwareFoundationPanel } from "./components/HardwareFoundationPanel.tsx";
 
 import {
   Wifi,
@@ -71,6 +72,11 @@ export default function App() {
   const [l6AgentConflicts, setL6AgentConflicts] = useState<any>(null);
   const [l6DistributedState, setL6DistributedState] = useState<any>(null);
   const [l6AgentConfidence, setL6AgentConfidence] = useState<any>(null);
+  const [hardwareRelay, setHardwareRelay] = useState<any>(null);
+  const [hardwareGpio, setHardwareGpio] = useState<any>(null);
+  const [hardwareSensor, setHardwareSensor] = useState<any>(null);
+  const [hardwareDeviceHealth, setHardwareDeviceHealth] = useState<any>(null);
+  const [hardwareCommandLog, setHardwareCommandLog] = useState<any>(null);
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
@@ -111,10 +117,11 @@ export default function App() {
     l6_adaptive_recovery: 2,
     l6_survival: 2,
     l6_predictive_stabilization: 2,
-    l6_multi_agent: 2
+    l6_multi_agent: 2,
+    l7_hardware: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware"
   ]);
 
   // Timeline Replay States
@@ -157,6 +164,11 @@ export default function App() {
       l6AgentConflicts,
       l6DistributedState,
       l6AgentConfidence,
+      hardwareRelay,
+      hardwareGpio,
+      hardwareSensor,
+      hardwareDeviceHealth,
+      hardwareCommandLog,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -329,6 +341,21 @@ export default function App() {
           if (data.l6_agent_confidence) {
             setL6AgentConfidence(data.l6_agent_confidence);
           }
+          if (data.hardware_relay) {
+            setHardwareRelay(data.hardware_relay);
+          }
+          if (data.hardware_gpio) {
+            setHardwareGpio(data.hardware_gpio);
+          }
+          if (data.hardware_sensor) {
+            setHardwareSensor(data.hardware_sensor);
+          }
+          if (data.hardware_device_health) {
+            setHardwareDeviceHealth(data.hardware_device_health);
+          }
+          if (data.hardware_command_log) {
+            setHardwareCommandLog(data.hardware_command_log);
+          }
         } 
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
@@ -404,6 +431,11 @@ export default function App() {
               l6AgentConflicts: currentStates.l6AgentConflicts,
               l6DistributedState: currentStates.l6DistributedState,
               l6AgentConfidence: currentStates.l6AgentConfidence,
+              hardwareRelay: currentStates.hardwareRelay,
+              hardwareGpio: currentStates.hardwareGpio,
+              hardwareSensor: currentStates.hardwareSensor,
+              hardwareDeviceHealth: currentStates.hardwareDeviceHealth,
+              hardwareCommandLog: currentStates.hardwareCommandLog,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -563,6 +595,16 @@ export default function App() {
             setL6DistributedState(payload);
           } else if (topic === "grid/l6_agent_confidence") {
             setL6AgentConfidence(payload);
+          } else if (topic === "hardware/relay") {
+            setHardwareRelay(payload);
+          } else if (topic === "hardware/gpio") {
+            setHardwareGpio(payload);
+          } else if (topic === "hardware/sensor") {
+            setHardwareSensor(payload);
+          } else if (topic === "hardware/device_health") {
+            setHardwareDeviceHealth(payload);
+          } else if (topic === "hardware/command_log") {
+            setHardwareCommandLog(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -799,6 +841,11 @@ export default function App() {
   const dispL6AgentConflicts = currentFrame ? currentFrame.l6AgentConflicts : l6AgentConflicts;
   const dispL6DistributedState = currentFrame ? currentFrame.l6DistributedState : l6DistributedState;
   const dispL6AgentConfidence = currentFrame ? currentFrame.l6AgentConfidence : l6AgentConfidence;
+  const dispHardwareRelay = currentFrame ? currentFrame.hardwareRelay : hardwareRelay;
+  const dispHardwareGpio = currentFrame ? currentFrame.hardwareGpio : hardwareGpio;
+  const dispHardwareSensor = currentFrame ? currentFrame.hardwareSensor : hardwareSensor;
+  const dispHardwareDeviceHealth = currentFrame ? currentFrame.hardwareDeviceHealth : hardwareDeviceHealth;
+  const dispHardwareCommandLog = currentFrame ? currentFrame.hardwareCommandLog : hardwareCommandLog;
 
   const dispHistory = useMemo(() => {
     if (!isReplaying || !currentFrame || !dispTelemetry) return history;
@@ -1003,6 +1050,19 @@ export default function App() {
             conflictsData={dispL6AgentConflicts}
             distributedStateData={dispL6DistributedState}
             confidenceData={dispL6AgentConfidence}
+          />
+        );
+        break;
+      case "l7_hardware":
+        title = "Layer 7.1 Hardware Abstraction Foundation";
+        content = (
+          <HardwareFoundationPanel
+            hardwareRelay={dispHardwareRelay}
+            hardwareGpio={dispHardwareGpio}
+            hardwareSensor={dispHardwareSensor}
+            hardwareDeviceHealth={dispHardwareDeviceHealth}
+            hardwareCommandLog={dispHardwareCommandLog}
+            onSendControl={sendControl}
           />
         );
         break;

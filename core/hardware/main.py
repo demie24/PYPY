@@ -12,6 +12,14 @@ from virtual_sensor_faults import VirtualSensorFaults
 from hardware_command_router import HardwareCommandRouter
 from hardware_fault_orchestrator import HardwareFaultOrchestrator
 
+# Import Cyber-Physical Attack Layer Skeletons
+from digispark_attack_engine import DigisparkAttackEngine
+from badusb_payload_manager import BadUSBPayloadManager
+from rogue_device_monitor import RogueDeviceMonitor
+from hardware_intrusion_detector import HardwareIntrusionDetector
+from cyber_physical_attack_orchestrator import CyberPhysicalAttackOrchestrator
+
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("hardware.main")
@@ -27,6 +35,13 @@ plc_interface = VirtualPLC(state_manager, relay_controller)
 sensor_interface = VirtualSensorFaults(state_manager)
 command_router = HardwareCommandRouter(state_manager, esp32_bridge, plc_interface, relay_controller)
 fault_orchestrator = HardwareFaultOrchestrator(state_manager, esp32_bridge, plc_interface, sensor_interface, relay_controller)
+
+# Initialize Attack Layer Skeletons
+digispark_engine = DigisparkAttackEngine()
+badusb_manager = BadUSBPayloadManager()
+rogue_monitor = RogueDeviceMonitor()
+intrusion_detector = HardwareIntrusionDetector()
+attack_orchestrator = CyberPhysicalAttackOrchestrator(digispark_engine, badusb_manager, rogue_monitor, intrusion_detector)
 
 # MQTT Callbacks
 def on_connect(client, userdata, flags, rc):
@@ -48,10 +63,23 @@ def on_message(client, userdata, msg):
             sensor_data = sensor_interface.simulate_sensor_sweep(payload)
             if sensor_data:
                 client.publish("hardware/sensor", json.dumps(sensor_data))
+                # Scaffolding intrusion telemetry analysis
+                for bid, bus in (payload.get("state", {}).get("buses", {})).items():
+                    sensor_id = f"{bid.lower()}_v"
+                    if sensor_id in state_manager.sensors:
+                        raw_v = bus.get("voltage_pu", 1.0)
+                        filtered_v = state_manager.sensors[sensor_id]
+                        intrusion_detector.analyze_telemetry(sensor_id, raw_v, filtered_v)
                 
         # 2. Intercept proposed commands
         elif topic == "hardware/control/execute":
             logger.info(f"Proposed control command intercepted: {payload}")
+            # Intrusion command checks
+            cmd = payload.get("command")
+            target = payload.get("target")
+            source = payload.get("source")
+            intrusion_detector.analyze_command(cmd, target, source)
+            
             success, reason = command_router.route_command(payload)
             
             # If successfully routed, we publish the command execution to grid/control
@@ -101,17 +129,131 @@ def on_message(client, userdata, msg):
                 
             elif cmd == "LAUNCH_HARDWARE_SCENARIO":
                 scenario = payload.get("scenario")
-                fault_orchestrator.launch_scenario(scenario)
+                campaigns = ["coordinated_blackout", "stealthy_calibration_drift", "reconnect_flood_dos"]
+                if scenario in campaigns:
+                    attack_orchestrator.start_campaign(scenario)
+                else:
+                    fault_orchestrator.launch_scenario(scenario)
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
-                    "event": f"Launched Hardware Scenario: {scenario}",
+                    "event": f"Launched Hardware Scenario/Campaign: {scenario}",
                     "severity": "WARNING"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "INJECT_USB_DEVICE":
+                vid = payload.get("vendor_id")
+                pid = payload.get("product_id")
+                name = payload.get("name")
+                rogue_monitor.simulate_device_insertion(vid, pid, name)
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"USB Device Connected: {name} ({vid}:{pid})",
+                    "severity": "WARNING"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "REMOVE_USB_DEVICE":
+                vid = payload.get("vendor_id")
+                pid = payload.get("product_id")
+                rogue_monitor.simulate_device_removal(vid, pid)
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"USB Device Disconnected: {vid}:{pid}",
+                    "severity": "INFO"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "TRIGGER_BADUSB_ATTACK":
+                payload_id = payload.get("payload_id")
+                delay = payload.get("delay_ticks", 0)
+                origin_ip = payload.get("origin_ip", "192.168.1.50")
+                
+                # Fetch payload scripts and metadata
+                script_steps = badusb_manager.get_payload_script(payload_id)
+                meta = badusb_manager.get_payload_metadata(payload_id)
+                
+                # Run security intrusion evaluations
+                intrusion_detector.analyze_ip_origin(origin_ip, f"TRIGGER_BADUSB:{payload_id}")
+                intrusion_detector.analyze_typing_speed(2) # 2ms mechanical speed triggers alert
+                
+                # Trigger staged attack execution
+                digispark_engine.trigger_attack(payload_id, delay_ticks=delay, steps=script_steps)
+                
+                # Decay trust statefully based on badusb metadata
+                impact = meta.get("trust_impact", 0.0)
+                if impact > 0:
+                    rogue_monitor.hardware_trust_score = max(0.0, rogue_monitor.hardware_trust_score - impact)
+                
+                # Dynamically execute simulated physical commands described in the DuckyScript
+                for step in script_steps:
+                    parts = step.split(" ", 1)
+                    step_cmd = parts[0]
+                    step_arg = parts[1] if len(parts) > 1 else ""
+                    
+                    if step_cmd == "WRITE_MODBUS_COIL":
+                        # Format: WRITE_MODBUS_COIL address value
+                        try:
+                            addr_val = step_arg.split(" ")
+                            addr = int(addr_val[0])
+                            val = int(addr_val[1])
+                            # Execute coil write
+                            plc_interface.write_single_coil(addr, val)
+                        except Exception as e:
+                            logger.error(f"Error executing MODBUS payload step: {e}")
+                    elif step_cmd == "SPOOF_BIAS":
+                        try:
+                            sensor_val = step_arg.split(" ")
+                            sensor = sensor_val[0]
+                            bias = float(sensor_val[1])
+                            sensor_interface.set_calibration_drift(sensor, bias)
+                        except Exception as e:
+                            logger.error(f"Error executing SPOOF payload step: {e}")
+                    elif step_cmd == "CORRUPT_SENSOR":
+                        try:
+                            sensor_type = step_arg.split(" ")
+                            sensor = sensor_type[0]
+                            ctype = sensor_type[1]
+                            sensor_interface.set_sensor_corruption(sensor, ctype)
+                        except Exception as e:
+                            logger.error(f"Error executing CORRUPT payload step: {e}")
+                
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"Triggered Digispark BadUSB Attack: {payload_id} (trust penalty applied: -{impact})",
+                    "severity": "HIGH"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "QUARANTINE_PORT":
+                port = payload.get("port")
+                attack_orchestrator.execute_quarantine(port)
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"Quarantined Hardware Interface Port: {port}",
+                    "severity": "WARNING"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "RELEASE_PORT":
+                port = payload.get("port")
+                attack_orchestrator.remove_quarantine(port)
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"Released Quarantine on Port: {port}",
+                    "severity": "INFO"
                 }
                 client.publish("grid/events", json.dumps(event_log))
                 
             elif cmd == "TERMINATE_HARDWARE_SCENARIO" or cmd == "RESET_ALARMS":
                 fault_orchestrator.clear_all_faults()
+                attack_orchestrator.reset()
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
@@ -211,6 +353,20 @@ if __name__ == "__main__":
             client.publish("hardware/spoofed_telemetry", json.dumps(spoofed_telemetry_payload))
             
             client.publish("hardware/fault_propagation", json.dumps(fault_orchestrator.get_fault_propagation_status()))
+            
+            # Tick Cyber-Physical Attack layer
+            rogue_monitor.tick()
+            attack_orchestrator.tick_campaign()
+            badusb_payload = digispark_engine.tick()
+            attack_state_payload = attack_orchestrator.get_orchestration_payload()
+            
+            client.publish("hardware/usb_events", json.dumps({"timestamp": int(time.time() * 1000), "events": digispark_engine.usb_events}))
+            client.publish("hardware/rogue_devices", json.dumps({"timestamp": int(time.time() * 1000), "devices": rogue_monitor.get_devices_status()}))
+            client.publish("hardware/badusb", json.dumps(badusb_payload))
+            client.publish("hardware/intrusion_alerts", json.dumps({"timestamp": int(time.time() * 1000), "alerts": intrusion_detector.alerts}))
+            client.publish("hardware/device_trust", json.dumps(rogue_monitor.get_trust_payload()))
+            client.publish("hardware/attack_state", json.dumps(attack_state_payload))
+            client.publish("hardware/attack_propagation", json.dumps(attack_orchestrator.get_propagation_chain()))
             
             time.sleep(1.0)
         except KeyboardInterrupt:

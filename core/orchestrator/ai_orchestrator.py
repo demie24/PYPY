@@ -62,7 +62,9 @@ class AIOrchestrator:
             "l6_agent_consensus": None,
             "l6_agent_conflicts": None,
             "l6_distributed_state": None,
-            "l6_agent_confidence": None
+            "l6_agent_confidence": None,
+            "hardware_attack_state": None,
+            "hardware_attack_propagation": None
         }
 
         # Operator overrides and control states
@@ -142,6 +144,8 @@ class AIOrchestrator:
             self.state_cache["hardware_relay_faults"] = payload
         elif topic == "hardware/anomalies":
             self.state_cache["hardware_anomalies"] = payload
+        elif topic == "hardware/attack_state":
+            self.state_cache["hardware_attack_state"] = payload
         elif topic == "grid/pre_rl":
             op_override = payload.get("operator_override", {})
             self.override_state["pause_autonomous"] = op_override.get("pause_autonomous", False)
@@ -153,6 +157,58 @@ class AIOrchestrator:
                 self.state_cache["flisr_auto"] = payload["flisr_auto"]
             if "defense_mode" in payload:
                 self.defense_mode = payload["defense_mode"]
+        elif topic == "hardware/attack_propagation":
+            self.state_cache["hardware_attack_propagation"] = payload
+
+    def process_quarantine_containment(self, client):
+        """
+        When a hardware quarantine is detected in the propagation chain,
+        automatically isolate the dependent power lines/breakers.
+        """
+        hardware_prop = self.state_cache.get("hardware_attack_propagation") or {}
+        nodes = hardware_prop.get("nodes", [])
+        quarantined_nodes = [node["id"] for node in nodes if node.get("status") == "QUARANTINED"]
+        
+        hardware_attack = self.state_cache.get("hardware_attack_state")
+        if hardware_attack:
+            quarantined_ports = hardware_attack.get("quarantined_ports", [])
+            for port in quarantined_ports:
+                port_id = port
+                if port == "Port 7":
+                    port_id = "USB_Port_7"
+                elif port == "ESP32":
+                    port_id = "ESP32_Bridge"
+                elif port == "PLC":
+                    port_id = "PLC_Modbus_Gateway"
+                
+                if port_id not in quarantined_nodes:
+                    quarantined_nodes.append(port_id)
+                    
+        if not quarantined_nodes:
+            return
+            
+        device_dependency = {
+            "USB_Port_7": ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6"],
+            "ESP32_Bridge": ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6"],
+            "PLC_Modbus_Gateway": ["L6_7", "L7_8", "L8_9"],
+            "Breaker_Relays": ["L6_7", "L7_8", "L8_9"]
+        }
+        
+        telemetry = self.state_cache.get("telemetry")
+        breakers_state = telemetry.get("state", {}).get("breakers", {}) if telemetry else {}
+        
+        for qnode in quarantined_nodes:
+            dependent_breakers = device_dependency.get(qnode, [])
+            for breaker in dependent_breakers:
+                current_state = breakers_state.get(breaker, "CLOSED")
+                if current_state in ["CLOSED", "CLOSE"]:
+                    logger.warning(f"[DEFENSIVE COORDINATION] Quarantined interface {qnode} detected. Automatically isolating dependent breaker {breaker}.")
+                    isolate_payload = {
+                        "command": "OPEN",
+                        "target": breaker,
+                        "source": "AI_ORCHESTRATOR"
+                    }
+                    client.publish("grid/control", json.dumps(isolate_payload))
 
     def evaluate_proposed_command(self, cmd: str, target: str, source: str) -> Tuple[bool, str]:
         """
@@ -164,6 +220,46 @@ class AIOrchestrator:
             
         if self.override_state.get("pause_autonomous", False):
             return False, "Autonomous execution paused by operator override."
+
+        # Hardware Attack Layer / Quarantine & Compromise Checks
+        hardware_attack = self.state_cache.get("hardware_attack_state") or {}
+        quarantined_ports = hardware_attack.get("quarantined_ports", [])
+        
+        # Map quarantined ports/interfaces to dependent breakers
+        device_dependency = {
+            "ESP32": ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6"],
+            "Port 7": ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6"],
+            "USB_Port_7": ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6"],
+            "ESP32_Bridge": ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6"],
+            "PLC": ["L6_7", "L7_8", "L8_9"],
+            "PLC_Modbus_Gateway": ["L6_7", "L7_8", "L8_9"],
+            "Breaker_Relays": ["L6_7", "L7_8", "L8_9"]
+        }
+
+        for port in quarantined_ports:
+            if str(port) in target or target in str(port):
+                return False, f"Blocked proposed command on {target}: Target interface/port {port} is quarantined."
+            dependent_breakers = device_dependency.get(port, [])
+            if target in dependent_breakers:
+                return False, f"Blocked proposed command on {target}: Dependent interface/port {port} is quarantined."
+
+        hardware_prop = self.state_cache.get("hardware_attack_propagation") or {}
+        nodes = hardware_prop.get("nodes", [])
+        for node in nodes:
+            if node.get("status") == "QUARANTINED":
+                dependent_breakers = device_dependency.get(node["id"], [])
+                if target in dependent_breakers:
+                    return False, f"Blocked proposed command on {target}: Dependent interface {node['id']} is quarantined."
+
+        escalation = hardware_attack.get("attack_escalation_state", "NOMINAL")
+        if escalation == "COMPROMISED":
+            # Decay agent trust statefully
+            for agent_name in self.orchestrator_agent.agent_trust:
+                self.orchestrator_agent.agent_trust[agent_name] = max(0.1, self.orchestrator_agent.agent_trust[agent_name] - 0.05)
+            logger.warning("Decayed AI agent trust levels due to COMPROMISED hardware attack state.")
+            # Quarantine proposed commands
+            if source != "SCADA_OPERATOR":
+                return False, f"Blocked proposed command on {target}: Hardware layer is COMPROMISED. Proposed action quarantined."
 
         # Stuck/Welded/Desynced Relays Check
         relay_faults = self.state_cache.get("hardware_relay_faults") or {}
@@ -443,7 +539,9 @@ class AIOrchestrator:
             "l6_agent_consensus": None,
             "l6_agent_conflicts": None,
             "l6_distributed_state": None,
-            "l6_agent_confidence": None
+            "l6_agent_confidence": None,
+            "hardware_attack_state": None,
+            "hardware_attack_propagation": None
         }
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
@@ -490,6 +588,8 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("hardware/faults")
         client.subscribe("hardware/relay_faults")
         client.subscribe("hardware/anomalies")
+        client.subscribe("hardware/attack_state")
+        client.subscribe("hardware/attack_propagation")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 
@@ -589,6 +689,8 @@ def on_message(client, userdata, msg):
             # Trigger cycle execution upon receiving telemetry tick
             if topic == "grid/telemetry":
                 orchestrator.run_cycle(client)
+            elif topic == "hardware/attack_propagation":
+                orchestrator.process_quarantine_containment(client)
                 
     except Exception as e:
         logger.error(f"Error handling message on {msg.topic}: {e}", exc_info=True)

@@ -21,6 +21,7 @@ import { PredictiveStabilizationPanel } from "./components/PredictiveStabilizati
 import { MultiAgentCoordinationPanel } from "./components/MultiAgentCoordinationPanel.tsx";
 import { HardwareFoundationPanel } from "./components/HardwareFoundationPanel.tsx";
 import { VirtualHardwareTwinPanel } from "./components/VirtualHardwareTwinPanel.tsx";
+import { CyberPhysicalAttackPanel } from "./components/CyberPhysicalAttackPanel.tsx";
 
 
 import {
@@ -85,6 +86,13 @@ export default function App() {
   const [hardwareVirtualDevices, setHardwareVirtualDevices] = useState<any>(null);
   const [hardwareSpoofedTelemetry, setHardwareSpoofedTelemetry] = useState<any>(null);
   const [hardwareFaultPropagation, setHardwareFaultPropagation] = useState<any>(null);
+  const [hardwareUsbEvents, setHardwareUsbEvents] = useState<any>(null);
+  const [hardwareRogueDevices, setHardwareRogueDevices] = useState<any>(null);
+  const [hardwareBadusb, setHardwareBadusb] = useState<any>(null);
+  const [hardwareIntrusionAlerts, setHardwareIntrusionAlerts] = useState<any>(null);
+  const [hardwareDeviceTrust, setHardwareDeviceTrust] = useState<any>(null);
+  const [hardwareAttackState, setHardwareAttackState] = useState<any>(null);
+  const [hardwareAttackPropagation, setHardwareAttackPropagation] = useState<any>(null);
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
@@ -127,10 +135,11 @@ export default function App() {
     l6_predictive_stabilization: 2,
     l6_multi_agent: 2,
     l7_hardware: 2,
-    l7_twin: 2
+    l7_twin: 2,
+    l7_attack: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack"
   ]);
 
   // Timeline Replay States
@@ -184,6 +193,13 @@ export default function App() {
       hardwareVirtualDevices,
       hardwareSpoofedTelemetry,
       hardwareFaultPropagation,
+      hardwareUsbEvents,
+      hardwareRogueDevices,
+      hardwareBadusb,
+      hardwareIntrusionAlerts,
+      hardwareDeviceTrust,
+      hardwareAttackState,
+      hardwareAttackPropagation,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -389,6 +405,27 @@ export default function App() {
           if (data.hardware_fault_propagation) {
             setHardwareFaultPropagation(data.hardware_fault_propagation);
           }
+          if (data.hardware_usb_events) {
+            setHardwareUsbEvents(data.hardware_usb_events);
+          }
+          if (data.hardware_rogue_devices) {
+            setHardwareRogueDevices(data.hardware_rogue_devices);
+          }
+          if (data.hardware_badusb) {
+            setHardwareBadusb(data.hardware_badusb);
+          }
+          if (data.hardware_intrusion_alerts) {
+            setHardwareIntrusionAlerts(data.hardware_intrusion_alerts);
+          }
+          if (data.hardware_device_trust) {
+            setHardwareDeviceTrust(data.hardware_device_trust);
+          }
+          if (data.hardware_attack_state) {
+            setHardwareAttackState(data.hardware_attack_state);
+          }
+          if (data.hardware_attack_propagation) {
+            setHardwareAttackPropagation(data.hardware_attack_propagation);
+          }
         } 
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
@@ -475,6 +512,13 @@ export default function App() {
               hardwareVirtualDevices: currentStates.hardwareVirtualDevices,
               hardwareSpoofedTelemetry: currentStates.hardwareSpoofedTelemetry,
               hardwareFaultPropagation: currentStates.hardwareFaultPropagation,
+              hardwareUsbEvents: currentStates.hardwareUsbEvents,
+              hardwareRogueDevices: currentStates.hardwareRogueDevices,
+              hardwareBadusb: currentStates.hardwareBadusb,
+              hardwareIntrusionAlerts: currentStates.hardwareIntrusionAlerts,
+              hardwareDeviceTrust: currentStates.hardwareDeviceTrust,
+              hardwareAttackState: currentStates.hardwareAttackState,
+              hardwareAttackPropagation: currentStates.hardwareAttackPropagation,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -656,6 +700,20 @@ export default function App() {
             setHardwareSpoofedTelemetry(payload);
           } else if (topic === "hardware/fault_propagation") {
             setHardwareFaultPropagation(payload);
+          } else if (topic === "hardware/usb_events") {
+            setHardwareUsbEvents(payload);
+          } else if (topic === "hardware/rogue_devices") {
+            setHardwareRogueDevices(payload);
+          } else if (topic === "hardware/badusb") {
+            setHardwareBadusb(payload);
+          } else if (topic === "hardware/intrusion_alerts") {
+            setHardwareIntrusionAlerts(payload);
+          } else if (topic === "hardware/device_trust") {
+            setHardwareDeviceTrust(payload);
+          } else if (topic === "hardware/attack_state") {
+            setHardwareAttackState(payload);
+          } else if (topic === "hardware/attack_propagation") {
+            setHardwareAttackPropagation(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -902,6 +960,13 @@ export default function App() {
   const dispHardwareVirtualDevices = currentFrame ? currentFrame.hardwareVirtualDevices : hardwareVirtualDevices;
   const dispHardwareSpoofedTelemetry = currentFrame ? currentFrame.hardwareSpoofedTelemetry : hardwareSpoofedTelemetry;
   const dispHardwareFaultPropagation = currentFrame ? currentFrame.hardwareFaultPropagation : hardwareFaultPropagation;
+  const dispHardwareUsbEvents = currentFrame ? currentFrame.hardwareUsbEvents : hardwareUsbEvents;
+  const dispHardwareRogueDevices = currentFrame ? currentFrame.hardwareRogueDevices : hardwareRogueDevices;
+  const dispHardwareBadusb = currentFrame ? currentFrame.hardwareBadusb : hardwareBadusb;
+  const dispHardwareIntrusionAlerts = currentFrame ? currentFrame.hardwareIntrusionAlerts : hardwareIntrusionAlerts;
+  const dispHardwareDeviceTrust = currentFrame ? currentFrame.hardwareDeviceTrust : hardwareDeviceTrust;
+  const dispHardwareAttackState = currentFrame ? currentFrame.hardwareAttackState : hardwareAttackState;
+  const dispHardwareAttackPropagation = currentFrame ? currentFrame.hardwareAttackPropagation : hardwareAttackPropagation;
 
 
   const dispHistory = useMemo(() => {
@@ -1132,6 +1197,21 @@ export default function App() {
             hardwareSpoofedTelemetry={dispHardwareSpoofedTelemetry}
             hardwareAnomalies={dispHardwareAnomalies}
             hardwareFaultPropagation={dispHardwareFaultPropagation}
+            onSendControl={sendControl}
+          />
+        );
+        break;
+      case "l7_attack":
+        title = "Cyber-Physical Attack Layer Foundation";
+        content = (
+          <CyberPhysicalAttackPanel
+            hardwareUsbEvents={dispHardwareUsbEvents}
+            hardwareRogueDevices={dispHardwareRogueDevices}
+            hardwareBadusb={dispHardwareBadusb}
+            hardwareIntrusionAlerts={dispHardwareIntrusionAlerts}
+            hardwareDeviceTrust={dispHardwareDeviceTrust}
+            hardwareAttackState={dispHardwareAttackState}
+            hardwareAttackPropagation={dispHardwareAttackPropagation}
             onSendControl={sendControl}
           />
         );

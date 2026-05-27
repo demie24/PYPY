@@ -51,6 +51,13 @@ class MemoryStore:
         self.latest_hardware_virtual_devices: Optional[Dict[str, Any]] = None
         self.latest_hardware_spoofed_telemetry: Optional[Dict[str, Any]] = None
         self.latest_hardware_fault_propagation: Optional[Dict[str, Any]] = None
+        self.latest_hardware_usb_events: Optional[Dict[str, Any]] = None
+        self.latest_hardware_rogue_devices: Optional[Dict[str, Any]] = None
+        self.latest_hardware_badusb: Optional[Dict[str, Any]] = None
+        self.latest_hardware_intrusion_alerts: Optional[Dict[str, Any]] = None
+        self.latest_hardware_device_trust: Optional[Dict[str, Any]] = None
+        self.latest_hardware_attack_state: Optional[Dict[str, Any]] = None
+        self.latest_hardware_attack_propagation: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -186,6 +193,27 @@ class MemoryStore:
     def update_hardware_fault_propagation(self, payload: Dict[str, Any]):
         self.latest_hardware_fault_propagation = payload
 
+    def update_hardware_usb_events(self, payload: Dict[str, Any]):
+        self.latest_hardware_usb_events = payload
+
+    def update_hardware_rogue_devices(self, payload: Dict[str, Any]):
+        self.latest_hardware_rogue_devices = payload
+
+    def update_hardware_badusb(self, payload: Dict[str, Any]):
+        self.latest_hardware_badusb = payload
+
+    def update_hardware_intrusion_alerts(self, payload: Dict[str, Any]):
+        self.latest_hardware_intrusion_alerts = payload
+
+    def update_hardware_device_trust(self, payload: Dict[str, Any]):
+        self.latest_hardware_device_trust = payload
+
+    def update_hardware_attack_state(self, payload: Dict[str, Any]):
+        self.latest_hardware_attack_state = payload
+
+    def update_hardware_attack_propagation(self, payload: Dict[str, Any]):
+        self.latest_hardware_attack_propagation = payload
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -245,7 +273,14 @@ class MemoryStore:
             "hardware_anomalies": self.latest_hardware_anomalies,
             "hardware_virtual_devices": self.latest_hardware_virtual_devices,
             "hardware_spoofed_telemetry": self.latest_hardware_spoofed_telemetry,
-            "hardware_fault_propagation": self.latest_hardware_fault_propagation
+            "hardware_fault_propagation": self.latest_hardware_fault_propagation,
+            "hardware_usb_events": self.latest_hardware_usb_events,
+            "hardware_rogue_devices": self.latest_hardware_rogue_devices,
+            "hardware_badusb": self.latest_hardware_badusb,
+            "hardware_intrusion_alerts": self.latest_hardware_intrusion_alerts,
+            "hardware_device_trust": self.latest_hardware_device_trust,
+            "hardware_attack_state": self.latest_hardware_attack_state,
+            "hardware_attack_propagation": self.latest_hardware_attack_propagation
         }
 
     def clear_alerts(self):

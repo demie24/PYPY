@@ -92,6 +92,13 @@ class MQTTManager:
             client.subscribe("hardware/virtual_devices")
             client.subscribe("hardware/spoofed_telemetry")
             client.subscribe("hardware/fault_propagation")
+            client.subscribe("hardware/usb_events")
+            client.subscribe("hardware/rogue_devices")
+            client.subscribe("hardware/badusb")
+            client.subscribe("hardware/intrusion_alerts")
+            client.subscribe("hardware/device_trust")
+            client.subscribe("hardware/attack_state")
+            client.subscribe("hardware/attack_propagation")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -189,6 +196,20 @@ class MQTTManager:
                 store.update_hardware_spoofed_telemetry(payload)
             elif topic == "hardware/fault_propagation":
                 store.update_hardware_fault_propagation(payload)
+            elif topic == "hardware/usb_events":
+                store.update_hardware_usb_events(payload)
+            elif topic == "hardware/rogue_devices":
+                store.update_hardware_rogue_devices(payload)
+            elif topic == "hardware/badusb":
+                store.update_hardware_badusb(payload)
+            elif topic == "hardware/intrusion_alerts":
+                store.update_hardware_intrusion_alerts(payload)
+            elif topic == "hardware/device_trust":
+                store.update_hardware_device_trust(payload)
+            elif topic == "hardware/attack_state":
+                store.update_hardware_attack_state(payload)
+            elif topic == "hardware/attack_propagation":
+                store.update_hardware_attack_propagation(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

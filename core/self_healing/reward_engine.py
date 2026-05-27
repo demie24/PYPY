@@ -202,7 +202,7 @@ class RewardEngine:
         # ==========================================
         details["penalty_unsafe_breaker_switching"] = 0.0
         if changed_breakers > 0.0 and action_id != 0:
-            details["penalty_unsafe_breaker_switching"] = -3.0
+            details["penalty_unsafe_breaker_switching"] = -5.0
 
         # ==========================================
         # 13. PENALTIES: FALSE RESTORATION
@@ -234,6 +234,16 @@ class RewardEngine:
         # 16. PENALTIES: ACTION ROLLBACK EVENT
         # ==========================================
         details["penalty_rollback_event"] = -5.0 if rollback_occurred else 0.0
+
+        # ==========================================
+        # 16A. PENALTIES: REPEATED FAILURE
+        # ==========================================
+        details["penalty_repeated_failure"] = -15.0 if repeated_failed_action else 0.0
+
+        # ==========================================
+        # 16B. PENALTIES: RESTORATION LATENCY
+        # ==========================================
+        details["penalty_latency"] = -0.5 * max(0, step_count - 5)
 
         # ==========================================
         # 17. DEFENSE-AWARE REWARDS & PENALTIES

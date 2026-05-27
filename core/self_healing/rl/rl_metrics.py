@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from typing import Dict, Any, List
 
 def calculate_grid_survivability(telemetry: Dict[str, Any]) -> float:
@@ -109,11 +110,68 @@ def estimate_action_risk(action_name: str,
         unsafe_topo_prob = max(unsafe_topo_prob, 0.90)
         rollback_prob = max(rollback_prob, 0.85)
         
-    # Coordination confidence
     confidence = (1.0 - rollback_prob) * (1.0 - unsafe_topo_prob) * 100.0
-    
     return {
         "rollback_probability": round(rollback_prob, 2),
         "unsafe_topology_probability": round(unsafe_topo_prob, 2),
         "restoration_confidence": round(confidence, 2)
+    }
+
+def calculate_containment_efficiency(compromised_nodes: List[str], isolated_nodes: List[str]) -> float:
+    """
+    Calculates containment efficiency % based on how many compromised nodes were successfully isolated.
+    """
+    if not compromised_nodes:
+        return 100.0
+    isolated_count = sum(1 for node in compromised_nodes if node in isolated_nodes)
+    return round((isolated_count / len(compromised_nodes)) * 100.0, 2)
+
+def calculate_policy_confidence(ppo_probs: np.ndarray, action_id: int) -> float:
+    """
+    Calculates the confidence percentage for the selected policy action.
+    """
+    if ppo_probs is None or len(ppo_probs) == 0:
+        return 100.0
+    if action_id < 0 or action_id >= len(ppo_probs):
+        return 0.0
+    return round(float(ppo_probs[action_id]) * 100.0, 2)
+
+def compile_comprehensive_metrics(
+    telemetry: Dict[str, Any],
+    actual_steps: int,
+    step_count: int,
+    rollbacks: int,
+    switch_count: int,
+    start_time: float,
+    compromised_nodes: List[str],
+    isolated_nodes: List[str],
+    ppo_probs: np.ndarray = None,
+    action_id: int = 0,
+    cascade_prob: float = 0.0
+) -> Dict[str, Any]:
+    """
+    Compiles all RL maturity metrics.
+    """
+    survivability = calculate_grid_survivability(telemetry)
+    blackout_risk = calculate_blackout_risk(telemetry, cascade_prob)
+    rest_efficiency = calculate_recovery_efficiency(actual_steps)
+    cont_efficiency = calculate_containment_efficiency(compromised_nodes, isolated_nodes)
+    
+    # Policy confidence
+    pol_confidence = 100.0
+    if ppo_probs is not None:
+        pol_confidence = calculate_policy_confidence(ppo_probs, action_id)
+        
+    duration = time.time() - start_time if start_time > 0 else 0.0
+    
+    return {
+        "restoration_latency_steps": step_count,
+        "topology_survivability_score": survivability,
+        "blackout_risk_pct": blackout_risk,
+        "containment_efficiency_pct": cont_efficiency,
+        "restoration_efficiency_pct": rest_efficiency,
+        "policy_confidence_pct": pol_confidence,
+        "relay_switch_count": switch_count,
+        "rollback_frequency": rollbacks,
+        "recovery_duration_seconds": round(duration, 2)
     }

@@ -120,13 +120,13 @@ def on_message(client, userdata, msg):
             if not skip_flisr:
                 flisr_commands = flisr.execute_healing_cycle(payload)
                 for cmd in flisr_commands:
-                    # Send reconfiguration action (e.g. closing tie-breaker)
+                    # Send reconfiguration action (e.g. closing tie-breaker) to proposed topic
                     control_payload = {
                         "command": cmd["command"],
                         "target": cmd["target"],
                         "source": "FLISR"
                     }
-                    client.publish("grid/control", json.dumps(control_payload))
+                    client.publish("grid/control/proposed", json.dumps(control_payload))
                     
                     # Publish restoration event log
                     client.publish("grid/events", json.dumps(cmd["event_log"]))

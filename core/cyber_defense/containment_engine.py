@@ -44,7 +44,7 @@ class ContainmentEngine:
                         "source": "AUTONOMOUS_CONTAINMENT"
                     }
                     try:
-                        mqtt_client.publish("grid/control", json.dumps(payload))
+                        mqtt_client.publish("grid/control/proposed", json.dumps(payload))
                         log_msg = f"Dispatched telemetry isolation for {target} (Priority: {priority})"
                         logger.warning(log_msg)
                         dispatched_logs.append({
@@ -64,7 +64,7 @@ class ContainmentEngine:
                     "source": "AUTONOMOUS_CONTAINMENT"
                 }
                 try:
-                    mqtt_client.publish("grid/control", json.dumps(payload))
+                    mqtt_client.publish("grid/control/proposed", json.dumps(payload))
                     log_msg = f"Dispatched breaker trip command to isolate line {target}"
                     logger.warning(log_msg)
                     dispatched_logs.append({
@@ -136,7 +136,7 @@ class ContainmentEngine:
                     "target": target,
                     "source": "CONTAINMENT_RESET"
                 }
-                mqtt_client.publish("grid/control", json.dumps(payload))
+                mqtt_client.publish("grid/control/proposed", json.dumps(payload))
                 
         self.isolated_telemetry.clear()
         self.locked_breakers.clear()

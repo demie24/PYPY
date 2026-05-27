@@ -291,7 +291,7 @@ class ThreatScoringEngine:
 
             if action == "ISOLATE_LINE":
                 payload = {"command": "OPEN", "target": target}
-                client.publish("grid/control", json.dumps(payload))
+                client.publish("grid/control/proposed", json.dumps(payload))
                 
                 # Log event
                 event = {
@@ -327,7 +327,7 @@ class ThreatScoringEngine:
             elif action == "ACTIVATE_ISLANDING":
                 # Isolate target bus by opening connected lines
                 payload = {"command": "OPEN", "target": target}
-                client.publish("grid/control", json.dumps(payload))
+                client.publish("grid/control/proposed", json.dumps(payload))
                 
                 event = {
                     "timestamp": int(now * 1000),

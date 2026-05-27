@@ -132,6 +132,27 @@ class ActionExplainer:
             if trust_val < 0.5:
                 trusted_basis = f"CAUTION: Target line {target} telemetry trust is degraded ({trust_val*100:.1f}%)."
 
+        # 6. Objectives, Containment and Risk-Tradeoff Explanations
+        restoration_objective = "Maintain grid in steady state."
+        if action_id in [2, 8, 9]:
+            restoration_objective = "Restore islanded or unpowered loads, close breakers to re-energize transmission paths."
+        elif action_id in [1, 3, 6, 7]:
+            restoration_objective = "Isolate faulted or compromised physical components to prevent overloading and voltage collapse."
+            
+        containment_rationale = "No active threat containment required for this operation."
+        if action_id in [3, 6]:
+            containment_rationale = "Distrust telemetry from compromised nodes to block malicious inputs."
+        elif action_id in [1, 7]:
+            containment_rationale = "Disconnect lines around high-risk or compromised nodes to stop cascading cyber-physical spread."
+            
+        risk_tradeoff = "Balance security enforcement with grid operational capacity."
+        if action_id in [1, 6, 7]:
+            risk_tradeoff = "Prioritizes immediate physical containment of cascades over load connectivity, temporarily increasing topology fragmentation to guarantee safety."
+        elif action_id in [2, 9]:
+            risk_tradeoff = "Prioritizes customer load service and voltage support, accepting potential secondary trip risks if underlying fault is not fully cleared."
+        elif action_id == 0:
+            risk_tradeoff = "Prioritizes operational stability, verifying current layout achieves optimal balance between load service and line safety margin."
+
         return {
             "action_id": action_id,
             "action_name": action_name,
@@ -146,5 +167,8 @@ class ActionExplainer:
             "trusted_telemetry_basis": trusted_basis,
             "reasoning_chain": reasoning_chain,
             "policy_prob_percent": round(prob_percent, 2),
-            "policy_prob_offset": round(prob_offset, 2)
+            "policy_prob_offset": round(prob_offset, 2),
+            "restoration_objective": restoration_objective,
+            "containment_rationale": containment_rationale,
+            "risk_tradeoff_reasoning": risk_tradeoff
         }

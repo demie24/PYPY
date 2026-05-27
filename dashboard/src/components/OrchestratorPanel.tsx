@@ -16,6 +16,12 @@ interface AIOrchestratorData {
   restoration_confidence: number;
   active_subsystems_reasoning: SubsystemsReasoning;
   defense_mode?: "ADVISORY" | "SEMI_AUTONOMOUS" | "EMERGENCY_DEFENSE";
+  active_modules?: string[];
+  dominant_decision_source?: string;
+  ai_coordination_confidence?: number;
+  emergency_override_state?: boolean;
+  coordinated_recovery_state?: string;
+  escalation_mode?: string;
 }
 
 interface RecommendationAction {
@@ -332,6 +338,39 @@ export const OrchestratorPanel: React.FC<OrchestratorPanelProps> = ({
               </div>
             ) : activeTab === "reasoning" ? (
               <div className="font-mono text-[7px] space-y-1 pr-0.5">
+                <div className="bg-emerald-950/20 border border-emerald-900/35 rounded p-1 mb-1.5 grid grid-cols-2 gap-1 text-[6.5px] leading-snug">
+                  <div>
+                    <span className="text-emerald-400 font-bold">MODE:</span>{" "}
+                    <span className="text-white font-semibold">
+                      {orchestratorData.escalation_mode ?? "NORMAL"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-emerald-400 font-bold">RECOVERY:</span>{" "}
+                    <span className="text-white font-semibold">
+                      {orchestratorData.coordinated_recovery_state ?? "STANDBY"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-emerald-400 font-bold">DOMINANT AI:</span>{" "}
+                    <span className="text-white font-semibold">
+                      {orchestratorData.dominant_decision_source ?? "LSTM"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-emerald-400 font-bold">OVERRIDE:</span>{" "}
+                    <span className="text-white font-semibold">
+                      {orchestratorData.emergency_override_state ? "ACTIVE" : "INACTIVE"}
+                    </span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-emerald-400 font-bold">ACTIVE AI:</span>{" "}
+                    <span className="text-white font-mono font-medium">
+                      {(orchestratorData.active_modules ?? ["LSTM", "PINN", "PPO"]).join(", ")}
+                    </span>
+                  </div>
+                </div>
+
                 <div>
                   <span className="text-emerald-400 font-bold uppercase block border-b border-scada-border/10 pb-0.2 mb-0.5">
                     [ML Forecast]

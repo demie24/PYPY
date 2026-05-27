@@ -423,8 +423,12 @@ def run_training(agent_type: str = "PPO", num_episodes: int = 1000, max_steps: i
                     containment_conflicts += 1
                 
                 action_id = 0
+                repeated_failed_action = (action_name, target) in env.episode_failed_actions
+                env.episode_failed_actions.add((action_name, target))
+                env.episode_rollbacks += 1
                 reward, _ = env.reward_engine.compute_reward(
-                    state, next_state, action_id, rollback_occurred=True, defense_status=env.latest_defense
+                    state, next_state, action_id, rollback_occurred=True, defense_status=env.latest_defense,
+                    repeated_failed_action=repeated_failed_action, step_count=env.step_count
                 )
             else:
                 # Check for severe voltage violations
@@ -450,8 +454,12 @@ def run_training(agent_type: str = "PPO", num_episodes: int = 1000, max_steps: i
                     episode_rollbacks += 1
                     rollback_count += 1
                     
+                    repeated_failed_action = (action_name, target) in env.episode_failed_actions
+                    env.episode_failed_actions.add((action_name, target))
+                    env.episode_rollbacks += 1
                     reward, _ = env.reward_engine.compute_reward(
-                        state, next_state, action_id, rollback_occurred=True, defense_status=env.latest_defense
+                        state, next_state, action_id, rollback_occurred=True, defense_status=env.latest_defense,
+                        repeated_failed_action=repeated_failed_action, step_count=env.step_count
                     )
             
             if is_unsafe_step:

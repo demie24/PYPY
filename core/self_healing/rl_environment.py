@@ -12,6 +12,9 @@ import paho.mqtt.client as mqtt
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CURRENT_DIR)
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "digital_twin")))
+sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "rl")))
+
+import rl_metrics
 
 from state_encoder import StateEncoder
 from action_registry import ActionRegistry
@@ -138,6 +141,12 @@ class GridRLEnvironment(EnvClass):
         self.current_live_state_vec = np.zeros(72, dtype=np.float32)
         self.bus_names = [f"Bus_{i}" for i in range(1, 10)]
         
+        self.step_count = 0
+        self.episode_failed_actions = set()
+        self.episode_rollbacks = 0
+        self.episode_switches = 0
+        self.episode_start_time = time.time()
+        
         # Add rl folder to sys.path and initialize PPOAgent
         rl_path = os.path.abspath(os.path.join(CURRENT_DIR, "rl"))
         if rl_path not in sys.path:
@@ -214,6 +223,12 @@ class GridRLEnvironment(EnvClass):
         if seed is not None and hasattr(self, "np_random"):
             self.np_random, seed = gym.utils.seeding.np_random(seed)
             
+        self.step_count = 0
+        self.episode_failed_actions = set()
+        self.episode_rollbacks = 0
+        self.episode_switches = 0
+        self.episode_start_time = time.time()
+        
         # Reset local sandbox parameters
         self.sandbox_breakers = {line["id"]: "CLOSED" for line in self.topo.lines}
         self.sandbox_breakers["L7_8"] = "OPEN"
@@ -249,6 +264,9 @@ class GridRLEnvironment(EnvClass):
         action = self.registry.get_action(action_id)
         action_name = action["name"]
         
+        self.step_count += 1
+        repeated_failed_action = (action_name, target) in self.episode_failed_actions
+        
         prev_obs = self.encoder.encode_state(
             telemetry=self._get_sandbox_telemetry_snapshot(),
             threat_data=self.latest_threat_data,
@@ -266,6 +284,10 @@ class GridRLEnvironment(EnvClass):
         action_allowed = True
         violation_reason = ""
         
+        if repeated_failed_action:
+            action_allowed = False
+            violation_reason = f"Action {action_name}({target}) blocked by adaptive policy protection (repeated failed action)."
+            
         # 1. Cyber defense containment check (Priority override)
         if self.latest_defense:
             esc_level = self.latest_defense.get("escalation_level", "ADVISORY")
@@ -303,17 +325,25 @@ class GridRLEnvironment(EnvClass):
         if action_allowed:
             # Apply changes statefully inside sandbox breakers
             if action_name in ["ISOLATE_LINE", "OPEN_BREAKER"] and target in self.sandbox_breakers:
+                if self.sandbox_breakers[target] != "OPEN":
+                    self.episode_switches += 1
                 self.sandbox_breakers[target] = "OPEN"
             elif action_name in ["RECONNECT_LINE", "REROUTE_FLOW"] and target in self.sandbox_breakers:
+                if self.sandbox_breakers[target] != "CLOSED":
+                    self.episode_switches += 1
                 self.sandbox_breakers[target] = "CLOSED"
             elif action_name == "ISOLATE_BUS":
                 bus_idx = self.bus_names.index(target) if target in self.bus_names else 0
                 for line in self.topo.lines:
                     if line["from"] == bus_idx or line["to"] == bus_idx:
+                        if self.sandbox_breakers[line["id"]] != "OPEN":
+                            self.episode_switches += 1
                         self.sandbox_breakers[line["id"]] = "OPEN"
             elif action_name == "ENABLE_ISLANDING":
                 for line_id in ["L7_8", "L4_5", "L8_9"]:
                     if line_id in self.sandbox_breakers:
+                        if self.sandbox_breakers[line_id] != "OPEN":
+                            self.episode_switches += 1
                         self.sandbox_breakers[line_id] = "OPEN"
                         
             # Execute sandbox physics calculation loop
@@ -323,6 +353,7 @@ class GridRLEnvironment(EnvClass):
             self.policy.record_action_execution(target)
             self.override.record_execution(action_name, target)
         else:
+            self.episode_failed_actions.add((action_name, target))
             logger.warning(f"[SANDBOX STEP BLOCKED] Action {action_name}({target}) blocked. Reason: {violation_reason}")
             
         curr_obs = self.encoder.encode_state(
@@ -338,7 +369,12 @@ class GridRLEnvironment(EnvClass):
             orchestrator_data=self.latest_ai_orchestrator
         )
         
-        reward, reward_details = self.reward_engine.compute_reward(prev_obs, curr_obs, action_id)
+        reward, reward_details = self.reward_engine.compute_reward(
+            prev_obs, curr_obs, action_id,
+            repeated_failed_action=repeated_failed_action,
+            step_count=self.step_count,
+            defense_status=self.latest_defense
+        )
         
         terminated = False
         truncated = False
@@ -539,6 +575,74 @@ class GridRLEnvironment(EnvClass):
         }
         return payload
 
+    def compile_live_rl_telemetry(self, ppo_probs=None) -> Dict[str, Any]:
+        telemetry = self.latest_telemetry or {"state": {}}
+        survivability = rl_metrics.calculate_grid_survivability(telemetry)
+        
+        cascade_prob = 0.0
+        if self.latest_threat_data:
+            cascade_prob = float(self.latest_threat_data.get("cascade_probability", 0.0))
+        blackout_prob = rl_metrics.calculate_blackout_risk(telemetry, cascade_prob)
+        
+        # PPO confidence
+        ppo_conf = 100.0
+        if ppo_probs is not None:
+            ppo_conf = float(np.max(ppo_probs)) * 100.0
+            
+        # Determine current RL objective
+        objective = "NORMAL"
+        buses = telemetry.get("state", {}).get("buses", {})
+        breakers = telemetry.get("state", {}).get("breakers", {})
+        
+        voltage_deviation = False
+        if buses:
+            voltages = [b.get("voltage_pu", 1.0) for b in buses.values()]
+            if any(v < 0.92 or v > 1.08 for v in voltages):
+                voltage_deviation = True
+                
+        open_restorable = False
+        if breakers:
+            if breakers.get("L7_8") == "OPEN" and any(b.get("voltage_pu", 1.0) < 0.90 for b in buses.values()):
+                open_restorable = True
+                
+        if self.latest_defense and self.latest_defense.get("escalation_level") in ["EMERGENCY_CONTAINMENT", "GRID_PRESERVATION"]:
+            objective = "ISOLATE_FAULT"
+        elif open_restorable:
+            objective = "RECONNECT_LOAD"
+        elif voltage_deviation:
+            objective = "STABILIZE_VOLTAGE"
+        elif any(stat == "OPEN" for lid, stat in breakers.items() if lid != "L7_8"):
+            objective = "ISOLATE_FAULT"
+            
+        # Restoration Phase
+        phase = "STABLE"
+        flisr_state = telemetry.get("flisr_state", "NORMAL")
+        if flisr_state == "FAULT_DETECTED":
+            phase = "FAULT_ISOLATION"
+        elif flisr_state in ["ISOLATED", "RECONFIGURING"]:
+            phase = "POWER_RECONSTRUCT"
+        elif any(stat == "OPEN" for lid, stat in breakers.items() if lid != "L7_8"):
+            phase = "DEGRADED"
+            
+        # Recovery progress %
+        load_bus_indices = ["Bus_5", "Bus_6", "Bus_8"]
+        serviced_loads = 0
+        for bid in load_bus_indices:
+            if buses and bid in buses:
+                if buses[bid].get("voltage_pu", 0.0) > 0.90:
+                    serviced_loads += 1
+        progress = (serviced_loads / len(load_bus_indices)) * 100.0 if load_bus_indices else 100.0
+        
+        return {
+            "timestamp": int(time.time() * 1000),
+            "current_rl_objective": objective,
+            "restoration_phase": phase,
+            "topology_health": round(survivability, 2),
+            "blackout_probability": round(blackout_prob, 2),
+            "ppo_confidence": round(ppo_conf, 2),
+            "recovery_progress": round(progress, 2)
+        }
+
 # Live Daemon Service Execution Loop
 def run_live_daemon():
     MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
@@ -582,6 +686,20 @@ def run_live_daemon():
                 compiled = env.process_live_telemetry()
                 client.publish("grid/pre_rl", json.dumps(compiled))
                 
+                # Publish live RL metrics
+                ppo_probs = None
+                if env.ppo_agent is not None:
+                    try:
+                        import torch
+                        state_t = torch.FloatTensor(env.current_live_state_vec).to(env.ppo_agent.device)
+                        with torch.no_grad():
+                            logits = env.ppo_agent.actor(state_t)
+                            ppo_probs = torch.softmax(logits, dim=-1).cpu().numpy().squeeze(0)
+                    except Exception as e:
+                        pass
+                rl_telemetry = env.compile_live_rl_telemetry(ppo_probs=ppo_probs)
+                client.publish("grid/rl/telemetry", json.dumps(rl_telemetry))
+                
                 # Check for automatic action execution if in AUTO mode
                 if env.override.restoration_mode == "AUTO" and not env.override.pause_autonomous and not env.override.emergency_stop_active:
                     # Perform live PPO model inference if available
@@ -594,20 +712,25 @@ def run_live_daemon():
                             logger.info("[PPO LIVE INFERENCE] PPO selected NO_ACTION. Grid is stable.")
                         else:
                             act_target = env.get_target_for_action(action_id, env.current_live_state_vec)
-                            logger.info(f"[PPO LIVE INFERENCE] PPO selected Action {act_name} targeting {act_target}")
                             
-                            # Validate the selected action via TrustedActionFilter
-                            allowed = False
-                            reason = ""
-                            if env.latest_telemetry:
-                                allowed, reason, _ = env.filter.filter_action(
-                                    action=action_meta,
-                                    target=act_target,
-                                    telemetry=env.latest_telemetry,
-                                    trust_scores=env.latest_trust_scores,
-                                    pinn_forecast=env.latest_pinn_forecast,
-                                    physics_validation=env.latest_physics_val
-                                )
+                            # Adaptive behavior: check if this action was already attempted and failed
+                            if (act_name, act_target) in env.episode_failed_actions:
+                                logger.warning(f"[PPO LIVE ADAPTIVE] PPO proposed repeated failed action {act_name} targeting {act_target}. Blocking to avoid unsafe loop.")
+                                allowed = False
+                                reason = f"Repeated failed action {act_name} on {act_target} blocked by orchestrator."
+                            else:
+                                # Validate the selected action via TrustedActionFilter
+                                allowed = False
+                                reason = ""
+                                if env.latest_telemetry:
+                                    allowed, reason, _ = env.filter.filter_action(
+                                        action=action_meta,
+                                        target=act_target,
+                                        telemetry=env.latest_telemetry,
+                                        trust_scores=env.latest_trust_scores,
+                                        pinn_forecast=env.latest_pinn_forecast,
+                                        physics_validation=env.latest_physics_val
+                                    )
                                 
                             # Check cyber defense restrictions
                             if allowed and env.latest_defense:
@@ -642,7 +765,7 @@ def run_live_daemon():
                                         "target": act_target,
                                         "source": "AI_RL_PPO_CONTROL"
                                     }
-                                    client.publish("grid/control", json.dumps(control_payload))
+                                    client.publish("grid/control/proposed", json.dumps(control_payload))
                                     env.override.record_execution(act_name, act_target)
                                     env.timeline.record_event("ACTION_SELECTED", f"PPO LIVE: executed [{act_name}] targeting {act_target}.")
                                 else:
@@ -670,7 +793,7 @@ def run_live_daemon():
                                                 "target": fb_target,
                                                 "source": "AI_AUTONOMOUS_CONTROL_FALLBACK"
                                             }
-                                            client.publish("grid/control", json.dumps(control_payload))
+                                            client.publish("grid/control/proposed", json.dumps(control_payload))
                                             env.override.record_execution(fb_name, fb_target)
                                             env.timeline.record_event("ACTION_SELECTED", f"PPO GATED FALLBACK: executed [{fb_name}] targeting {fb_target}.")
                                             break
@@ -695,7 +818,7 @@ def run_live_daemon():
                                         "target": act_target,
                                         "source": "AI_AUTONOMOUS_CONTROL"
                                     }
-                                    client.publish("grid/control", json.dumps(control_payload))
+                                    client.publish("grid/control/proposed", json.dumps(control_payload))
                                     env.override.record_execution(act_name, act_target)
                                     env.timeline.record_event("ACTION_SELECTED", f"AI AUTO: executed [{act_name}] targeting {act_target}.")
                                     break

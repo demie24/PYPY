@@ -23,6 +23,8 @@ import { HardwareFoundationPanel } from "./components/HardwareFoundationPanel.ts
 import { VirtualHardwareTwinPanel } from "./components/VirtualHardwareTwinPanel.tsx";
 import { CyberPhysicalAttackPanel } from "./components/CyberPhysicalAttackPanel.tsx";
 import { HardwareOrchestrationPanel } from "./components/HardwareOrchestrationPanel.tsx";
+import { HardwareExecutionPanel } from "./components/HardwareExecutionPanel.tsx";
+
 
 
 import {
@@ -100,6 +102,12 @@ export default function App() {
   const [hardwareDistributedBus, setHardwareDistributedBus] = useState<any>(null);
   const [hardwareSynchronization, setHardwareSynchronization] = useState<any>(null);
   const [hardwareOrchestrationConflicts, setHardwareOrchestrationConflicts] = useState<any>(null);
+  const [hardwareExecutionGateway, setHardwareExecutionGateway] = useState<any>(null);
+  const [hardwareReliability, setHardwareReliability] = useState<any>(null);
+  const [hardwareSafetyGuard, setHardwareSafetyGuard] = useState<any>(null);
+  const [hardwareDeploymentProfiles, setHardwareDeploymentProfiles] = useState<any>(null);
+  const [hardwareTelemetryValidation, setHardwareTelemetryValidation] = useState<any>(null);
+
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
@@ -144,10 +152,11 @@ export default function App() {
     l7_hardware: 2,
     l7_twin: 2,
     l7_attack: 2,
-    l7_orchestration: 2
+    l7_orchestration: 2,
+    l7_execution: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack", "l7_orchestration"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack", "l7_orchestration", "l7_execution"
   ]);
 
   // Timeline Replay States
@@ -214,6 +223,11 @@ export default function App() {
       hardwareDistributedBus,
       hardwareSynchronization,
       hardwareOrchestrationConflicts,
+      hardwareExecutionGateway,
+      hardwareReliability,
+      hardwareSafetyGuard,
+      hardwareDeploymentProfiles,
+      hardwareTelemetryValidation,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -458,7 +472,23 @@ export default function App() {
           if (data.hardware_orchestration_conflicts) {
             setHardwareOrchestrationConflicts(data.hardware_orchestration_conflicts);
           }
+          if (data.hardware_execution_gateway) {
+            setHardwareExecutionGateway(data.hardware_execution_gateway);
+          }
+          if (data.hardware_reliability) {
+            setHardwareReliability(data.hardware_reliability);
+          }
+          if (data.hardware_safety_guard) {
+            setHardwareSafetyGuard(data.hardware_safety_guard);
+          }
+          if (data.hardware_deployment_profiles) {
+            setHardwareDeploymentProfiles(data.hardware_deployment_profiles);
+          }
+          if (data.hardware_telemetry_validation) {
+            setHardwareTelemetryValidation(data.hardware_telemetry_validation);
+          }
         } 
+
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
           const { topic, payload } = data;
@@ -557,6 +587,11 @@ export default function App() {
               hardwareDistributedBus: currentStates.hardwareDistributedBus,
               hardwareSynchronization: currentStates.hardwareSynchronization,
               hardwareOrchestrationConflicts: currentStates.hardwareOrchestrationConflicts,
+              hardwareExecutionGateway: currentStates.hardwareExecutionGateway,
+              hardwareReliability: currentStates.hardwareReliability,
+              hardwareSafetyGuard: currentStates.hardwareSafetyGuard,
+              hardwareDeploymentProfiles: currentStates.hardwareDeploymentProfiles,
+              hardwareTelemetryValidation: currentStates.hardwareTelemetryValidation,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -764,6 +799,16 @@ export default function App() {
             setHardwareSynchronization(payload);
           } else if (topic === "hardware/orchestration_conflicts") {
             setHardwareOrchestrationConflicts(payload);
+          } else if (topic === "hardware/execution_gateway") {
+            setHardwareExecutionGateway(payload);
+          } else if (topic === "hardware/reliability") {
+            setHardwareReliability(payload);
+          } else if (topic === "hardware/safety_guard") {
+            setHardwareSafetyGuard(payload);
+          } else if (topic === "hardware/deployment_profiles") {
+            setHardwareDeploymentProfiles(payload);
+          } else if (topic === "hardware/telemetry_validation") {
+            setHardwareTelemetryValidation(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -1023,6 +1068,11 @@ export default function App() {
   const dispHardwareDistributedBus = currentFrame ? currentFrame.hardwareDistributedBus : hardwareDistributedBus;
   const dispHardwareSynchronization = currentFrame ? currentFrame.hardwareSynchronization : hardwareSynchronization;
   const dispHardwareOrchestrationConflicts = currentFrame ? currentFrame.hardwareOrchestrationConflicts : hardwareOrchestrationConflicts;
+  const dispHardwareExecutionGateway = currentFrame ? currentFrame.hardwareExecutionGateway : hardwareExecutionGateway;
+  const dispHardwareReliability = currentFrame ? currentFrame.hardwareReliability : hardwareReliability;
+  const dispHardwareSafetyGuard = currentFrame ? currentFrame.hardwareSafetyGuard : hardwareSafetyGuard;
+  const dispHardwareTelemetryValidation = currentFrame ? currentFrame.hardwareTelemetryValidation : hardwareTelemetryValidation;
+
 
 
   const dispHistory = useMemo(() => {
@@ -1286,6 +1336,19 @@ export default function App() {
           />
         );
         break;
+      case "l7_execution":
+        title = "Physical Execution & Edge Safety Console";
+        content = (
+          <HardwareExecutionPanel
+            executionGateway={dispHardwareExecutionGateway}
+            reliability={dispHardwareReliability}
+            safetyGuard={dispHardwareSafetyGuard}
+            telemetryValidation={dispHardwareTelemetryValidation}
+            onSendControl={sendControl}
+          />
+        );
+        break;
+
       default:
         return null;
     }

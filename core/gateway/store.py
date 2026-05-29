@@ -64,6 +64,11 @@ class MemoryStore:
         self.latest_hardware_distributed_bus: Optional[Dict[str, Any]] = None
         self.latest_hardware_synchronization: Optional[Dict[str, Any]] = None
         self.latest_hardware_orchestration_conflicts: Optional[Dict[str, Any]] = None
+        self.latest_hardware_execution_gateway: Optional[Dict[str, Any]] = None
+        self.latest_hardware_reliability: Optional[Dict[str, Any]] = None
+        self.latest_hardware_safety_guard: Optional[Dict[str, Any]] = None
+        self.latest_hardware_deployment_profiles: Optional[Dict[str, Any]] = None
+        self.latest_hardware_telemetry_validation: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -238,6 +243,22 @@ class MemoryStore:
     def update_hardware_orchestration_conflicts(self, payload: Dict[str, Any]):
         self.latest_hardware_orchestration_conflicts = payload
 
+    def update_hardware_execution_gateway(self, payload: Dict[str, Any]):
+        self.latest_hardware_execution_gateway = payload
+
+    def update_hardware_reliability(self, payload: Dict[str, Any]):
+        self.latest_hardware_reliability = payload
+
+    def update_hardware_safety_guard(self, payload: Dict[str, Any]):
+        self.latest_hardware_safety_guard = payload
+
+    def update_hardware_deployment_profiles(self, payload: Dict[str, Any]):
+        self.latest_hardware_deployment_profiles = payload
+
+    def update_hardware_telemetry_validation(self, payload: Dict[str, Any]):
+        self.latest_hardware_telemetry_validation = payload
+
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -310,7 +331,12 @@ class MemoryStore:
             "hardware_relay_execution": self.latest_hardware_relay_execution,
             "hardware_distributed_bus": self.latest_hardware_distributed_bus,
             "hardware_synchronization": self.latest_hardware_synchronization,
-            "hardware_orchestration_conflicts": self.latest_hardware_orchestration_conflicts
+            "hardware_orchestration_conflicts": self.latest_hardware_orchestration_conflicts,
+            "hardware_execution_gateway": self.latest_hardware_execution_gateway,
+            "hardware_reliability": self.latest_hardware_reliability,
+            "hardware_safety_guard": self.latest_hardware_safety_guard,
+            "hardware_deployment_profiles": self.latest_hardware_deployment_profiles,
+            "hardware_telemetry_validation": self.latest_hardware_telemetry_validation
         }
 
     def clear_alerts(self):

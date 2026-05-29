@@ -70,8 +70,11 @@ class AIOrchestrator:
             "hardware_relay_execution": None,
             "hardware_distributed_bus": None,
             "hardware_synchronization": None,
-            "hardware_orchestration_conflicts": None
+            "hardware_orchestration_conflicts": None,
+            "hardware_reliability": None,
+            "hardware_telemetry_validation": None
         }
+
 
         # Operator overrides and control states
         self.override_state = {
@@ -177,6 +180,11 @@ class AIOrchestrator:
             self.state_cache["hardware_synchronization"] = payload
         elif topic == "hardware/orchestration_conflicts":
             self.state_cache["hardware_orchestration_conflicts"] = payload
+        elif topic == "hardware/reliability":
+            self.state_cache["hardware_reliability"] = payload
+        elif topic == "hardware/telemetry_validation":
+            self.state_cache["hardware_telemetry_validation"] = payload
+
 
     def process_quarantine_containment(self, client):
         """
@@ -614,6 +622,8 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("hardware/distributed_bus")
         client.subscribe("hardware/synchronization")
         client.subscribe("hardware/orchestration_conflicts")
+        client.subscribe("hardware/reliability")
+        client.subscribe("hardware/telemetry_validation")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 
@@ -700,6 +710,13 @@ def on_message(client, userdata, msg):
             cmd = payload.get("command")
             if cmd == "RESET_ALARMS":
                 orchestrator.reset()
+                orchestrator.override_state["emergency_stop_active"] = False
+            elif cmd == "TRIGGER_EMERGENCY_STOP":
+                orchestrator.override_state["emergency_stop_active"] = True
+                logger.warning("Emergency stop triggered at AI Orchestrator.")
+            elif cmd == "RESET_EMERGENCY_STOP":
+                orchestrator.override_state["emergency_stop_active"] = False
+                logger.info("Emergency stop reset at AI Orchestrator.")
             elif cmd == "TOGGLE_AUTO_DEFENSE":
                 enabled = payload.get("enabled", False)
                 orchestrator.defense_mode = "EMERGENCY_DEFENSE" if enabled else "ADVISORY"

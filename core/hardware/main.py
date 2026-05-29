@@ -20,6 +20,14 @@ from hardware_intrusion_detector import HardwareIntrusionDetector
 from cyber_physical_attack_orchestrator import CyberPhysicalAttackOrchestrator
 from hardware_orchestrator import HardwareOrchestrator
 
+# Import Physical Execution & Edge Reliability Layer
+from deployment_profiles import DeploymentProfiles
+from physical_telemetry_validator import PhysicalTelemetryValidator
+from edge_reliability_monitor import EdgeReliabilityMonitor
+from safe_relay_guard import SafeRelayGuard
+from hardware_execution_gateway import HardwareExecutionGateway
+
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -74,6 +82,23 @@ attack_orchestrator = CyberPhysicalAttackOrchestrator(digispark_engine, badusb_m
 
 # Initialize Hardware Orchestrator
 orchestrator = HardwareOrchestrator(state_manager, command_router)
+
+# Initialize Physical Execution & Edge Reliability Layer
+profiles = DeploymentProfiles()
+telemetry_validator = PhysicalTelemetryValidator()
+reliability_monitor = EdgeReliabilityMonitor()
+safety_guard = SafeRelayGuard()
+execution_gateway = HardwareExecutionGateway(
+    device_manager=orchestrator.device_manager,
+    profiles=profiles,
+    safety_guard=safety_guard,
+    reliability_monitor=reliability_monitor,
+    command_router=command_router
+)
+
+# Proxy orchestrator's router calls to execution gateway
+orchestrator.command_router = execution_gateway
+
 
 # MQTT Callbacks
 def on_connect(client, userdata, flags, rc):
@@ -259,10 +284,16 @@ def on_message(client, userdata, msg):
                 if port == "esp32":
                     for d in ["esp32_zone1", "esp32_zone2", "esp32_zone3"]:
                         orchestrator.device_manager.set_device_quarantine(d, True)
+                    execution_gateway.set_zone_compromised("zone_1", True)
+                    execution_gateway.set_zone_compromised("zone_2", True)
+                    execution_gateway.set_zone_compromised("zone_3", True)
                 elif port == "plc":
                     orchestrator.device_manager.set_device_quarantine("plc_primary", True)
+                    execution_gateway.set_zone_compromised("plc_zone", True)
                 else:
                     orchestrator.device_manager.set_device_quarantine(port, True)
+                    zone = execution_gateway.breaker_to_zone.get(port) or port
+                    execution_gateway.set_zone_compromised(zone, True)
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
@@ -277,10 +308,16 @@ def on_message(client, userdata, msg):
                 if port == "esp32":
                     for d in ["esp32_zone1", "esp32_zone2", "esp32_zone3"]:
                         orchestrator.device_manager.set_device_quarantine(d, False)
+                    execution_gateway.set_zone_compromised("zone_1", False)
+                    execution_gateway.set_zone_compromised("zone_2", False)
+                    execution_gateway.set_zone_compromised("zone_3", False)
                 elif port == "plc":
                     orchestrator.device_manager.set_device_quarantine("plc_primary", False)
+                    execution_gateway.set_zone_compromised("plc_zone", False)
                 else:
                     orchestrator.device_manager.set_device_quarantine(port, False)
+                    zone = execution_gateway.breaker_to_zone.get(port) or port
+                    execution_gateway.set_zone_compromised(zone, False)
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
@@ -289,16 +326,41 @@ def on_message(client, userdata, msg):
                 }
                 client.publish("grid/events", json.dumps(event_log))
                 
-            elif cmd == "TERMINATE_HARDWARE_SCENARIO" or cmd == "RESET_ALARMS":
-                fault_orchestrator.clear_all_faults()
-                attack_orchestrator.reset()
+            elif cmd == "TRIGGER_EMERGENCY_STOP":
+                commands = safety_guard.trigger_emergency_stop()
+                for safe_cmd in commands:
+                    execution_gateway.execute_command(safe_cmd)
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
-                    "event": "Cleared all hardware faults and scenario states.",
+                    "event": "Triggered Emergency Stop! Forced all relays to safe states.",
+                    "severity": "CRITICAL"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "RESET_EMERGENCY_STOP":
+                safety_guard.reset_emergency_stop()
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": "Emergency Stop Reset. Command execution re-enabled.",
                     "severity": "INFO"
                 }
                 client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "TERMINATE_HARDWARE_SCENARIO" or cmd == "RESET_ALARMS":
+                fault_orchestrator.clear_all_faults()
+                attack_orchestrator.reset()
+                safety_guard.reset_emergency_stop()
+                execution_gateway.compromised_zones.clear()
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": "Cleared all hardware faults, emergency stops, and scenario states.",
+                    "severity": "INFO"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+
                 
     except Exception as e:
         logger.error(f"Error handling message in HAL Daemon: {e}")
@@ -346,6 +408,19 @@ if __name__ == "__main__":
             # Tick the hardware orchestrator
             orchestrator.tick(on_bus_execution)
             
+            # Get latest telemetry and relays from state_manager
+            current_state = state_manager.get_all_states()
+            
+            # Validate telemetry integrity
+            telemetry_validator.validate_telemetry_integrity(current_state, state_manager.relays)
+            
+            # Get fleet telemetry representation and relay telemetry
+            fleet_payload = orchestrator.device_manager.get_telemetry_payload()
+            relay_telemetry = relay_controller.get_relay_telemetry()
+            
+            # Tick reliability monitor
+            reliability_monitor.tick(fleet_payload, relay_telemetry)
+            
             # 1. Heartbeats
             esp32_hb = esp32_bridge.run_heartbeat_cycle()
             plc_hb = plc_interface.run_heartbeat_cycle()
@@ -367,6 +442,7 @@ if __name__ == "__main__":
             # 3. Publish relay and GPIO statuses
             relay_payload = relay_controller.get_relay_telemetry()
             client.publish("hardware/relay", json.dumps(relay_payload))
+
             
             gpio_payload = {
                 "timestamp": int(time.time() * 1000),
@@ -427,6 +503,14 @@ if __name__ == "__main__":
             client.publish("hardware/distributed_bus", json.dumps(orchestrator.command_bus.get_telemetry_payload()))
             client.publish("hardware/synchronization", json.dumps(orchestrator.sync_engine.get_telemetry_payload()))
             client.publish("hardware/orchestration_conflicts", json.dumps(orchestrator.get_conflicts_telemetry()))
+            
+            # 7. Publish Physical Execution & Edge Reliability Telemetry
+            client.publish("hardware/execution_gateway", json.dumps(execution_gateway.get_telemetry_payload()))
+            client.publish("hardware/reliability", json.dumps(reliability_monitor.get_telemetry_payload()))
+            client.publish("hardware/safety_guard", json.dumps(safety_guard.get_telemetry_payload()))
+            client.publish("hardware/deployment_profiles", json.dumps(profiles.get_telemetry_payload()))
+            client.publish("hardware/telemetry_validation", json.dumps(telemetry_validator.get_telemetry_payload()))
+
             
             time.sleep(1.0)
         except KeyboardInterrupt:

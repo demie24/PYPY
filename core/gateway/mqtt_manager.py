@@ -105,6 +105,11 @@ class MQTTManager:
             client.subscribe("hardware/distributed_bus")
             client.subscribe("hardware/synchronization")
             client.subscribe("hardware/orchestration_conflicts")
+            client.subscribe("hardware/execution_gateway")
+            client.subscribe("hardware/reliability")
+            client.subscribe("hardware/safety_guard")
+            client.subscribe("hardware/deployment_profiles")
+            client.subscribe("hardware/telemetry_validation")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -228,6 +233,17 @@ class MQTTManager:
                 store.update_hardware_synchronization(payload)
             elif topic == "hardware/orchestration_conflicts":
                 store.update_hardware_orchestration_conflicts(payload)
+            elif topic == "hardware/execution_gateway":
+                store.update_hardware_execution_gateway(payload)
+            elif topic == "hardware/reliability":
+                store.update_hardware_reliability(payload)
+            elif topic == "hardware/safety_guard":
+                store.update_hardware_safety_guard(payload)
+            elif topic == "hardware/deployment_profiles":
+                store.update_hardware_deployment_profiles(payload)
+            elif topic == "hardware/telemetry_validation":
+                store.update_hardware_telemetry_validation(payload)
+
                 
             # 2. Package for WebSockets
             ws_payload = {

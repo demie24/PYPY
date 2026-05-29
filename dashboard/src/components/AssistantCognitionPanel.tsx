@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Send, Mic, Bot, Sparkles, User, Clock, Cpu, Zap,
-  AlertCircle, Smile, Volume2, RotateCcw,
-  MessageSquare, Compass, Database
+  Send, Mic, Bot, Sparkles, User, Cpu, Smile, Volume2, RotateCcw,
+  MessageSquare, Compass, Database, Link, GitBranch,
+  ShieldCheck, Terminal, Sliders, Activity, AlertCircle
 } from "lucide-react";
 
 interface Interaction {
   role: string;
   text: string;
+  timestamp?: number;
 }
 
 interface UserPreferences {
@@ -57,6 +58,46 @@ interface AssistantResponse {
   action?: any;
 }
 
+interface SemanticIntent {
+  category: string;
+  action: string | null;
+  confidence: number;
+  parameters: Record<string, any>;
+  is_fuzzy: boolean;
+  is_followup: boolean;
+}
+
+interface ContextualMemory {
+  active_thread_id: string | null;
+  active_subject: string | null;
+  recent_references: Record<string, any>;
+  active_messages: Interaction[];
+  thread_count: number;
+}
+
+interface Reasoning {
+  should_execute: boolean;
+  should_respond: boolean;
+  resolved_action: string | null;
+  parameters: Record<string, any>;
+  webhook_trigger: string | null;
+  followup_recommendation: string | null;
+  reasoning_logs: string[];
+  grid_critical: boolean;
+}
+
+interface AutomationHooks {
+  trigger_count: number;
+  latest_hook_status: Record<string, any>;
+  supported_hooks: string[];
+}
+
+interface SemanticResponse {
+  text: string;
+  clean_tts_text: string;
+  timestamp: number;
+}
+
 interface AssistantCognitionPanelProps {
   assistantState: AssistantState | null;
   assistantIntent: AssistantIntent | null;
@@ -66,6 +107,11 @@ interface AssistantCognitionPanelProps {
   assistantMemory: AssistantMemory | null;
   assistantResponse: AssistantResponse | null;
   assistantRuntime: any | null;
+  assistantSemanticIntent?: { semantic_intent: SemanticIntent } | null;
+  assistantContextualMemory?: { contextual_memory: ContextualMemory } | null;
+  assistantReasoning?: { reasoning: Reasoning } | null;
+  assistantAutomationHooks?: { automation_hooks: AutomationHooks } | null;
+  assistantSemanticResponse?: { semantic_response: SemanticResponse } | null;
   connected: boolean;
   onSendControl: (payload: any) => void;
 }
@@ -79,12 +125,18 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
   assistantMemory,
   assistantResponse,
   assistantRuntime,
+  assistantSemanticIntent,
+  assistantContextualMemory,
+  assistantReasoning,
+  assistantAutomationHooks,
+  assistantSemanticResponse,
   connected,
   onSendControl
 }) => {
   const [chatText, setChatText] = useState("");
   const [isListeningVoice, setIsListeningVoice] = useState(false);
   const [voiceSimProgress, setVoiceSimProgress] = useState(0);
+  const [activeTab, setActiveTab] = useState<"pipeline" | "intent" | "context" | "automation">("pipeline");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Extract variables with defaults
@@ -96,10 +148,52 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
   const lastResponse = assistantResponse;
   const runtime = assistantRuntime ?? { status: "OFFLINE", uptime_sec: 0 };
 
+  // New semantic parameters:
+  const semanticIntent = assistantSemanticIntent?.semantic_intent ?? {
+    category: "UNKNOWN",
+    action: null,
+    confidence: 0.0,
+    parameters: {},
+    is_fuzzy: false,
+    is_followup: false
+  };
+  const contextualMemory = assistantContextualMemory?.contextual_memory ?? {
+    active_thread_id: null,
+    active_subject: null,
+    recent_references: {},
+    active_messages: [],
+    thread_count: 0
+  };
+  const reasoning = assistantReasoning?.reasoning ?? {
+    should_execute: false,
+    should_respond: false,
+    resolved_action: null,
+    parameters: {},
+    webhook_trigger: null,
+    followup_recommendation: null,
+    reasoning_logs: ["Reasoning engine stand-by."],
+    grid_critical: false
+  };
+  const automationHooks = assistantAutomationHooks?.automation_hooks ?? {
+    trigger_count: 0,
+    latest_hook_status: {},
+    supported_hooks: []
+  };
+  const semanticResponse = assistantSemanticResponse?.semantic_response ?? {
+    text: "",
+    clean_tts_text: "",
+    timestamp: 0
+  };
+
+  // Determine interactions list (use contextual active messages first for thread summary, fallback to old list)
+  const displayInteractions = (contextualMemory.active_messages && contextualMemory.active_messages.length > 0)
+    ? contextualMemory.active_messages
+    : (memory.interactions ?? []);
+
   // Auto-scroll to bottom of chat
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [memory.interactions, state]);
+  }, [displayInteractions.length, state]);
 
   // Voice simulation logic
   const handleSimulateVoice = () => {
@@ -202,8 +296,15 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     );
   };
 
-  // Filter out system summary messages or format them differently
-  const displayInteractions = memory.interactions ?? [];
+  // Static definition of Jaccard keywords sets for visualization
+  const referenceKeywordsMap = {
+    "open_youtube": ["youtube", "yt", "main", "pasang"],
+    "open_browser": ["browser", "pelayar", "web", "google", "internet", "chrome"],
+    "get_time": ["pukul", "jam", "time", "masa", "waktu", "jam-jam"],
+    "get_system_status": ["status", "grid", "sistem", "keadaan", "ok", "health"],
+    "open_dashboard": ["dashboard", "scada", "hmi", "buka"],
+    "assistant_identity_response": ["siapa", "nama", "identity", "who", "diri"]
+  };
 
   return (
     <div className="bg-scada-panel border border-scada-border rounded-lg p-3 h-[420px] flex flex-col overflow-hidden relative font-mono text-[9px] text-white">
@@ -260,16 +361,16 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
         </div>
       </div>
 
-      {/* Main content grid split 55% / 45% */}
+      {/* Main content grid split 50% / 50% */}
       <div className="flex-1 flex gap-3 overflow-hidden z-10 min-h-0">
         {/* Left Side: Conversational Console (Chat) */}
-        <div className="w-[55%] flex flex-col overflow-hidden bg-scada-bg/50 border border-scada-border/30 rounded p-2">
+        <div className="w-[50%] flex flex-col overflow-hidden bg-scada-bg/50 border border-scada-border/30 rounded p-2">
           {/* Topic & Depth Banner */}
           <div className="flex justify-between items-center mb-1 border-b border-scada-border/20 pb-1.5 shrink-0 text-[8px] text-scada-dimText uppercase tracking-wider font-semibold">
             <span className="flex items-center gap-1">
-              <Compass size={9} /> Topic: <span className="text-cyan-300 font-bold">{context.current_topic ?? "NONE"}</span>
+              <Compass size={9} /> Topic: <span className="text-cyan-300 font-bold">{contextualMemory.active_subject ?? context.current_topic ?? "NONE"}</span>
             </span>
-            <span>Depth: <span className="text-white font-bold">{context.interaction_depth}</span></span>
+            <span>Thread: <span className="text-white font-bold">{contextualMemory.active_thread_id ? `T-${contextualMemory.active_thread_id.substring(0, 4)}` : "NONE"}</span></span>
           </div>
 
           {/* Dialog Container */}
@@ -285,12 +386,12 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
             ) : (
               displayInteractions.map((msg: Interaction, idx: number) => {
                 const isUser = msg.role === "user";
-                const isSummary = msg.role === "system_summary";
+                const isSummary = msg.role === "system_summary" || msg.role === "system";
 
                 if (isSummary) {
                   return (
                     <div key={idx} className="flex justify-center my-1.5">
-                      <span className="bg-scada-bg/80 border border-scada-border/20 px-2 py-0.5 rounded text-[7px] text-scada-dimText italic">
+                      <span className="bg-scada-bg/85 border border-purple-500/20 px-2 py-0.5 rounded text-[7px] text-purple-300 italic text-center max-w-[95%]">
                         {msg.text}
                       </span>
                     </div>
@@ -343,6 +444,14 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
             <div ref={chatEndRef} />
           </div>
 
+          {/* Voice status info */}
+          {semanticResponse.clean_tts_text && (
+            <div className="bg-black/10 border border-scada-border/20 rounded p-1 mb-1 shrink-0 text-[6.5px] text-emerald-400 flex items-center gap-1 select-none">
+              <Volume2 size={8} className="shrink-0 text-emerald-400 animate-pulse" />
+              <span className="truncate">TTS Text: {semanticResponse.clean_tts_text}</span>
+            </div>
+          )}
+
           {/* Quick Prompts Input Section */}
           <div className="grid grid-cols-2 gap-1 mb-1.5 shrink-0">
             <button onClick={() => handleQuickCommand("keadaan grid ok ke?", true)}
@@ -393,132 +502,376 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
           </div>
         </div>
 
-        {/* Right Side: Cognition Monitoring */}
-        <div className="w-[45%] flex flex-col justify-between overflow-hidden">
-          {/* FSM Loop Display */}
-          <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-2 shrink-0">
-            <div className="text-[8px] font-bold text-scada-dimText uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Cpu size={10} className="text-purple-400" />
-              <span>Cognitive State Machine</span>
-            </div>
-            <div className="flex flex-wrap gap-1 items-center justify-center py-1 border border-scada-border/10 rounded bg-black/10">
-              {renderFsmNode("IDLE", "IDLE")}
-              <span className="text-scada-dimText font-mono">→</span>
-              {renderFsmNode("LISTENING", "LISTEN")}
-              <span className="text-scada-dimText font-mono">→</span>
-              {renderFsmNode("THINKING", "THINK")}
-              <span className="text-scada-dimText font-mono">→</span>
-              {renderFsmNode("EXECUTING", "EXEC")}
-              <span className="text-scada-dimText font-mono">→</span>
-              {renderFsmNode("RESPONDING", "RESP")}
-            </div>
+        {/* Right Side: Cognition Monitoring & Semantic Visualizations */}
+        <div className="w-[50%] flex flex-col overflow-hidden">
+          {/* Tab Selector */}
+          <div className="flex border-b border-scada-border/30 mb-2 bg-scada-bg/30 rounded-t overflow-hidden shrink-0">
+            <button
+              onClick={() => setActiveTab("pipeline")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
+                activeTab === "pipeline"
+                  ? "border-purple-500 text-white bg-purple-500/10"
+                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
+              }`}
+            >
+              <Activity size={10} />
+              Reasoning
+            </button>
+            <button
+              onClick={() => setActiveTab("intent")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
+                activeTab === "intent"
+                  ? "border-cyan-500 text-white bg-cyan-500/10"
+                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
+              }`}
+            >
+              <Sliders size={10} />
+              Fuzzy Intent
+            </button>
+            <button
+              onClick={() => setActiveTab("context")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
+                activeTab === "context"
+                  ? "border-emerald-500 text-white bg-emerald-500/10"
+                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
+              }`}
+            >
+              <GitBranch size={10} />
+              Memory
+            </button>
+            <button
+              onClick={() => setActiveTab("automation")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
+                activeTab === "automation"
+                  ? "border-amber-500 text-white bg-amber-500/10"
+                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
+              }`}
+            >
+              <ShieldCheck size={10} />
+              n8n Hooks
+            </button>
           </div>
 
-          {/* Action Dispatches & SCADA controls */}
-          <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-2 flex-1 my-2 overflow-hidden flex flex-col">
-            <div className="text-[8px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-1 shrink-0 flex items-center justify-between">
-              <span className="flex items-center gap-1">
-                <Zap size={10} className="text-yellow-400" />
-                <span>Action Dispatcher Output</span>
-              </span>
-              <span className="text-[7px] text-scada-dimText uppercase">n8n Gateway</span>
-            </div>
-
-            <div className="flex-1 overflow-y-auto space-y-1.5 pt-1.5 scrollbar-thin">
-              {lastResponse?.action && (
-                <div className={`p-1.5 border rounded leading-normal ${
-                  lastResponse.action.status === "SUCCESS" ? "bg-emerald-950/20 border-emerald-500/20 text-emerald-300" : "bg-purple-950/20 border-purple-500/30 text-purple-300"
-                }`}>
-                  <div className="flex justify-between items-center font-bold">
-                    <span>ACTION: {lastResponse.action.action}</span>
-                    <span className="text-[7px] bg-black/35 px-1 py-0.5 rounded border border-scada-border/20">{lastResponse.action.status}</span>
+          {/* Tab Content Panels */}
+          <div className="flex-1 overflow-hidden flex flex-col">
+            {/* 1. PIPELINE & REASONING */}
+            {activeTab === "pipeline" && (
+              <div className="flex-1 flex flex-col overflow-hidden justify-between">
+                {/* Cognitive FSM Row */}
+                <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 mb-1.5 shrink-0">
+                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Cpu size={9} className="text-purple-400" />
+                    <span>Cognitive State Machine</span>
                   </div>
-                  <div className="text-[7.5px] mt-1 text-white/80 font-mono space-y-0.5">
-                    {lastResponse.action.payload && Object.entries(lastResponse.action.payload).map(([k, v]: any) => (
-                      <div key={k} className="flex justify-between">
-                        <span className="text-scada-dimText capitalize">{k.replace(/_/g, " ")}:</span>
-                        <span className="truncate max-w-[120px]">{typeof v === "object" ? JSON.stringify(v) : String(v)}</span>
+                  <div className="flex gap-0.5 items-center justify-between py-1 px-1 border border-scada-border/15 rounded bg-black/15">
+                    {renderFsmNode("IDLE", "IDLE")}
+                    <span className="text-scada-dimText text-[6px]">→</span>
+                    {renderFsmNode("LISTENING", "LISTEN")}
+                    <span className="text-scada-dimText text-[6px]">→</span>
+                    {renderFsmNode("THINKING", "THINK")}
+                    <span className="text-scada-dimText text-[6px]">→</span>
+                    {renderFsmNode("EXECUTING", "EXEC")}
+                    <span className="text-scada-dimText text-[6px]">→</span>
+                    {renderFsmNode("RESPONDING", "RESP")}
+                  </div>
+                </div>
+
+                {/* Reasoning Logs Console */}
+                <div className="flex-1 bg-scada-bg/70 border border-scada-border/30 rounded p-2 flex flex-col overflow-hidden mb-1.5">
+                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                    <Terminal size={9} className="text-purple-400" />
+                    <span>5-Step Decision Reasoning Log</span>
+                  </div>
+                  <div className="flex-1 overflow-y-auto space-y-1.5 scrollbar-thin text-[7px] font-mono leading-normal pt-1">
+                    {reasoning.reasoning_logs.map((log: string, index: number) => {
+                      let color = "text-white/80";
+                      if (log.includes("SAFETY OVERRIDE")) color = "text-rose-400 font-bold bg-rose-950/20 border-l border-rose-500 pl-1";
+                      else if (log.includes("Automation planning")) color = "text-amber-400";
+                      else if (log.includes("Critical=True")) color = "text-rose-400";
+                      else if (log.includes("resolving") || log.includes("resolved")) color = "text-emerald-400";
+                      return (
+                        <div key={index} className={color}>
+                          &gt; {log}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Grid stress sync */}
+                <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 shrink-0">
+                  <div className="flex justify-between items-center text-[7.5px]">
+                    <span className="text-scada-dimText uppercase tracking-wider flex items-center gap-1 font-bold">
+                      <AlertCircle size={9} className="text-rose-400 animate-pulse" />
+                      <span>Stress Empathy Override</span>
+                    </span>
+                    <span className={`font-bold px-1 rounded text-[6.5px] ${reasoning.grid_critical ? "text-rose-400 bg-rose-950/50 border border-rose-500/30 animate-pulse" : "text-emerald-400 bg-emerald-950/40 border border-emerald-500/20"}`}>
+                      {reasoning.grid_critical ? "LOCKOUT ACTIVE" : "NOMINAL"}
+                    </span>
+                  </div>
+                  <p className="text-[6.5px] text-scada-dimText/80 mt-1 leading-tight">
+                    Lockout redirects entertainment commands to status queries when threat &gt; 70.0%. Current state: {reasoning.grid_critical ? "LOCK ENGAGED" : "NOMINAL"}.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* 2. FUZZY INTENT DETECTOR */}
+            {activeTab === "intent" && (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 flex flex-col overflow-hidden flex-1 mb-1.5">
+                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                    <Compass size={9} className="text-cyan-400" />
+                    <span>Jaccard Fuzzy Intent Mappings</span>
+                  </div>
+                  
+                  {/* Confidence Gauge */}
+                  <div className="flex items-center gap-2 bg-black/25 p-1.5 border border-scada-border/10 rounded mb-2 shrink-0">
+                    <div className="flex-1">
+                      <div className="flex justify-between text-[7px] mb-0.5">
+                        <span className="text-scada-dimText uppercase">Jaccard Score Threshold: 0.40</span>
+                        <span className="text-cyan-400 font-bold">Conf: {(semanticIntent.confidence * 100).toFixed(0)}%</span>
                       </div>
-                    ))}
-                    <div className="text-[6.5px] text-scada-dimText mt-1 flex justify-between">
-                      <span>TIME: {new Date(lastResponse.action.timestamp).toLocaleTimeString()}</span>
+                      <div className="w-full bg-scada-bg h-1.5 rounded-full overflow-hidden border border-scada-border/20">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            semanticIntent.confidence >= 0.40 ? "bg-cyan-500" : "bg-rose-500"
+                          }`}
+                          style={{ width: `${Math.min(100, semanticIntent.confidence * 100)}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* Memory Logs & Preference Stack */}
-              <div className="p-1.5 border border-scada-border/20 rounded bg-scada-bg/25">
-                <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1">
-                  <Database size={8} className="text-cyan-400" />
-                  <span>Operator Profile Cache</span>
-                </div>
-                <div className="grid grid-cols-3 gap-1 text-[7px] font-mono leading-tight">
-                  <div className="bg-black/15 p-1 rounded border border-scada-border/10">
-                    <div className="text-scada-dimText">Name</div>
-                    <div className="text-white font-bold truncate">{memory.user_preferences?.name ?? "Operator"}</div>
-                  </div>
-                  <div className="bg-black/15 p-1 rounded border border-scada-border/10">
-                    <div className="text-scada-dimText">Lang</div>
-                    <div className="text-white font-bold truncate">{memory.user_preferences?.language ?? "ms"}</div>
-                  </div>
-                  <div className="bg-black/15 p-1 rounded border border-scada-border/10">
-                    <div className="text-scada-dimText">Tone</div>
-                    <div className="text-white font-bold truncate">{memory.user_preferences?.tone ?? "casual"}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Log History */}
-              <div className="p-1.5 border border-scada-border/20 rounded bg-scada-bg/25 text-[7px] leading-tight">
-                <div className="text-scada-dimText uppercase mb-1 font-bold flex items-center gap-1">
-                  <Clock size={7} /> Commmand Logs
-                </div>
-                {actions.length === 0 ? (
-                  <div className="text-scada-dimText/60 italic text-[6.5px]">No commands executed in this session</div>
-                ) : (
-                  <div className="flex flex-wrap gap-1 max-h-[35px] overflow-y-auto pr-0.5">
-                    {actions.map((act: string, idx: number) => (
-                      <span key={idx} className="bg-cyan-950/50 border border-cyan-800/30 px-1 py-0.5 rounded text-[6.5px] text-cyan-300">
-                        {act}
+                  {/* Intent Categories Grid */}
+                  <div className="grid grid-cols-2 gap-1.5 mb-2 shrink-0 text-[7.5px]">
+                    <div className="bg-black/15 p-1 rounded border border-scada-border/10 flex justify-between">
+                      <span className="text-scada-dimText">Category:</span>
+                      <span className="text-white font-bold">{semanticIntent.category}</span>
+                    </div>
+                    <div className="bg-black/15 p-1 rounded border border-scada-border/10 flex justify-between">
+                      <span className="text-scada-dimText">Fuzzy Match:</span>
+                      <span className={semanticIntent.is_fuzzy ? "text-cyan-400 font-bold" : "text-scada-dimText"}>
+                        {semanticIntent.is_fuzzy ? "YES" : "NO"}
                       </span>
-                    ))}
+                    </div>
+                    <div className="bg-black/15 p-1 rounded border border-scada-border/10 flex justify-between col-span-2">
+                      <span className="text-scada-dimText">Resolved Action:</span>
+                      <span className="text-cyan-300 font-bold">{semanticIntent.action ?? "NONE"}</span>
+                    </div>
                   </div>
-                )}
-              </div>
 
-              {/* Supported Commands Info */}
-              {assistantIntent?.intent && (
-                <div className="p-1.5 border border-scada-border/20 rounded bg-scada-bg/25 text-[7px] leading-tight mt-1.5">
-                  <div className="text-scada-dimText uppercase mb-1 font-bold flex items-center gap-1">
-                    <Compass size={7} /> Supported Commands
+                  {/* Jaccard Pattern Sets Reference list */}
+                  <div className="flex-1 overflow-y-auto pr-0.5 space-y-1.5 scrollbar-thin">
+                    <div className="text-[7px] text-scada-dimText uppercase font-bold tracking-wider mb-1">
+                      Keyword Similarity Reference
+                    </div>
+                    {Object.entries(referenceKeywordsMap).map(([action, keywords]) => {
+                      const isActive = semanticIntent.action === action;
+                      return (
+                        <div
+                          key={action}
+                          className={`p-1 border rounded text-[6.5px] transition-all flex justify-between items-center ${
+                            isActive
+                              ? "bg-cyan-950/40 border-cyan-500/40 text-white"
+                              : "bg-black/15 border-scada-border/10 text-scada-dimText"
+                          }`}
+                        >
+                          <span className="font-bold truncate max-w-[100px]">{action}</span>
+                          <span className="text-[6px] opacity-80 max-w-[120px] truncate">
+                            {"{" + keywords.join(", ") + "}"}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="grid grid-cols-2 gap-1 text-[6.5px]">
-                    {Object.keys(assistantIntent.intent).map((key: string) => (
-                      <div key={key} className="truncate text-cyan-300">
-                        • {key.replace(/_/g, " ")}
+
+                  {/* Baseline Intent list info */}
+                  {assistantIntent?.intent && (
+                    <div className="mt-1 pt-1 border-t border-scada-border/10 text-[6px] text-scada-dimText flex flex-wrap gap-1">
+                      <span>Supported baselines:</span>
+                      {Object.keys(assistantIntent.intent).map(k => (
+                        <span key={k} className="text-cyan-400/80">{k}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 3. CONTEXT & MEMORY THREADS */}
+            {activeTab === "context" && (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 flex flex-col overflow-hidden flex-1 mb-1.5">
+                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1.5 flex items-center gap-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                    <Database size={9} className="text-emerald-400" />
+                    <span>Contextual Thread Registry</span>
+                  </div>
+
+                  {/* Context State Details */}
+                  <div className="grid grid-cols-2 gap-1 mb-2 shrink-0 text-[7.5px]">
+                    <div className="bg-black/15 p-1 rounded border border-scada-border/10 flex flex-col">
+                      <span className="text-scada-dimText text-[6.5px]">Thread ID:</span>
+                      <span className="text-white font-bold truncate text-[7.5px]">
+                        {contextualMemory.active_thread_id ?? "No active thread"}
+                      </span>
+                    </div>
+                    <div className="bg-black/15 p-1 rounded border border-scada-border/10 flex flex-col">
+                      <span className="text-scada-dimText text-[6.5px]">Session Threads Count:</span>
+                      <span className="text-emerald-400 font-bold text-[7.5px]">
+                        {contextualMemory.thread_count} Active
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Active Subject Nodes Graph */}
+                  <div className="bg-black/20 border border-scada-border/10 rounded p-1.5 mb-2 shrink-0">
+                    <div className="text-[7px] text-scada-dimText uppercase mb-1 font-bold">Active subject hierarchy</div>
+                    <div className="flex items-center gap-1.5 py-1 justify-center">
+                      <span className={`px-1.5 py-0.5 rounded text-[7px] ${contextualMemory.active_subject ? "bg-scada-bg text-scada-dimText border border-scada-border/30" : "bg-emerald-500 text-black font-bold animate-pulse"}`}>
+                        general
+                      </span>
+                      <span className="text-scada-dimText">→</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[7px] ${contextualMemory.active_subject ? "bg-emerald-500 text-black font-bold border border-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.7)] animate-pulse" : "bg-scada-bg text-scada-dimText border border-scada-border/30"}`}>
+                        {contextualMemory.active_subject ?? "NONE"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Pronoun Resolution / Reference cache */}
+                  <div className="flex-1 bg-black/10 border border-scada-border/10 rounded p-1.5 flex flex-col overflow-hidden mb-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                      <Link size={8} className="text-emerald-400" />
+                      <span>Pronoun Reference Cache (yang tadi tu)</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[7px] pt-1">
+                      {Object.keys(contextualMemory.recent_references).length === 0 ? (
+                        <div className="h-full flex items-center justify-center text-scada-dimText/60 italic text-[7px]">
+                          No active entity references cached.
+                        </div>
+                      ) : (
+                        Object.entries(contextualMemory.recent_references).map(([k, v]) => (
+                          <div key={k} className="flex justify-between bg-black/15 p-1 rounded border border-scada-border/5 text-[6.5px]">
+                            <span className="text-emerald-400 capitalize">{k}:</span>
+                            <span className="text-white font-bold">{String(v)}</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Command history list */}
+                  {actions.length > 0 && (
+                    <div className="shrink-0 border-t border-scada-border/10 pt-1 flex flex-wrap items-center gap-1 text-[6.5px]">
+                      <span className="text-scada-dimText">Execution log:</span>
+                      {actions.slice(-5).map((act: string, idx: number) => (
+                        <span key={idx} className="bg-cyan-950/40 border border-cyan-800/30 px-1 py-0.2 rounded text-cyan-300">
+                          {act}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 4. n8n WEBHOOKS */}
+            {activeTab === "automation" && (
+              <div className="flex-1 flex flex-col overflow-hidden justify-between">
+                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 flex flex-col overflow-hidden flex-1 mb-1.5">
+                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center justify-between border-b border-scada-border/20 pb-0.5 shrink-0">
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck size={9} className="text-amber-400" />
+                      <span>n8n Webhook Automation Orchestrator</span>
+                    </span>
+                    <span className="text-[6.5px] text-scada-dimText">Mock dispatch</span>
+                  </div>
+
+                  {/* Webhook execution status block */}
+                  {automationHooks.latest_hook_status && automationHooks.latest_hook_status.status ? (
+                    <div className={`p-1.5 border rounded leading-normal mb-2 shrink-0 ${
+                      automationHooks.latest_hook_status.status === "SUCCESS"
+                        ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.1)]"
+                        : "bg-rose-950/20 border-rose-500/30 text-rose-300"
+                    }`}>
+                      <div className="flex justify-between items-center font-bold text-[7.5px]">
+                        <span>TRIGGER: {automationHooks.latest_hook_status.hook_name}</span>
+                        <span className={`text-[6.5px] px-1 rounded font-mono ${
+                          automationHooks.latest_hook_status.status === "SUCCESS" ? "bg-emerald-500 text-black" : "bg-rose-500 text-white"
+                        }`}>{automationHooks.latest_hook_status.status}</span>
                       </div>
-                    ))}
+                      
+                      {/* JSON Payload representation */}
+                      <div className="text-[6.5px] mt-1 text-white/80 font-mono space-y-0.5 bg-black/20 p-1 rounded border border-scada-border/5">
+                        <div className="flex justify-between">
+                          <span className="text-scada-dimText">Target URL:</span>
+                          <span className="truncate max-w-[140px] text-amber-300 font-bold">{automationHooks.latest_hook_status.payload?.endpoint_url ?? "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-scada-dimText">Trigger ID:</span>
+                          <span className="truncate max-w-[140px]">{automationHooks.latest_hook_status.payload?.trigger_id ?? "N/A"}</span>
+                        </div>
+                        {automationHooks.latest_hook_status.payload?.data && (
+                          <div className="mt-1 pt-1 border-t border-scada-border/10 text-left">
+                            <span className="text-scada-dimText uppercase text-[6px]">Payload Data:</span>
+                            <pre className="text-[5.5px] leading-tight text-emerald-400 overflow-x-auto whitespace-pre">
+                              {JSON.stringify(automationHooks.latest_hook_status.payload.data, null, 2)}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : lastResponse?.action ? (
+                    /* Fallback to display the baseline SCADA action dispatcher status */
+                    <div className={`p-1.5 border rounded leading-normal mb-2 shrink-0 ${
+                      lastResponse.action.status === "SUCCESS" ? "bg-emerald-950/20 border-emerald-500/20 text-emerald-300" : "bg-purple-950/20 border-purple-500/30 text-purple-300"
+                    }`}>
+                      <div className="flex justify-between items-center font-bold text-[7.5px]">
+                        <span>DISPATCHER: {lastResponse.action.action}</span>
+                        <span className="text-[6.5px] bg-black/35 px-1 py-0.5 rounded border border-scada-border/20">{lastResponse.action.status}</span>
+                      </div>
+                      <div className="text-[6.5px] mt-1 text-white/80 font-mono space-y-0.5">
+                        {lastResponse.action.payload && Object.entries(lastResponse.action.payload).map(([k, v]: any) => (
+                          <div key={k} className="flex justify-between">
+                            <span className="text-scada-dimText capitalize">{k.replace(/_/g, " ")}:</span>
+                            <span className="truncate max-w-[125px]">{typeof v === "object" ? JSON.stringify(v) : String(v)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-[75px] bg-black/15 border border-scada-border/10 rounded flex flex-col justify-center items-center text-center p-3 mb-2 shrink-0">
+                      <Sparkles className="w-5 h-5 text-amber-500/40 mb-1 animate-pulse" />
+                      <span className="text-scada-dimText uppercase text-[7px] tracking-wide">No webhooks dispatched in this session</span>
+                    </div>
+                  )}
+
+                  {/* Parameter guards details */}
+                  <div className="bg-black/15 border border-scada-border/10 rounded p-1.5 shrink-0 text-[7px]">
+                    <div className="flex justify-between items-center">
+                      <span className="text-scada-dimText uppercase tracking-wider flex items-center gap-1 font-bold">
+                        <ShieldCheck size={8} className="text-emerald-400" />
+                        <span>Parameter Guard</span>
+                      </span>
+                      <span className="text-emerald-400 font-bold bg-emerald-950/40 px-1 rounded text-[6px] border border-emerald-500/20">
+                        SECURE_GATEWAY
+                      </span>
+                    </div>
+                    <p className="text-[6px] text-scada-dimText/80 mt-0.5 leading-tight">
+                      Blocks remote shell command injections matching character patterns: ; & | $ ` \.
+                    </p>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* Grid Stress Indicator Empathy Sync */}
-          <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-2 shrink-0">
-            <div className="flex justify-between items-center text-[7.5px]">
-              <span className="text-scada-dimText uppercase tracking-wider flex items-center gap-1">
-                <AlertCircle size={10} className="text-rose-400" />
-                <span>Grid Stress Empathy Overrides</span>
-              </span>
-              <span className={`font-bold ${emotion.assistant_mood === "serious" ? "text-rose-400 animate-pulse" : "text-emerald-400"}`}>
-                {emotion.assistant_mood === "serious" ? "LOCK ENGAGED" : "NOMINAL"}
-              </span>
-            </div>
-            <p className="text-[7px] text-scada-dimText/80 mt-1 leading-tight">
-              Jika threat score grid melebihi 70.0, Assistant mood di-lock ke <span className="text-white font-bold">serious/focused</span> untuk menghalang arahan hiburan.
-            </p>
+                {/* Automation statistics footer */}
+                <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 shrink-0 flex justify-between items-center text-[7px]">
+                  <span className="text-scada-dimText uppercase font-bold">Total automation events:</span>
+                  <span className="text-amber-400 font-bold bg-black/25 px-1.5 py-0.5 rounded border border-scada-border/15">
+                    {automationHooks.trigger_count}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

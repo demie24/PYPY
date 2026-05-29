@@ -1,9 +1,11 @@
+from typing import Dict, Any
 import os
 import sys
 import json
 import time
 import logging
 import paho.mqtt.client as mqtt
+from typing import Dict, Any, List
 
 # Configure paths
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))

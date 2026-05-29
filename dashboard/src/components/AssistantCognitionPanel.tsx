@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Send, Mic, Bot, Sparkles, User, Cpu, Smile, Volume2, RotateCcw,
-  MessageSquare, Compass, GitBranch, Bell, Eye, CheckCircle2, XCircle, RefreshCw,
-  ShieldCheck, Terminal, Sliders, Activity, AlertCircle, Play, Zap, Clock, WifiOff
+  MessageSquare, Compass, GitBranch, Bell, CheckCircle2, XCircle, RefreshCw,
+  Terminal, Sliders, Activity, Zap, Clock, WifiOff
 } from "lucide-react";
 
 interface Interaction {
@@ -538,6 +538,13 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
               {connected ? "ONLINE" : "OFFLINE"}
             </span>
           </div>
+          {/* Uptime Indicator */}
+          <div className="flex items-center gap-1 bg-scada-bg/85 px-1.5 py-0.5 rounded border border-scada-border/30">
+            <span className="text-scada-dimText">UPTIME:</span>
+            <span className={`font-bold ${runtime.status === "ONLINE" ? "text-emerald-400" : "text-rose-400"}`}>
+              {runtime.uptime_sec}s
+            </span>
+          </div>
           <button onClick={handleResetMemory} className="p-1 hover:bg-scada-border/40 rounded text-scada-dimText hover:text-white transition-colors" title="Reset Session">
             <RotateCcw size={10} />
           </button>
@@ -765,7 +772,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                     <div className="grid grid-cols-2 gap-1 text-[6.5px] pt-1">
                       <div className="flex justify-between"><span className="text-scada-dimText">Voice State:</span><span className="text-white">{voiceState.voice_state}</span></div>
                       <div className="flex justify-between"><span className="text-scada-dimText">Remaining Attention:</span><span className="text-white">{wakeWord.time_remaining}s</span></div>
-                      <div className="flex justify-between"><span className="text-scada-dimText">Latest Intent:</span><span className="text-cyan-400 truncate max-w-[60px]">{semanticIntent.category}</span></div>
+                      <div className="flex justify-between"><span className="text-scada-dimText">Latest Intent:</span><span className="text-cyan-400 truncate max-w-[60px]">{voiceMemory.latest_command ?? semanticIntent.category}</span></div>
                       <div className="flex justify-between"><span className="text-scada-dimText">Match Conf:</span><span className="text-cyan-400">{(semanticIntent.confidence * 100).toFixed(0)}%</span></div>
                     </div>
                   </div>
@@ -848,7 +855,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                     <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
                       <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
                         <span>n8n WEBHOOKS</span>
-                        <span className="text-white">({n8nBridge.active_retries_count} retries)</span>
+                        <span className="text-white">({n8nBridge.active_retries_count} retries, {automationHooks.trigger_count} total)</span>
                       </div>
                       <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[6px]">
                         {n8nBridge.active_retries.length === 0 && n8nBridge.executions.length === 0 ? (
@@ -933,8 +940,9 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                     </div>
 
                     <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
-                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0 flex justify-between">
                         <span>TRIGGERS HISTORY</span>
+                        <span className="text-white">({proactive.total_notifications_sent} sent)</span>
                       </div>
                       <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[5.8px]">
                         {conditions.trigger_history.length === 0 ? (

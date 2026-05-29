@@ -67,7 +67,7 @@ def test_confidence_gate():
     grid_state_low = {"threat": {"confidence": 0.40}}
     res_low = engine.execute_workflow("emergency_load_shed", grid_state_low, mock_step_fn)
     assert res_low["status"] == "FAILED"
-    assert res_low["error"] == "insufficient_confidence"
+    assert res_low["error"] == "Confidence score too low (less than 0.50). Load shed rejected."
     
     # Case B: Sufficient confidence (0.60) -> SUCCESS
     grid_state_high = {"threat": {"confidence": 0.60}}

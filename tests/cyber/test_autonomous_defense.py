@@ -7,11 +7,12 @@ import numpy as np
 from unittest.mock import MagicMock
 
 # Add core directories to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core")))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core", "cyber_defense")))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "core", "self_healing")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "core")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "core", "cyber_defense")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "core", "self_healing")))
 
-from defense_escalation import DefenseEscalator
+from core.cyber_defense.defense_escalation import DefenseEscalator
 from campaign_response_engine import CampaignResponseEngine
 from adaptive_defense_engine import AdaptiveDefenseEngine
 from autonomous_defense_coordinator import AutonomousDefenseCoordinator

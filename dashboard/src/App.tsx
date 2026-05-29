@@ -129,7 +129,16 @@ export default function App() {
   const [assistantReasoning, setAssistantReasoning] = useState<any>(null);
   const [assistantAutomationHooks, setAssistantAutomationHooks] = useState<any>(null);
   const [assistantSemanticResponse, setAssistantSemanticResponse] = useState<any>(null);
-
+  const [assistantVoiceState, setAssistantVoiceState] = useState<any>(null);
+  const [assistantWakeWord, setAssistantWakeWord] = useState<any>(null);
+  const [assistantProactive, setAssistantProactive] = useState<any>(null);
+  const [assistantVoiceMemory, setAssistantVoiceMemory] = useState<any>(null);
+  const [assistantPresence, setAssistantPresence] = useState<any>(null);
+  const [assistantWorkflows, setAssistantWorkflows] = useState<any>(null);
+  const [assistantReminders, setAssistantReminders] = useState<any>(null);
+  const [assistantConditions, setAssistantConditions] = useState<any>(null);
+  const [assistantN8nBridge, setAssistantN8nBridge] = useState<any>(null);
+  const [assistantRoutines, setAssistantRoutines] = useState<any>(null);
 
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
@@ -271,6 +280,16 @@ export default function App() {
       assistantReasoning,
       assistantAutomationHooks,
       assistantSemanticResponse,
+      assistantVoiceState,
+      assistantWakeWord,
+      assistantProactive,
+      assistantVoiceMemory,
+      assistantPresence,
+      assistantWorkflows,
+      assistantReminders,
+      assistantConditions,
+      assistantN8nBridge,
+      assistantRoutines,
 
       flisrState,
       flisrIsolated,
@@ -585,6 +604,21 @@ export default function App() {
           if (data.assistant_semantic_response) {
             setAssistantSemanticResponse(data.assistant_semantic_response);
           }
+          if (data.assistant_voice_state) {
+            setAssistantVoiceState(data.assistant_voice_state);
+          }
+          if (data.assistant_wake_word) {
+            setAssistantWakeWord(data.assistant_wake_word);
+          }
+          if (data.assistant_proactive) {
+            setAssistantProactive(data.assistant_proactive);
+          }
+          if (data.assistant_voice_memory) {
+            setAssistantVoiceMemory(data.assistant_voice_memory);
+          }
+          if (data.assistant_presence) {
+            setAssistantPresence(data.assistant_presence);
+          }
         } 
 
         // Handle active MQTT stream broadcasts
@@ -708,6 +742,16 @@ export default function App() {
               assistantReasoning: currentStates.assistantReasoning,
               assistantAutomationHooks: currentStates.assistantAutomationHooks,
               assistantSemanticResponse: currentStates.assistantSemanticResponse,
+              assistantVoiceState: currentStates.assistantVoiceState,
+              assistantWakeWord: currentStates.assistantWakeWord,
+              assistantProactive: currentStates.assistantProactive,
+              assistantVoiceMemory: currentStates.assistantVoiceMemory,
+              assistantPresence: currentStates.assistantPresence,
+              assistantWorkflows: currentStates.assistantWorkflows,
+              assistantReminders: currentStates.assistantReminders,
+              assistantConditions: currentStates.assistantConditions,
+              assistantN8nBridge: currentStates.assistantN8nBridge,
+              assistantRoutines: currentStates.assistantRoutines,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -973,6 +1017,26 @@ export default function App() {
             setAssistantAutomationHooks(payload);
           } else if (topic === "assistant/semantic_response") {
             setAssistantSemanticResponse(payload);
+          } else if (topic === "assistant/voice_state") {
+            setAssistantVoiceState(payload);
+          } else if (topic === "assistant/wake_word") {
+            setAssistantWakeWord(payload);
+          } else if (topic === "assistant/proactive") {
+            setAssistantProactive(payload);
+          } else if (topic === "assistant/voice_memory") {
+            setAssistantVoiceMemory(payload);
+          } else if (topic === "assistant/presence") {
+            setAssistantPresence(payload);
+          } else if (topic === "assistant/workflows") {
+            setAssistantWorkflows(payload);
+          } else if (topic === "assistant/reminders") {
+            setAssistantReminders(payload);
+          } else if (topic === "assistant/conditions") {
+            setAssistantConditions(payload);
+          } else if (topic === "assistant/n8n_bridge") {
+            setAssistantN8nBridge(payload);
+          } else if (topic === "assistant/routines") {
+            setAssistantRoutines(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -1266,6 +1330,16 @@ export default function App() {
   const dispAssistantReasoning = currentFrame ? currentFrame.assistantReasoning : assistantReasoning;
   const dispAssistantAutomationHooks = currentFrame ? currentFrame.assistantAutomationHooks : assistantAutomationHooks;
   const dispAssistantSemanticResponse = currentFrame ? currentFrame.assistantSemanticResponse : assistantSemanticResponse;
+  const dispAssistantVoiceState = currentFrame ? currentFrame.assistantVoiceState : assistantVoiceState;
+  const dispAssistantWakeWord = currentFrame ? currentFrame.assistantWakeWord : assistantWakeWord;
+  const dispAssistantProactive = currentFrame ? currentFrame.assistantProactive : assistantProactive;
+  const dispAssistantVoiceMemory = currentFrame ? currentFrame.assistantVoiceMemory : assistantVoiceMemory;
+  const dispAssistantPresence = currentFrame ? currentFrame.assistantPresence : assistantPresence;
+  const dispAssistantWorkflows = currentFrame ? currentFrame.assistantWorkflows : assistantWorkflows;
+  const dispAssistantReminders = currentFrame ? currentFrame.assistantReminders : assistantReminders;
+  const dispAssistantConditions = currentFrame ? currentFrame.assistantConditions : assistantConditions;
+  const dispAssistantN8nBridge = currentFrame ? currentFrame.assistantN8nBridge : assistantN8nBridge;
+  const dispAssistantRoutines = currentFrame ? currentFrame.assistantRoutines : assistantRoutines;
 
 
 
@@ -1575,6 +1649,16 @@ export default function App() {
             assistantReasoning={dispAssistantReasoning}
             assistantAutomationHooks={dispAssistantAutomationHooks}
             assistantSemanticResponse={dispAssistantSemanticResponse}
+            assistantVoiceState={dispAssistantVoiceState}
+            assistantWakeWord={dispAssistantWakeWord}
+            assistantProactive={dispAssistantProactive}
+            assistantVoiceMemory={dispAssistantVoiceMemory}
+            assistantPresence={dispAssistantPresence}
+            assistantWorkflows={dispAssistantWorkflows}
+            assistantReminders={dispAssistantReminders}
+            assistantConditions={dispAssistantConditions}
+            assistantN8nBridge={dispAssistantN8nBridge}
+            assistantRoutines={dispAssistantRoutines}
             connected={connected}
             onSendControl={sendDirectMqtt}
           />

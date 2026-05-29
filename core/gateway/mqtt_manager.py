@@ -131,6 +131,16 @@ class MQTTManager:
             client.subscribe("assistant/reasoning")
             client.subscribe("assistant/automation_hooks")
             client.subscribe("assistant/semantic_response")
+            client.subscribe("assistant/voice_state")
+            client.subscribe("assistant/wake_word")
+            client.subscribe("assistant/proactive")
+            client.subscribe("assistant/voice_memory")
+            client.subscribe("assistant/presence")
+            client.subscribe("assistant/workflows")
+            client.subscribe("assistant/reminders")
+            client.subscribe("assistant/conditions")
+            client.subscribe("assistant/n8n_bridge")
+            client.subscribe("assistant/routines")
 
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
@@ -301,6 +311,26 @@ class MQTTManager:
                 store.update_assistant_automation_hooks(payload)
             elif topic == "assistant/semantic_response":
                 store.update_assistant_semantic_response(payload)
+            elif topic == "assistant/voice_state":
+                store.update_assistant_voice_state(payload)
+            elif topic == "assistant/wake_word":
+                store.update_assistant_wake_word(payload)
+            elif topic == "assistant/proactive":
+                store.update_assistant_proactive(payload)
+            elif topic == "assistant/voice_memory":
+                store.update_assistant_voice_memory(payload)
+            elif topic == "assistant/presence":
+                store.update_assistant_presence(payload)
+            elif topic == "assistant/workflows":
+                store.update_assistant_workflows(payload)
+            elif topic == "assistant/reminders":
+                store.update_assistant_reminders(payload)
+            elif topic == "assistant/conditions":
+                store.update_assistant_conditions(payload)
+            elif topic == "assistant/n8n_bridge":
+                store.update_assistant_n8n_bridge(payload)
+            elif topic == "assistant/routines":
+                store.update_assistant_routines(payload)
 
 
                 

@@ -131,6 +131,11 @@ class MQTTManager:
             client.subscribe("assistant/reasoning")
             client.subscribe("assistant/automation_hooks")
             client.subscribe("assistant/semantic_response")
+            client.subscribe("assistant/voice_state")
+            client.subscribe("assistant/wake_word")
+            client.subscribe("assistant/proactive")
+            client.subscribe("assistant/voice_memory")
+            client.subscribe("assistant/presence")
 
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
@@ -301,6 +306,16 @@ class MQTTManager:
                 store.update_assistant_automation_hooks(payload)
             elif topic == "assistant/semantic_response":
                 store.update_assistant_semantic_response(payload)
+            elif topic == "assistant/voice_state":
+                store.update_assistant_voice_state(payload)
+            elif topic == "assistant/wake_word":
+                store.update_assistant_wake_word(payload)
+            elif topic == "assistant/proactive":
+                store.update_assistant_proactive(payload)
+            elif topic == "assistant/voice_memory":
+                store.update_assistant_voice_memory(payload)
+            elif topic == "assistant/presence":
+                store.update_assistant_presence(payload)
 
 
                 

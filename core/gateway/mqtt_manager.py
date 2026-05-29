@@ -110,6 +110,11 @@ class MQTTManager:
             client.subscribe("hardware/safety_guard")
             client.subscribe("hardware/deployment_profiles")
             client.subscribe("hardware/telemetry_validation")
+            client.subscribe("hardware/resilience")
+            client.subscribe("hardware/disaster_recovery")
+            client.subscribe("hardware/redundancy")
+            client.subscribe("hardware/deployment_hardening")
+            client.subscribe("hardware/large_scale_sync")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -243,6 +248,16 @@ class MQTTManager:
                 store.update_hardware_deployment_profiles(payload)
             elif topic == "hardware/telemetry_validation":
                 store.update_hardware_telemetry_validation(payload)
+            elif topic == "hardware/resilience":
+                store.update_hardware_resilience(payload)
+            elif topic == "hardware/disaster_recovery":
+                store.update_hardware_disaster_recovery(payload)
+            elif topic == "hardware/redundancy":
+                store.update_hardware_redundancy(payload)
+            elif topic == "hardware/deployment_hardening":
+                store.update_hardware_deployment_hardening(payload)
+            elif topic == "hardware/large_scale_sync":
+                store.update_hardware_large_scale_sync(payload)
 
                 
             # 2. Package for WebSockets

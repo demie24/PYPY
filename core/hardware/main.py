@@ -27,6 +27,13 @@ from edge_reliability_monitor import EdgeReliabilityMonitor
 from safe_relay_guard import SafeRelayGuard
 from hardware_execution_gateway import HardwareExecutionGateway
 
+# Import Distributed Resilience & Deployment Hardening Layer
+from distributed_resilience_manager import DistributedResilienceManager
+from disaster_recovery_engine import DisasterRecoveryEngine
+from redundancy_coordinator import RedundancyCoordinator
+from deployment_hardening_engine import DeploymentHardeningEngine
+from large_scale_synchronization_manager import LargeScaleSynchronizationManager
+
 
 
 # Configure logging
@@ -98,6 +105,13 @@ execution_gateway = HardwareExecutionGateway(
 
 # Proxy orchestrator's router calls to execution gateway
 orchestrator.command_router = execution_gateway
+
+# Initialize Distributed Resilience & Deployment Hardening Layer
+resilience_manager = DistributedResilienceManager()
+disaster_recovery = DisasterRecoveryEngine()
+redundancy_coordinator = RedundancyCoordinator()
+deployment_hardening = DeploymentHardeningEngine()
+large_scale_sync = LargeScaleSynchronizationManager()
 
 
 # MQTT Callbacks
@@ -348,15 +362,67 @@ def on_message(client, userdata, msg):
                 }
                 client.publish("grid/events", json.dumps(event_log))
                 
+            elif cmd == "TRIGGER_DISASTER_RECOVERY":
+                workflow = payload.get("workflow", "BLACKSTART_RESTORATION")
+                current_breaker_states = {k: v.get("feedback", "OPEN") for k, v in state_manager.relays.items()}
+                success, msg = disaster_recovery.start_recovery_workflow(workflow, current_breaker_states)
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"Triggered Disaster Recovery Workflow: {workflow}. Result: {msg}",
+                    "severity": "WARNING" if success else "ERROR"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "TOGGLE_REDUNDANT_EXECUTION":
+                enabled = payload.get("enabled", False)
+                redundancy_coordinator.redundant_execution_active = enabled
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"Redundant Execution Routing toggled to: {enabled}",
+                    "severity": "INFO"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+                
+            elif cmd == "SET_HARDENING_CHECK":
+                check_name = payload.get("check")
+                state = payload.get("state", False)
+                deployment_hardening.set_check_state(check_name, state)
+                event_log = {
+                    "timestamp": int(time.time() * 1000),
+                    "source": "SCADA_OPERATOR",
+                    "event": f"Hardening Compliance check {check_name} set to {state}",
+                    "severity": "INFO"
+                }
+                client.publish("grid/events", json.dumps(event_log))
+
             elif cmd == "TERMINATE_HARDWARE_SCENARIO" or cmd == "RESET_ALARMS":
                 fault_orchestrator.clear_all_faults()
                 attack_orchestrator.reset()
                 safety_guard.reset_emergency_stop()
                 execution_gateway.compromised_zones.clear()
+                
+                # Reset new resilience states
+                disaster_recovery.active_workflow = None
+                disaster_recovery.workflow_status = "IDLE"
+                disaster_recovery.restoration_stage = 0
+                disaster_recovery.rollback_active = False
+                redundancy_coordinator.redundant_execution_active = False
+                deployment_hardening.compliance_checks = {
+                    "SECURE_BOOT_ENABLED": True,
+                    "ENCRYPTED_COMMS_ONLY": True,
+                    "DEFAULT_CREDENTIALS_CHANGED": True,
+                    "PORT_SECTOR_SEGMENTATION": True,
+                    "ACCESS_CONTROL_ENFORCED": True
+                }
+                deployment_hardening.evaluate_compliance()
+                large_scale_sync.recovery_attempts = 0
+                
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
-                    "event": "Cleared all hardware faults, emergency stops, and scenario states.",
+                    "event": "Cleared all hardware faults, emergency stops, scenarios, and resilience states.",
                     "severity": "INFO"
                 }
                 client.publish("grid/events", json.dumps(event_log))
@@ -420,6 +486,38 @@ if __name__ == "__main__":
             
             # Tick reliability monitor
             reliability_monitor.tick(fleet_payload, relay_telemetry)
+            
+            # Tick synchronization manager and evaluate timings
+            large_scale_sync.monitor_and_stabilize(orchestrator.sync_engine.device_drifts)
+            
+            # Evaluate redundancy and primary-backup health
+            redundancy_coordinator.evaluate_redundancy_health(fleet_payload, large_scale_sync.timing_deviations)
+            
+            # Evaluate global distributed resilience state
+            resilience_manager.evaluate_resilience(
+                current_state,
+                fleet_payload,
+                telemetry_validator.alerts,
+                not large_scale_sync.sync_stabilized,
+                large_scale_sync.congestion_detected
+            )
+            
+            # Evaluate deployment hardening compliance
+            deployment_hardening.evaluate_compliance()
+            
+            # Execute automated disaster recovery workflow step
+            if disaster_recovery.active_workflow and disaster_recovery.workflow_status == "IN_PROGRESS":
+                current_breaker_states = {k: v.get("feedback", "OPEN") for k, v in state_manager.relays.items()}
+                cmd_payload = disaster_recovery.execute_next_step(current_breaker_states)
+                if cmd_payload:
+                    success, reason = execution_gateway.execute_command(cmd_payload)
+                    if success:
+                        disaster_recovery.restoration_stage += 1
+                        logger.info(f"Disaster Recovery executed step successfully. Advancing to stage {disaster_recovery.restoration_stage}")
+                    else:
+                        rollback_cmds = disaster_recovery.handle_step_failure(cmd_payload["target"], current_breaker_states)
+                        for r_cmd in rollback_cmds:
+                            execution_gateway.execute_command(r_cmd)
             
             # 1. Heartbeats
             esp32_hb = esp32_bridge.run_heartbeat_cycle()
@@ -510,6 +608,13 @@ if __name__ == "__main__":
             client.publish("hardware/safety_guard", json.dumps(safety_guard.get_telemetry_payload()))
             client.publish("hardware/deployment_profiles", json.dumps(profiles.get_telemetry_payload()))
             client.publish("hardware/telemetry_validation", json.dumps(telemetry_validator.get_telemetry_payload()))
+            
+            # 8. Publish Distributed Resilience & Deployment Hardening Telemetry
+            client.publish("hardware/resilience", json.dumps(resilience_manager.get_telemetry_payload()))
+            client.publish("hardware/disaster_recovery", json.dumps(disaster_recovery.get_telemetry_payload()))
+            client.publish("hardware/redundancy", json.dumps(redundancy_coordinator.get_telemetry_payload()))
+            client.publish("hardware/deployment_hardening", json.dumps(deployment_hardening.get_telemetry_payload()))
+            client.publish("hardware/large_scale_sync", json.dumps(large_scale_sync.get_telemetry_payload()))
 
             
             time.sleep(1.0)

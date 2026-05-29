@@ -81,6 +81,24 @@ class OrchestrationDecisionEngine:
             collapse_prob_val = float(pred_stability.get("collapse_probability", 0.0))
             horizon_val = float(pred_stability.get("survivability_horizon", 999.0))
             stability -= collapse_prob_val * 0.2
+            
+        # Add distributed resilience and hardening penalties
+        resilience = grid_state.get("hardware_resilience")
+        large_scale_sync = grid_state.get("hardware_large_scale_sync")
+        deployment_hardening = grid_state.get("hardware_deployment_hardening")
+        
+        if resilience:
+            res_state = resilience.get("resilience_state", "NOMINAL")
+            if res_state == "CRITICAL":
+                stability -= 15.0
+            elif res_state == "EMERGENCY":
+                stability -= 30.0
+                
+        if large_scale_sync and large_scale_sync.get("congestion_detected"):
+            stability -= 5.0
+            
+        if deployment_hardening and deployment_hardening.get("deployment_safety_status") == "INSECURE":
+            stability -= 10.0
         
         stability_score = max(0.0, min(100.0, round(stability, 2)))
         
@@ -217,6 +235,15 @@ class OrchestrationDecisionEngine:
             reasoning["predictive_stability"] = f"Stability Horizon: {horizon_val}s. Collapse Prob: {collapse_prob_val}%. Preservation Policy: {policy}."
         else:
             reasoning["predictive_stability"] = "Predictive stability model warming up..."
+            
+        # Add distributed resilience & hardening reasoning
+        if resilience and deployment_hardening:
+            res_state = resilience.get("resilience_state", "NOMINAL")
+            surv_score = resilience.get("survivability_score", 100.0)
+            comp_score = deployment_hardening.get("compliance_score", 100.0)
+            reasoning["resilience_hardening"] = f"Resilience state is {res_state} (Survivability: {surv_score:.1f}%, Hardening: {comp_score:.1f}% Compliance)."
+        else:
+            reasoning["resilience_hardening"] = "Resilience and hardening monitors initializing..."
             
         return {
             "global_state": global_state,

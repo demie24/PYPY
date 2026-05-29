@@ -25,6 +25,7 @@ class HardwareExecutionGateway:
         
         # Mirror command router attributes for drop-in proxy compatibility
         self.routing_table = getattr(command_router, "routing_table", {})
+        self.redundancy_coordinator = None
         
         # Track execution queue logs for HMI console
 
@@ -142,17 +143,42 @@ class HardwareExecutionGateway:
             return False, msg
 
         # 6. Command routing execution
-        success, reason = self.command_router.route_command(payload)
+        if getattr(self, "redundancy_coordinator", None):
+            commands_to_run = self.redundancy_coordinator.route_redundant_command(payload, controlling_dev)
+        else:
+            commands_to_run = [payload]
+            
+        primary_success = False
+        backup_success = False
+        primary_reason = ""
+        backup_reason = ""
         
+        for cmd in commands_to_run:
+            is_backup = "redundant_route" in cmd
+            succ, reason = self.command_router.route_command(cmd)
+            if is_backup:
+                backup_success = succ
+                backup_reason = reason
+            else:
+                primary_success = succ
+                primary_reason = reason
+                
+        # Register command to track timeout transitions in Reliability Monitor if primary succeeded
+        if primary_success and target and command_type in ["OPEN", "CLOSE", "CLOSED"]:
+            self.reliability_monitor.register_relay_command(target, command_type, controlling_dev)
+            
+        # Arbitrate responses
+        if len(commands_to_run) > 1:
+            success, reason = self.redundancy_coordinator.arbitrate_responses(primary_success, backup_success, controlling_dev)
+        else:
+            success, reason = primary_success, primary_reason
+            
         if success:
             log_entry["status"] = "EXECUTED"
             log_entry["details"] = f"Routed to {controlling_dev}. {reason}"
-            # Register command to track timeout transitions in Reliability Monitor
-            if target and command_type in ["OPEN", "CLOSE", "CLOSED"]:
-                self.reliability_monitor.register_relay_command(target, command_type, controlling_dev)
         else:
             log_entry["status"] = "FAILED"
-            log_entry["details"] = f"Execution failed on interface: {reason}"
+            log_entry["details"] = f"Execution failed: {reason}"
             
         self._add_to_log(log_entry)
         return success, reason

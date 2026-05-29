@@ -71,8 +71,12 @@ class AIOrchestrator:
             "hardware_distributed_bus": None,
             "hardware_synchronization": None,
             "hardware_orchestration_conflicts": None,
-            "hardware_reliability": None,
-            "hardware_telemetry_validation": None
+            "hardware_telemetry_validation": None,
+            "hardware_resilience": None,
+            "hardware_disaster_recovery": None,
+            "hardware_redundancy": None,
+            "hardware_deployment_hardening": None,
+            "hardware_large_scale_sync": None
         }
 
 
@@ -184,6 +188,16 @@ class AIOrchestrator:
             self.state_cache["hardware_reliability"] = payload
         elif topic == "hardware/telemetry_validation":
             self.state_cache["hardware_telemetry_validation"] = payload
+        elif topic == "hardware/resilience":
+            self.state_cache["hardware_resilience"] = payload
+        elif topic == "hardware/disaster_recovery":
+            self.state_cache["hardware_disaster_recovery"] = payload
+        elif topic == "hardware/redundancy":
+            self.state_cache["hardware_redundancy"] = payload
+        elif topic == "hardware/deployment_hardening":
+            self.state_cache["hardware_deployment_hardening"] = payload
+        elif topic == "hardware/large_scale_sync":
+            self.state_cache["hardware_large_scale_sync"] = payload
 
 
     def process_quarantine_containment(self, client):
@@ -624,6 +638,11 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("hardware/orchestration_conflicts")
         client.subscribe("hardware/reliability")
         client.subscribe("hardware/telemetry_validation")
+        client.subscribe("hardware/resilience")
+        client.subscribe("hardware/disaster_recovery")
+        client.subscribe("hardware/redundancy")
+        client.subscribe("hardware/deployment_hardening")
+        client.subscribe("hardware/large_scale_sync")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 

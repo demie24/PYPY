@@ -24,6 +24,7 @@ import { VirtualHardwareTwinPanel } from "./components/VirtualHardwareTwinPanel.
 import { CyberPhysicalAttackPanel } from "./components/CyberPhysicalAttackPanel.tsx";
 import { HardwareOrchestrationPanel } from "./components/HardwareOrchestrationPanel.tsx";
 import { HardwareExecutionPanel } from "./components/HardwareExecutionPanel.tsx";
+import { InfrastructureResiliencePanel } from "./components/InfrastructureResiliencePanel.tsx";
 
 
 
@@ -107,6 +108,11 @@ export default function App() {
   const [hardwareSafetyGuard, setHardwareSafetyGuard] = useState<any>(null);
   const [hardwareDeploymentProfiles, setHardwareDeploymentProfiles] = useState<any>(null);
   const [hardwareTelemetryValidation, setHardwareTelemetryValidation] = useState<any>(null);
+  const [hardwareResilience, setHardwareResilience] = useState<any>(null);
+  const [hardwareDisasterRecovery, setHardwareDisasterRecovery] = useState<any>(null);
+  const [hardwareRedundancy, setHardwareRedundancy] = useState<any>(null);
+  const [hardwareDeploymentHardening, setHardwareDeploymentHardening] = useState<any>(null);
+  const [hardwareLargeScaleSync, setHardwareLargeScaleSync] = useState<any>(null);
 
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
@@ -153,10 +159,11 @@ export default function App() {
     l7_twin: 2,
     l7_attack: 2,
     l7_orchestration: 2,
-    l7_execution: 2
+    l7_execution: 2,
+    l7_resilience: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack", "l7_orchestration", "l7_execution"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack", "l7_orchestration", "l7_execution", "l7_resilience"
   ]);
 
   // Timeline Replay States
@@ -228,6 +235,11 @@ export default function App() {
       hardwareSafetyGuard,
       hardwareDeploymentProfiles,
       hardwareTelemetryValidation,
+      hardwareResilience,
+      hardwareDisasterRecovery,
+      hardwareRedundancy,
+      hardwareDeploymentHardening,
+      hardwareLargeScaleSync,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -487,6 +499,21 @@ export default function App() {
           if (data.hardware_telemetry_validation) {
             setHardwareTelemetryValidation(data.hardware_telemetry_validation);
           }
+          if (data.hardware_resilience) {
+            setHardwareResilience(data.hardware_resilience);
+          }
+          if (data.hardware_disaster_recovery) {
+            setHardwareDisasterRecovery(data.hardware_disaster_recovery);
+          }
+          if (data.hardware_redundancy) {
+            setHardwareRedundancy(data.hardware_redundancy);
+          }
+          if (data.hardware_deployment_hardening) {
+            setHardwareDeploymentHardening(data.hardware_deployment_hardening);
+          }
+          if (data.hardware_large_scale_sync) {
+            setHardwareLargeScaleSync(data.hardware_large_scale_sync);
+          }
         } 
 
         // Handle active MQTT stream broadcasts
@@ -592,6 +619,11 @@ export default function App() {
               hardwareSafetyGuard: currentStates.hardwareSafetyGuard,
               hardwareDeploymentProfiles: currentStates.hardwareDeploymentProfiles,
               hardwareTelemetryValidation: currentStates.hardwareTelemetryValidation,
+              hardwareResilience: currentStates.hardwareResilience,
+              hardwareDisasterRecovery: currentStates.hardwareDisasterRecovery,
+              hardwareRedundancy: currentStates.hardwareRedundancy,
+              hardwareDeploymentHardening: currentStates.hardwareDeploymentHardening,
+              hardwareLargeScaleSync: currentStates.hardwareLargeScaleSync,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -809,6 +841,16 @@ export default function App() {
             setHardwareDeploymentProfiles(payload);
           } else if (topic === "hardware/telemetry_validation") {
             setHardwareTelemetryValidation(payload);
+          } else if (topic === "hardware/resilience") {
+            setHardwareResilience(payload);
+          } else if (topic === "hardware/disaster_recovery") {
+            setHardwareDisasterRecovery(payload);
+          } else if (topic === "hardware/redundancy") {
+            setHardwareRedundancy(payload);
+          } else if (topic === "hardware/deployment_hardening") {
+            setHardwareDeploymentHardening(payload);
+          } else if (topic === "hardware/large_scale_sync") {
+            setHardwareLargeScaleSync(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -941,6 +983,11 @@ export default function App() {
     setL6AgentConflicts(null);
     setL6DistributedState(null);
     setL6AgentConfidence(null);
+    setHardwareResilience(null);
+    setHardwareDisasterRecovery(null);
+    setHardwareRedundancy(null);
+    setHardwareDeploymentHardening(null);
+    setHardwareLargeScaleSync(null);
   };
 
   const handleToggleAutoDefense = (enabled: boolean) => {
@@ -1072,6 +1119,11 @@ export default function App() {
   const dispHardwareReliability = currentFrame ? currentFrame.hardwareReliability : hardwareReliability;
   const dispHardwareSafetyGuard = currentFrame ? currentFrame.hardwareSafetyGuard : hardwareSafetyGuard;
   const dispHardwareTelemetryValidation = currentFrame ? currentFrame.hardwareTelemetryValidation : hardwareTelemetryValidation;
+  const dispHardwareResilience = currentFrame ? currentFrame.hardwareResilience : hardwareResilience;
+  const dispHardwareDisasterRecovery = currentFrame ? currentFrame.hardwareDisasterRecovery : hardwareDisasterRecovery;
+  const dispHardwareRedundancy = currentFrame ? currentFrame.hardwareRedundancy : hardwareRedundancy;
+  const dispHardwareDeploymentHardening = currentFrame ? currentFrame.hardwareDeploymentHardening : hardwareDeploymentHardening;
+  const dispHardwareLargeScaleSync = currentFrame ? currentFrame.hardwareLargeScaleSync : hardwareLargeScaleSync;
 
 
 
@@ -1344,6 +1396,20 @@ export default function App() {
             reliability={dispHardwareReliability}
             safetyGuard={dispHardwareSafetyGuard}
             telemetryValidation={dispHardwareTelemetryValidation}
+            onSendControl={sendControl}
+          />
+        );
+        break;
+
+      case "l7_resilience":
+        title = "Infrastructure Resilience & Hardening";
+        content = (
+          <InfrastructureResiliencePanel
+            resilience={dispHardwareResilience}
+            disasterRecovery={dispHardwareDisasterRecovery}
+            redundancy={dispHardwareRedundancy}
+            deploymentHardening={dispHardwareDeploymentHardening}
+            largeScaleSync={dispHardwareLargeScaleSync}
             onSendControl={sendControl}
           />
         );

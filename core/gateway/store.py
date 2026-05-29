@@ -69,6 +69,11 @@ class MemoryStore:
         self.latest_hardware_safety_guard: Optional[Dict[str, Any]] = None
         self.latest_hardware_deployment_profiles: Optional[Dict[str, Any]] = None
         self.latest_hardware_telemetry_validation: Optional[Dict[str, Any]] = None
+        self.latest_hardware_resilience: Optional[Dict[str, Any]] = None
+        self.latest_hardware_disaster_recovery: Optional[Dict[str, Any]] = None
+        self.latest_hardware_redundancy: Optional[Dict[str, Any]] = None
+        self.latest_hardware_deployment_hardening: Optional[Dict[str, Any]] = None
+        self.latest_hardware_large_scale_sync: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -258,6 +263,21 @@ class MemoryStore:
     def update_hardware_telemetry_validation(self, payload: Dict[str, Any]):
         self.latest_hardware_telemetry_validation = payload
 
+    def update_hardware_resilience(self, payload: Dict[str, Any]):
+        self.latest_hardware_resilience = payload
+
+    def update_hardware_disaster_recovery(self, payload: Dict[str, Any]):
+        self.latest_hardware_disaster_recovery = payload
+
+    def update_hardware_redundancy(self, payload: Dict[str, Any]):
+        self.latest_hardware_redundancy = payload
+
+    def update_hardware_deployment_hardening(self, payload: Dict[str, Any]):
+        self.latest_hardware_deployment_hardening = payload
+
+    def update_hardware_large_scale_sync(self, payload: Dict[str, Any]):
+        self.latest_hardware_large_scale_sync = payload
+
 
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
@@ -336,7 +356,12 @@ class MemoryStore:
             "hardware_reliability": self.latest_hardware_reliability,
             "hardware_safety_guard": self.latest_hardware_safety_guard,
             "hardware_deployment_profiles": self.latest_hardware_deployment_profiles,
-            "hardware_telemetry_validation": self.latest_hardware_telemetry_validation
+            "hardware_telemetry_validation": self.latest_hardware_telemetry_validation,
+            "hardware_resilience": self.latest_hardware_resilience,
+            "hardware_disaster_recovery": self.latest_hardware_disaster_recovery,
+            "hardware_redundancy": self.latest_hardware_redundancy,
+            "hardware_deployment_hardening": self.latest_hardware_deployment_hardening,
+            "hardware_large_scale_sync": self.latest_hardware_large_scale_sync
         }
 
     def clear_alerts(self):

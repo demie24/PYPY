@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Send, Mic, Bot, Sparkles, User, Cpu, Smile, Volume2, RotateCcw,
-  MessageSquare, Compass, GitBranch,
+  MessageSquare, Compass, GitBranch, Bell, Eye, CheckCircle2, XCircle, RefreshCw,
   ShieldCheck, Terminal, Sliders, Activity, AlertCircle, Play, Zap, Clock, WifiOff
 } from "lucide-react";
 
@@ -114,12 +114,18 @@ interface AssistantCognitionPanelProps {
   assistantSemanticResponse?: { semantic_response: SemanticResponse } | null;
   connected: boolean;
   onSendControl: (payload: any) => void;
-  // Phase 9.3 new props
+  // Phase 9.3 props
   assistantVoiceState?: any | null;
   assistantWakeWord?: any | null;
   assistantProactive?: any | null;
   assistantVoiceMemory?: any | null;
   assistantPresence?: any | null;
+  // Phase 9.4 props
+  assistantWorkflows?: any | null;
+  assistantReminders?: any | null;
+  assistantConditions?: any | null;
+  assistantN8nBridge?: any | null;
+  assistantRoutines?: any | null;
 }
 
 export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = ({
@@ -139,12 +145,17 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
   assistantWakeWord,
   assistantProactive,
   assistantVoiceMemory,
-  assistantPresence
+  assistantPresence,
+  assistantWorkflows,
+  assistantReminders,
+  assistantConditions,
+  assistantN8nBridge,
+  assistantRoutines
 }) => {
   const [chatText, setChatText] = useState("");
   const [isListeningVoice, setIsListeningVoice] = useState(false);
   const [voiceSimProgress, setVoiceSimProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState<"reasoning" | "voice_wake" | "presence_pacing" | "proactive_hooks">("reasoning");
+  const [activeTab, setActiveTab] = useState<"reasoning" | "workflows" | "reminders" | "presence">("reasoning");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Extract variables with defaults
@@ -233,6 +244,40 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     idle_duration_sec: 0.0
   };
 
+  // Phase 9.4 Parameters:
+  const workflows = assistantWorkflows?.workflows ?? {
+    executions: [],
+    delayed_tasks_count: 0,
+    delayed_queue: [],
+    cooldown_timers: {},
+    call_stack: [],
+    total_executions: 0
+  };
+  const reminders = assistantReminders?.reminders ?? {
+    active_reminders: [],
+    active_count: 0,
+    triggered_history: [],
+    total_triggered: 0
+  };
+  const conditions = assistantConditions?.conditions ?? {
+    registered_watches: [],
+    watches_count: 0,
+    trigger_history: [],
+    total_triggers: 0
+  };
+  const n8nBridge = assistantN8nBridge?.n8n_bridge ?? {
+    executions: [],
+    active_retries_count: 0,
+    active_retries: [],
+    total_executions: 0
+  };
+  const routines = assistantRoutines?.routines ?? {
+    recommended_routines: [],
+    routines_count: 0,
+    interaction_history: [],
+    command_frequencies: {}
+  };
+
   // SVG Breathing core coordinate calculation
   const [localBreathingCoordinate, setLocalBreathingCoordinate] = useState(0);
 
@@ -266,7 +311,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     return () => cancelAnimationFrame(animFrameId);
   }, [state, presence.breathing_frequency_hz]);
 
-  // Determine interactions list (use contextual active messages first for thread summary, fallback to old list)
+  // Determine interactions list
   const displayInteractions = (contextualMemory.active_messages && contextualMemory.active_messages.length > 0)
     ? contextualMemory.active_messages
     : (memory.interactions ?? []);
@@ -302,7 +347,6 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
       if (currentProgress >= 100) {
         clearInterval(interval);
         setIsListeningVoice(false);
-        // Send as voice input trigger
         onSendControl({
           topic: "assistant/voice_input",
           payload: { audio_text: randomPhrase }
@@ -341,6 +385,70 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     }
   };
 
+  // 6 Simulation Controls triggers
+  const triggerScheduleReminder = () => {
+    onSendControl({
+      topic: "assistant/reminder_trigger",
+      payload: { action: "schedule", text: "Check system status", delay_sec: 5.0 }
+    });
+  };
+
+  const triggerStatusCheckWorkflow = () => {
+    onSendControl({
+      topic: "assistant/workflow_trigger",
+      payload: { action: "execute", workflow_name: "system_status_check" }
+    });
+  };
+
+  const triggerWebhookFailureSim = () => {
+    onSendControl({
+      topic: "assistant/n8n_bridge_trigger",
+      payload: {
+        action: "dispatch",
+        webhook_name: "alert_webhook",
+        force_failure: true,
+        simulate_network_failure: true,
+        payload: { status: "critical_warning", source: "HMI" }
+      }
+    });
+  };
+
+  const triggerCooldownConflictSim = () => {
+    // Schedule a reminder with the exact same text within 10s cooldown
+    onSendControl({
+      topic: "assistant/reminder_trigger",
+      payload: { action: "schedule", text: "Check system status", delay_sec: 5.0 }
+    });
+  };
+
+  const triggerRecursiveLoopSim = () => {
+    onSendControl({
+      topic: "assistant/workflow_trigger",
+      payload: { action: "execute", workflow_name: "recursive_loop_test" }
+    });
+  };
+
+  const triggerTelemetryTriggeredWorkflowSim = () => {
+    onSendControl({
+      topic: "assistant/proactive_trigger",
+      payload: { latency_ms: 620.0, latency_spike: true }
+    });
+  };
+
+  const handleCancelReminder = (reminderId: string) => {
+    onSendControl({
+      topic: "assistant/reminder_trigger",
+      payload: { action: "cancel", reminder_id: reminderId }
+    });
+  };
+
+  const handleAcceptRoutine = (routineType: string) => {
+    onSendControl({
+      topic: "assistant/routine_trigger",
+      payload: { action: "accept", routine_type: routineType }
+    });
+  };
+
   // Helper styles for FSM States
   const getFsmStateStyle = (nodeState: string) => {
     const isActive = state === nodeState;
@@ -377,43 +485,6 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     );
   };
 
-  // Simulated alerts helpers
-  const triggerWakeWordSim = () => {
-    onSendControl({
-      topic: "assistant/wake_word_trigger",
-      payload: { text: "hey pypy" }
-    });
-  };
-
-  const triggerLatencySpikeSim = () => {
-    onSendControl({
-      topic: "assistant/proactive_trigger",
-      payload: { latency_ms: 620.0, latency_spike: true }
-    });
-  };
-
-  const triggerRelayInstabilitySim = () => {
-    onSendControl({
-      topic: "assistant/proactive_trigger",
-      payload: { relay_unstable: true }
-    });
-  };
-
-  const triggerBrokerDisconnectSim = () => {
-    onSendControl({
-      topic: "assistant/proactive_trigger",
-      payload: { comms_online: false }
-    });
-  };
-
-  const triggerSyncRecoverySim = () => {
-    onSendControl({
-      topic: "assistant/proactive_trigger",
-      payload: { sync_recovered: true }
-    });
-  };
-
-  // Helper for Pacing delay calculation description
   const getPacingDelayValue = (mood: string, critical: boolean) => {
     if (critical) return 0.0;
     if (mood === "excited") return 0.15;
@@ -422,9 +493,12 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     return 0.50;
   };
 
+  // Extract latest workflow run
+  const latestWf = workflows.executions.length > 0 ? workflows.executions[workflows.executions.length - 1] : null;
+
   return (
     <div className="bg-scada-panel border border-scada-border rounded-lg p-3 h-[420px] flex flex-col overflow-hidden relative font-mono text-[9px] text-white">
-      {/* Dynamic Background Glow representing State */}
+      {/* Dynamic Background Glow */}
       <div className={`absolute inset-0 transition-opacity duration-1000 pointer-events-none opacity-[0.03] ${
         state === "LISTENING" ? "bg-cyan-500" :
         state === "THINKING" ? "bg-purple-500" :
@@ -457,14 +531,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
               {state}
             </span>
           </div>
-          {/* Uptime Indicator */}
-          <div className="flex items-center gap-1 bg-scada-bg/85 px-1.5 py-0.5 rounded border border-scada-border/30">
-            <span className="text-scada-dimText">UPTIME:</span>
-            <span className={`font-bold ${runtime.status === "ONLINE" ? "text-emerald-400" : "text-rose-400"}`}>
-              {runtime.uptime_sec}s
-            </span>
-          </div>
-          {/* Connection status badge */}
+          {/* Link status badge */}
           <div className="flex items-center gap-1 bg-scada-bg/85 px-1.5 py-0.5 rounded border border-scada-border/30">
             <span className="text-scada-dimText">LINK:</span>
             <span className={`font-bold ${connected ? "text-emerald-400" : "text-rose-500 animate-pulse"}`}>
@@ -477,19 +544,17 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
         </div>
       </div>
 
-      {/* Main content grid split 50% / 50% */}
+      {/* Main content split */}
       <div className="flex-1 flex gap-3 overflow-hidden z-10 min-h-0">
-        {/* Left Side: Conversational Console (Chat) */}
+        {/* Left Side: Chat Console */}
         <div className="w-[50%] flex flex-col overflow-hidden bg-scada-bg/50 border border-scada-border/30 rounded p-2">
-          {/* Topic & Depth Banner */}
           <div className="flex justify-between items-center mb-1 border-b border-scada-border/20 pb-1.5 shrink-0 text-[8px] text-scada-dimText uppercase tracking-wider font-semibold">
             <span className="flex items-center gap-1">
-              <Compass size={9} /> Topic: <span className="text-cyan-300 font-bold">{contextualMemory.active_subject ?? context.current_topic ?? "NONE"}</span>
+              <Compass size={9} className="text-cyan-400" /> Topic: <span className="text-cyan-300 font-bold">{contextualMemory.active_subject ?? context.current_topic ?? "NONE"}</span>
             </span>
             <span>Thread: <span className="text-white font-bold">{contextualMemory.active_thread_id ? `T-${contextualMemory.active_thread_id.substring(0, 4)}` : "NONE"}</span></span>
           </div>
 
-          {/* Dialog Container */}
           <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-2 scrollbar-thin bg-black/10 rounded p-1.5">
             {displayInteractions.length === 0 ? (
               <div className="h-full flex flex-col justify-center items-center text-center p-4">
@@ -522,11 +587,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                         : "bg-scada-bg/85 border-scada-border/40 text-emerald-100"
                     }`}>
                       <div className="shrink-0 mt-0.5">
-                        {isUser ? (
-                          <User size={10} className="text-cyan-400" />
-                        ) : (
-                          <Bot size={10} className="text-emerald-400" />
-                        )}
+                        {isUser ? <User size={10} className="text-cyan-400" /> : <Bot size={10} className="text-emerald-400" />}
                       </div>
                       <div className="flex flex-col">
                         <div className="text-[7px] text-scada-dimText uppercase tracking-wider mb-0.5">
@@ -540,7 +601,6 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
               })
             )}
 
-            {/* Listening / Thinking animation overlay */}
             {state !== "IDLE" && state !== "ERROR" && (
               <div className="flex justify-start">
                 <div className="bg-scada-bg border border-scada-border/20 rounded p-1.5 px-2.5 flex items-center gap-1.5">
@@ -560,7 +620,6 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
             <div ref={chatEndRef} />
           </div>
 
-          {/* Voice status info */}
           {semanticResponse.clean_tts_text && (
             <div className="bg-black/10 border border-scada-border/20 rounded p-1 mb-1 shrink-0 text-[6.5px] text-emerald-400 flex items-center gap-1 select-none">
               <Volume2 size={8} className="shrink-0 text-emerald-400 animate-pulse" />
@@ -568,7 +627,6 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
             </div>
           )}
 
-          {/* Quick Prompts Input Section */}
           <div className="grid grid-cols-2 gap-1 mb-1.5 shrink-0">
             <button onClick={() => handleQuickCommand("keadaan grid ok ke?", true)}
               className="bg-scada-bg hover:bg-scada-border/20 border border-scada-border/30 rounded p-1 text-left text-[7.5px] text-scada-dimText truncate flex items-center gap-1">
@@ -580,9 +638,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
             </button>
           </div>
 
-          {/* Input Controls */}
           <div className="flex gap-1.5 shrink-0 items-center">
-            {/* STT/Voice Activation Button */}
             <button
               onClick={handleSimulateVoice}
               disabled={isListeningVoice || state !== "IDLE"}
@@ -596,18 +652,16 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
               {isListeningVoice ? <Volume2 size={12} className="animate-bounce" /> : <Mic size={12} />}
             </button>
 
-            {/* Chat text box */}
             <input
               type="text"
               value={chatText}
               onChange={(e) => setChatText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
-              placeholder={isListeningVoice ? `Listening to audio text (${voiceSimProgress}%)...` : "Type a request to assistant..."}
+              placeholder={isListeningVoice ? `Listening (${voiceSimProgress}%)...` : "Type request..."}
               disabled={isListeningVoice || state !== "IDLE"}
               className="flex-1 bg-scada-bg border border-scada-border/50 text-white rounded p-1.5 text-[8.5px] outline-none placeholder:text-scada-dimText/60"
             />
 
-            {/* Send Button */}
             <button
               onClick={handleSendChat}
               disabled={!chatText.trim() || state !== "IDLE"}
@@ -618,534 +672,387 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
           </div>
         </div>
 
-        {/* Right Side: Cognition Monitoring & Semantic Visualizations */}
+        {/* Right Side: Cognition Tabs */}
         <div className="w-[50%] flex flex-col overflow-hidden">
-          {/* Tab Selector */}
           <div className="flex border-b border-scada-border/30 mb-2 bg-scada-bg/30 rounded-t overflow-hidden shrink-0">
             <button
               onClick={() => setActiveTab("reasoning")}
-              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
-                activeTab === "reasoning"
-                  ? "border-purple-500 text-white bg-purple-500/10"
-                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
+              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "reasoning" ? "border-purple-500 text-white bg-purple-500/10" : "border-transparent text-scada-dimText hover:text-white"
               }`}
             >
-              <Activity size={10} />
+              <Activity size={9} />
               Reasoning
             </button>
             <button
-              onClick={() => setActiveTab("voice_wake")}
-              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
-                activeTab === "voice_wake"
-                  ? "border-cyan-500 text-white bg-cyan-500/10"
-                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
+              onClick={() => setActiveTab("workflows")}
+              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "workflows" ? "border-blue-500 text-white bg-blue-500/10" : "border-transparent text-scada-dimText hover:text-white"
               }`}
             >
-              <Volume2 size={10} />
-              Voice & Wake
+              <GitBranch size={9} />
+              Workflows
             </button>
             <button
-              onClick={() => setActiveTab("presence_pacing")}
-              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
-                activeTab === "presence_pacing"
-                  ? "border-emerald-500 text-white bg-emerald-500/10"
-                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
+              onClick={() => setActiveTab("reminders")}
+              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "reminders" ? "border-amber-500 text-white bg-amber-500/10" : "border-transparent text-scada-dimText hover:text-white"
               }`}
             >
-              <Clock size={10} />
+              <Bell size={9} />
+              Reminders
+            </button>
+            <button
+              onClick={() => setActiveTab("presence")}
+              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "presence" ? "border-emerald-500 text-white bg-emerald-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              }`}
+            >
+              <Clock size={9} />
               Presence
-            </button>
-            <button
-              onClick={() => setActiveTab("proactive_hooks")}
-              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-1 ${
-                activeTab === "proactive_hooks"
-                  ? "border-amber-500 text-white bg-amber-500/10"
-                  : "border-transparent text-scada-dimText hover:text-white hover:bg-scada-border/10"
-              }`}
-            >
-              <Zap size={10} />
-              Proactive
             </button>
           </div>
 
-          {/* Tab Content Panels */}
-          <div className="flex-1 overflow-hidden flex flex-col">
-            {/* 1. REASONING */}
-            {activeTab === "reasoning" && (
-              <div className="flex-1 flex flex-col overflow-hidden justify-between">
-                {/* Cognitive FSM Row */}
-                <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 mb-1.5 shrink-0">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1">
-                    <Cpu size={9} className="text-purple-400" />
-                    <span>Cognitive State Machine</span>
+          <div className="flex-1 overflow-hidden flex flex-col justify-between">
+            <div className="flex-1 overflow-y-auto mb-1.5 pr-0.5 scrollbar-thin">
+              {/* Tab 1: Reasoning */}
+              {activeTab === "reasoning" && (
+                <div className="space-y-1.5">
+                  {/* Cognitive FSM */}
+                  <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1">
+                      <Cpu size={9} className="text-purple-400" />
+                      <span>Cognitive State Machine</span>
+                    </div>
+                    <div className="flex gap-0.5 items-center justify-between py-1 px-1 border border-scada-border/15 rounded bg-black/15">
+                      {renderFsmNode("IDLE", "IDLE")}
+                      <span className="text-scada-dimText text-[6px]">→</span>
+                      {renderFsmNode("LISTENING", "LISTEN")}
+                      <span className="text-scada-dimText text-[6px]">→</span>
+                      {renderFsmNode("THINKING", "THINK")}
+                      <span className="text-scada-dimText text-[6px]">→</span>
+                      {renderFsmNode("EXECUTING", "EXEC")}
+                      <span className="text-scada-dimText text-[6px]">→</span>
+                      {renderFsmNode("RESPONDING", "RESP")}
+                    </div>
                   </div>
-                  <div className="flex gap-0.5 items-center justify-between py-1 px-1 border border-scada-border/15 rounded bg-black/15">
-                    {renderFsmNode("IDLE", "IDLE")}
-                    <span className="text-scada-dimText text-[6px]">→</span>
-                    {renderFsmNode("LISTENING", "LISTEN")}
-                    <span className="text-scada-dimText text-[6px]">→</span>
-                    {renderFsmNode("THINKING", "THINK")}
-                    <span className="text-scada-dimText text-[6px]">→</span>
-                    {renderFsmNode("EXECUTING", "EXEC")}
-                    <span className="text-scada-dimText text-[6px]">→</span>
-                    {renderFsmNode("RESPONDING", "RESP")}
+
+                  {/* Reasoning Logs */}
+                  <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-1.5 h-[80px] flex flex-col overflow-hidden">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                      <Terminal size={9} className="text-purple-400" />
+                      <span>Decision Reasoning Logs</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[6.5px] leading-normal pt-1">
+                      {reasoning.reasoning_logs.map((log: string, index: number) => {
+                        let color = "text-white/80";
+                        if (log.includes("SAFETY OVERRIDE")) color = "text-rose-400 font-bold bg-rose-950/20 pl-1 border-l border-rose-500";
+                        else if (log.includes("Automation planning")) color = "text-amber-400";
+                        else if (log.includes("resolving") || log.includes("resolved")) color = "text-emerald-400";
+                        return <div key={index} className={color}>&gt; {log}</div>;
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Voice state info */}
+                  <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 text-[7px] space-y-1">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider flex justify-between">
+                      <span>VOICE & ATTENTION STATE</span>
+                      <span className={`px-1 rounded text-[6px] ${wakeWord.attention_active ? "text-emerald-400 border border-emerald-500/20" : "text-scada-dimText bg-scada-bg"}`}>
+                        {wakeWord.attention_active ? "ATTENTION ON" : "STANDBY"}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 text-[6.5px] pt-1">
+                      <div className="flex justify-between"><span className="text-scada-dimText">Voice State:</span><span className="text-white">{voiceState.voice_state}</span></div>
+                      <div className="flex justify-between"><span className="text-scada-dimText">Remaining Attention:</span><span className="text-white">{wakeWord.time_remaining}s</span></div>
+                      <div className="flex justify-between"><span className="text-scada-dimText">Latest Intent:</span><span className="text-cyan-400 truncate max-w-[60px]">{semanticIntent.category}</span></div>
+                      <div className="flex justify-between"><span className="text-scada-dimText">Match Conf:</span><span className="text-cyan-400">{(semanticIntent.confidence * 100).toFixed(0)}%</span></div>
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Reasoning Logs Console */}
-                <div className="flex-1 bg-scada-bg/70 border border-scada-border/30 rounded p-2 flex flex-col overflow-hidden mb-1.5">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5 shrink-0">
-                    <Terminal size={9} className="text-purple-400" />
-                    <span>5-Step Decision Reasoning Log</span>
-                  </div>
-                  <div className="flex-1 overflow-y-auto space-y-1.5 scrollbar-thin text-[7px] font-mono leading-normal pt-1">
-                    {reasoning.reasoning_logs.map((log: string, index: number) => {
-                      let color = "text-white/80";
-                      if (log.includes("SAFETY OVERRIDE")) color = "text-rose-400 font-bold bg-rose-950/20 border-l border-rose-500 pl-1";
-                      else if (log.includes("Automation planning")) color = "text-amber-400";
-                      else if (log.includes("Critical=True")) color = "text-rose-400";
-                      else if (log.includes("resolving") || log.includes("resolved")) color = "text-emerald-400";
-                      return (
-                        <div key={index} className={color}>
-                          &gt; {log}
+              {/* Tab 2: Workflows & Chains */}
+              {activeTab === "workflows" && (
+                <div className="space-y-1.5">
+                  {/* Latest Execution */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex justify-between">
+                      <span>LATEST WORKFLOW EXECUTION</span>
+                      {latestWf && (
+                        <span className={`px-1 rounded text-[6.5px] ${
+                          latestWf.status === "SUCCESS" ? "text-emerald-400 bg-emerald-950/40" :
+                          latestWf.status === "RUNNING" ? "text-amber-400 bg-amber-950/40 animate-pulse" : "text-rose-400 bg-rose-950/40"
+                        }`}>
+                          {latestWf.status}
+                        </span>
+                      )}
+                    </div>
+
+                    {latestWf ? (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[7px] border-b border-scada-border/10 pb-0.5">
+                          <span className="text-scada-dimText font-bold">{latestWf.workflow_name}</span>
+                          <span className="text-scada-dimText text-[6px]">{new Date(latestWf.timestamp).toLocaleTimeString()}</span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Grid stress sync */}
-                <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 shrink-0">
-                  <div className="flex justify-between items-center text-[7.5px]">
-                    <span className="text-scada-dimText uppercase tracking-wider flex items-center gap-1 font-bold">
-                      <AlertCircle size={9} className="text-rose-400 animate-pulse" />
-                      <span>Stress Empathy Override</span>
-                    </span>
-                    <span className={`font-bold px-1 rounded text-[6.5px] ${reasoning.grid_critical ? "text-rose-400 bg-rose-950/50 border border-rose-500/30 animate-pulse" : "text-emerald-400 bg-emerald-950/40 border border-emerald-500/20"}`}>
-                      {reasoning.grid_critical ? "LOCKOUT ACTIVE" : "NOMINAL"}
-                    </span>
-                  </div>
-                  <p className="text-[6.5px] text-scada-dimText/80 mt-1 leading-tight">
-                    Lockout redirects entertainment commands to status queries when threat &gt; 70.0%. Current state: {reasoning.grid_critical ? "LOCK ENGAGED" : "NOMINAL"}.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* 2. VOICE & WAKE WORD */}
-            {activeTab === "voice_wake" && (
-              <div className="flex-1 flex flex-col overflow-hidden justify-between">
-                {/* Wake Word Status */}
-                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 mb-1.5 shrink-0">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-2 border-b border-scada-border/20 pb-0.5 flex justify-between items-center">
-                    <span className="flex items-center gap-1">
-                      <Mic size={9} className="text-cyan-400" />
-                      <span>Wake-Word Attention Guard</span>
-                    </span>
-                    <span className={`px-1.5 py-0.2 rounded text-[6.5px] font-bold font-mono border ${
-                      wakeWord.attention_active 
-                        ? "bg-emerald-950/80 border-emerald-500 text-emerald-400 animate-pulse" 
-                        : "bg-scada-bg border-scada-border text-scada-dimText"
-                    }`}>
-                      {wakeWord.attention_active ? "ATTENTION ACTIVE" : "STANDBY"}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-[7.5px]">
-                    <div className="bg-black/20 p-1.5 rounded border border-scada-border/10 flex flex-col justify-between">
-                      <span className="text-scada-dimText">Target Wake word:</span>
-                      <span className="text-white font-bold">"baby" / "hey pypy"</span>
-                    </div>
-                    <div className="bg-black/20 p-1.5 rounded border border-scada-border/10 flex flex-col justify-between">
-                      <span className="text-scada-dimText">Attention Window:</span>
-                      <span className={`font-bold ${wakeWord.attention_active ? "text-cyan-400" : "text-scada-dimText"}`}>
-                        {wakeWord.time_remaining}s remaining
-                      </span>
-                    </div>
-                    <div className="bg-black/20 p-1.5 rounded border border-scada-border/10 flex flex-col justify-between">
-                      <span className="text-scada-dimText">Matched Word:</span>
-                      <span className="text-emerald-400 font-bold">"{wakeWord.last_wake_word ?? "NONE"}"</span>
-                    </div>
-                    <div className="bg-black/20 p-1.5 rounded border border-scada-border/10 flex flex-col justify-between">
-                      <span className="text-scada-dimText">Matching Conf:</span>
-                      <span className="text-cyan-400 font-bold">{(wakeWord.last_confidence * 100).toFixed(0)}%</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Session Stage Timeline */}
-                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 mb-1.5 flex-1 flex flex-col overflow-hidden">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-2 border-b border-scada-border/20 pb-0.5 flex justify-between items-center shrink-0">
-                    <span className="flex items-center gap-1">
-                      <GitBranch size={9} className="text-purple-400" />
-                      <span>Voice Session Stage Timeline</span>
-                    </span>
-                    <span className="text-[6.5px] text-scada-dimText">
-                      ID: {voiceState.session_id ? `S-${voiceState.session_id.substring(0, 5)}` : "NONE"}
-                    </span>
-                  </div>
-
-                  {/* Horizontal visual timeline */}
-                  <div className="flex items-center justify-between py-2 px-1 border border-scada-border/15 rounded bg-black/15 my-1.5 shrink-0 select-none">
-                    <div className={`px-1.5 py-0.5 rounded text-[6.5px] font-bold font-mono transition-all border ${voiceState.voice_state === "WAKING" ? "bg-cyan-500 text-black border-cyan-300 scale-105" : "bg-scada-bg/60 text-scada-dimText/60 border-scada-border/10"}`}>WAKING</div>
-                    <span className="text-scada-dimText text-[8px]">&gt;</span>
-                    <div className={`px-1.5 py-0.5 rounded text-[6.5px] font-bold font-mono transition-all border ${voiceState.voice_state === "LISTENING" ? "bg-cyan-500 text-black border-cyan-300 scale-105" : "bg-scada-bg/60 text-scada-dimText/60 border-scada-border/10"}`}>LISTENING</div>
-                    <span className="text-scada-dimText text-[8px]">&gt;</span>
-                    <div className={`px-1.5 py-0.5 rounded text-[6.5px] font-bold font-mono transition-all border ${voiceState.voice_state === "THINKING" ? "bg-purple-500 text-white border-purple-300 scale-105 animate-pulse" : "bg-scada-bg/60 text-scada-dimText/60 border-scada-border/10"}`}>THINKING</div>
-                    <span className="text-scada-dimText text-[8px]">&gt;</span>
-                    <div className={`px-1.5 py-0.5 rounded text-[6.5px] font-bold font-mono transition-all border ${voiceState.voice_state === "SPEAKING" ? "bg-emerald-500 text-black border-emerald-300 scale-105" : "bg-scada-bg/60 text-scada-dimText/60 border-scada-border/10"}`}>SPEAKING</div>
-                  </div>
-
-                  {/* Session Metrics list */}
-                  <div className="flex-1 overflow-y-auto pr-0.5 space-y-1 scrollbar-thin text-[7px] font-mono leading-normal pt-1">
-                    <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
-                      <span className="text-scada-dimText">SESSION ACTIVE:</span>
-                      <span className={voiceState.session_active ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>
-                        {voiceState.session_active ? "TRUE" : "FALSE"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
-                      <span className="text-scada-dimText">SESSION TIME REMAINING:</span>
-                      <span className="text-white">{voiceState.time_remaining}s</span>
-                    </div>
-                    <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
-                      <span className="text-scada-dimText">STATE DURATION:</span>
-                      <span className="text-white">{voiceState.state_duration}s</span>
-                    </div>
-                    <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
-                      <span className="text-scada-dimText">TOTAL SESSIONS SPAWNED:</span>
-                      <span className="text-cyan-400">{voiceState.total_sessions}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-scada-dimText">LATEST VOICE TEXT:</span>
-                      <span className="text-cyan-300 italic truncate max-w-[150px]">
-                        {voiceMemory.latest_voice_text ? `"${voiceMemory.latest_voice_text}"` : "NONE"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Confidence Gauges */}
-                <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 shrink-0 text-[7px]">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1">
-                    <Sliders size={8} className="text-cyan-400" />
-                    <span>Dynamic Matching Confidence Gauges</span>
-                  </div>
-                  
-                  {/* Wake Confidence bar */}
-                  <div className="mb-1">
-                    <div className="flex justify-between text-[6.5px] mb-0.2">
-                      <span className="text-scada-dimText uppercase">Wake Word (Threshold: 0.70)</span>
-                      <span className="text-cyan-400">{(wakeWord.last_confidence * 100).toFixed(0)}%</span>
-                    </div>
-                    <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/20">
-                      <div
-                        className={`h-full rounded-full transition-all duration-300 ${wakeWord.last_confidence >= 0.70 ? "bg-cyan-500" : "bg-rose-500"}`}
-                        style={{ width: `${Math.min(100, wakeWord.last_confidence * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* STT/Intent confidence bar */}
-                  <div>
-                    <div className="flex justify-between text-[6.5px] mb-0.2">
-                      <span className="text-scada-dimText uppercase">Intent Parsing (Threshold: 0.40)</span>
-                      <span className="text-cyan-400">{(semanticIntent.confidence * 100).toFixed(0)}%</span>
-                    </div>
-                    <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/20">
-                      <div
-                        className={`h-full rounded-full transition-all duration-300 ${semanticIntent.confidence >= 0.40 ? "bg-cyan-500" : "bg-rose-500"}`}
-                        style={{ width: `${Math.min(100, semanticIntent.confidence * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 3. PRESENCE & PACING */}
-            {activeTab === "presence_pacing" && (
-              <div className="flex-1 flex flex-col overflow-hidden justify-between">
-                {/* Breathing Core Graph Card */}
-                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-3 mb-1.5 flex-1 flex flex-col justify-center items-center overflow-hidden">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-2 border-b border-scada-border/20 pb-0.5 w-full flex items-center justify-between shrink-0">
-                    <span className="flex items-center gap-1">
-                      <Cpu size={9} className="text-emerald-400" />
-                      <span>Real-time Presence Core Node</span>
-                    </span>
-                    <span className={`px-1 rounded text-[6px] font-bold ${
-                      presence.attention_state === "FOCUS" ? "bg-cyan-500 text-black animate-pulse" :
-                      presence.attention_state === "ATTENTIVE" ? "bg-emerald-500 text-black" : "bg-scada-bg border border-scada-border text-scada-dimText"
-                    }`}>{presence.attention_state}</span>
-                  </div>
-
-                  {/* Smooth Animated Breathing Core SVG */}
-                  <div className="flex-1 flex items-center justify-center py-2 shrink-0 relative w-full">
-                    <svg viewBox="0 0 100 100" className="w-24 h-24 mx-auto select-none">
-                      {/* Glow definitions */}
-                      <defs>
-                        <radialGradient id="presenceGlowCyan">
-                          <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" />
-                          <stop offset="60%" stopColor="#8b5cf6" stopOpacity="0.3" />
-                          <stop offset="100%" stopColor="#020617" stopOpacity="0" />
-                        </radialGradient>
-                        <radialGradient id="presenceGlowEmerald">
-                          <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
-                          <stop offset="60%" stopColor="#06b6d4" stopOpacity="0.3" />
-                          <stop offset="100%" stopColor="#020617" stopOpacity="0" />
-                        </radialGradient>
-                        <radialGradient id="presenceGlowPurple">
-                          <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.8" />
-                          <stop offset="60%" stopColor="#ec4899" stopOpacity="0.3" />
-                          <stop offset="100%" stopColor="#020617" stopOpacity="0" />
-                        </radialGradient>
-                        <radialGradient id="presenceGlowRose">
-                          <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.8" />
-                          <stop offset="60%" stopColor="#e11d48" stopOpacity="0.4" />
-                          <stop offset="100%" stopColor="#020617" stopOpacity="0" />
-                        </radialGradient>
-                      </defs>
-
-                      {/* Outermost breathing orbit ring */}
-                      <circle cx="50" cy="50" r={30 + localBreathingCoordinate * 8} fill="none" 
-                        stroke={state === "ERROR" ? "#rose" : state === "THINKING" ? "#purple" : "#cyan"}
-                        className="transition-all duration-75"
-                        strokeWidth="1" strokeDasharray="3,3" opacity="0.3" 
-                        style={{
-                          stroke: state === "ERROR" ? "#f43f5e" : state === "THINKING" ? "#a855f7" : state === "RESPONDING" ? "#10b981" : "#06b6d4"
-                        }}
-                      />
-
-                      {/* Second breathing ring */}
-                      <circle cx="50" cy="50" r={22 + localBreathingCoordinate * 4} fill="none"
-                        className="transition-all duration-75"
-                        strokeWidth="1.5" opacity="0.4"
-                        style={{
-                          stroke: state === "ERROR" ? "#f43f5e" : state === "THINKING" ? "#a855f7" : state === "RESPONDING" ? "#10b981" : "#06b6d4"
-                        }}
-                      />
-
-                      {/* Glowing radial core */}
-                      <circle cx="50" cy="50" r={14 + localBreathingCoordinate * 3} 
-                        className="transition-all duration-75"
-                        fill={
-                          state === "ERROR" ? "url(#presenceGlowRose)" : 
-                          state === "THINKING" ? "url(#presenceGlowPurple)" : 
-                          state === "RESPONDING" ? "url(#presenceGlowEmerald)" : "url(#presenceGlowCyan)"
-                        } 
-                      />
-
-                      {/* Inner solid node */}
-                      <circle cx="50" cy="50" r={6 + localBreathingCoordinate} 
-                        className="transition-all duration-75"
-                        fill={
-                          state === "ERROR" ? "#f43f5e" : 
-                          state === "THINKING" ? "#a855f7" : 
-                          state === "RESPONDING" ? "#10b981" : "#06b6d4"
-                        } 
-                      />
-                    </svg>
-
-                    {/* Numeric Breathing Monitor Overlay */}
-                    <div className="absolute bottom-1 right-2 text-right text-[6px] text-scada-dimText bg-black/40 px-1 py-0.5 rounded border border-scada-border/10">
-                      <div>COORD: {localBreathingCoordinate.toFixed(4)}</div>
-                      <div>FREQ: {presence.breathing_frequency_hz} Hz</div>
-                    </div>
-                  </div>
-
-                  {/* Presence State Data */}
-                  <div className="grid grid-cols-2 gap-1 w-full text-[7px] font-mono border-t border-scada-border/10 pt-2 shrink-0">
-                    <div className="flex justify-between">
-                      <span className="text-scada-dimText">ATTENTION:</span>
-                      <span className="text-white font-bold">{presence.attention_state}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-scada-dimText">FREQ MODE:</span>
-                      <span className="text-cyan-400 font-bold">{presence.breathing_frequency_hz} Hz</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-scada-dimText">IDLE TIMER:</span>
-                      <span className="text-white">{presence.idle_duration_sec}s</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-scada-dimText">ST Stress Override:</span>
-                      <span className={reasoning.grid_critical ? "text-rose-400 font-bold" : "text-emerald-400 font-bold"}>
-                        {reasoning.grid_critical ? "BYPASS ON" : "NOMINAL"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Conversation Pacing Panel */}
-                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 shrink-0">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
-                    <Clock size={9} className="text-emerald-400" />
-                    <span>Emotion-Based Pacing Modulator</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[7.5px] py-1 bg-black/15 px-1.5 rounded border border-scada-border/5 mb-1.5">
-                    <span className="text-scada-dimText">Calculated Pacing Delay:</span>
-                    <span className="text-emerald-400 font-bold text-[8px] bg-emerald-950/40 px-1 rounded border border-emerald-500/20">
-                      {getPacingDelayValue(emotion.assistant_mood, reasoning.grid_critical).toFixed(2)} seconds
-                    </span>
-                  </div>
-                  <p className="text-[6.5px] text-scada-dimText/80 leading-tight">
-                    Excited speaks fast (0.15s), Serious nominal (0.30s), Calm default (0.50s), Tired slow (1.10s).
-                    {reasoning.grid_critical ? (
-                      <span className="text-rose-400 font-bold block mt-0.5">CRITICAL OVERRIDE ACTIVE: 0.0s delay forced for rapid SCADA action.</span>
+                        {latestWf.error && (
+                          <div className="text-[6.5px] text-rose-400 bg-rose-950/10 p-0.5 rounded italic">
+                            Error: {latestWf.error}
+                          </div>
+                        )}
+                        {/* Steps checklist */}
+                        <div className="pt-1 space-y-0.5 text-[6.5px]">
+                          {latestWf.steps.map((s: any, i: number) => (
+                            <div key={i} className="flex justify-between items-center bg-black/10 px-1 py-0.5 rounded">
+                              <span className="text-white flex items-center gap-1">
+                                {s.status === "SUCCESS" && <CheckCircle2 size={7.5} className="text-emerald-400 shrink-0" />}
+                                {s.status === "FAILED" && <XCircle size={7.5} className="text-rose-400 shrink-0" />}
+                                {s.status === "PENDING" && <RefreshCw size={7.5} className="text-amber-400 shrink-0 animate-spin" />}
+                                {s.step_name}
+                              </span>
+                              <span className={s.status === "SUCCESS" ? "text-emerald-400" : s.status === "FAILED" ? "text-rose-400" : "text-amber-400"}>
+                                {s.status}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     ) : (
-                      <span className="text-emerald-400 block mt-0.5">Nominal pacing delay is currently applied.</span>
+                      <div className="text-[6.5px] text-scada-dimText italic text-center py-2">
+                        No workflows triggered yet.
+                      </div>
                     )}
-                  </p>
+                  </div>
+
+                  {/* Delayed Task queue & n8n Bridge */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
+                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span>DELAYED QUEUE</span>
+                        <span className="text-white">({workflows.delayed_tasks_count})</span>
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[6px]">
+                        {workflows.delayed_queue.length === 0 ? (
+                          <div className="h-full flex items-center justify-center text-scada-dimText/40 italic">Queue empty</div>
+                        ) : (
+                          workflows.delayed_queue.map((q: any) => (
+                            <div key={q.task_id} className="flex justify-between bg-black/10 p-0.5 rounded">
+                              <span className="text-white truncate max-w-[50px]">{q.name}</span>
+                              <span className="text-cyan-300">{q.time_remaining_sec}s</span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
+                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span>n8n WEBHOOKS</span>
+                        <span className="text-white">({n8nBridge.active_retries_count} retries)</span>
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[6px]">
+                        {n8nBridge.active_retries.length === 0 && n8nBridge.executions.length === 0 ? (
+                          <div className="h-full flex items-center justify-center text-scada-dimText/40 italic">No webhook logs</div>
+                        ) : (
+                          <>
+                            {n8nBridge.active_retries.map((r: any) => (
+                              <div key={r.execution_id} className="bg-rose-950/20 border-l border-rose-500 p-0.5 rounded flex flex-col">
+                                <div className="flex justify-between text-rose-300 font-bold">
+                                  <span className="truncate max-w-[45px]">{r.webhook_name}</span>
+                                  <span>R:{r.retry_count}</span>
+                                </div>
+                                <span className="text-[5.5px] text-white">Next retry in {r.seconds_until_next}s</span>
+                              </div>
+                            ))}
+                            {n8nBridge.executions.slice(-3).reverse().map((e: any) => (
+                              <div key={e.execution_id} className="bg-black/10 p-0.5 rounded flex justify-between text-scada-dimText">
+                                <span className="truncate max-w-[50px]">{e.webhook_name}</span>
+                                <span className={e.status === "SUCCESS" ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{e.status}</span>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* 4. PROACTIVE ALERTS & HOOKS */}
-            {activeTab === "proactive_hooks" && (
-              <div className="flex-1 flex flex-col overflow-hidden justify-between">
-                {/* Alerts logs & n8n hooks */}
-                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 mb-1.5 flex-1 flex flex-col overflow-hidden">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-2 border-b border-scada-border/20 pb-0.5 flex justify-between items-center shrink-0">
-                    <span className="flex items-center gap-1">
-                      <Zap size={9} className="text-amber-400" />
-                      <span>Proactive Grid Notifications</span>
-                    </span>
-                    <span className="text-[6.5px] text-scada-dimText">
-                      Sent: {proactive.total_notifications_sent}
-                    </span>
-                  </div>
-
-                  {/* Cooldown Timers Progress Bars */}
-                  <div className="space-y-1 mb-2 shrink-0">
-                    {/* A. broker_disconnect */}
-                    <div>
-                      <div className="flex justify-between text-[6.5px] text-scada-dimText leading-none mb-0.2">
-                        <span>Heartbeat Disconnection</span>
-                        <span className={proactive.cooldown_timers.broker_disconnect > 0 ? "text-rose-400 font-bold" : "text-emerald-400 font-bold"}>
-                          {proactive.cooldown_timers.broker_disconnect > 0 ? `${proactive.cooldown_timers.broker_disconnect}s locked` : "READY"}
-                        </span>
-                      </div>
-                      <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/20">
-                        <div className={`h-full rounded-full transition-all duration-300 ${proactive.cooldown_timers.broker_disconnect > 0 ? "bg-rose-500" : "bg-emerald-500"}`}
-                          style={{ width: proactive.cooldown_timers.broker_disconnect > 0 ? `${(proactive.cooldown_timers.broker_disconnect / 45.0) * 100}%` : "100%" }}
-                        />
-                      </div>
+              {/* Tab 3: Reminders & Monitors */}
+              {activeTab === "reminders" && (
+                <div className="space-y-1.5">
+                  {/* Active Reminders */}
+                  <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                      <span>ACTIVE REMINDERS</span>
+                      <span className="text-white font-bold">Count: {reminders.active_count}</span>
                     </div>
-                    {/* B. relay_unstable */}
-                    <div>
-                      <div className="flex justify-between text-[6.5px] text-scada-dimText leading-none mb-0.2">
-                        <span>Relay Instability</span>
-                        <span className={proactive.cooldown_timers.relay_unstable > 0 ? "text-rose-400 font-bold" : "text-emerald-400 font-bold"}>
-                          {proactive.cooldown_timers.relay_unstable > 0 ? `${proactive.cooldown_timers.relay_unstable}s locked` : "READY"}
-                        </span>
-                      </div>
-                      <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/20">
-                        <div className={`h-full rounded-full transition-all duration-300 ${proactive.cooldown_timers.relay_unstable > 0 ? "bg-rose-500" : "bg-emerald-500"}`}
-                          style={{ width: proactive.cooldown_timers.relay_unstable > 0 ? `${(proactive.cooldown_timers.relay_unstable / 45.0) * 100}%` : "100%" }}
-                        />
-                      </div>
-                    </div>
-                    {/* C. sync_recovered */}
-                    <div>
-                      <div className="flex justify-between text-[6.5px] text-scada-dimText leading-none mb-0.2">
-                        <span>Telemetry Sync Recovery</span>
-                        <span className={proactive.cooldown_timers.sync_recovered > 0 ? "text-rose-400 font-bold" : "text-emerald-400 font-bold"}>
-                          {proactive.cooldown_timers.sync_recovered > 0 ? `${proactive.cooldown_timers.sync_recovered}s locked` : "READY"}
-                        </span>
-                      </div>
-                      <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/20">
-                        <div className={`h-full rounded-full transition-all duration-300 ${proactive.cooldown_timers.sync_recovered > 0 ? "bg-rose-500" : "bg-emerald-500"}`}
-                          style={{ width: proactive.cooldown_timers.sync_recovered > 0 ? `${(proactive.cooldown_timers.sync_recovered / 45.0) * 100}%` : "100%" }}
-                        />
-                      </div>
-                    </div>
-                    {/* D. latency_spike */}
-                    <div>
-                      <div className="flex justify-between text-[6.5px] text-scada-dimText leading-none mb-0.2">
-                        <span>Latency Spike (Ping &gt; 500ms)</span>
-                        <span className={proactive.cooldown_timers.latency_spike > 0 ? "text-rose-400 font-bold" : "text-emerald-400 font-bold"}>
-                          {proactive.cooldown_timers.latency_spike > 0 ? `${proactive.cooldown_timers.latency_spike}s locked` : "READY"}
-                        </span>
-                      </div>
-                      <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/20">
-                        <div className={`h-full rounded-full transition-all duration-300 ${proactive.cooldown_timers.latency_spike > 0 ? "bg-rose-500" : "bg-emerald-500"}`}
-                          style={{ width: proactive.cooldown_timers.latency_spike > 0 ? `${(proactive.cooldown_timers.latency_spike / 45.0) * 100}%` : "100%" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Scrolling alerts history logs */}
-                  <div className="flex-1 bg-black/15 border border-scada-border/10 rounded p-1 flex flex-col overflow-hidden">
-                    <div className="text-[6.5px] text-scada-dimText uppercase font-bold tracking-wider mb-0.5 border-b border-scada-border/10 pb-0.5 shrink-0 flex items-center gap-1">
-                      <Terminal size={7} /> Alerts dispatch history (45s Lockout)
-                    </div>
-                    <div className="flex-1 overflow-y-auto space-y-1.5 scrollbar-thin text-[6.5px] font-mono leading-tight pt-1 pr-0.5">
-                      {proactive.history.length === 0 ? (
-                        <div className="h-full flex items-center justify-center text-scada-dimText/40 italic">
-                          No alerts recorded. Standby...
+                    <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
+                      {reminders.active_reminders.length === 0 ? (
+                        <div className="h-full flex items-center justify-center text-[7px] text-scada-dimText/40 italic">
+                          No active reminders scheduled.
                         </div>
                       ) : (
-                        [...proactive.history].reverse().map((item: any, idx: number) => (
-                          <div key={idx} className="border-l border-amber-500 pl-1 py-0.5">
-                            <div className="flex justify-between font-bold text-amber-400 text-[6px]">
-                              <span>CAT: {item.category}</span>
-                              <span>T: {new Date(item.timestamp).toLocaleTimeString()}</span>
+                        reminders.active_reminders.map((r: any) => (
+                          <div key={r.reminder_id} className="flex justify-between items-center bg-black/20 px-1 py-0.5 rounded text-[6.5px]">
+                            <div className="flex flex-col min-w-0 flex-1">
+                              <span className="text-white truncate pr-1">"{r.text}"</span>
+                              {r.recurring_interval && <span className="text-[5.5px] text-emerald-400">Recur: {r.recurring_interval}s</span>}
                             </div>
-                            <div className="text-white italic">"{item.message}"</div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-amber-400 font-bold">{r.time_remaining_sec}s left</span>
+                              <button onClick={() => handleCancelReminder(r.reminder_id)} className="p-0.5 hover:bg-rose-950 hover:text-rose-400 rounded text-scada-dimText">
+                                <XCircle size={8} />
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Conditions Watches & History */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
+                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                        <span>CONDITION MONITORS</span>
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[6px]">
+                        {conditions.registered_watches.map((w: any) => (
+                          <div key={w.condition_id} className="bg-black/10 p-0.5 rounded flex flex-col">
+                            <div className="flex justify-between font-semibold text-white">
+                              <span className="truncate max-w-[50px]">{w.target_field}</span>
+                              <span className="text-cyan-300 font-bold">{w.operator}{w.threshold}</span>
+                            </div>
+                            {w.cooldown_remaining_sec > 0 && (
+                              <span className="text-[5.5px] text-rose-400">CD: {w.cooldown_remaining_sec}s remaining</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
+                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                        <span>TRIGGERS HISTORY</span>
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[5.8px]">
+                        {conditions.trigger_history.length === 0 ? (
+                          <div className="h-full flex items-center justify-center text-scada-dimText/40 italic">No triggers logs</div>
+                        ) : (
+                          [...conditions.trigger_history].reverse().slice(0, 3).map((h: any, idx: number) => (
+                            <div key={idx} className="border-l border-amber-500 pl-1 p-0.5 rounded bg-black/10 flex flex-col">
+                              <div className="flex justify-between font-bold text-amber-400">
+                                <span>{h.condition_id}</span>
+                                <span>{new Date(h.timestamp).toLocaleTimeString()}</span>
+                              </div>
+                              <span className="text-white">Value: {h.current_value}</span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 4: Presence & Routines */}
+              {activeTab === "presence" && (
+                <div className="space-y-1.5">
+                  {/* SVG Breathing Core and Pacing info */}
+                  <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-1.5 flex items-center gap-2">
+                    <div className="w-[30%] shrink-0 flex items-center justify-center relative">
+                      <svg viewBox="0 0 100 100" className="w-14 h-14 mx-auto select-none">
+                        <defs>
+                          <radialGradient id="pGlowC"><stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" /><stop offset="60%" stopColor="#8b5cf6" stopOpacity="0.3" /><stop offset="100%" stopColor="#020617" stopOpacity="0" /></radialGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r={30 + localBreathingCoordinate * 8} fill="none" strokeWidth="1" strokeDasharray="3,3" opacity="0.3" style={{ stroke: state === "ERROR" ? "#f43f5e" : state === "THINKING" ? "#a855f7" : state === "RESPONDING" ? "#10b981" : "#06b6d4" }} />
+                        <circle cx="50" cy="50" r={14 + localBreathingCoordinate * 3} fill="url(#pGlowC)" />
+                        <circle cx="50" cy="50" r={6 + localBreathingCoordinate} fill={state === "ERROR" ? "#f43f5e" : state === "THINKING" ? "#a855f7" : state === "RESPONDING" ? "#10b981" : "#06b6d4"} />
+                      </svg>
+                    </div>
+                    <div className="flex-1 text-[6.5px] space-y-0.5">
+                      <div className="flex justify-between"><span className="text-scada-dimText">Attention Mode:</span><span className="text-white font-bold">{presence.attention_state}</span></div>
+                      <div className="flex justify-between"><span className="text-scada-dimText">Breathing Freq:</span><span className="text-cyan-400 font-bold">{presence.breathing_frequency_hz} Hz</span></div>
+                      <div className="flex justify-between">
+                        <span className="text-scada-dimText">Calculated Pacing:</span>
+                        <span className="text-emerald-400 font-bold">{getPacingDelayValue(emotion.assistant_mood, reasoning.grid_critical).toFixed(2)}s</span>
+                      </div>
+                      {reasoning.grid_critical && <div className="text-[5.5px] text-rose-400 font-bold animate-pulse">GRID stress: pacing delay bypassed.</div>}
+                    </div>
+                  </div>
+
+                  {/* Adaptive Routines */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                      <span>ADAPTIVE ROUTINES SUGGESTIONS</span>
+                      <span className="text-white">Count: {routines.routines_count}</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
+                      {routines.recommended_routines.length === 0 ? (
+                        <div className="h-full flex items-center justify-center text-[7px] text-scada-dimText/40 italic">
+                          No routine habits suggested yet.
+                        </div>
+                      ) : (
+                        routines.recommended_routines.map((r: any, idx: number) => (
+                          <div key={idx} className="bg-black/25 px-1 py-1 rounded border border-scada-border/10 text-[6.5px] flex flex-col gap-1">
+                            <div className="flex justify-between">
+                              <span className="text-white font-bold">{r.routine_type}</span>
+                              <span className="text-scada-dimText">Freq: {r.frequency_per_hr}/hr</span>
+                            </div>
+                            <span className="text-white italic leading-tight">"{r.recommendation_message}"</span>
+                            {!r.accepted ? (
+                              <button
+                                onClick={() => handleAcceptRoutine(r.routine_type)}
+                                className="self-end px-1.5 py-0.5 bg-emerald-950 border border-emerald-500/30 text-emerald-400 rounded hover:bg-emerald-900 transition-colors"
+                              >
+                                Accept Recommendation
+                              </button>
+                            ) : (
+                              <span className="self-end text-emerald-400 font-bold font-mono text-[5.8px]">ACCEPTED & RUNNING</span>
+                            )}
                           </div>
                         ))
                       )}
                     </div>
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* n8n hooks status */}
-                <div className="bg-scada-bg/50 border border-scada-border/30 rounded p-1.5 mb-1.5 shrink-0 text-[7px]">
-                  {automationHooks.latest_hook_status?.status ? (
-                    <div className="flex justify-between items-center text-amber-400">
-                      <span className="flex items-center gap-1 font-bold">
-                        <ShieldCheck size={8} /> n8n: {automationHooks.latest_hook_status.hook_name}
-                      </span>
-                      <span className="bg-emerald-500 text-black px-1 rounded text-[6px] font-mono font-bold">SUCCESS</span>
-                    </div>
-                  ) : (
-                    <span className="text-scada-dimText italic">n8n webhook listener active...</span>
-                  )}
-                </div>
-
-                {/* Simulation Buttons Grid */}
-                <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 shrink-0">
-                  <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
-                    <Activity size={8} className="text-amber-400" />
-                    <span>Real-time Hardware Simulation Controls</span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-1 pt-1.5">
-                    <button onClick={triggerWakeWordSim}
-                      className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[7px] text-cyan-300 font-bold transition-all hover:scale-102 flex items-center justify-center gap-0.5">
-                      <Play size={7} /> Wake Word
-                    </button>
-                    <button onClick={triggerLatencySpikeSim}
-                      className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[7px] text-amber-300 font-bold transition-all hover:scale-102 flex items-center justify-center gap-0.5">
-                      <Zap size={7} /> Latency
-                    </button>
-                    <button onClick={triggerRelayInstabilitySim}
-                      className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[7px] text-rose-300 font-bold transition-all hover:scale-102 flex items-center justify-center gap-0.5">
-                      <Zap size={7} /> Flapping
-                    </button>
-                    <button onClick={triggerBrokerDisconnectSim}
-                      className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[7px] text-rose-300 font-bold transition-all hover:scale-102 flex items-center justify-center gap-0.5 col-span-1.5">
-                      <WifiOff size={7} /> Disconnect
-                    </button>
-                    <button onClick={triggerSyncRecoverySim}
-                      className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[7px] text-emerald-300 font-bold transition-all hover:scale-102 flex items-center justify-center gap-0.5 col-span-1.5">
-                      <RotateCcw size={7} /> Recover Sync
-                    </button>
-                  </div>
-                </div>
+            {/* Simulation controls grid at bottom */}
+            <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 shrink-0">
+              <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
+                <Sliders size={8} className="text-amber-400 animate-pulse" />
+                <span>Autonomous Workflow Simulation Console</span>
               </div>
-            )}
+              <div className="grid grid-cols-3 gap-1 pt-1.5">
+                <button onClick={triggerScheduleReminder}
+                  className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                  <Bell size={8} /> Schedule Reminder
+                </button>
+                <button onClick={triggerStatusCheckWorkflow}
+                  className="bg-blue-950 hover:bg-blue-900 border border-blue-500/30 rounded py-1 text-[6.5px] text-blue-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                  <GitBranch size={8} /> Run Status Checks
+                </button>
+                <button onClick={triggerWebhookFailureSim}
+                  className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                  <WifiOff size={8} /> Webhook Retry Failure
+                </button>
+                <button onClick={triggerCooldownConflictSim}
+                  className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                  <Clock size={8} /> Cooldown Conflict
+                </button>
+                <button onClick={triggerRecursiveLoopSim}
+                  className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                  <RotateCcw size={8} /> Recursive Loop Block
+                </button>
+                <button onClick={triggerTelemetryTriggeredWorkflowSim}
+                  className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                  <Zap size={8} /> Telemetry Trigger
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

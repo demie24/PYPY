@@ -134,7 +134,11 @@ export default function App() {
   const [assistantProactive, setAssistantProactive] = useState<any>(null);
   const [assistantVoiceMemory, setAssistantVoiceMemory] = useState<any>(null);
   const [assistantPresence, setAssistantPresence] = useState<any>(null);
-
+  const [assistantWorkflows, setAssistantWorkflows] = useState<any>(null);
+  const [assistantReminders, setAssistantReminders] = useState<any>(null);
+  const [assistantConditions, setAssistantConditions] = useState<any>(null);
+  const [assistantN8nBridge, setAssistantN8nBridge] = useState<any>(null);
+  const [assistantRoutines, setAssistantRoutines] = useState<any>(null);
 
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
@@ -281,6 +285,11 @@ export default function App() {
       assistantProactive,
       assistantVoiceMemory,
       assistantPresence,
+      assistantWorkflows,
+      assistantReminders,
+      assistantConditions,
+      assistantN8nBridge,
+      assistantRoutines,
 
       flisrState,
       flisrIsolated,
@@ -738,6 +747,11 @@ export default function App() {
               assistantProactive: currentStates.assistantProactive,
               assistantVoiceMemory: currentStates.assistantVoiceMemory,
               assistantPresence: currentStates.assistantPresence,
+              assistantWorkflows: currentStates.assistantWorkflows,
+              assistantReminders: currentStates.assistantReminders,
+              assistantConditions: currentStates.assistantConditions,
+              assistantN8nBridge: currentStates.assistantN8nBridge,
+              assistantRoutines: currentStates.assistantRoutines,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -1013,6 +1027,16 @@ export default function App() {
             setAssistantVoiceMemory(payload);
           } else if (topic === "assistant/presence") {
             setAssistantPresence(payload);
+          } else if (topic === "assistant/workflows") {
+            setAssistantWorkflows(payload);
+          } else if (topic === "assistant/reminders") {
+            setAssistantReminders(payload);
+          } else if (topic === "assistant/conditions") {
+            setAssistantConditions(payload);
+          } else if (topic === "assistant/n8n_bridge") {
+            setAssistantN8nBridge(payload);
+          } else if (topic === "assistant/routines") {
+            setAssistantRoutines(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -1311,6 +1335,11 @@ export default function App() {
   const dispAssistantProactive = currentFrame ? currentFrame.assistantProactive : assistantProactive;
   const dispAssistantVoiceMemory = currentFrame ? currentFrame.assistantVoiceMemory : assistantVoiceMemory;
   const dispAssistantPresence = currentFrame ? currentFrame.assistantPresence : assistantPresence;
+  const dispAssistantWorkflows = currentFrame ? currentFrame.assistantWorkflows : assistantWorkflows;
+  const dispAssistantReminders = currentFrame ? currentFrame.assistantReminders : assistantReminders;
+  const dispAssistantConditions = currentFrame ? currentFrame.assistantConditions : assistantConditions;
+  const dispAssistantN8nBridge = currentFrame ? currentFrame.assistantN8nBridge : assistantN8nBridge;
+  const dispAssistantRoutines = currentFrame ? currentFrame.assistantRoutines : assistantRoutines;
 
 
 
@@ -1625,6 +1654,11 @@ export default function App() {
             assistantProactive={dispAssistantProactive}
             assistantVoiceMemory={dispAssistantVoiceMemory}
             assistantPresence={dispAssistantPresence}
+            assistantWorkflows={dispAssistantWorkflows}
+            assistantReminders={dispAssistantReminders}
+            assistantConditions={dispAssistantConditions}
+            assistantN8nBridge={dispAssistantN8nBridge}
+            assistantRoutines={dispAssistantRoutines}
             connected={connected}
             onSendControl={sendDirectMqtt}
           />

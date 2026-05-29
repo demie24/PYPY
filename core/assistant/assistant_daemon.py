@@ -34,6 +34,13 @@ from core.assistant.voice_session_memory import VoiceSessionMemory
 from core.assistant.proactive_assistant_engine import ProactiveAssistantEngine
 from core.assistant.assistant_presence_engine import AssistantPresenceEngine
 
+# Autonomous Workflow & Assistant Operations engines imports
+from core.assistant.reminder_manager import ReminderManager
+from core.assistant.condition_monitor_engine import ConditionMonitorEngine
+from core.assistant.n8n_orchestration_bridge import N8nOrchestrationBridge
+from core.assistant.adaptive_routine_engine import AdaptiveRoutineEngine
+from core.assistant.autonomous_workflow_engine import AutonomousWorkflowEngine
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("assistant.daemon")
 
@@ -66,6 +73,13 @@ class AssistantDaemon:
         self.voice_session_mem = VoiceSessionMemory()
         self.proactive_eng = ProactiveAssistantEngine()
         self.presence_eng = AssistantPresenceEngine()
+        
+        # Autonomous Workflow & Assistant Operations engines initialization
+        self.reminder_mgr = ReminderManager()
+        self.condition_monitor = ConditionMonitorEngine()
+        self.n8n_bridge = N8nOrchestrationBridge()
+        self.adaptive_routine = AdaptiveRoutineEngine()
+        self.workflow_engine = AutonomousWorkflowEngine()
         
         # Hardware simulation state registers for proactive triggers
         self.hardware_sim_state = {
@@ -109,6 +123,12 @@ class AssistantDaemon:
         self.latest_voice_memory = self.voice_session_mem.get_session_summary(None)
         self.latest_presence = self.presence_eng.get_status_summary("IDLE")
         
+        self.latest_workflows = self.workflow_engine.get_status_summary()
+        self.latest_reminders = self.reminder_mgr.get_status_summary()
+        self.latest_conditions = self.condition_monitor.get_status_summary()
+        self.latest_n8n_bridge = self.n8n_bridge.get_status_summary()
+        self.latest_routines = self.adaptive_routine.get_status_summary()
+        
         # Grid cache
         self.grid_state = {
             "telemetry": {},
@@ -123,6 +143,27 @@ class AssistantDaemon:
         # Client callbacks
         self.client.on_connect = self._on_connect
         self.client.on_message = self._on_message
+        
+    def _execute_workflow_step(self, workflow_name: str, step_name: str) -> Dict[str, Any]:
+        if workflow_name == "recursive_loop_test" and step_name == "trigger_recursion_step":
+            logger.info("Simulation: Attempting recursive workflow execution call")
+            return self.workflow_engine.execute_workflow(workflow_name, self.grid_state, self._execute_workflow_step)
+        
+        if step_name == "shed_bus_5_load":
+            logger.info("Executing load shed step: shedding Bus_5 load")
+            self.client.publish("grid/control", json.dumps({
+                "command": "SHED_LOAD",
+                "bus_id": "Bus_5",
+                "percentage": 100.0
+            }))
+            
+        return {"status": "SUCCESS", "result": f"Executed {step_name} successfully"}
+
+    def _workflow_task_callback(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        wf_to_trigger = payload.get("trigger_workflow")
+        if wf_to_trigger:
+            self.workflow_engine.execute_workflow(wf_to_trigger, self.grid_state, self._execute_workflow_step)
+        return {"status": "SUCCESS", "payload": payload}
         
     def start(self):
         logger.info(f"Connecting to MQTT Broker {self.broker}:{self.port}...")
@@ -218,13 +259,58 @@ class AssistantDaemon:
                 
             self.state_mgr.transition_to(old_state)
             
-        # 4. Update voice orchestration summaries
+        # 4. Tick Autonomous Workflows, Reminders, and Webhooks
+        self.workflow_engine.tick()
+        
+        triggered_reminders = self.reminder_mgr.tick()
+        for r in triggered_reminders:
+            logger.info(f"Triggered reminder: '{r['text']}'")
+            # Publish to assistant/response
+            t_ms = int(time.time() * 1000)
+            self.client.publish("assistant/response", json.dumps({
+                "timestamp": t_ms,
+                "text": f"Peringatan: {r['text']}",
+                "is_voice": False,
+                "action": {"status": "SUCCESS", "action": "reminder_trigger"},
+                "reasoning": {
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "reminder_trigger",
+                    "parameters": {"text": r['text']},
+                    "webhook_trigger": None,
+                    "followup_recommendation": None,
+                    "reasoning_logs": [f"Reminder triggered: {r['text']}"],
+                    "grid_critical": False
+                },
+                "automation_hook": {}
+            }))
+            self.contextual_mem.add_interaction(role="assistant", text=f"Peringatan: {r['text']}")
+            
+        triggered_conditions = self.condition_monitor.scan(self.grid_state, self.hardware_sim_state)
+        for c in triggered_conditions:
+            logger.info(f"Triggered condition watch: {c['condition_id']}")
+            # Auto-trigger corresponding workflows
+            if c["condition_id"] == "critical_threat_watch":
+                self.workflow_engine.execute_workflow("emergency_load_shed", self.grid_state, self._execute_workflow_step)
+            elif c["condition_id"] == "high_latency_watch":
+                self.workflow_engine.execute_workflow("system_status_check", self.grid_state, self._execute_workflow_step)
+                
+        self.n8n_bridge.tick()
+        
+        # 5. Update voice orchestration summaries
         self.latest_voice_state = self.voice_orch_eng.get_status_summary()
         self.latest_wake_word = self.wake_word_mgr.get_status_summary()
         self.latest_proactive = self.proactive_eng.get_automation_summary()
         
         active_sess_id = self.voice_orch_eng.active_session_id
         self.latest_voice_memory = self.voice_session_mem.get_session_summary(active_sess_id)
+        
+        # Update autonomous caches
+        self.latest_workflows = self.workflow_engine.get_status_summary()
+        self.latest_reminders = self.reminder_mgr.get_status_summary()
+        self.latest_conditions = self.condition_monitor.get_status_summary()
+        self.latest_n8n_bridge = self.n8n_bridge.get_status_summary()
+        self.latest_routines = self.adaptive_routine.get_status_summary()
         
         self.publish_telemetry()
             
@@ -238,6 +324,13 @@ class AssistantDaemon:
             client.subscribe("assistant/reset")
             client.subscribe("assistant/wake_word_trigger")
             client.subscribe("assistant/proactive_trigger")
+            
+            # Subscribe to Phase 9.4 simulation topics
+            client.subscribe("assistant/workflow_trigger")
+            client.subscribe("assistant/reminder_trigger")
+            client.subscribe("assistant/condition_trigger")
+            client.subscribe("assistant/n8n_bridge_trigger")
+            client.subscribe("assistant/routine_trigger")
         else:
             logger.error(f"MQTT Connection failed with code {rc}")
             
@@ -264,6 +357,81 @@ class AssistantDaemon:
                     if k in self.grid_state:
                         self.grid_state[k] = v
                 self.tick_periodic_presence_and_proactive()
+            elif topic == "assistant/workflow_trigger":
+                action = payload.get("action")
+                if action == "execute":
+                    self.workflow_engine.execute_workflow(payload.get("workflow_name"), self.grid_state, self._execute_workflow_step)
+                elif action == "schedule_delayed":
+                    self.workflow_engine.schedule_delayed_task(
+                        payload.get("task_name", "delayed_status_check"),
+                        float(payload.get("delay_sec", 5.0)),
+                        self._workflow_task_callback,
+                        payload.get("payload", {})
+                    )
+                elif action == "clear":
+                    self.workflow_engine.clear_history()
+                
+                self.latest_workflows = self.workflow_engine.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/reminder_trigger":
+                action = payload.get("action")
+                if action == "schedule":
+                    self.reminder_mgr.add_reminder(
+                        payload.get("text", "Default Reminder"),
+                        float(payload.get("delay_sec", 5.0)),
+                        payload.get("recurring_interval")
+                    )
+                elif action == "cancel":
+                    self.reminder_mgr.cancel_reminder(payload.get("reminder_id", ""))
+                elif action == "clear":
+                    self.reminder_mgr.clear_all()
+                
+                self.latest_reminders = self.reminder_mgr.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/condition_trigger":
+                action = payload.get("action")
+                if action == "register":
+                    self.condition_monitor.register_watch(
+                        payload.get("condition_id"),
+                        payload.get("watch_type", "custom"),
+                        payload.get("target_field"),
+                        payload.get("operator"),
+                        payload.get("threshold"),
+                        float(payload.get("cooldown", 45.0)),
+                        bool(payload.get("is_recurring", True))
+                    )
+                elif action == "remove":
+                    self.condition_monitor.remove_watch(payload.get("condition_id"))
+                elif action == "clear":
+                    self.condition_monitor.clear_history()
+                
+                self.latest_conditions = self.condition_monitor.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/n8n_bridge_trigger":
+                action = payload.get("action")
+                if action == "dispatch":
+                    self.n8n_bridge.simulate_network_failure = bool(payload.get("simulate_network_failure", False))
+                    self.n8n_bridge.dispatch_webhook(
+                        payload.get("webhook_name", "test_webhook"),
+                        payload.get("payload", {}),
+                        bool(payload.get("force_failure", False))
+                    )
+                elif action == "clear":
+                    self.n8n_bridge.clear_history()
+                
+                self.latest_n8n_bridge = self.n8n_bridge.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/routine_trigger":
+                action = payload.get("action")
+                if action == "record":
+                    self.adaptive_routine.record_interaction(payload.get("command"), payload.get("phrase", ""))
+                elif action == "accept":
+                    self.adaptive_routine.accept_routine(payload.get("routine_type"))
+                elif action == "clear":
+                    self.adaptive_routine.clear_routines()
+                
+                self.latest_routines = self.adaptive_routine.get_status_summary()
+                self.publish_telemetry()
             elif topic in ["assistant/chat_input", "assistant/voice_input"]:
                 # Process user request
                 is_voice = (topic == "assistant/voice_input")
@@ -390,6 +558,7 @@ class AssistantDaemon:
                 grid_state=self.grid_state
             )
             self.memory_orch.record_command(action_name)
+            self.adaptive_routine.record_interaction(action_name, text)
             
             if is_voice:
                 self.voice_session_mem.add_interaction(
@@ -474,6 +643,12 @@ class AssistantDaemon:
         self.voice_session_mem.clear_all()
         self.proactive_eng.reset_cooldowns()
         
+        self.reminder_mgr.clear_all()
+        self.condition_monitor.clear_history()
+        self.n8n_bridge.clear_history()
+        self.adaptive_routine.clear_routines()
+        self.workflow_engine.clear_history()
+        
         self.hardware_sim_state = {
             "latency_ms": 0.0,
             "drift_sec": 0.0,
@@ -512,6 +687,12 @@ class AssistantDaemon:
         self.latest_proactive = self.proactive_eng.get_automation_summary()
         self.latest_voice_memory = self.voice_session_mem.get_session_summary(None)
         self.latest_presence = self.presence_eng.get_status_summary("IDLE")
+        
+        self.latest_workflows = self.workflow_engine.get_status_summary()
+        self.latest_reminders = self.reminder_mgr.get_status_summary()
+        self.latest_conditions = self.condition_monitor.get_status_summary()
+        self.latest_n8n_bridge = self.n8n_bridge.get_status_summary()
+        self.latest_routines = self.adaptive_routine.get_status_summary()
         
         self.state_mgr.transition_to("IDLE")
         self.publish_telemetry()
@@ -608,6 +789,31 @@ class AssistantDaemon:
         self.client.publish("assistant/presence", json.dumps({
             "timestamp": t_ms,
             "presence": self.latest_presence
+        }))
+        # 18. assistant/workflows [NEW]
+        self.client.publish("assistant/workflows", json.dumps({
+            "timestamp": t_ms,
+            "workflows": self.latest_workflows
+        }))
+        # 19. assistant/reminders [NEW]
+        self.client.publish("assistant/reminders", json.dumps({
+            "timestamp": t_ms,
+            "reminders": self.latest_reminders
+        }))
+        # 20. assistant/conditions [NEW]
+        self.client.publish("assistant/conditions", json.dumps({
+            "timestamp": t_ms,
+            "conditions": self.latest_conditions
+        }))
+        # 21. assistant/n8n_bridge [NEW]
+        self.client.publish("assistant/n8n_bridge", json.dumps({
+            "timestamp": t_ms,
+            "n8n_bridge": self.latest_n8n_bridge
+        }))
+        # 22. assistant/routines [NEW]
+        self.client.publish("assistant/routines", json.dumps({
+            "timestamp": t_ms,
+            "routines": self.latest_routines
         }))
 
 if __name__ == "__main__":

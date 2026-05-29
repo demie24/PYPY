@@ -94,6 +94,11 @@ class MemoryStore:
         self.latest_assistant_proactive: Optional[Dict[str, Any]] = None
         self.latest_assistant_voice_memory: Optional[Dict[str, Any]] = None
         self.latest_assistant_presence: Optional[Dict[str, Any]] = None
+        self.latest_assistant_workflows: Optional[Dict[str, Any]] = None
+        self.latest_assistant_reminders: Optional[Dict[str, Any]] = None
+        self.latest_assistant_conditions: Optional[Dict[str, Any]] = None
+        self.latest_assistant_n8n_bridge: Optional[Dict[str, Any]] = None
+        self.latest_assistant_routines: Optional[Dict[str, Any]] = None
 
         
         # Add initial system startup event
@@ -354,6 +359,21 @@ class MemoryStore:
     def update_assistant_presence(self, payload: Dict[str, Any]):
         self.latest_assistant_presence = payload
 
+    def update_assistant_workflows(self, payload: Dict[str, Any]):
+        self.latest_assistant_workflows = payload
+
+    def update_assistant_reminders(self, payload: Dict[str, Any]):
+        self.latest_assistant_reminders = payload
+
+    def update_assistant_conditions(self, payload: Dict[str, Any]):
+        self.latest_assistant_conditions = payload
+
+    def update_assistant_n8n_bridge(self, payload: Dict[str, Any]):
+        self.latest_assistant_n8n_bridge = payload
+
+    def update_assistant_routines(self, payload: Dict[str, Any]):
+        self.latest_assistant_routines = payload
+
 
 
     def add_event(self, event: Dict[str, Any]):
@@ -456,7 +476,12 @@ class MemoryStore:
             "assistant_wake_word": self.latest_assistant_wake_word,
             "assistant_proactive": self.latest_assistant_proactive,
             "assistant_voice_memory": self.latest_assistant_voice_memory,
-            "assistant_presence": self.latest_assistant_presence
+            "assistant_presence": self.latest_assistant_presence,
+            "assistant_workflows": self.latest_assistant_workflows,
+            "assistant_reminders": self.latest_assistant_reminders,
+            "assistant_conditions": self.latest_assistant_conditions,
+            "assistant_n8n_bridge": self.latest_assistant_n8n_bridge,
+            "assistant_routines": self.latest_assistant_routines
 
         }
 

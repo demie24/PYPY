@@ -246,6 +246,22 @@ services:
     networks:
       - grid-net
 
+  assistant:
+    image: python:3.10-slim
+    container_name: smart_grid_assistant
+    working_dir: /app
+    volumes:
+      - ./core:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python assistant/assistant_daemon.py"
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      - mqtt
+    restart: always
+    networks:
+      - grid-net
+
 networks:
   grid-net:
     driver: bridge

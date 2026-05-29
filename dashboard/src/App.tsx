@@ -25,6 +25,7 @@ import { CyberPhysicalAttackPanel } from "./components/CyberPhysicalAttackPanel.
 import { HardwareOrchestrationPanel } from "./components/HardwareOrchestrationPanel.tsx";
 import { HardwareExecutionPanel } from "./components/HardwareExecutionPanel.tsx";
 import { InfrastructureResiliencePanel } from "./components/InfrastructureResiliencePanel.tsx";
+import { AssistantCognitionPanel } from "./components/AssistantCognitionPanel.tsx";
 
 
 
@@ -114,6 +115,16 @@ export default function App() {
   const [hardwareDeploymentHardening, setHardwareDeploymentHardening] = useState<any>(null);
   const [hardwareLargeScaleSync, setHardwareLargeScaleSync] = useState<any>(null);
 
+  // Assistant states
+  const [assistantState, setAssistantState] = useState<any>(null);
+  const [assistantIntent, setAssistantIntent] = useState<any>(null);
+  const [assistantEmotion, setAssistantEmotion] = useState<any>(null);
+  const [assistantActions, setAssistantActions] = useState<any>(null);
+  const [assistantContext, setAssistantContext] = useState<any>(null);
+  const [assistantMemory, setAssistantMemory] = useState<any>(null);
+  const [assistantResponse, setAssistantResponse] = useState<any>(null);
+  const [assistantRuntime, setAssistantRuntime] = useState<any>(null);
+
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
@@ -160,10 +171,11 @@ export default function App() {
     l7_attack: 2,
     l7_orchestration: 2,
     l7_execution: 2,
-    l7_resilience: 2
+    l7_resilience: 2,
+    l7_assistant: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack", "l7_orchestration", "l7_execution", "l7_resilience"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack", "l7_orchestration", "l7_execution", "l7_resilience", "l7_assistant"
   ]);
 
   // Timeline Replay States
@@ -240,6 +252,14 @@ export default function App() {
       hardwareRedundancy,
       hardwareDeploymentHardening,
       hardwareLargeScaleSync,
+      assistantState,
+      assistantIntent,
+      assistantEmotion,
+      assistantActions,
+      assistantContext,
+      assistantMemory,
+      assistantResponse,
+      assistantRuntime,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -514,6 +534,30 @@ export default function App() {
           if (data.hardware_large_scale_sync) {
             setHardwareLargeScaleSync(data.hardware_large_scale_sync);
           }
+          if (data.assistant_state) {
+            setAssistantState(data.assistant_state);
+          }
+          if (data.assistant_intent) {
+            setAssistantIntent(data.assistant_intent);
+          }
+          if (data.assistant_emotion) {
+            setAssistantEmotion(data.assistant_emotion);
+          }
+          if (data.assistant_actions) {
+            setAssistantActions(data.assistant_actions);
+          }
+          if (data.assistant_context) {
+            setAssistantContext(data.assistant_context);
+          }
+          if (data.assistant_memory) {
+            setAssistantMemory(data.assistant_memory);
+          }
+          if (data.assistant_response) {
+            setAssistantResponse(data.assistant_response);
+          }
+          if (data.assistant_runtime) {
+            setAssistantRuntime(data.assistant_runtime);
+          }
         } 
 
         // Handle active MQTT stream broadcasts
@@ -624,6 +668,14 @@ export default function App() {
               hardwareRedundancy: currentStates.hardwareRedundancy,
               hardwareDeploymentHardening: currentStates.hardwareDeploymentHardening,
               hardwareLargeScaleSync: currentStates.hardwareLargeScaleSync,
+              assistantState: currentStates.assistantState,
+              assistantIntent: currentStates.assistantIntent,
+              assistantEmotion: currentStates.assistantEmotion,
+              assistantActions: currentStates.assistantActions,
+              assistantContext: currentStates.assistantContext,
+              assistantMemory: currentStates.assistantMemory,
+              assistantResponse: currentStates.assistantResponse,
+              assistantRuntime: currentStates.assistantRuntime,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -851,6 +903,34 @@ export default function App() {
             setHardwareDeploymentHardening(payload);
           } else if (topic === "hardware/large_scale_sync") {
             setHardwareLargeScaleSync(payload);
+          } else if (topic === "assistant/state") {
+            setAssistantState(payload);
+          } else if (topic === "assistant/intent") {
+            setAssistantIntent(payload);
+          } else if (topic === "assistant/emotion") {
+            setAssistantEmotion(payload);
+          } else if (topic === "assistant/actions") {
+            setAssistantActions(payload);
+          } else if (topic === "assistant/context") {
+            setAssistantContext(payload);
+          } else if (topic === "assistant/memory") {
+            setAssistantMemory(payload);
+          } else if (topic === "assistant/response") {
+            setAssistantResponse(payload);
+            
+            // Execute simulated actions on dashboard client
+            if (payload?.action && payload.action.status === "SUCCESS") {
+              const act = payload.action;
+              if (act.action === "open_youtube") {
+                window.open(act.payload.url || "https://www.youtube.com", "_blank");
+              } else if (act.action === "open_browser") {
+                window.open(act.payload.url || "https://www.google.com", "_blank");
+              } else if (act.action === "open_dashboard") {
+                console.log("Assistant requested dashboard focus.");
+              }
+            }
+          } else if (topic === "assistant/runtime") {
+            setAssistantRuntime(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -901,6 +981,12 @@ export default function App() {
         topic: "grid/control",
         payload
       }));
+    }
+  };
+
+  const sendDirectMqtt = (msg: { topic: string; payload: any }) => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(msg));
     }
   };
 
@@ -1124,6 +1210,15 @@ export default function App() {
   const dispHardwareRedundancy = currentFrame ? currentFrame.hardwareRedundancy : hardwareRedundancy;
   const dispHardwareDeploymentHardening = currentFrame ? currentFrame.hardwareDeploymentHardening : hardwareDeploymentHardening;
   const dispHardwareLargeScaleSync = currentFrame ? currentFrame.hardwareLargeScaleSync : hardwareLargeScaleSync;
+
+  const dispAssistantState = currentFrame ? currentFrame.assistantState : assistantState;
+  const dispAssistantIntent = currentFrame ? currentFrame.assistantIntent : assistantIntent;
+  const dispAssistantEmotion = currentFrame ? currentFrame.assistantEmotion : assistantEmotion;
+  const dispAssistantActions = currentFrame ? currentFrame.assistantActions : assistantActions;
+  const dispAssistantContext = currentFrame ? currentFrame.assistantContext : assistantContext;
+  const dispAssistantMemory = currentFrame ? currentFrame.assistantMemory : assistantMemory;
+  const dispAssistantResponse = currentFrame ? currentFrame.assistantResponse : assistantResponse;
+  const dispAssistantRuntime = currentFrame ? currentFrame.assistantRuntime : assistantRuntime;
 
 
 
@@ -1411,6 +1506,24 @@ export default function App() {
             deploymentHardening={dispHardwareDeploymentHardening}
             largeScaleSync={dispHardwareLargeScaleSync}
             onSendControl={sendControl}
+          />
+        );
+        break;
+
+      case "l7_assistant":
+        title = "Intelligent Personal Assistant Core";
+        content = (
+          <AssistantCognitionPanel
+            assistantState={dispAssistantState}
+            assistantIntent={dispAssistantIntent}
+            assistantEmotion={dispAssistantEmotion}
+            assistantActions={dispAssistantActions}
+            assistantContext={dispAssistantContext}
+            assistantMemory={dispAssistantMemory}
+            assistantResponse={dispAssistantResponse}
+            assistantRuntime={dispAssistantRuntime}
+            connected={connected}
+            onSendControl={sendDirectMqtt}
           />
         );
         break;

@@ -115,6 +115,17 @@ class MQTTManager:
             client.subscribe("hardware/redundancy")
             client.subscribe("hardware/deployment_hardening")
             client.subscribe("hardware/large_scale_sync")
+            client.subscribe("assistant/state")
+            client.subscribe("assistant/intent")
+            client.subscribe("assistant/emotion")
+            client.subscribe("assistant/actions")
+            client.subscribe("assistant/context")
+            client.subscribe("assistant/memory")
+            client.subscribe("assistant/response")
+            client.subscribe("assistant/chat_input")
+            client.subscribe("assistant/voice_input")
+            client.subscribe("assistant/reset")
+            client.subscribe("assistant/runtime")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -258,6 +269,22 @@ class MQTTManager:
                 store.update_hardware_deployment_hardening(payload)
             elif topic == "hardware/large_scale_sync":
                 store.update_hardware_large_scale_sync(payload)
+            elif topic == "assistant/state":
+                store.update_assistant_state(payload)
+            elif topic == "assistant/intent":
+                store.update_assistant_intent(payload)
+            elif topic == "assistant/emotion":
+                store.update_assistant_emotion(payload)
+            elif topic == "assistant/actions":
+                store.update_assistant_actions(payload)
+            elif topic == "assistant/context":
+                store.update_assistant_context(payload)
+            elif topic == "assistant/memory":
+                store.update_assistant_memory(payload)
+            elif topic == "assistant/response":
+                store.update_assistant_response(payload)
+            elif topic == "assistant/runtime":
+                store.update_assistant_runtime(payload)
 
                 
             # 2. Package for WebSockets

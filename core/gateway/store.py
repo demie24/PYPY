@@ -75,6 +75,16 @@ class MemoryStore:
         self.latest_hardware_deployment_hardening: Optional[Dict[str, Any]] = None
         self.latest_hardware_large_scale_sync: Optional[Dict[str, Any]] = None
         
+        # Assistant Core state caches
+        self.latest_assistant_state: Optional[Dict[str, Any]] = None
+        self.latest_assistant_intent: Optional[Dict[str, Any]] = None
+        self.latest_assistant_emotion: Optional[Dict[str, Any]] = None
+        self.latest_assistant_actions: Optional[Dict[str, Any]] = None
+        self.latest_assistant_context: Optional[Dict[str, Any]] = None
+        self.latest_assistant_memory: Optional[Dict[str, Any]] = None
+        self.latest_assistant_response: Optional[Dict[str, Any]] = None
+        self.latest_assistant_runtime: Optional[Dict[str, Any]] = None
+        
         # Add initial system startup event
         self.add_event({
             "timestamp": int(time.time() * 1000),
@@ -274,9 +284,34 @@ class MemoryStore:
 
     def update_hardware_deployment_hardening(self, payload: Dict[str, Any]):
         self.latest_hardware_deployment_hardening = payload
+        self.latest_hardware_large_scale_sync = payload
 
     def update_hardware_large_scale_sync(self, payload: Dict[str, Any]):
         self.latest_hardware_large_scale_sync = payload
+
+    def update_assistant_state(self, payload: Dict[str, Any]):
+        self.latest_assistant_state = payload
+
+    def update_assistant_intent(self, payload: Dict[str, Any]):
+        self.latest_assistant_intent = payload
+
+    def update_assistant_emotion(self, payload: Dict[str, Any]):
+        self.latest_assistant_emotion = payload
+
+    def update_assistant_actions(self, payload: Dict[str, Any]):
+        self.latest_assistant_actions = payload
+
+    def update_assistant_context(self, payload: Dict[str, Any]):
+        self.latest_assistant_context = payload
+
+    def update_assistant_memory(self, payload: Dict[str, Any]):
+        self.latest_assistant_memory = payload
+
+    def update_assistant_response(self, payload: Dict[str, Any]):
+        self.latest_assistant_response = payload
+
+    def update_assistant_runtime(self, payload: Dict[str, Any]):
+        self.latest_assistant_runtime = payload
 
 
     def add_event(self, event: Dict[str, Any]):
@@ -361,7 +396,15 @@ class MemoryStore:
             "hardware_disaster_recovery": self.latest_hardware_disaster_recovery,
             "hardware_redundancy": self.latest_hardware_redundancy,
             "hardware_deployment_hardening": self.latest_hardware_deployment_hardening,
-            "hardware_large_scale_sync": self.latest_hardware_large_scale_sync
+            "hardware_large_scale_sync": self.latest_hardware_large_scale_sync,
+            "assistant_state": self.latest_assistant_state,
+            "assistant_intent": self.latest_assistant_intent,
+            "assistant_emotion": self.latest_assistant_emotion,
+            "assistant_actions": self.latest_assistant_actions,
+            "assistant_context": self.latest_assistant_context,
+            "assistant_memory": self.latest_assistant_memory,
+            "assistant_response": self.latest_assistant_response,
+            "assistant_runtime": self.latest_assistant_runtime
         }
 
     def clear_alerts(self):

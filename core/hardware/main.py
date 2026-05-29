@@ -18,6 +18,7 @@ from badusb_payload_manager import BadUSBPayloadManager
 from rogue_device_monitor import RogueDeviceMonitor
 from hardware_intrusion_detector import HardwareIntrusionDetector
 from cyber_physical_attack_orchestrator import CyberPhysicalAttackOrchestrator
+from hardware_orchestrator import HardwareOrchestrator
 
 
 # Configure logging
@@ -26,6 +27,34 @@ logger = logging.getLogger("hardware.main")
 
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+
+client = None
+
+# Callback for bus command execution
+def on_bus_execution(cmd_payload, success, reason):
+    global client
+    if not client:
+        return
+    if success:
+        logger.info(f"Command routed successfully: {cmd_payload.get('command')} on {cmd_payload.get('target')}. Confirming execution.")
+        control_payload = {
+            "command": cmd_payload.get("command"),
+            "target": cmd_payload.get("target"),
+            "source": "AGENT_CONSENSUS"
+        }
+        client.publish("grid/control", json.dumps(control_payload))
+    else:
+        logger.warning(f"Command execution failed on bus: {reason}")
+        
+    log_payload = {
+        "timestamp": int(time.time() * 1000),
+        "command": cmd_payload.get("command"),
+        "target": cmd_payload.get("target"),
+        "source": cmd_payload.get("source"),
+        "status": "SUCCESS" if success else "BLOCKED",
+        "details": reason
+    }
+    client.publish("hardware/command_log", json.dumps(log_payload))
 
 # Initialize HAL instances
 state_manager = HardwareStateManager()
@@ -42,6 +71,9 @@ badusb_manager = BadUSBPayloadManager()
 rogue_monitor = RogueDeviceMonitor()
 intrusion_detector = HardwareIntrusionDetector()
 attack_orchestrator = CyberPhysicalAttackOrchestrator(digispark_engine, badusb_manager, rogue_monitor, intrusion_detector)
+
+# Initialize Hardware Orchestrator
+orchestrator = HardwareOrchestrator(state_manager, command_router)
 
 # MQTT Callbacks
 def on_connect(client, userdata, flags, rc):
@@ -80,31 +112,23 @@ def on_message(client, userdata, msg):
             source = payload.get("source")
             intrusion_detector.analyze_command(cmd, target, source)
             
-            success, reason = command_router.route_command(payload)
+            success, reason = orchestrator.submit_command(payload)
             
-            # If successfully routed, we publish the command execution to grid/control
-            # so that the Digital Twin updates its state.
-            if success:
-                logger.info(f"Command routed successfully: {payload.get('command')} on {payload.get('target')}. Confirming execution.")
-                control_payload = {
+            # If the command fails arbitration, reject and log immediately.
+            # Otherwise it is submitted on the bus and will be acknowledged asynchronously.
+            if not success:
+                logger.warning(f"Command rejected by Orchestrator arbitration: {reason}")
+                log_payload = {
+                    "timestamp": int(time.time() * 1000),
                     "command": payload.get("command"),
                     "target": payload.get("target"),
-                    "source": "AGENT_CONSENSUS"  # Mark as consensus execution
+                    "source": payload.get("source"),
+                    "status": "BLOCKED",
+                    "details": reason
                 }
-                client.publish("grid/control", json.dumps(control_payload))
+                client.publish("hardware/command_log", json.dumps(log_payload))
             else:
-                logger.warning(f"Command rejected by Hardware abstraction: {reason}")
-                
-            # Always publish router log
-            log_payload = {
-                "timestamp": int(time.time() * 1000),
-                "command": payload.get("command"),
-                "target": payload.get("target"),
-                "source": payload.get("source"),
-                "status": "SUCCESS" if success else "BLOCKED",
-                "details": reason
-            }
-            client.publish("hardware/command_log", json.dumps(log_payload))
+                logger.info(f"Command successfully submitted to Orchestrator: {reason}")
             
         # 3. Handle operator commands (e.g. reset alarms or fault injections)
         elif topic == "grid/control":
@@ -232,6 +256,13 @@ def on_message(client, userdata, msg):
             elif cmd == "QUARANTINE_PORT":
                 port = payload.get("port")
                 attack_orchestrator.execute_quarantine(port)
+                if port == "esp32":
+                    for d in ["esp32_zone1", "esp32_zone2", "esp32_zone3"]:
+                        orchestrator.device_manager.set_device_quarantine(d, True)
+                elif port == "plc":
+                    orchestrator.device_manager.set_device_quarantine("plc_primary", True)
+                else:
+                    orchestrator.device_manager.set_device_quarantine(port, True)
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
@@ -243,6 +274,13 @@ def on_message(client, userdata, msg):
             elif cmd == "RELEASE_PORT":
                 port = payload.get("port")
                 attack_orchestrator.remove_quarantine(port)
+                if port == "esp32":
+                    for d in ["esp32_zone1", "esp32_zone2", "esp32_zone3"]:
+                        orchestrator.device_manager.set_device_quarantine(d, False)
+                elif port == "plc":
+                    orchestrator.device_manager.set_device_quarantine("plc_primary", False)
+                else:
+                    orchestrator.device_manager.set_device_quarantine(port, False)
                 event_log = {
                     "timestamp": int(time.time() * 1000),
                     "source": "SCADA_OPERATOR",
@@ -278,6 +316,7 @@ def run_relay_transition_loop():
 
 if __name__ == "__main__":
     # Initialize MQTT Client
+    global client
     client = mqtt.Client(client_id="smart_grid_hardware_abstraction_layer")
     client.on_connect = on_connect
     client.on_message = on_message
@@ -304,9 +343,22 @@ if __name__ == "__main__":
             fault_orchestrator.tick_scenario()
             anomalies = fault_orchestrator.check_anomalies()
             
+            # Tick the hardware orchestrator
+            orchestrator.tick(on_bus_execution)
+            
             # 1. Heartbeats
             esp32_hb = esp32_bridge.run_heartbeat_cycle()
             plc_hb = plc_interface.run_heartbeat_cycle()
+            
+            # Feed heartbeats into fleet devices
+            if esp32_bridge.status == "ONLINE":
+                orchestrator.device_manager.update_device_heartbeat("esp32_zone1", esp32_bridge.latency_ms)
+                orchestrator.device_manager.update_device_heartbeat("esp32_zone2", esp32_bridge.latency_ms + 2.0)
+                orchestrator.device_manager.update_device_heartbeat("esp32_zone3", esp32_bridge.latency_ms + 4.0)
+                orchestrator.device_manager.update_device_heartbeat("esp32_backup", esp32_bridge.latency_ms + 3.0)
+            if plc_interface.status == "ONLINE":
+                orchestrator.device_manager.update_device_heartbeat("plc_primary", plc_interface.latency_ms)
+                orchestrator.device_manager.update_device_heartbeat("plc_backup", plc_interface.latency_ms + 5.0)
             
             # 2. Publish health payload
             health_payload = state_manager.get_device_health()
@@ -367,6 +419,14 @@ if __name__ == "__main__":
             client.publish("hardware/device_trust", json.dumps(rogue_monitor.get_trust_payload()))
             client.publish("hardware/attack_state", json.dumps(attack_state_payload))
             client.publish("hardware/attack_propagation", json.dumps(attack_orchestrator.get_propagation_chain()))
+            
+            # 6. Publish Hardware Orchestration Telemetry
+            client.publish("hardware/orchestration", json.dumps(orchestrator.get_orchestration_telemetry()))
+            client.publish("hardware/edge_devices", json.dumps(orchestrator.device_manager.get_telemetry_payload()))
+            client.publish("hardware/relay_execution", json.dumps(orchestrator.relay_planner.get_telemetry_payload()))
+            client.publish("hardware/distributed_bus", json.dumps(orchestrator.command_bus.get_telemetry_payload()))
+            client.publish("hardware/synchronization", json.dumps(orchestrator.sync_engine.get_telemetry_payload()))
+            client.publish("hardware/orchestration_conflicts", json.dumps(orchestrator.get_conflicts_telemetry()))
             
             time.sleep(1.0)
         except KeyboardInterrupt:

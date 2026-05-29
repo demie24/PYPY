@@ -99,6 +99,12 @@ class MQTTManager:
             client.subscribe("hardware/device_trust")
             client.subscribe("hardware/attack_state")
             client.subscribe("hardware/attack_propagation")
+            client.subscribe("hardware/orchestration")
+            client.subscribe("hardware/edge_devices")
+            client.subscribe("hardware/relay_execution")
+            client.subscribe("hardware/distributed_bus")
+            client.subscribe("hardware/synchronization")
+            client.subscribe("hardware/orchestration_conflicts")
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -210,6 +216,18 @@ class MQTTManager:
                 store.update_hardware_attack_state(payload)
             elif topic == "hardware/attack_propagation":
                 store.update_hardware_attack_propagation(payload)
+            elif topic == "hardware/orchestration":
+                store.update_hardware_orchestration(payload)
+            elif topic == "hardware/edge_devices":
+                store.update_hardware_edge_devices(payload)
+            elif topic == "hardware/relay_execution":
+                store.update_hardware_relay_execution(payload)
+            elif topic == "hardware/distributed_bus":
+                store.update_hardware_distributed_bus(payload)
+            elif topic == "hardware/synchronization":
+                store.update_hardware_synchronization(payload)
+            elif topic == "hardware/orchestration_conflicts":
+                store.update_hardware_orchestration_conflicts(payload)
                 
             # 2. Package for WebSockets
             ws_payload = {

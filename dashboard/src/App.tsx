@@ -22,6 +22,7 @@ import { MultiAgentCoordinationPanel } from "./components/MultiAgentCoordination
 import { HardwareFoundationPanel } from "./components/HardwareFoundationPanel.tsx";
 import { VirtualHardwareTwinPanel } from "./components/VirtualHardwareTwinPanel.tsx";
 import { CyberPhysicalAttackPanel } from "./components/CyberPhysicalAttackPanel.tsx";
+import { HardwareOrchestrationPanel } from "./components/HardwareOrchestrationPanel.tsx";
 
 
 import {
@@ -93,6 +94,12 @@ export default function App() {
   const [hardwareDeviceTrust, setHardwareDeviceTrust] = useState<any>(null);
   const [hardwareAttackState, setHardwareAttackState] = useState<any>(null);
   const [hardwareAttackPropagation, setHardwareAttackPropagation] = useState<any>(null);
+  const [hardwareOrchestration, setHardwareOrchestration] = useState<any>(null);
+  const [hardwareEdgeDevices, setHardwareEdgeDevices] = useState<any>(null);
+  const [hardwareRelayExecution, setHardwareRelayExecution] = useState<any>(null);
+  const [hardwareDistributedBus, setHardwareDistributedBus] = useState<any>(null);
+  const [hardwareSynchronization, setHardwareSynchronization] = useState<any>(null);
+  const [hardwareOrchestrationConflicts, setHardwareOrchestrationConflicts] = useState<any>(null);
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
   const [recording, setRecording] = useState<boolean>(false);
@@ -136,10 +143,11 @@ export default function App() {
     l6_multi_agent: 2,
     l7_hardware: 2,
     l7_twin: 2,
-    l7_attack: 2
+    l7_attack: 2,
+    l7_orchestration: 2
   });
   const [panelOrder, setPanelOrder] = useState<string[]>([
-    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack"
+    "telemetry", "forecast", "multibus", "threat_aware", "pinn", "physics", "trust", "orchestrator", "health", "pre_rl", "cyber_defense", "l6_recovery", "l6_adaptive_recovery", "l6_survival", "l6_predictive_stabilization", "l6_multi_agent", "l7_hardware", "l7_twin", "l7_attack", "l7_orchestration"
   ]);
 
   // Timeline Replay States
@@ -200,6 +208,12 @@ export default function App() {
       hardwareDeviceTrust,
       hardwareAttackState,
       hardwareAttackPropagation,
+      hardwareOrchestration,
+      hardwareEdgeDevices,
+      hardwareRelayExecution,
+      hardwareDistributedBus,
+      hardwareSynchronization,
+      hardwareOrchestrationConflicts,
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -426,6 +440,24 @@ export default function App() {
           if (data.hardware_attack_propagation) {
             setHardwareAttackPropagation(data.hardware_attack_propagation);
           }
+          if (data.hardware_orchestration) {
+            setHardwareOrchestration(data.hardware_orchestration);
+          }
+          if (data.hardware_edge_devices) {
+            setHardwareEdgeDevices(data.hardware_edge_devices);
+          }
+          if (data.hardware_relay_execution) {
+            setHardwareRelayExecution(data.hardware_relay_execution);
+          }
+          if (data.hardware_distributed_bus) {
+            setHardwareDistributedBus(data.hardware_distributed_bus);
+          }
+          if (data.hardware_synchronization) {
+            setHardwareSynchronization(data.hardware_synchronization);
+          }
+          if (data.hardware_orchestration_conflicts) {
+            setHardwareOrchestrationConflicts(data.hardware_orchestration_conflicts);
+          }
         } 
         // Handle active MQTT stream broadcasts
         else if (data.topic && data.payload) {
@@ -519,6 +551,12 @@ export default function App() {
               hardwareDeviceTrust: currentStates.hardwareDeviceTrust,
               hardwareAttackState: currentStates.hardwareAttackState,
               hardwareAttackPropagation: currentStates.hardwareAttackPropagation,
+              hardwareOrchestration: currentStates.hardwareOrchestration,
+              hardwareEdgeDevices: currentStates.hardwareEdgeDevices,
+              hardwareRelayExecution: currentStates.hardwareRelayExecution,
+              hardwareDistributedBus: currentStates.hardwareDistributedBus,
+              hardwareSynchronization: currentStates.hardwareSynchronization,
+              hardwareOrchestrationConflicts: currentStates.hardwareOrchestrationConflicts,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -714,6 +752,18 @@ export default function App() {
             setHardwareAttackState(payload);
           } else if (topic === "hardware/attack_propagation") {
             setHardwareAttackPropagation(payload);
+          } else if (topic === "hardware/orchestration") {
+            setHardwareOrchestration(payload);
+          } else if (topic === "hardware/edge_devices") {
+            setHardwareEdgeDevices(payload);
+          } else if (topic === "hardware/relay_execution") {
+            setHardwareRelayExecution(payload);
+          } else if (topic === "hardware/distributed_bus") {
+            setHardwareDistributedBus(payload);
+          } else if (topic === "hardware/synchronization") {
+            setHardwareSynchronization(payload);
+          } else if (topic === "hardware/orchestration_conflicts") {
+            setHardwareOrchestrationConflicts(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -967,6 +1017,12 @@ export default function App() {
   const dispHardwareDeviceTrust = currentFrame ? currentFrame.hardwareDeviceTrust : hardwareDeviceTrust;
   const dispHardwareAttackState = currentFrame ? currentFrame.hardwareAttackState : hardwareAttackState;
   const dispHardwareAttackPropagation = currentFrame ? currentFrame.hardwareAttackPropagation : hardwareAttackPropagation;
+  const dispHardwareOrchestration = currentFrame ? currentFrame.hardwareOrchestration : hardwareOrchestration;
+  const dispHardwareEdgeDevices = currentFrame ? currentFrame.hardwareEdgeDevices : hardwareEdgeDevices;
+  const dispHardwareRelayExecution = currentFrame ? currentFrame.hardwareRelayExecution : hardwareRelayExecution;
+  const dispHardwareDistributedBus = currentFrame ? currentFrame.hardwareDistributedBus : hardwareDistributedBus;
+  const dispHardwareSynchronization = currentFrame ? currentFrame.hardwareSynchronization : hardwareSynchronization;
+  const dispHardwareOrchestrationConflicts = currentFrame ? currentFrame.hardwareOrchestrationConflicts : hardwareOrchestrationConflicts;
 
 
   const dispHistory = useMemo(() => {
@@ -1212,6 +1268,20 @@ export default function App() {
             hardwareDeviceTrust={dispHardwareDeviceTrust}
             hardwareAttackState={dispHardwareAttackState}
             hardwareAttackPropagation={dispHardwareAttackPropagation}
+            onSendControl={sendControl}
+          />
+        );
+        break;
+      case "l7_orchestration":
+        title = "Hardware Orchestration Panel";
+        content = (
+          <HardwareOrchestrationPanel
+            hardwareOrchestration={dispHardwareOrchestration}
+            hardwareEdgeDevices={dispHardwareEdgeDevices}
+            hardwareRelayExecution={dispHardwareRelayExecution}
+            hardwareDistributedBus={dispHardwareDistributedBus}
+            hardwareSynchronization={dispHardwareSynchronization}
+            hardwareOrchestrationConflicts={dispHardwareOrchestrationConflicts}
             onSendControl={sendControl}
           />
         );

@@ -64,7 +64,13 @@ class AIOrchestrator:
             "l6_distributed_state": None,
             "l6_agent_confidence": None,
             "hardware_attack_state": None,
-            "hardware_attack_propagation": None
+            "hardware_attack_propagation": None,
+            "hardware_orchestration": None,
+            "hardware_edge_devices": None,
+            "hardware_relay_execution": None,
+            "hardware_distributed_bus": None,
+            "hardware_synchronization": None,
+            "hardware_orchestration_conflicts": None
         }
 
         # Operator overrides and control states
@@ -159,6 +165,18 @@ class AIOrchestrator:
                 self.defense_mode = payload["defense_mode"]
         elif topic == "hardware/attack_propagation":
             self.state_cache["hardware_attack_propagation"] = payload
+        elif topic == "hardware/orchestration":
+            self.state_cache["hardware_orchestration"] = payload
+        elif topic == "hardware/edge_devices":
+            self.state_cache["hardware_edge_devices"] = payload
+        elif topic == "hardware/relay_execution":
+            self.state_cache["hardware_relay_execution"] = payload
+        elif topic == "hardware/distributed_bus":
+            self.state_cache["hardware_distributed_bus"] = payload
+        elif topic == "hardware/synchronization":
+            self.state_cache["hardware_synchronization"] = payload
+        elif topic == "hardware/orchestration_conflicts":
+            self.state_cache["hardware_orchestration_conflicts"] = payload
 
     def process_quarantine_containment(self, client):
         """
@@ -590,6 +608,12 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("hardware/anomalies")
         client.subscribe("hardware/attack_state")
         client.subscribe("hardware/attack_propagation")
+        client.subscribe("hardware/orchestration")
+        client.subscribe("hardware/edge_devices")
+        client.subscribe("hardware/relay_execution")
+        client.subscribe("hardware/distributed_bus")
+        client.subscribe("hardware/synchronization")
+        client.subscribe("hardware/orchestration_conflicts")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 

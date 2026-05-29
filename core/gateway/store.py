@@ -58,6 +58,12 @@ class MemoryStore:
         self.latest_hardware_device_trust: Optional[Dict[str, Any]] = None
         self.latest_hardware_attack_state: Optional[Dict[str, Any]] = None
         self.latest_hardware_attack_propagation: Optional[Dict[str, Any]] = None
+        self.latest_hardware_orchestration: Optional[Dict[str, Any]] = None
+        self.latest_hardware_edge_devices: Optional[Dict[str, Any]] = None
+        self.latest_hardware_relay_execution: Optional[Dict[str, Any]] = None
+        self.latest_hardware_distributed_bus: Optional[Dict[str, Any]] = None
+        self.latest_hardware_synchronization: Optional[Dict[str, Any]] = None
+        self.latest_hardware_orchestration_conflicts: Optional[Dict[str, Any]] = None
         
         # Add initial system startup event
         self.add_event({
@@ -214,6 +220,24 @@ class MemoryStore:
     def update_hardware_attack_propagation(self, payload: Dict[str, Any]):
         self.latest_hardware_attack_propagation = payload
 
+    def update_hardware_orchestration(self, payload: Dict[str, Any]):
+        self.latest_hardware_orchestration = payload
+
+    def update_hardware_edge_devices(self, payload: Dict[str, Any]):
+        self.latest_hardware_edge_devices = payload
+
+    def update_hardware_relay_execution(self, payload: Dict[str, Any]):
+        self.latest_hardware_relay_execution = payload
+
+    def update_hardware_distributed_bus(self, payload: Dict[str, Any]):
+        self.latest_hardware_distributed_bus = payload
+
+    def update_hardware_synchronization(self, payload: Dict[str, Any]):
+        self.latest_hardware_synchronization = payload
+
+    def update_hardware_orchestration_conflicts(self, payload: Dict[str, Any]):
+        self.latest_hardware_orchestration_conflicts = payload
+
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
         if len(self.events) > self.max_history:
@@ -280,7 +304,13 @@ class MemoryStore:
             "hardware_intrusion_alerts": self.latest_hardware_intrusion_alerts,
             "hardware_device_trust": self.latest_hardware_device_trust,
             "hardware_attack_state": self.latest_hardware_attack_state,
-            "hardware_attack_propagation": self.latest_hardware_attack_propagation
+            "hardware_attack_propagation": self.latest_hardware_attack_propagation,
+            "hardware_orchestration": self.latest_hardware_orchestration,
+            "hardware_edge_devices": self.latest_hardware_edge_devices,
+            "hardware_relay_execution": self.latest_hardware_relay_execution,
+            "hardware_distributed_bus": self.latest_hardware_distributed_bus,
+            "hardware_synchronization": self.latest_hardware_synchronization,
+            "hardware_orchestration_conflicts": self.latest_hardware_orchestration_conflicts
         }
 
     def clear_alerts(self):

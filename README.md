@@ -1,40 +1,102 @@
-# Smart Grid Cybersecurity Platform
+# PYPY 
 
-A modular, cyber-physical platform simulating a power distribution grid with real-time digital twin monitoring, hardware-in-the-loop (HIL) ESP32 edge control, intelligent electronic device (relay) protection, AI intrusion detection, and automatic self-healing logic.
-
-## System Architecture
-
-The platform consists of several decoupled services that communicate via a central WebSocket and MQTT Gateway:
-
-1. **Gateway (`core/gateway/`)**: A WebSocket and MQTT communication hub.
-2. **Digital Twin (`core/digital_twin/`)**: A Python-based real-time power grid simulator modeling buses, branches, generators, loads, and breakers.
-3. **AI Anomaly Detection (`core/ai_detection/`)**: Machine learning models detecting False Data Injection Attacks (FDIA) and unauthorized commands.
-4. **Relay Protection (`core/relay_protection/`)**: Emulator of Intelligent Electronic Devices (IEDs) providing overcurrent/overvoltage protection logic.
-5. **Self-Healing Grid (`core/self_healing/`)**: Automates Fault Location, Isolation, and Service Restoration (FLISR).
-6. **Attack Simulator (`core/attack_simulator/`)**: Injects faults, DoS, and telemetry manipulation (FDIA).
-7. **Dashboard (`dashboard/`)**: A dynamic Vite + React single-line diagram and security operations center.
-8. **Hardware (`hardware/`)**: ESP32 microcontroller firmware implementing physical substation sensors and breakers.
+AI-Powered Autonomous Cyber-Physical Immune System  
+for Smart Grid Infrastructure
 
 ---
 
-## Directory Layout
+## Overview
+
+PYPY is a modular smart grid cybersecurity and resilience platform designed to simulate, detect, defend, and recover from cyber-physical attacks in electrical grid environments.
+
+The system combines:
+- AI anomaly detection
+- reinforcement learning
+- digital twin simulation
+- cyber defense orchestration
+- self-healing grid recovery
+- hardware integration using ESP32
+
+---
+
+## Core Features
+
+- FDIA (False Data Injection Attack) detection
+- RL-based self-healing restoration
+- PINN-based physics validation
+- MQTT smart grid telemetry
+- autonomous cyber defense escalation
+- relay protection simulation
+- Digispark/BadUSB attack simulation
+- multi-agent consensus system
+- IEEE 9-Bus grid simulation
+
+---
+
+## System Architecture
+
+(Add architecture diagram later)
+
+---
+
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Backend | Python |
+| AI/ML | PyTorch |
+| Messaging | MQTT |
+| Frontend | React + Vite |
+| Containerization | Docker |
+| Hardware | ESP32 |
+| Communication | WebSocket |
+
+---
+
+## Project Structure
 
 ```text
-smart-grid-cybersecurity/
-├── core/
-│   ├── gateway/           # Real-time WebSocket & MQTT message router
-│   ├── digital_twin/      # Power grid simulator (IEEE 9-Bus model)
-│   ├── ai_detection/      # Anomaly detection models & inference pipeline
-│   ├── relay_protection/  # Overcurrent / undervoltage trip logic (IEDs)
-│   ├── self_healing/      # FLISR (Fault Location, Isolation, and Service Restoration)
-│   └── attack_simulator/  # Cyber-attack orchestrator (FDIA, DoS)
-├── dashboard/             # React visualizer and control center
-└── hardware/              # ESP32 firmware for hardware-in-the-loop RTU
+core/
+dashboard/
+hardware/
+analytics/
+tests/
+docker-compose.yml
+README.md
 ```
 
-## Getting Started
+---
 
-Refer to individual service READMEs for configuration and setup details. Use Docker Compose to launch the environment locally:
+## Quick Start
+
 ```bash
 docker-compose up --build
 ```
+
+---
+
+## Run Tests
+
+```bash
+pytest tests/
+```
+
+---
+
+## Current Development Phase
+
+- Phase 1 ✅
+- Phase 2 ✅
+- Phase 3 ✅
+- Phase 4 ✅
+- Phase 5 ✅
+- Phase 6 ✅
+- Phase 7 🚧
+- Phase 8 🚧
+- Phase 9 🚧
+
+---
+
+## Disclaimer
+
+This project is developed for research, simulation, and educational purposes related to smart grid cybersecurity and cyber-physical resilience systems.

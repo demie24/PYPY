@@ -124,6 +124,12 @@ export default function App() {
   const [assistantMemory, setAssistantMemory] = useState<any>(null);
   const [assistantResponse, setAssistantResponse] = useState<any>(null);
   const [assistantRuntime, setAssistantRuntime] = useState<any>(null);
+  const [assistantSemanticIntent, setAssistantSemanticIntent] = useState<any>(null);
+  const [assistantContextualMemory, setAssistantContextualMemory] = useState<any>(null);
+  const [assistantReasoning, setAssistantReasoning] = useState<any>(null);
+  const [assistantAutomationHooks, setAssistantAutomationHooks] = useState<any>(null);
+  const [assistantSemanticResponse, setAssistantSemanticResponse] = useState<any>(null);
+
 
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
@@ -260,6 +266,12 @@ export default function App() {
       assistantMemory,
       assistantResponse,
       assistantRuntime,
+      assistantSemanticIntent,
+      assistantContextualMemory,
+      assistantReasoning,
+      assistantAutomationHooks,
+      assistantSemanticResponse,
+
       flisrState,
       flisrIsolated,
       flisrReconfigured,
@@ -558,6 +570,21 @@ export default function App() {
           if (data.assistant_runtime) {
             setAssistantRuntime(data.assistant_runtime);
           }
+          if (data.assistant_semantic_intent) {
+            setAssistantSemanticIntent(data.assistant_semantic_intent);
+          }
+          if (data.assistant_contextual_memory) {
+            setAssistantContextualMemory(data.assistant_contextual_memory);
+          }
+          if (data.assistant_reasoning) {
+            setAssistantReasoning(data.assistant_reasoning);
+          }
+          if (data.assistant_automation_hooks) {
+            setAssistantAutomationHooks(data.assistant_automation_hooks);
+          }
+          if (data.assistant_semantic_response) {
+            setAssistantSemanticResponse(data.assistant_semantic_response);
+          }
         } 
 
         // Handle active MQTT stream broadcasts
@@ -676,6 +703,11 @@ export default function App() {
               assistantMemory: currentStates.assistantMemory,
               assistantResponse: currentStates.assistantResponse,
               assistantRuntime: currentStates.assistantRuntime,
+              assistantSemanticIntent: currentStates.assistantSemanticIntent,
+              assistantContextualMemory: currentStates.assistantContextualMemory,
+              assistantReasoning: currentStates.assistantReasoning,
+              assistantAutomationHooks: currentStates.assistantAutomationHooks,
+              assistantSemanticResponse: currentStates.assistantSemanticResponse,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -931,6 +963,16 @@ export default function App() {
             }
           } else if (topic === "assistant/runtime") {
             setAssistantRuntime(payload);
+          } else if (topic === "assistant/semantic_intent") {
+            setAssistantSemanticIntent(payload);
+          } else if (topic === "assistant/contextual_memory") {
+            setAssistantContextualMemory(payload);
+          } else if (topic === "assistant/reasoning") {
+            setAssistantReasoning(payload);
+          } else if (topic === "assistant/automation_hooks") {
+            setAssistantAutomationHooks(payload);
+          } else if (topic === "assistant/semantic_response") {
+            setAssistantSemanticResponse(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -1219,6 +1261,12 @@ export default function App() {
   const dispAssistantMemory = currentFrame ? currentFrame.assistantMemory : assistantMemory;
   const dispAssistantResponse = currentFrame ? currentFrame.assistantResponse : assistantResponse;
   const dispAssistantRuntime = currentFrame ? currentFrame.assistantRuntime : assistantRuntime;
+  const dispAssistantSemanticIntent = currentFrame ? currentFrame.assistantSemanticIntent : assistantSemanticIntent;
+  const dispAssistantContextualMemory = currentFrame ? currentFrame.assistantContextualMemory : assistantContextualMemory;
+  const dispAssistantReasoning = currentFrame ? currentFrame.assistantReasoning : assistantReasoning;
+  const dispAssistantAutomationHooks = currentFrame ? currentFrame.assistantAutomationHooks : assistantAutomationHooks;
+  const dispAssistantSemanticResponse = currentFrame ? currentFrame.assistantSemanticResponse : assistantSemanticResponse;
+
 
 
 
@@ -1522,6 +1570,11 @@ export default function App() {
             assistantMemory={dispAssistantMemory}
             assistantResponse={dispAssistantResponse}
             assistantRuntime={dispAssistantRuntime}
+            assistantSemanticIntent={dispAssistantSemanticIntent}
+            assistantContextualMemory={dispAssistantContextualMemory}
+            assistantReasoning={dispAssistantReasoning}
+            assistantAutomationHooks={dispAssistantAutomationHooks}
+            assistantSemanticResponse={dispAssistantSemanticResponse}
             connected={connected}
             onSendControl={sendDirectMqtt}
           />

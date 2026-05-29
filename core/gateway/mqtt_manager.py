@@ -126,6 +126,12 @@ class MQTTManager:
             client.subscribe("assistant/voice_input")
             client.subscribe("assistant/reset")
             client.subscribe("assistant/runtime")
+            client.subscribe("assistant/semantic_intent")
+            client.subscribe("assistant/contextual_memory")
+            client.subscribe("assistant/reasoning")
+            client.subscribe("assistant/automation_hooks")
+            client.subscribe("assistant/semantic_response")
+
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
 
@@ -285,6 +291,17 @@ class MQTTManager:
                 store.update_assistant_response(payload)
             elif topic == "assistant/runtime":
                 store.update_assistant_runtime(payload)
+            elif topic == "assistant/semantic_intent":
+                store.update_assistant_semantic_intent(payload)
+            elif topic == "assistant/contextual_memory":
+                store.update_assistant_contextual_memory(payload)
+            elif topic == "assistant/reasoning":
+                store.update_assistant_reasoning(payload)
+            elif topic == "assistant/automation_hooks":
+                store.update_assistant_automation_hooks(payload)
+            elif topic == "assistant/semantic_response":
+                store.update_assistant_semantic_response(payload)
+
 
                 
             # 2. Package for WebSockets

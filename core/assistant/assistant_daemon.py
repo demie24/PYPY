@@ -20,6 +20,12 @@ from core.assistant.action_router import ActionRouter
 from core.assistant.response_engine import ResponseEngine
 from core.assistant.assistant_state_manager import AssistantStateManager
 
+# Semantic engines imports
+from core.assistant.semantic_intent_engine import SemanticIntentEngine
+from core.assistant.contextual_memory_engine import ContextualMemoryEngine
+from core.assistant.assistant_reasoning_engine import AssistantReasoningEngine
+from core.assistant.automation_hook_manager import AutomationHookManager
+from core.assistant.semantic_response_engine import SemanticResponseEngine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("assistant.daemon")
@@ -39,6 +45,38 @@ class AssistantDaemon:
         self.action_rt = ActionRouter()
         self.response_eng = ResponseEngine()
         self.state_mgr = AssistantStateManager()
+        
+        # Semantic engines initialization
+        self.semantic_intent_eng = SemanticIntentEngine()
+        self.contextual_mem = ContextualMemoryEngine()
+        self.reasoning_eng = AssistantReasoningEngine()
+        self.automation_hook_mgr = AutomationHookManager()
+        self.semantic_response_eng = SemanticResponseEngine()
+        
+        # Telemetry cache registers
+        self.latest_semantic_intent = {
+            "category": "UNKNOWN",
+            "action": None,
+            "confidence": 0.0,
+            "parameters": {},
+            "is_fuzzy": False,
+            "is_followup": False
+        }
+        self.latest_reasoning = {
+            "should_execute": False,
+            "should_respond": False,
+            "resolved_action": None,
+            "parameters": {},
+            "webhook_trigger": None,
+            "followup_recommendation": None,
+            "reasoning_logs": ["Assistant daemon initialized."],
+            "grid_critical": False
+        }
+        self.latest_semantic_response = {
+            "text": "",
+            "clean_tts_text": "",
+            "timestamp": 0
+        }
         
         # Grid cache
         self.grid_state = {
@@ -126,6 +164,12 @@ class AssistantDaemon:
         
         # 3. Intent detection
         intent = self.intent_eng.detect_intent(text)
+        # Fuzzy / Semantic intent detection
+        semantic_intent = self.semantic_intent_eng.detect_intent(
+            text, 
+            previous_action=self.contextual_mem.active_subject
+        )
+        self.latest_semantic_intent = semantic_intent
         
         # 4. Context update
         self.context_eng.update_context(intent, self.state_mgr.state)
@@ -138,8 +182,23 @@ class AssistantDaemon:
         
         # 6. Memory store user input
         self.memory_orch.add_interaction("user", text)
+        self.contextual_mem.add_interaction(
+            role="user", 
+            text=text, 
+            intent_action=semantic_intent.get("action"), 
+            entities=semantic_intent.get("parameters")
+        )
         
-        # 7. Decision engine routing
+        # 7. Reasoning & Decision Routing
+        reasoning = self.reasoning_eng.reason(
+            intent=semantic_intent,
+            context=self.context_eng.get_context_summary(),
+            emotion=self.emotion_eng.get_emotion_summary(),
+            grid_state=self.grid_state
+        )
+        self.latest_reasoning = reasoning
+        
+        # Run old decision engine as fallback/sync checks
         decision = self.decision_eng.determine_routing(
             intent=intent,
             context=self.context_eng.get_context_summary(),
@@ -148,38 +207,57 @@ class AssistantDaemon:
         
         # 8. Execution path
         action_result = {}
-        if decision["should_execute"]:
+        hook_status = {}
+        
+        # Use reasoning outcome primarily
+        if reasoning["should_execute"]:
             self.state_mgr.transition_to("EXECUTING")
             self.publish_telemetry()
-            action_name = decision["resolved_action"]
+            action_name = reasoning["resolved_action"]
             action_result = self.action_rt.route_action(
                 action_name=action_name,
-                parameters=decision["parameters"],
+                parameters=reasoning["parameters"],
                 grid_state=self.grid_state
             )
             self.memory_orch.record_command(action_name)
+            
+            # 8B. Automation hook dispatch
+            if reasoning["webhook_trigger"]:
+                hook_status = self.automation_hook_mgr.trigger_webhook(
+                    reasoning["webhook_trigger"], 
+                    action_result
+                )
             time.sleep(0.05)
             
         # 9. Response formulation
         self.state_mgr.transition_to("RESPONDING")
         self.publish_telemetry()
         
-        resolved_action = decision["resolved_action"]
-        response_text = self.response_eng.generate_response(
-            intent_action=resolved_action,
+        # Generate semantic, context-aware Malay response
+        response_text = self.semantic_response_eng.generate_response(
+            reasoning=reasoning,
             action_result=action_result,
             emotion=self.emotion_eng.get_emotion_summary()
         )
         
+        self.latest_semantic_response = {
+            "text": response_text,
+            "clean_tts_text": self.semantic_response_eng.clean_tts(response_text),
+            "timestamp": int(time.time() * 1000)
+        }
+        
         # Store response in memory
         self.memory_orch.add_interaction("assistant", response_text)
+        self.contextual_mem.add_interaction(role="assistant", text=response_text)
         
         # Publish response text
         self.client.publish("assistant/response", json.dumps({
             "timestamp": int(time.time() * 1000),
             "text": response_text,
             "is_voice": is_voice,
-            "action": action_result
+            "action": action_result,
+            "reasoning": reasoning,
+            "automation_hook": hook_status
         }))
         
         # 10. Finish -> IDLE state
@@ -193,8 +271,33 @@ class AssistantDaemon:
         logger.info("Resetting assistant registers...")
         self.context_eng.reset_context()
         self.memory_orch.clear_memory()
+        self.contextual_mem.clear_memory()
+        self.latest_semantic_intent = {
+            "category": "UNKNOWN",
+            "action": None,
+            "confidence": 0.0,
+            "parameters": {},
+            "is_fuzzy": False,
+            "is_followup": False
+        }
+        self.latest_reasoning = {
+            "should_execute": False,
+            "should_respond": False,
+            "resolved_action": None,
+            "parameters": {},
+            "webhook_trigger": None,
+            "followup_recommendation": None,
+            "reasoning_logs": ["Assistant registers reset."],
+            "grid_critical": False
+        }
+        self.latest_semantic_response = {
+            "text": "",
+            "clean_tts_text": "",
+            "timestamp": int(time.time() * 1000)
+        }
         self.state_mgr.transition_to("IDLE")
         self.publish_telemetry()
+
         
     def publish_telemetry(self):
         """
@@ -239,6 +342,32 @@ class AssistantDaemon:
             "status": "ONLINE",
             "uptime_sec": uptime
         }))
+        # 8. assistant/semantic_intent
+        self.client.publish("assistant/semantic_intent", json.dumps({
+            "timestamp": t_ms,
+            "semantic_intent": self.latest_semantic_intent
+        }))
+        # 9. assistant/contextual_memory
+        self.client.publish("assistant/contextual_memory", json.dumps({
+            "timestamp": t_ms,
+            "contextual_memory": self.contextual_mem.get_memory_summary()
+        }))
+        # 10. assistant/reasoning
+        self.client.publish("assistant/reasoning", json.dumps({
+            "timestamp": t_ms,
+            "reasoning": self.latest_reasoning
+        }))
+        # 11. assistant/automation_hooks
+        self.client.publish("assistant/automation_hooks", json.dumps({
+            "timestamp": t_ms,
+            "automation_hooks": self.automation_hook_mgr.get_automation_summary()
+        }))
+        # 12. assistant/semantic_response
+        self.client.publish("assistant/semantic_response", json.dumps({
+            "timestamp": t_ms,
+            "semantic_response": self.latest_semantic_response
+        }))
+
 
 if __name__ == "__main__":
     daemon = AssistantDaemon()

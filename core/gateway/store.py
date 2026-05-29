@@ -84,6 +84,12 @@ class MemoryStore:
         self.latest_assistant_memory: Optional[Dict[str, Any]] = None
         self.latest_assistant_response: Optional[Dict[str, Any]] = None
         self.latest_assistant_runtime: Optional[Dict[str, Any]] = None
+        self.latest_assistant_semantic_intent: Optional[Dict[str, Any]] = None
+        self.latest_assistant_contextual_memory: Optional[Dict[str, Any]] = None
+        self.latest_assistant_reasoning: Optional[Dict[str, Any]] = None
+        self.latest_assistant_automation_hooks: Optional[Dict[str, Any]] = None
+        self.latest_assistant_semantic_response: Optional[Dict[str, Any]] = None
+
         
         # Add initial system startup event
         self.add_event({
@@ -313,6 +319,22 @@ class MemoryStore:
     def update_assistant_runtime(self, payload: Dict[str, Any]):
         self.latest_assistant_runtime = payload
 
+    def update_assistant_semantic_intent(self, payload: Dict[str, Any]):
+        self.latest_assistant_semantic_intent = payload
+
+    def update_assistant_contextual_memory(self, payload: Dict[str, Any]):
+        self.latest_assistant_contextual_memory = payload
+
+    def update_assistant_reasoning(self, payload: Dict[str, Any]):
+        self.latest_assistant_reasoning = payload
+
+    def update_assistant_automation_hooks(self, payload: Dict[str, Any]):
+        self.latest_assistant_automation_hooks = payload
+
+    def update_assistant_semantic_response(self, payload: Dict[str, Any]):
+        self.latest_assistant_semantic_response = payload
+
+
 
     def add_event(self, event: Dict[str, Any]):
         self.events.append(event)
@@ -404,7 +426,13 @@ class MemoryStore:
             "assistant_context": self.latest_assistant_context,
             "assistant_memory": self.latest_assistant_memory,
             "assistant_response": self.latest_assistant_response,
-            "assistant_runtime": self.latest_assistant_runtime
+            "assistant_runtime": self.latest_assistant_runtime,
+            "assistant_semantic_intent": self.latest_assistant_semantic_intent,
+            "assistant_contextual_memory": self.latest_assistant_contextual_memory,
+            "assistant_reasoning": self.latest_assistant_reasoning,
+            "assistant_automation_hooks": self.latest_assistant_automation_hooks,
+            "assistant_semantic_response": self.latest_assistant_semantic_response
+
         }
 
     def clear_alerts(self):

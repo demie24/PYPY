@@ -1,8 +1,54 @@
+# Python
 __pycache__/
 *.pyc
-node_modules/
+*.pyo
+*.egg-info/
+.pytest_cache/
+*.egg
 dist/
+build/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node/Frontend
+node_modules/
 .vite/
 dashboard/dist/
 dashboard/node_modules/
+dashboard/.env.local
+
+# Machine Learning
 *.pt
+*.pth
+*.pkl
+*.h5
+*.model
+training_logs/
+scratch/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+.dockerignore

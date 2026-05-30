@@ -2,8 +2,8 @@ import time
 import random
 import logging
 from typing import Dict, Any
-from esp32_bridge import ESP32Bridge
-from hardware_state_manager import HardwareStateManager
+from core.hardware.esp32_bridge import ESP32Bridge
+from core.hardware.hardware_state_manager import HardwareStateManager
 
 logger = logging.getLogger("hardware.virtual_esp32")
 

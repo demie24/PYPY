@@ -43,6 +43,13 @@ from core.assistant.n8n_orchestration_bridge import N8nOrchestrationBridge
 from core.assistant.adaptive_routine_engine import AdaptiveRoutineEngine
 from core.assistant.autonomous_workflow_engine import AutonomousWorkflowEngine
 
+# Phase 9.5 engines imports
+from core.assistant.conversational_planning_engine import ConversationalPlanningEngine
+from core.assistant.task_chain_manager import TaskChainManager
+from core.assistant.live_conversation_stream import LiveConversationStream
+from core.assistant.adaptive_dialogue_engine import AdaptiveDialogueEngine
+from core.assistant.orchestration_planner_bridge import OrchestrationPlannerBridge
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("assistant.daemon")
 
@@ -82,6 +89,13 @@ class AssistantDaemon:
         self.n8n_bridge = N8nOrchestrationBridge()
         self.adaptive_routine = AdaptiveRoutineEngine()
         self.workflow_engine = AutonomousWorkflowEngine()
+        
+        # Phase 9.5 engines initialization
+        self.planning_engine = ConversationalPlanningEngine()
+        self.task_chain_mgr = TaskChainManager()
+        self.live_stream = LiveConversationStream()
+        self.dialogue_engine = AdaptiveDialogueEngine()
+        self.planner_bridge = OrchestrationPlannerBridge()
         
         # Hardware simulation state registers for proactive triggers
         self.hardware_sim_state = {
@@ -131,6 +145,13 @@ class AssistantDaemon:
         self.latest_n8n_bridge = self.n8n_bridge.get_status_summary()
         self.latest_routines = self.adaptive_routine.get_status_summary()
         
+        # New Phase 9.5 caches
+        self.latest_planning = self.planning_engine.get_status_summary()
+        self.latest_task_chains = self.task_chain_mgr.get_status_summary()
+        self.latest_live_stream = self.live_stream.get_status_summary()
+        self.latest_dialogue = self.dialogue_engine.get_status_summary()
+        self.latest_planner_bridge = self.planner_bridge.get_status_summary()
+        
         # Grid cache
         self.grid_state = {
             "telemetry": {},
@@ -166,6 +187,25 @@ class AssistantDaemon:
         if wf_to_trigger:
             self.workflow_engine.execute_workflow(wf_to_trigger, self.grid_state, self._execute_workflow_step)
         return {"status": "SUCCESS", "payload": payload}
+
+    def _execute_chain_step(self, chain_id: str, step: Dict[str, Any]) -> Dict[str, Any]:
+        logger.info(f"Daemon executing plan step: {step['objective']} on chain {chain_id}")
+        res = self.planner_bridge.execute_step(
+            chain_id=chain_id,
+            step=step,
+            grid_state=self.grid_state,
+            n8n_bridge=self.n8n_bridge,
+            workflow_engine=self.workflow_engine,
+            reminder_mgr=self.reminder_mgr,
+            mqtt_client=self.client
+        )
+        self.planning_engine.update_step_status(
+            plan_id=chain_id,
+            step_id=step.get("step_id", ""),
+            status=res.get("status", "SUCCESS"),
+            log_message=f"Step '{step['objective']}' execution result: {res.get('status')}"
+        )
+        return res
         
     def start(self):
         logger.info(f"Connecting to MQTT Broker {self.broker}:{self.port}...")
@@ -299,6 +339,10 @@ class AssistantDaemon:
                 
         self.n8n_bridge.tick()
         
+        # Phase 9.5 ticks
+        self.live_stream.tick()
+        self.task_chain_mgr.tick(self._execute_chain_step, self.grid_state)
+        
         # 5. Update voice orchestration summaries
         self.latest_voice_state = self.voice_orch_eng.get_status_summary()
         self.latest_wake_word = self.wake_word_mgr.get_status_summary()
@@ -313,6 +357,13 @@ class AssistantDaemon:
         self.latest_conditions = self.condition_monitor.get_status_summary()
         self.latest_n8n_bridge = self.n8n_bridge.get_status_summary()
         self.latest_routines = self.adaptive_routine.get_status_summary()
+        
+        # Update Phase 9.5 caches
+        self.latest_planning = self.planning_engine.get_status_summary()
+        self.latest_task_chains = self.task_chain_mgr.get_status_summary()
+        self.latest_live_stream = self.live_stream.get_status_summary()
+        self.latest_dialogue = self.dialogue_engine.get_status_summary()
+        self.latest_planner_bridge = self.planner_bridge.get_status_summary()
         
         self.publish_telemetry()
             
@@ -333,6 +384,13 @@ class AssistantDaemon:
             client.subscribe("assistant/condition_trigger")
             client.subscribe("assistant/n8n_bridge_trigger")
             client.subscribe("assistant/routine_trigger")
+            
+            # Subscribe to Phase 9.5 simulation topics
+            client.subscribe("assistant/plan_simulation")
+            client.subscribe("assistant/chain_simulation")
+            client.subscribe("assistant/stream_simulation")
+            client.subscribe("assistant/dialogue_simulation")
+            client.subscribe("assistant/orchestration_simulation")
         else:
             logger.error(f"MQTT Connection failed with code {rc}")
             
@@ -434,6 +492,67 @@ class AssistantDaemon:
                 
                 self.latest_routines = self.adaptive_routine.get_status_summary()
                 self.publish_telemetry()
+            elif topic == "assistant/plan_simulation":
+                action = payload.get("action")
+                if action == "create":
+                    self.planning_engine.create_plan(
+                        payload.get("query", ""),
+                        payload.get("intent", {})
+                    )
+                elif action == "update_step":
+                    self.planning_engine.update_step_status(
+                        payload.get("plan_id"),
+                        payload.get("step_id"),
+                        payload.get("status"),
+                        payload.get("log")
+                    )
+                self.latest_planning = self.planning_engine.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/chain_simulation":
+                action = payload.get("action")
+                if action == "submit":
+                    plan = payload.get("plan")
+                    if not plan and self.planning_engine.active_plans:
+                        plan = list(self.planning_engine.active_plans.values())[-1]
+                    if plan:
+                        self.task_chain_mgr.submit_chain(plan)
+                elif action == "cancel":
+                    self.task_chain_mgr.cancel_chain(payload.get("chain_id"))
+                self.latest_task_chains = self.task_chain_mgr.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/stream_simulation":
+                action = payload.get("action")
+                if action == "start":
+                    self.live_stream.start_stream(payload.get("text", "Default streaming text"))
+                elif action == "interrupt":
+                    self.live_stream.interrupt()
+                self.latest_live_stream = self.live_stream.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/dialogue_simulation":
+                action = payload.get("action")
+                if action == "check":
+                    self.dialogue_engine.check_ambiguity(
+                        payload.get("phrase", ""),
+                        payload.get("intent", {})
+                    )
+                elif action == "resolve":
+                    self.dialogue_engine.resolve_clarification(payload.get("answer", ""))
+                elif action == "clear":
+                    self.dialogue_engine.clear_dialogue()
+                self.latest_dialogue = self.dialogue_engine.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/orchestration_simulation":
+                action = payload.get("action")
+                if action == "set_safety":
+                    self.planner_bridge.confidence_threshold = float(payload.get("confidence_threshold", 0.50))
+                    self.planner_bridge.min_stability = float(payload.get("min_stability", 30.0))
+                elif action == "evaluate":
+                    self.planner_bridge.evaluate_confidence_and_safety(
+                        payload.get("step", {}),
+                        self.grid_state
+                    )
+                self.latest_planner_bridge = self.planner_bridge.get_status_summary()
+                self.publish_telemetry()
             elif topic in ["assistant/chat_input", "assistant/voice_input"]:
                 # Process user request
                 is_voice = (topic == "assistant/voice_input")
@@ -469,6 +588,12 @@ class AssistantDaemon:
             return
             
         logger.info(f"Processing input (Voice={is_voice}): '{text}'")
+        
+        # Check streaming interruption (Interruption-Aware Streaming rule)
+        if self.live_stream.is_streaming:
+            self.live_stream.interrupt()
+            self.latest_live_stream = self.live_stream.get_status_summary()
+            logger.info("Live stream interrupted by new user request.")
         
         # 1. Voice specific routing locks
         if is_voice:
@@ -508,16 +633,37 @@ class AssistantDaemon:
             self.voice_orch_eng.transition_to("THINKING")
         self.publish_telemetry()
         
-        # 4. Intent detection (Fuzzy set Jaccard matching + fallback references)
-        intent = self.intent_eng.detect_intent(text)
-        semantic_intent = self.semantic_intent_eng.detect_intent(
-            text, 
-            previous_action=self.contextual_mem.active_subject
-        )
-        self.latest_semantic_intent = semantic_intent
-        
+        # 4. Intent detection & Dialogue Clarification Check
+        semantic_intent = None
+        if self.dialogue_engine.state == "AWAITING_CLARIFICATION":
+            res = self.dialogue_engine.resolve_clarification(text)
+            if res["status"] == "SUCCESS":
+                semantic_intent = res["resolved_intent"]
+                # Override text and logs
+                text = res["original_phrase"]
+                logger.info(f"Resolved dialogue clarification: {semantic_intent}")
+            else:
+                response_text = self.dialogue_engine.clarification_question
+                self._respond(response_text, is_voice)
+                return
+        else:
+            intent = self.intent_eng.detect_intent(text)
+            semantic_intent = self.semantic_intent_eng.detect_intent(
+                text, 
+                previous_action=self.contextual_mem.active_subject
+            )
+            self.latest_semantic_intent = semantic_intent
+            
+            # Check ambiguity
+            self.dialogue_engine.check_ambiguity(text, semantic_intent)
+            self.latest_dialogue = self.dialogue_engine.get_status_summary()
+            if self.dialogue_engine.state == "AWAITING_CLARIFICATION":
+                response_text = self.dialogue_engine.clarification_question
+                self._respond(response_text, is_voice)
+                return
+
         # 5. Context update
-        self.context_eng.update_context(intent, self.state_mgr.state)
+        self.context_eng.update_context(semantic_intent, self.state_mgr.state)
         
         # 6. Emotion mapping
         user_mood = self.emotion_eng.detect_user_emotion(text)
@@ -534,7 +680,44 @@ class AssistantDaemon:
             entities=semantic_intent.get("parameters")
         )
         
-        # 8. Reasoning & Decision Routing
+        # 8. Conversational planning check (Multi-Step task sequencing)
+        plan = self.planning_engine.create_plan(text, semantic_intent)
+        self.latest_planning = self.planning_engine.get_status_summary()
+        if len(plan["steps"]) > 1:
+            chain_res = self.task_chain_mgr.submit_chain(plan)
+            self.latest_task_chains = self.task_chain_mgr.get_status_summary()
+            if chain_res["status"] == "SUBMITTED":
+                response_text = f"Saya telah menjadualkan pelan tindakan multi-step untuk: {plan['original_query']}. Langkah pertama: {plan['steps'][0]['description']}."
+                self._respond(
+                    response_text,
+                    is_voice,
+                    action_result=chain_res,
+                    reasoning={
+                        "should_execute": True,
+                        "should_respond": True,
+                        "resolved_action": "submit_chain",
+                        "reasoning_logs": plan["reasoning_logs"],
+                        "grid_critical": False
+                    }
+                )
+                return
+            elif chain_res["status"] == "REJECTED":
+                response_text = f"Tindakan disekat: {chain_res['reason']}"
+                self._respond(
+                    response_text,
+                    is_voice,
+                    action_result=chain_res,
+                    reasoning={
+                        "should_execute": False,
+                        "should_respond": True,
+                        "resolved_action": "submit_chain_rejected",
+                        "reasoning_logs": plan["reasoning_logs"],
+                        "grid_critical": False
+                    }
+                )
+                return
+
+        # 9. Reasoning & Decision Routing (Standard Single Step)
         reasoning = self.reasoning_eng.reason(
             intent=semantic_intent,
             context=self.context_eng.get_context_summary(),
@@ -543,7 +726,7 @@ class AssistantDaemon:
         )
         self.latest_reasoning = reasoning
         
-        # 9. Execution path
+        # 10. Execution path
         action_result = {}
         hook_status = {}
         
@@ -578,59 +761,14 @@ class AssistantDaemon:
                 )
             time.sleep(0.05)
             
-        # 10. Response formulation
-        self.state_mgr.transition_to("RESPONDING")
-        if is_voice:
-            self.voice_orch_eng.transition_to("SPEAKING")
-        self.publish_telemetry()
-        
-        # Calculate presence delay simulation
-        pacing_delay = self.presence_eng.calculate_pacing_delay(
-            emotion_mood=self.emotion_eng.get_emotion_summary().get("assistant_mood", "calm"),
-            grid_critical=grid_critical
-        )
-        if pacing_delay > 0.0:
-            time.sleep(pacing_delay)
-        
-        # Generate semantic, context-aware Malay response
+        # 11. Response formulation
         response_text = self.semantic_response_eng.generate_response(
             reasoning=reasoning,
             action_result=action_result,
             emotion=self.emotion_eng.get_emotion_summary()
         )
         
-        self.latest_semantic_response = {
-            "text": response_text,
-            "clean_tts_text": self.semantic_response_eng.clean_tts(response_text),
-            "timestamp": int(time.time() * 1000)
-        }
-        
-        # Store response in memory
-        self.memory_orch.add_interaction("assistant", response_text)
-        self.contextual_mem.add_interaction(role="assistant", text=response_text)
-        if is_voice:
-            self.voice_session_mem.add_interaction(
-                self.voice_orch_eng.active_session_id, 
-                "assistant", 
-                response_text
-            )
-            self.latest_voice_memory = self.voice_session_mem.get_session_summary(self.voice_orch_eng.active_session_id)
-        
-        # Publish response text
-        self.client.publish("assistant/response", json.dumps({
-            "timestamp": int(time.time() * 1000),
-            "text": response_text,
-            "is_voice": is_voice,
-            "action": action_result,
-            "reasoning": reasoning,
-            "automation_hook": hook_status
-        }))
-        
-        # 11. Finish -> IDLE state
-        self.state_mgr.transition_to("IDLE")
-        if is_voice:
-            self.voice_orch_eng.transition_to("LISTENING") # Returns to listening until attention expires
-        self.publish_telemetry()
+        self._respond(response_text, is_voice, action_result=action_result, reasoning=reasoning, hook_status=hook_status)
         
     def reset_assistant(self):
         """
@@ -695,10 +833,80 @@ class AssistantDaemon:
         self.latest_conditions = self.condition_monitor.get_status_summary()
         self.latest_n8n_bridge = self.n8n_bridge.get_status_summary()
         self.latest_routines = self.adaptive_routine.get_status_summary()
+
+        # Reset Phase 9.5 engines and states
+        self.planning_engine.active_plans.clear()
+        self.planning_engine.plan_history.clear()
+        self.task_chain_mgr.active_chains.clear()
+        self.task_chain_mgr.completed_chains.clear()
+        self.live_stream.is_streaming = False
+        self.live_stream.status = "IDLE"
+        self.live_stream.output_buffer = ""
+        self.dialogue_engine.clear_dialogue()
+        self.planner_bridge.validation_logs.clear()
+        
+        self.latest_planning = self.planning_engine.get_status_summary()
+        self.latest_task_chains = self.task_chain_mgr.get_status_summary()
+        self.latest_live_stream = self.live_stream.get_status_summary()
+        self.latest_dialogue = self.dialogue_engine.get_status_summary()
+        self.latest_planner_bridge = self.planner_bridge.get_status_summary()
         
         self.state_mgr.transition_to("IDLE")
         self.publish_telemetry()
         
+    def _respond(self, response_text: str, is_voice: bool, action_result: Dict[str, Any] = {}, reasoning: Dict[str, Any] = {}, hook_status: Dict[str, Any] = {}):
+        # Calculate presence delay simulation
+        threat_score = self.grid_state["threat"].get("threat_score", 0.0)
+        grid_critical = (threat_score > 70.0)
+        pacing_delay = self.presence_eng.calculate_pacing_delay(
+            emotion_mood=self.emotion_eng.get_emotion_summary().get("assistant_mood", "calm"),
+            grid_critical=grid_critical
+        )
+        if pacing_delay > 0.0:
+            time.sleep(pacing_delay)
+            
+        self.state_mgr.transition_to("RESPONDING")
+        if is_voice:
+            self.voice_orch_eng.transition_to("SPEAKING")
+        self.publish_telemetry()
+        
+        self.latest_semantic_response = {
+            "text": response_text,
+            "clean_tts_text": self.semantic_response_eng.clean_tts(response_text),
+            "timestamp": int(time.time() * 1000)
+        }
+        
+        # Store response in memory
+        self.memory_orch.add_interaction("assistant", response_text)
+        self.contextual_mem.add_interaction(role="assistant", text=response_text)
+        if is_voice:
+            self.voice_session_mem.add_interaction(
+                self.voice_orch_eng.active_session_id, 
+                "assistant", 
+                response_text
+            )
+            self.latest_voice_memory = self.voice_session_mem.get_session_summary(self.voice_orch_eng.active_session_id)
+        
+        # Publish response text
+        self.client.publish("assistant/response", json.dumps({
+            "timestamp": int(time.time() * 1000),
+            "text": response_text,
+            "is_voice": is_voice,
+            "action": action_result,
+            "reasoning": reasoning,
+            "automation_hook": hook_status
+        }))
+        
+        # Start streaming response chunks
+        self.live_stream.start_stream(response_text)
+        self.latest_live_stream = self.live_stream.get_status_summary()
+        
+        # Transition back to IDLE
+        self.state_mgr.transition_to("IDLE")
+        if is_voice:
+            self.voice_orch_eng.transition_to("LISTENING")
+        self.publish_telemetry()
+
     def publish_telemetry(self):
         """
         Publishes separate topics for state, intent, emotion, actions, context, memory, voice.
@@ -817,6 +1025,17 @@ class AssistantDaemon:
             "timestamp": t_ms,
             "routines": self.latest_routines
         }))
+        
+        # 23. assistant/conversation_planning [NEW]
+        self.client.publish("assistant/conversation_planning", json.dumps(self.latest_planning))
+        # 24. assistant/task_chains [NEW]
+        self.client.publish("assistant/task_chains", json.dumps(self.latest_task_chains))
+        # 25. assistant/live_stream [NEW]
+        self.client.publish("assistant/live_stream", json.dumps(self.latest_live_stream))
+        # 26. assistant/dialogue [NEW]
+        self.client.publish("assistant/dialogue", json.dumps(self.latest_dialogue))
+        # 27. assistant/orchestration_planner [NEW]
+        self.client.publish("assistant/orchestration_planner", json.dumps(self.latest_planner_bridge))
 
 if __name__ == "__main__":
     daemon = AssistantDaemon()

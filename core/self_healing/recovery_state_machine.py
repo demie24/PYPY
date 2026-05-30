@@ -9,10 +9,10 @@ from typing import Dict, List, Any
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CURRENT_DIR)
 
-from topology_recovery_engine import TopologyRecoveryEngine
-from restoration_planner import RestorationPlanner
-from restoration_validator import RestorationValidator
-from rollback_guard import RollbackGuard
+from core.self_healing.topology_recovery_engine import TopologyRecoveryEngine
+from core.self_healing.restoration_planner import RestorationPlanner
+from core.self_healing.restoration_validator import RestorationValidator
+from core.self_healing.rollback_guard import RollbackGuard
 
 logger = logging.getLogger("self_healing.recovery_state_machine")
 

@@ -13,13 +13,13 @@ class PredictionAgent:
         self.confidence = 1.0
 
         if predictive_engine is None:
-            from predictive_stability_engine import PredictiveStabilityEngine
+            from core.self_healing.predictive_stability_engine import PredictiveStabilityEngine
             self.predictive_engine = PredictiveStabilityEngine()
         else:
             self.predictive_engine = predictive_engine
 
         if forecast_engine is None:
-            from survival_forecasting_engine import SurvivalForecastingEngine
+            from core.self_healing.survival_forecasting_engine import SurvivalForecastingEngine
             self.forecast_engine = SurvivalForecastingEngine()
         else:
             self.forecast_engine = forecast_engine

@@ -2,11 +2,11 @@ import time
 import logging
 import math
 from typing import Dict, Any, List, Optional
-from hardware_state_manager import HardwareStateManager
-from virtual_esp32 import VirtualESP32
-from virtual_plc import VirtualPLC
-from virtual_sensor_faults import VirtualSensorFaults
-from virtual_relay_faults import VirtualRelayFaults
+from core.hardware.hardware_state_manager import HardwareStateManager
+from core.hardware.virtual_esp32 import VirtualESP32
+from core.hardware.virtual_plc import VirtualPLC
+from core.hardware.virtual_sensor_faults import VirtualSensorFaults
+from core.hardware.virtual_relay_faults import VirtualRelayFaults
 
 logger = logging.getLogger("hardware.fault_orchestrator")
 

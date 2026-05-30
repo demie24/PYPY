@@ -52,7 +52,7 @@ except ImportError:
             line_flows = {line["id"]: {"P_flow": 0.1, "Q_flow": 0.02, "current": 0.1} for line in self.topo.lines}
             return V, theta, P, Q, line_flows
 
-from safety_constraints import SafetyConstraintEngine
+from core.self_healing.safety_constraints import SafetyConstraintEngine
 
 logger = logging.getLogger("self_healing.restoration_sandbox")
 

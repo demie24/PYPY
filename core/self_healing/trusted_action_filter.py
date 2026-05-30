@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, Any, Tuple, List
-from safety_constraints import SafetyConstraintEngine
+from core.self_healing.safety_constraints import SafetyConstraintEngine
 
 logger = logging.getLogger("self_healing.trusted_action_filter")
 

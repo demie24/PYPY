@@ -2,9 +2,9 @@ import time
 import random
 import logging
 from typing import Dict, Any, List, Optional
-from plc_interface import PLCInterface
-from hardware_state_manager import HardwareStateManager
-from relay_controller import RelayController
+from core.hardware.plc_interface import PLCInterface
+from core.hardware.hardware_state_manager import HardwareStateManager
+from core.hardware.relay_controller import RelayController
 
 logger = logging.getLogger("hardware.virtual_plc")
 

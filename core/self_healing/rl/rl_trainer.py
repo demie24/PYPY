@@ -15,10 +15,10 @@ sys.path.append(CURRENT_DIR)
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..")))
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", "digital_twin")))
 
-from ppo_agent import PPOAgent
-from dqn_agent import DQNAgent
-from replay_buffer import ReplayBuffer, PPOMemory
-from rl_environment import GridRLEnvironment
+from core.self_healing.rl.ppo_agent import PPOAgent
+from core.self_healing.rl.dqn_agent import DQNAgent
+from core.self_healing.rl.replay_buffer import ReplayBuffer, PPOMemory
+from core.self_healing.rl_environment import GridRLEnvironment
 
 # Set up project root and directories
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", ".."))

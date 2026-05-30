@@ -14,22 +14,22 @@ sys.path.append(CURRENT_DIR)
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "digital_twin")))
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "rl")))
 
-import rl_metrics
+import core.self_healing.rl.rl_metrics as rl_metrics
 
-from state_encoder import StateEncoder
-from action_registry import ActionRegistry
-from safety_constraints import SafetyConstraintEngine
-from trusted_action_filter import TrustedActionFilter
-from reward_engine import RewardEngine
-from restoration_policy_engine import RestorationPolicyEngine
-from operator_override import OperatorOverrideEngine
+from core.self_healing.state_encoder import StateEncoder
+from core.self_healing.action_registry import ActionRegistry
+from core.self_healing.safety_constraints import SafetyConstraintEngine
+from core.self_healing.trusted_action_filter import TrustedActionFilter
+from core.self_healing.reward_engine import RewardEngine
+from core.self_healing.restoration_policy_engine import RestorationPolicyEngine
+from core.self_healing.operator_override import OperatorOverrideEngine
 
 # Import new Pre-RL foundation engines
-from restoration_sandbox import RestorationSandbox
-from action_rollback import ActionRollbackManager
-from state_vector_debugger import StateVectorDebugger
-from action_explainer import ActionExplainer
-from restoration_timeline import RestorationTimeline
+from core.self_healing.restoration_sandbox import RestorationSandbox
+from core.self_healing.action_rollback import ActionRollbackManager
+from core.self_healing.state_vector_debugger import StateVectorDebugger
+from core.self_healing.action_explainer import ActionExplainer
+from core.self_healing.restoration_timeline import RestorationTimeline
 
 # Dynamic imports from digital twin if available
 try:
@@ -154,7 +154,7 @@ class GridRLEnvironment(EnvClass):
             
         self.ppo_agent = None
         try:
-            from ppo_agent import PPOAgent
+            from core.self_healing.rl.ppo_agent import PPOAgent
             self.ppo_agent = PPOAgent(state_dim=72, action_dim=10)
             models_dir = os.path.abspath(os.path.join(CURRENT_DIR, "models"))
             checkpoint_path = os.path.join(models_dir, "ppo_self_healing.pt")

@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Set, Tuple
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CURRENT_DIR)
 
-from topology_recovery_engine import TopologyRecoveryEngine
+from core.self_healing.topology_recovery_engine import TopologyRecoveryEngine
 
 logger = logging.getLogger("self_healing.cascading_containment_engine")
 

@@ -2,7 +2,7 @@ import time
 import random
 import logging
 from typing import Dict, Any
-from hardware_state_manager import HardwareStateManager
+from core.hardware.hardware_state_manager import HardwareStateManager
 
 logger = logging.getLogger("hardware.sensor_interface")
 

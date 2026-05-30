@@ -2,11 +2,11 @@ import time
 import logging
 from typing import Dict, Any, List, Tuple, Optional
 
-from deployment_profiles import DeploymentProfiles
-from edge_reliability_monitor import EdgeReliabilityMonitor
-from safe_relay_guard import SafeRelayGuard
-from edge_device_manager import EdgeDeviceManager
-from hardware_command_router import HardwareCommandRouter
+from core.hardware.deployment_profiles import DeploymentProfiles
+from core.hardware.edge_reliability_monitor import EdgeReliabilityMonitor
+from core.hardware.safe_relay_guard import SafeRelayGuard
+from core.hardware.edge_device_manager import EdgeDeviceManager
+from core.hardware.hardware_command_router import HardwareCommandRouter
 
 logger = logging.getLogger("hardware.execution_gateway")
 

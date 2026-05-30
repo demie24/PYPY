@@ -3,8 +3,8 @@ import random
 import logging
 import math
 from typing import Dict, Any, Optional
-from sensor_interface import SensorInterface
-from hardware_state_manager import HardwareStateManager
+from core.hardware.sensor_interface import SensorInterface
+from core.hardware.hardware_state_manager import HardwareStateManager
 
 logger = logging.getLogger("hardware.virtual_sensor_faults")
 

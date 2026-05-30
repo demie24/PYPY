@@ -7,8 +7,8 @@ from typing import Dict, List, Any, Tuple
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CURRENT_DIR)
 
-from topology_recovery_engine import TopologyRecoveryEngine
-from restoration_validator import RestorationValidator
+from core.self_healing.topology_recovery_engine import TopologyRecoveryEngine
+from core.self_healing.restoration_validator import RestorationValidator
 
 logger = logging.getLogger("self_healing.restoration_planner")
 

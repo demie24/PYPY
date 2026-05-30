@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict, Any, List
-from action_registry import ActionRegistry
+from core.self_healing.action_registry import ActionRegistry
 
 class ActionExplainer:
     """

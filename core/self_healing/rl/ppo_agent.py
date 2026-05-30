@@ -7,8 +7,8 @@ import numpy as np
 import logging
 from typing import Dict, Any, Tuple
 
-from policy_network import PolicyNetwork
-from value_network import ValueNetwork
+from core.self_healing.rl.policy_network import PolicyNetwork
+from core.self_healing.rl.value_network import ValueNetwork
 
 logger = logging.getLogger("self_healing.rl.ppo_agent")
 

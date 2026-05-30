@@ -3,12 +3,12 @@ import uuid
 import logging
 from typing import Dict, Any, List, Tuple, Optional
 
-from hardware_state_manager import HardwareStateManager
-from hardware_command_router import HardwareCommandRouter
-from hardware_synchronization_engine import HardwareSynchronizationEngine
-from distributed_command_bus import DistributedCommandBus
-from edge_device_manager import EdgeDeviceManager
-from relay_execution_planner import RelayExecutionPlanner
+from core.hardware.hardware_state_manager import HardwareStateManager
+from core.hardware.hardware_command_router import HardwareCommandRouter
+from core.hardware.hardware_synchronization_engine import HardwareSynchronizationEngine
+from core.hardware.distributed_command_bus import DistributedCommandBus
+from core.hardware.edge_device_manager import EdgeDeviceManager
+from core.hardware.relay_execution_planner import RelayExecutionPlanner
 
 logger = logging.getLogger("hardware.orchestrator")
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Send, Mic, Bot, Sparkles, User, Cpu, Smile, Volume2, RotateCcw,
   MessageSquare, Compass, GitBranch, Bell, CheckCircle2, XCircle, RefreshCw,
-  Terminal, Sliders, Activity, Zap, Clock, WifiOff
+  Terminal, Sliders, Activity, Clock, AlertTriangle, Shield
 } from "lucide-react";
 
 interface Interaction {
@@ -98,6 +98,45 @@ interface SemanticResponse {
   timestamp: number;
 }
 
+interface ConversationalPlanning {
+  active_plans_count: number;
+  active_plans: any[];
+  history_count: number;
+  plan_history: any[];
+}
+
+interface TaskChains {
+  active_chains_count: number;
+  active_chains: any[];
+  completed_chains_count: number;
+  completed_chains: any[];
+}
+
+interface LiveStream {
+  is_streaming: boolean;
+  status: string;
+  full_response_text: string;
+  output_buffer: string;
+  progress_pct: number;
+  elapsed_sec: number;
+  interrupted_at_text: string;
+  interruption_apology: string;
+}
+
+interface Dialogue {
+  dialogue_state: string;
+  parameter_needed: string;
+  clarification_question: string;
+  has_pending_phrase: boolean;
+}
+
+interface OrchestrationPlanner {
+  last_execution_status: string;
+  last_confidence_score: number;
+  validation_logs_count: number;
+  validation_logs: string[];
+}
+
 interface AssistantCognitionPanelProps {
   assistantState: AssistantState | null;
   assistantIntent: AssistantIntent | null;
@@ -126,6 +165,12 @@ interface AssistantCognitionPanelProps {
   assistantConditions?: any | null;
   assistantN8nBridge?: any | null;
   assistantRoutines?: any | null;
+  // Phase 9.5 props
+  assistantConversationPlanning?: ConversationalPlanning | null;
+  assistantTaskChains?: TaskChains | null;
+  assistantLiveStream?: LiveStream | null;
+  assistantDialogue?: Dialogue | null;
+  assistantOrchestrationPlanner?: OrchestrationPlanner | null;
 }
 
 export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = ({
@@ -137,25 +182,27 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
   assistantSemanticIntent,
   assistantContextualMemory,
   assistantReasoning,
-  assistantAutomationHooks,
   assistantSemanticResponse,
   connected,
   onSendControl,
   assistantVoiceState,
   assistantWakeWord,
-  assistantProactive,
   assistantVoiceMemory,
   assistantPresence,
   assistantWorkflows,
-  assistantReminders,
-  assistantConditions,
   assistantN8nBridge,
-  assistantRoutines
+  assistantRoutines,
+  assistantConversationPlanning,
+  assistantTaskChains,
+  assistantLiveStream,
+  assistantDialogue,
+  assistantOrchestrationPlanner
 }) => {
   const [chatText, setChatText] = useState("");
+  const [clarifyAnswerText, setClarifyAnswerText] = useState("");
   const [isListeningVoice, setIsListeningVoice] = useState(false);
   const [voiceSimProgress, setVoiceSimProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState<"reasoning" | "workflows" | "reminders" | "presence">("reasoning");
+  const [activeTab, setActiveTab] = useState<"reasoning" | "planning" | "dialogue" | "workflows" | "presence">("reasoning");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Extract variables with defaults
@@ -191,11 +238,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     reasoning_logs: ["Reasoning engine stand-by."],
     grid_critical: false
   };
-  const automationHooks = assistantAutomationHooks?.automation_hooks ?? {
-    trigger_count: 0,
-    latest_hook_status: {},
-    supported_hooks: []
-  };
+  // Removed unused automationHooks
   const semanticResponse = assistantSemanticResponse?.semantic_response ?? {
     text: "",
     clean_tts_text: "",
@@ -217,17 +260,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     last_wake_word: null,
     last_confidence: 0.0
   };
-  const proactive = assistantProactive?.proactive ?? {
-    total_notifications_sent: 0,
-    cooldown_timers: {
-      broker_disconnect: 0.0,
-      relay_unstable: 0.0,
-      sync_recovered: 0.0,
-      latency_spike: 0.0
-    },
-    latest_notification: null,
-    history: []
-  };
+  // Removed unused proactive
   const voiceMemory = assistantVoiceMemory?.voice_memory ?? {
     active_session_id: null,
     session_messages: [],
@@ -253,18 +286,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     call_stack: [],
     total_executions: 0
   };
-  const reminders = assistantReminders?.reminders ?? {
-    active_reminders: [],
-    active_count: 0,
-    triggered_history: [],
-    total_triggered: 0
-  };
-  const conditions = assistantConditions?.conditions ?? {
-    registered_watches: [],
-    watches_count: 0,
-    trigger_history: [],
-    total_triggers: 0
-  };
+  // Removed unused reminders and conditions
   const n8nBridge = assistantN8nBridge?.n8n_bridge ?? {
     executions: [],
     active_retries_count: 0,
@@ -276,6 +298,44 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     routines_count: 0,
     interaction_history: [],
     command_frequencies: {}
+  };
+
+  const latestWf = workflows.executions.length > 0 ? workflows.executions[workflows.executions.length - 1] : null;
+
+  // Phase 9.5 Parameters:
+  const planning = assistantConversationPlanning ?? {
+    active_plans_count: 0,
+    active_plans: [],
+    history_count: 0,
+    plan_history: []
+  };
+  const taskChains = assistantTaskChains ?? {
+    active_chains_count: 0,
+    active_chains: [],
+    completed_chains_count: 0,
+    completed_chains: []
+  };
+  const liveStream = assistantLiveStream ?? {
+    is_streaming: false,
+    status: "IDLE",
+    full_response_text: "",
+    output_buffer: "",
+    progress_pct: 0.0,
+    elapsed_sec: 0.0,
+    interrupted_at_text: "",
+    interruption_apology: ""
+  };
+  const dialogue = assistantDialogue ?? {
+    dialogue_state: "IDLE",
+    parameter_needed: "",
+    clarification_question: "",
+    has_pending_phrase: false
+  };
+  const plannerBridge = assistantOrchestrationPlanner ?? {
+    last_execution_status: "IDLE",
+    last_confidence_score: 1.0,
+    validation_logs_count: 0,
+    validation_logs: []
   };
 
   // SVG Breathing core coordinate calculation
@@ -385,62 +445,142 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     }
   };
 
-  // 6 Simulation Controls triggers
-  const triggerScheduleReminder = () => {
+  // Phase 9.5 Simulation Controls triggers
+  const triggerAmbiguityClarification = () => {
     onSendControl({
-      topic: "assistant/reminder_trigger",
-      payload: { action: "schedule", text: "Check system status", delay_sec: 5.0 }
-    });
-  };
-
-  const triggerStatusCheckWorkflow = () => {
-    onSendControl({
-      topic: "assistant/workflow_trigger",
-      payload: { action: "execute", workflow_name: "system_status_check" }
-    });
-  };
-
-  const triggerWebhookFailureSim = () => {
-    onSendControl({
-      topic: "assistant/n8n_bridge_trigger",
+      topic: "assistant/dialogue_simulation",
       payload: {
-        action: "dispatch",
-        webhook_name: "alert_webhook",
-        force_failure: true,
-        simulate_network_failure: true,
-        payload: { status: "critical_warning", source: "HMI" }
+        action: "check",
+        phrase: "check latency",
+        intent: { category: "CHECK_LATENCY", action: "measure", parameters: {} }
       }
     });
   };
 
-  const triggerCooldownConflictSim = () => {
-    // Schedule a reminder with the exact same text within 10s cooldown
+  const triggerStreamingInterruption = () => {
     onSendControl({
-      topic: "assistant/reminder_trigger",
-      payload: { action: "schedule", text: "Check system status", delay_sec: 5.0 }
+      topic: "assistant/stream_simulation",
+      payload: {
+        action: "start",
+        text: "Sila bersedia, saya sedang memulakan proses pengasingan talian grid yang mengalami gangguan transient frekuensi tinggi..."
+      }
     });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/stream_simulation",
+        payload: { action: "interrupt" }
+      });
+    }, 800);
   };
 
-  const triggerRecursiveLoopSim = () => {
+  const triggerChainedTaskPlan = () => {
     onSendControl({
-      topic: "assistant/workflow_trigger",
-      payload: { action: "execute", workflow_name: "recursive_loop_test" }
+      topic: "assistant/plan_simulation",
+      payload: {
+        action: "create",
+        query: "check latency lepas tu kalau tinggi trigger recovery workflow",
+        intent: { category: "CHECK_LATENCY", action: "measure" }
+      }
     });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/chain_simulation",
+        payload: { action: "submit" }
+      });
+    }, 200);
   };
 
-  const triggerTelemetryTriggeredWorkflowSim = () => {
-    onSendControl({
-      topic: "assistant/proactive_trigger",
-      payload: { latency_ms: 620.0, latency_spike: true }
-    });
+  const triggerDependencyFailure = () => {
+    const activeChain = taskChains.active_chains[taskChains.active_chains.length - 1];
+    if (activeChain) {
+      onSendControl({
+        topic: "assistant/plan_simulation",
+        payload: {
+          action: "update_step",
+          plan_id: activeChain.chain_id,
+          step_id: activeChain.steps[0].step_id,
+          status: "FAILED",
+          log: "Langkah pertama dipaksa gagal untuk simulasi dep."
+        }
+      });
+    } else {
+      // Step 1: Submit plan and chain
+      onSendControl({
+        topic: "assistant/plan_simulation",
+        payload: {
+          action: "create",
+          query: "check latency lepas tu kalau tinggi trigger recovery workflow",
+          intent: { category: "CHECK_LATENCY", action: "measure" }
+        }
+      });
+      setTimeout(() => {
+        onSendControl({
+          topic: "assistant/chain_simulation",
+          payload: { action: "submit" }
+        });
+      }, 200);
+    }
   };
 
-  const handleCancelReminder = (reminderId: string) => {
+  const triggerConfidenceGateBlock = () => {
     onSendControl({
-      topic: "assistant/reminder_trigger",
-      payload: { action: "cancel", reminder_id: reminderId }
+      topic: "assistant/orchestration_simulation",
+      payload: {
+        action: "set_safety",
+        confidence_threshold: 0.95,
+        min_stability: 30.0
+      }
     });
+    // Create critical step
+    onSendControl({
+      topic: "assistant/plan_simulation",
+      payload: {
+        action: "create",
+        query: "trigger emergency load shed",
+        intent: { category: "TRIGGER_WORKFLOW", action: "execute", parameters: { workflow_name: "emergency_load_shed" } }
+      }
+    });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/chain_simulation",
+        payload: { action: "submit" }
+      });
+    }, 200);
   };
+
+  const triggerRunawayChain = () => {
+    // Submit same request twice for recursive loop detection
+    onSendControl({
+      topic: "assistant/plan_simulation",
+      payload: {
+        action: "create",
+        query: "check latency please",
+        intent: { category: "CHECK_LATENCY", action: "measure" }
+      }
+    });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/chain_simulation",
+        payload: { action: "submit" }
+      });
+      setTimeout(() => {
+        onSendControl({
+          topic: "assistant/chain_simulation",
+          payload: { action: "submit" }
+        });
+      }, 100);
+    }, 200);
+  };
+
+  const handleResolveDialogue = (answer: string) => {
+    onSendControl({
+      topic: "assistant/dialogue_simulation",
+      payload: { action: "resolve", answer }
+    });
+    setClarifyAnswerText("");
+  };
+
+  // Removed unused handleCancelReminder
 
   const handleAcceptRoutine = (routineType: string) => {
     onSendControl({
@@ -493,8 +633,10 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     return 0.50;
   };
 
-  // Extract latest workflow run
-  const latestWf = workflows.executions.length > 0 ? workflows.executions[workflows.executions.length - 1] : null;
+  // Derived timeline elements
+  const activePlan = planning.active_plans.length > 0 ? planning.active_plans[planning.active_plans.length - 1] : null;
+  const activeChain = taskChains.active_chains.length > 0 ? taskChains.active_chains[taskChains.active_chains.length - 1] : null;
+  const displayPlan = activeChain ?? activePlan;
 
   return (
     <div className="bg-scada-panel border border-scada-border rounded-lg p-3 h-[420px] flex flex-col overflow-hidden relative font-mono text-[9px] text-white">
@@ -554,7 +696,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
       {/* Main content split */}
       <div className="flex-1 flex gap-3 overflow-hidden z-10 min-h-0">
         {/* Left Side: Chat Console */}
-        <div className="w-[50%] flex flex-col overflow-hidden bg-scada-bg/50 border border-scada-border/30 rounded p-2">
+        <div className="w-[45%] flex flex-col overflow-hidden bg-scada-bg/50 border border-scada-border/30 rounded p-2">
           <div className="flex justify-between items-center mb-1 border-b border-scada-border/20 pb-1.5 shrink-0 text-[8px] text-scada-dimText uppercase tracking-wider font-semibold">
             <span className="flex items-center gap-1">
               <Compass size={9} className="text-cyan-400" /> Topic: <span className="text-cyan-300 font-bold">{contextualMemory.active_subject ?? context.current_topic ?? "NONE"}</span>
@@ -588,7 +730,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
 
                 return (
                   <div key={idx} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[85%] rounded p-2 border flex gap-1.5 leading-relaxed ${
+                    <div className={`max-w-[90%] rounded p-2 border flex gap-1.5 leading-relaxed ${
                       isUser
                         ? "bg-cyan-950/40 border-cyan-500/20 text-cyan-100"
                         : "bg-scada-bg/85 border-scada-border/40 text-emerald-100"
@@ -635,13 +777,13 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
           )}
 
           <div className="grid grid-cols-2 gap-1 mb-1.5 shrink-0">
-            <button onClick={() => handleQuickCommand("keadaan grid ok ke?", true)}
+            <button onClick={() => handleQuickCommand("check latency", false)}
               className="bg-scada-bg hover:bg-scada-border/20 border border-scada-border/30 rounded p-1 text-left text-[7.5px] text-scada-dimText truncate flex items-center gap-1">
-              <Mic size={8} className="text-cyan-400" /> "Grid ok ke?"
+              <MessageSquare size={8} className="text-cyan-400" /> "Check Latency"
             </button>
-            <button onClick={() => handleQuickCommand("buka youtube jap", false)}
+            <button onClick={() => handleQuickCommand("check latency lepas tu kalau tinggi trigger recovery workflow", false)}
               className="bg-scada-bg hover:bg-scada-border/20 border border-scada-border/30 rounded p-1 text-left text-[7.5px] text-scada-dimText truncate flex items-center gap-1">
-              <MessageSquare size={8} className="text-purple-400" /> "Buka YouTube"
+              <Compass size={8} className="text-purple-400" /> "Run Chained Plan"
             </button>
           </div>
 
@@ -680,11 +822,11 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
         </div>
 
         {/* Right Side: Cognition Tabs */}
-        <div className="w-[50%] flex flex-col overflow-hidden">
+        <div className="w-[55%] flex flex-col overflow-hidden">
           <div className="flex border-b border-scada-border/30 mb-2 bg-scada-bg/30 rounded-t overflow-hidden shrink-0">
             <button
               onClick={() => setActiveTab("reasoning")}
-              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
                 activeTab === "reasoning" ? "border-purple-500 text-white bg-purple-500/10" : "border-transparent text-scada-dimText hover:text-white"
               }`}
             >
@@ -692,26 +834,35 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
               Reasoning
             </button>
             <button
-              onClick={() => setActiveTab("workflows")}
-              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
-                activeTab === "workflows" ? "border-blue-500 text-white bg-blue-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              onClick={() => setActiveTab("planning")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "planning" ? "border-cyan-500 text-white bg-cyan-500/10" : "border-transparent text-scada-dimText hover:text-white"
               }`}
             >
               <GitBranch size={9} />
-              Workflows
+              Planning & Chains
             </button>
             <button
-              onClick={() => setActiveTab("reminders")}
-              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
-                activeTab === "reminders" ? "border-amber-500 text-white bg-amber-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              onClick={() => setActiveTab("dialogue")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "dialogue" ? "border-yellow-500 text-white bg-yellow-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              }`}
+            >
+              <Volume2 size={9} />
+              Dialogue & Stream
+            </button>
+            <button
+              onClick={() => setActiveTab("workflows")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "workflows" ? "border-blue-500 text-white bg-blue-500/10" : "border-transparent text-scada-dimText hover:text-white"
               }`}
             >
               <Bell size={9} />
-              Reminders
+              Workflows
             </button>
             <button
               onClick={() => setActiveTab("presence")}
-              className={`flex-1 py-1.5 text-[7px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
                 activeTab === "presence" ? "border-emerald-500 text-white bg-emerald-500/10" : "border-transparent text-scada-dimText hover:text-white"
               }`}
             >
@@ -745,7 +896,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                   </div>
 
                   {/* Reasoning Logs */}
-                  <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-1.5 h-[80px] flex flex-col overflow-hidden">
+                  <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-1.5 h-[95px] flex flex-col overflow-hidden">
                     <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5 shrink-0">
                       <Terminal size={9} className="text-purple-400" />
                       <span>Decision Reasoning Logs</span>
@@ -754,7 +905,8 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                       {reasoning.reasoning_logs.map((log: string, index: number) => {
                         let color = "text-white/80";
                         if (log.includes("SAFETY OVERRIDE")) color = "text-rose-400 font-bold bg-rose-950/20 pl-1 border-l border-rose-500";
-                        else if (log.includes("Automation planning")) color = "text-amber-400";
+                        else if (log.includes("Decomposing")) color = "text-cyan-400";
+                        else if (log.includes("Matched pattern")) color = "text-amber-400";
                         else if (log.includes("resolving") || log.includes("resolved")) color = "text-emerald-400";
                         return <div key={index} className={color}>&gt; {log}</div>;
                       })}
@@ -772,14 +924,222 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                     <div className="grid grid-cols-2 gap-1 text-[6.5px] pt-1">
                       <div className="flex justify-between"><span className="text-scada-dimText">Voice State:</span><span className="text-white">{voiceState.voice_state}</span></div>
                       <div className="flex justify-between"><span className="text-scada-dimText">Remaining Attention:</span><span className="text-white">{wakeWord.time_remaining}s</span></div>
-                      <div className="flex justify-between"><span className="text-scada-dimText">Latest Intent:</span><span className="text-cyan-400 truncate max-w-[60px]">{voiceMemory.latest_command ?? semanticIntent.category}</span></div>
+                      <div className="flex justify-between"><span className="text-scada-dimText">Latest Intent:</span><span className="text-cyan-400 truncate max-w-[80px]">{voiceMemory.latest_command ?? semanticIntent.category}</span></div>
                       <div className="flex justify-between"><span className="text-scada-dimText">Match Conf:</span><span className="text-cyan-400">{(semanticIntent.confidence * 100).toFixed(0)}%</span></div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Tab 2: Workflows & Chains */}
+              {/* Tab 2: Planning & Chains */}
+              {activeTab === "planning" && (
+                <div className="space-y-1.5">
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex justify-between border-b border-scada-border/20 pb-0.5">
+                      <span>MULTISTEP PLANNING CHAIN</span>
+                      <span className="text-cyan-400 font-bold">Active Chains: {taskChains.active_chains_count}</span>
+                    </div>
+
+                    {displayPlan ? (
+                      <div className="space-y-1.5 pt-1">
+                        <div className="flex justify-between text-[7px] bg-black/20 p-1 rounded">
+                          <span className="text-scada-dimText">Query: <strong className="text-white">"{displayPlan.original_query}"</strong></span>
+                          <span className={`px-1 rounded text-[6px] font-bold uppercase ${
+                            displayPlan.status === "COMPLETED" ? "bg-emerald-950 text-emerald-400" :
+                            displayPlan.status === "FAILED" ? "bg-rose-950 text-rose-400" :
+                            displayPlan.status === "TIMEOUT" ? "bg-red-950 text-red-400" : "bg-cyan-950 text-cyan-400 animate-pulse"
+                          }`}>
+                            {displayPlan.status}
+                          </span>
+                        </div>
+
+                        {/* Steps Sequence Graph */}
+                        <div className="space-y-1">
+                          {displayPlan.steps.map((s: any, idx: number) => {
+                            const isCurrent = activeChain && activeChain.current_step_idx === idx;
+                            return (
+                              <div key={idx} className={`p-1 rounded flex items-center justify-between border text-[6.5px] ${
+                                isCurrent ? "bg-cyan-950/20 border-cyan-500 text-white" :
+                                s.status === "SUCCESS" ? "bg-emerald-950/10 border-emerald-500/20 text-emerald-300" :
+                                s.status === "FAILED" ? "bg-rose-950/10 border-rose-500/20 text-rose-300" : "bg-black/10 border-scada-border/10 text-scada-dimText"
+                              }`}>
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className="font-semibold text-scada-dimText text-[6px]">{idx + 1}.</span>
+                                  <span className="truncate font-bold uppercase text-[7px]">{s.objective}</span>
+                                  <span className="truncate text-scada-dimText">({s.description})</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {s.dependencies?.length > 0 && (
+                                    <span className="text-[5.5px] bg-scada-bg px-1 rounded text-purple-400">Dep: s{idx}</span>
+                                  )}
+                                  {s.status === "SUCCESS" && <CheckCircle2 size={8.5} className="text-emerald-400" />}
+                                  {s.status === "FAILED" && <XCircle size={8.5} className="text-rose-400" />}
+                                  {s.status === "RUNNING" && <RefreshCw size={8.5} className="text-amber-400 animate-spin" />}
+                                  {s.status === "PENDING" && <Clock size={8.5} className="text-scada-dimText" />}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-[7px] text-scada-dimText italic text-center py-4 flex flex-col items-center gap-1">
+                        <GitBranch size={16} className="opacity-30" />
+                        No active multi-step plans in loop memory.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Safety Gates Gauges */}
+                  <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1">
+                      <Shield size={9} className="text-amber-400" />
+                      <span>Orchestration Safety & Confidence Gates</span>
+                    </div>
+                    <div className="space-y-1.5 pt-1 text-[6.5px]">
+                      <div>
+                        <div className="flex justify-between mb-0.5 text-scada-dimText">
+                          <span>Threat Score Confidence</span>
+                          <span className={plannerBridge.last_confidence_score >= 0.50 ? "text-emerald-400" : "text-rose-400"}>
+                            {plannerBridge.last_confidence_score.toFixed(2)} (Min: 0.50)
+                          </span>
+                        </div>
+                        <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-scada-border/10">
+                          <div 
+                            className={`h-full transition-all duration-500 ${plannerBridge.last_confidence_score >= 0.50 ? "bg-emerald-500" : "bg-rose-500"}`}
+                            style={{ width: `${plannerBridge.last_confidence_score * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Planner Bridge status summary logs */}
+                      <div className="bg-black/20 p-1.5 rounded border border-scada-border/10 h-[45px] overflow-y-auto scrollbar-thin text-[5.8px]">
+                        <span className="text-scada-dimText block uppercase tracking-wider font-semibold border-b border-scada-border/15 pb-0.5 mb-1">Planner Bridge Safety Logs</span>
+                        {plannerBridge.validation_logs.length === 0 ? (
+                          <span className="text-scada-dimText/40 italic">Safety logs empty</span>
+                        ) : (
+                          plannerBridge.validation_logs.map((log: string, i: number) => {
+                            let color = "text-scada-dimText";
+                            if (log.includes("SAFETY REJECTION")) color = "text-rose-400 font-bold";
+                            else if (log.includes("CRITICAL ESCALATION")) color = "text-amber-400 font-bold";
+                            else if (log.includes("Bridging")) color = "text-cyan-400";
+                            return <div key={i} className={color}>&gt; {log}</div>;
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 3: Dialogue & Stream */}
+              {activeTab === "dialogue" && (
+                <div className="space-y-1.5">
+                  {/* Realtime Response Stream Terminal */}
+                  <div className="bg-black/60 border border-scada-border/30 rounded p-1.5 flex flex-col h-[90px] overflow-hidden">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                      <span className="flex items-center gap-1"><Volume2 size={9} className="text-yellow-400" /> Live Response Stream</span>
+                      {liveStream.is_streaming && <span className="text-yellow-400 animate-pulse font-bold">{liveStream.progress_pct}%</span>}
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-1 font-mono text-[7.5px] leading-tight text-cyan-300 relative scrollbar-thin bg-black/40 rounded mt-1">
+                      {liveStream.output_buffer ? (
+                        <span>
+                          {liveStream.output_buffer}
+                          {liveStream.is_streaming && <span className="inline-block w-1.5 h-3 bg-cyan-400 ml-0.5 animate-pulse" />}
+                        </span>
+                      ) : (
+                        <span className="text-scada-dimText/30 italic">Streaming buffer idle...</span>
+                      )}
+
+                      {/* Apology Interrupted Alert */}
+                      {liveStream.status === "INTERRUPTED" && (
+                        <div className="mt-1.5 p-1 border border-rose-500/20 bg-rose-950/20 rounded text-[6.8px] text-rose-400 leading-tight">
+                          <div className="font-bold uppercase flex items-center gap-1 mb-0.5"><AlertTriangle size={8} /> Response Interrupted</div>
+                          <div className="italic text-yellow-300">"{liveStream.interruption_apology}"</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Active Dialogue Clarification Module */}
+                  <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex justify-between border-b border-scada-border/20 pb-0.5">
+                      <span>DIALOGUE CLARIFICATION GATE</span>
+                      <span className={`px-1.5 rounded text-[6px] font-bold ${
+                        dialogue.dialogue_state === "AWAITING_CLARIFICATION" ? "bg-amber-950 text-amber-400 animate-pulse border border-amber-500/20" : "bg-black/30 text-scada-dimText"
+                      }`}>
+                        {dialogue.dialogue_state}
+                      </span>
+                    </div>
+
+                    {dialogue.dialogue_state === "AWAITING_CLARIFICATION" ? (
+                      <div className="pt-1.5 space-y-1.5">
+                        <div className="text-[8px] font-bold text-white bg-amber-950/20 p-1 border-l-2 border-amber-500 rounded">
+                          Question: <span className="text-amber-300 font-mono">"{dialogue.clarification_question}"</span>
+                        </div>
+                        <div className="flex gap-1 text-[6.5px]">
+                          <span className="text-scada-dimText font-bold">Needed parameter:</span>
+                          <span className="text-amber-400 uppercase tracking-wider font-semibold">{dialogue.parameter_needed}</span>
+                        </div>
+
+                        {/* Dialogue Resolution helpers */}
+                        <div className="flex flex-wrap gap-1 pt-0.5">
+                          {dialogue.parameter_needed === "target_bus" && (
+                            <>
+                              <button onClick={() => handleResolveDialogue("Bus 5")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: Bus 5</button>
+                              <button onClick={() => handleResolveDialogue("Bus 7")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: Bus 7</button>
+                            </>
+                          )}
+                          {dialogue.parameter_needed === "relay_line" && (
+                            <>
+                              <button onClick={() => handleResolveDialogue("L1_4")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: L1_4</button>
+                              <button onClick={() => handleResolveDialogue("L4_5")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: L4_5</button>
+                            </>
+                          )}
+                          {dialogue.parameter_needed === "workflow_name" && (
+                            <>
+                              <button onClick={() => handleResolveDialogue("status check")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: Status Check</button>
+                              <button onClick={() => handleResolveDialogue("shed load")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: Load Shed</button>
+                            </>
+                          )}
+                          {dialogue.parameter_needed === "delay_sec" && (
+                            <>
+                              <button onClick={() => handleResolveDialogue("5")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: 5s</button>
+                              <button onClick={() => handleResolveDialogue("10")} className="px-1.5 py-0.5 bg-cyan-950 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-900 text-[6.5px]">Resolve: 10s</button>
+                            </>
+                          )}
+                        </div>
+
+                        <div className="flex gap-1">
+                          <input 
+                            type="text" 
+                            placeholder="Type resolution answer..."
+                            value={clarifyAnswerText}
+                            onChange={(e) => setClarifyAnswerText(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleResolveDialogue(clarifyAnswerText)}
+                            className="flex-1 bg-black/40 border border-scada-border/40 text-white rounded p-1 text-[7.5px] outline-none"
+                          />
+                          <button 
+                            onClick={() => handleResolveDialogue(clarifyAnswerText)}
+                            disabled={!clarifyAnswerText.trim()}
+                            className="px-2 bg-amber-950 border border-amber-500/40 text-amber-400 rounded disabled:opacity-40 text-[7px]"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-[7px] text-scada-dimText italic text-center py-4 flex flex-col items-center gap-1">
+                        <MessageSquare size={16} className="opacity-30" />
+                        No dialogue ambiguity detected. Standing by...
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 4: Workflows & Reminders */}
               {activeTab === "workflows" && (
                 <div className="space-y-1.5">
                   {/* Latest Execution */}
@@ -855,7 +1215,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                     <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
                       <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
                         <span>n8n WEBHOOKS</span>
-                        <span className="text-white">({n8nBridge.active_retries_count} retries, {automationHooks.trigger_count} total)</span>
+                        <span className="text-white">({n8nBridge.active_retries_count} retries)</span>
                       </div>
                       <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[6px]">
                         {n8nBridge.active_retries.length === 0 && n8nBridge.executions.length === 0 ? (
@@ -885,86 +1245,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                 </div>
               )}
 
-              {/* Tab 3: Reminders & Monitors */}
-              {activeTab === "reminders" && (
-                <div className="space-y-1.5">
-                  {/* Active Reminders */}
-                  <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
-                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
-                      <span>ACTIVE REMINDERS</span>
-                      <span className="text-white font-bold">Count: {reminders.active_count}</span>
-                    </div>
-                    <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
-                      {reminders.active_reminders.length === 0 ? (
-                        <div className="h-full flex items-center justify-center text-[7px] text-scada-dimText/40 italic">
-                          No active reminders scheduled.
-                        </div>
-                      ) : (
-                        reminders.active_reminders.map((r: any) => (
-                          <div key={r.reminder_id} className="flex justify-between items-center bg-black/20 px-1 py-0.5 rounded text-[6.5px]">
-                            <div className="flex flex-col min-w-0 flex-1">
-                              <span className="text-white truncate pr-1">"{r.text}"</span>
-                              {r.recurring_interval && <span className="text-[5.5px] text-emerald-400">Recur: {r.recurring_interval}s</span>}
-                            </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-amber-400 font-bold">{r.time_remaining_sec}s left</span>
-                              <button onClick={() => handleCancelReminder(r.reminder_id)} className="p-0.5 hover:bg-rose-950 hover:text-rose-400 rounded text-scada-dimText">
-                                <XCircle size={8} />
-                              </button>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Conditions Watches & History */}
-                  <div className="grid grid-cols-2 gap-1.5">
-                    <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
-                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
-                        <span>CONDITION MONITORS</span>
-                      </div>
-                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[6px]">
-                        {conditions.registered_watches.map((w: any) => (
-                          <div key={w.condition_id} className="bg-black/10 p-0.5 rounded flex flex-col">
-                            <div className="flex justify-between font-semibold text-white">
-                              <span className="truncate max-w-[50px]">{w.target_field}</span>
-                              <span className="text-cyan-300 font-bold">{w.operator}{w.threshold}</span>
-                            </div>
-                            {w.cooldown_remaining_sec > 0 && (
-                              <span className="text-[5.5px] text-rose-400">CD: {w.cooldown_remaining_sec}s remaining</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 flex flex-col h-[75px] overflow-hidden">
-                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0 flex justify-between">
-                        <span>TRIGGERS HISTORY</span>
-                        <span className="text-white">({proactive.total_notifications_sent} sent)</span>
-                      </div>
-                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[5.8px]">
-                        {conditions.trigger_history.length === 0 ? (
-                          <div className="h-full flex items-center justify-center text-scada-dimText/40 italic">No triggers logs</div>
-                        ) : (
-                          [...conditions.trigger_history].reverse().slice(0, 3).map((h: any, idx: number) => (
-                            <div key={idx} className="border-l border-amber-500 pl-1 p-0.5 rounded bg-black/10 flex flex-col">
-                              <div className="flex justify-between font-bold text-amber-400">
-                                <span>{h.condition_id}</span>
-                                <span>{new Date(h.timestamp).toLocaleTimeString()}</span>
-                              </div>
-                              <span className="text-white">Value: {h.current_value}</span>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 4: Presence & Routines */}
+              {/* Tab 5: Presence & Health */}
               {activeTab === "presence" && (
                 <div className="space-y-1.5">
                   {/* SVG Breathing Core and Pacing info */}
@@ -1032,32 +1313,32 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
             <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 shrink-0">
               <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
                 <Sliders size={8} className="text-amber-400 animate-pulse" />
-                <span>Autonomous Workflow Simulation Console</span>
+                <span>Conversational Planning & Orchestration Simulation Console</span>
               </div>
               <div className="grid grid-cols-3 gap-1 pt-1.5">
-                <button onClick={triggerScheduleReminder}
+                <button onClick={triggerAmbiguityClarification}
                   className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <Bell size={8} /> Schedule Reminder
+                  <MessageSquare size={8} /> Simulate Ambiguity
                 </button>
-                <button onClick={triggerStatusCheckWorkflow}
+                <button onClick={triggerStreamingInterruption}
+                  className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                  <Volume2 size={8} /> Simulate Interruption
+                </button>
+                <button onClick={triggerChainedTaskPlan}
                   className="bg-blue-950 hover:bg-blue-900 border border-blue-500/30 rounded py-1 text-[6.5px] text-blue-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <GitBranch size={8} /> Run Status Checks
+                  <GitBranch size={8} /> Run Chained Plan
                 </button>
-                <button onClick={triggerWebhookFailureSim}
-                  className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <WifiOff size={8} /> Webhook Retry Failure
-                </button>
-                <button onClick={triggerCooldownConflictSim}
+                <button onClick={triggerDependencyFailure}
                   className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <Clock size={8} /> Cooldown Conflict
+                  <Clock size={8} /> {taskChains.active_chains.length > 0 ? "Trip Active Step" : "Sim Dependency Fail"}
                 </button>
-                <button onClick={triggerRecursiveLoopSim}
+                <button onClick={triggerConfidenceGateBlock}
                   className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <RotateCcw size={8} /> Recursive Loop Block
+                  <Shield size={8} /> Confidence Gate Block
                 </button>
-                <button onClick={triggerTelemetryTriggeredWorkflowSim}
+                <button onClick={triggerRunawayChain}
                   className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <Zap size={8} /> Telemetry Trigger
+                  <RotateCcw size={8} /> Runaway/Loop Block
                 </button>
               </div>
             </div>

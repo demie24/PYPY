@@ -5,10 +5,9 @@ import numpy as np
 
 # Set pythonpath dynamically
 import sys
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "core", "ai_prediction"))
 
-from physics_informed_loss import C_MATRIX, X_LINE, compute_pinn_loss
-from pinn_inference import PinnInferenceEngine
+from core.ai_prediction.physics_informed_loss import C_MATRIX, X_LINE, compute_pinn_loss
+from core.ai_prediction.pinn_inference import PinnInferenceEngine
 
 class TestPINNValidation(unittest.TestCase):
     def test_incidence_matrix_properties(self):

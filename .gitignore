@@ -29,6 +29,7 @@ dashboard/.env.local
 
 # Machine Learning
 *.pt
+<<<<<<< HEAD
 *.pth
 *.pkl
 *.h5
@@ -52,3 +53,9 @@ Thumbs.db
 
 # Docker
 .dockerignore
+=======
+*.egg-info/
+training_logs/
+analytics/*.csv
+__pycache__/
+.pytest_cache/

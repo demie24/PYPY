@@ -139,6 +139,11 @@ export default function App() {
   const [assistantConditions, setAssistantConditions] = useState<any>(null);
   const [assistantN8nBridge, setAssistantN8nBridge] = useState<any>(null);
   const [assistantRoutines, setAssistantRoutines] = useState<any>(null);
+  const [assistantConversationPlanning, setAssistantConversationPlanning] = useState<any>(null);
+  const [assistantTaskChains, setAssistantTaskChains] = useState<any>(null);
+  const [assistantLiveStream, setAssistantLiveStream] = useState<any>(null);
+  const [assistantDialogue, setAssistantDialogue] = useState<any>(null);
+  const [assistantOrchestrationPlanner, setAssistantOrchestrationPlanner] = useState<any>(null);
 
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
@@ -290,6 +295,11 @@ export default function App() {
       assistantConditions,
       assistantN8nBridge,
       assistantRoutines,
+      assistantConversationPlanning,
+      assistantTaskChains,
+      assistantLiveStream,
+      assistantDialogue,
+      assistantOrchestrationPlanner,
 
       flisrState,
       flisrIsolated,
@@ -619,6 +629,21 @@ export default function App() {
           if (data.assistant_presence) {
             setAssistantPresence(data.assistant_presence);
           }
+          if (data.assistant_conversation_planning) {
+            setAssistantConversationPlanning(data.assistant_conversation_planning);
+          }
+          if (data.assistant_task_chains) {
+            setAssistantTaskChains(data.assistant_task_chains);
+          }
+          if (data.assistant_live_stream) {
+            setAssistantLiveStream(data.assistant_live_stream);
+          }
+          if (data.assistant_dialogue) {
+            setAssistantDialogue(data.assistant_dialogue);
+          }
+          if (data.assistant_orchestration_planner) {
+            setAssistantOrchestrationPlanner(data.assistant_orchestration_planner);
+          }
         } 
 
         // Handle active MQTT stream broadcasts
@@ -752,6 +777,11 @@ export default function App() {
               assistantConditions: currentStates.assistantConditions,
               assistantN8nBridge: currentStates.assistantN8nBridge,
               assistantRoutines: currentStates.assistantRoutines,
+              assistantConversationPlanning: currentStates.assistantConversationPlanning,
+              assistantTaskChains: currentStates.assistantTaskChains,
+              assistantLiveStream: currentStates.assistantLiveStream,
+              assistantDialogue: currentStates.assistantDialogue,
+              assistantOrchestrationPlanner: currentStates.assistantOrchestrationPlanner,
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -1037,6 +1067,16 @@ export default function App() {
             setAssistantN8nBridge(payload);
           } else if (topic === "assistant/routines") {
             setAssistantRoutines(payload);
+          } else if (topic === "assistant/conversation_planning") {
+            setAssistantConversationPlanning(payload);
+          } else if (topic === "assistant/task_chains") {
+            setAssistantTaskChains(payload);
+          } else if (topic === "assistant/live_stream") {
+            setAssistantLiveStream(payload);
+          } else if (topic === "assistant/dialogue") {
+            setAssistantDialogue(payload);
+          } else if (topic === "assistant/orchestration_planner") {
+            setAssistantOrchestrationPlanner(payload);
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -1340,6 +1380,11 @@ export default function App() {
   const dispAssistantConditions = currentFrame ? currentFrame.assistantConditions : assistantConditions;
   const dispAssistantN8nBridge = currentFrame ? currentFrame.assistantN8nBridge : assistantN8nBridge;
   const dispAssistantRoutines = currentFrame ? currentFrame.assistantRoutines : assistantRoutines;
+  const dispAssistantConversationPlanning = currentFrame ? currentFrame.assistantConversationPlanning : assistantConversationPlanning;
+  const dispAssistantTaskChains = currentFrame ? currentFrame.assistantTaskChains : assistantTaskChains;
+  const dispAssistantLiveStream = currentFrame ? currentFrame.assistantLiveStream : assistantLiveStream;
+  const dispAssistantDialogue = currentFrame ? currentFrame.assistantDialogue : assistantDialogue;
+  const dispAssistantOrchestrationPlanner = currentFrame ? currentFrame.assistantOrchestrationPlanner : assistantOrchestrationPlanner;
 
 
 
@@ -1659,6 +1704,11 @@ export default function App() {
             assistantConditions={dispAssistantConditions}
             assistantN8nBridge={dispAssistantN8nBridge}
             assistantRoutines={dispAssistantRoutines}
+            assistantConversationPlanning={dispAssistantConversationPlanning}
+            assistantTaskChains={dispAssistantTaskChains}
+            assistantLiveStream={dispAssistantLiveStream}
+            assistantDialogue={dispAssistantDialogue}
+            assistantOrchestrationPlanner={dispAssistantOrchestrationPlanner}
             connected={connected}
             onSendControl={sendDirectMqtt}
           />

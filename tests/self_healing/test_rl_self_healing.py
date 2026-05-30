@@ -6,18 +6,15 @@ import torch
 
 # Setup paths to import core files
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(CURRENT_DIR, "core", "self_healing"))
-sys.path.append(os.path.join(CURRENT_DIR, "core", "self_healing", "rl"))
-sys.path.append(os.path.join(CURRENT_DIR, "core", "digital_twin"))
 
 # Import components
-from policy_network import PolicyNetwork
-from value_network import ValueNetwork
-from replay_buffer import ReplayBuffer, PPOMemory
-from ppo_agent import PPOAgent
-from dqn_agent import DQNAgent, QNetwork
-from rl_environment import GridRLEnvironment
-from reward_engine import RewardEngine
+from core.self_healing.rl.policy_network import PolicyNetwork
+from core.self_healing.rl.value_network import ValueNetwork
+from core.self_healing.rl.replay_buffer import ReplayBuffer, PPOMemory
+from core.self_healing.rl.ppo_agent import PPOAgent
+from core.self_healing.rl.dqn_agent import DQNAgent, QNetwork
+from core.self_healing.rl_environment import GridRLEnvironment
+from core.self_healing.reward_engine import RewardEngine
 
 class TestRLSelfHealing(unittest.TestCase):
     def setUp(self):

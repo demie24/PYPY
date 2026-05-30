@@ -13,14 +13,14 @@ class SurvivalAgent:
         self.confidence = 1.0
 
         if islanding_engine is None:
-            from islanding_engine import IslandingEngine
-            from topology_recovery_engine import TopologyRecoveryEngine
+            from core.self_healing.islanding_engine import IslandingEngine
+            from core.self_healing.topology_recovery_engine import TopologyRecoveryEngine
             self.islanding_engine = IslandingEngine(TopologyRecoveryEngine())
         else:
             self.islanding_engine = islanding_engine
 
         if guard is None:
-            from critical_infrastructure_guard import CriticalInfrastructureGuard
+            from core.self_healing.critical_infrastructure_guard import CriticalInfrastructureGuard
             self.guard = CriticalInfrastructureGuard()
         else:
             self.guard = guard

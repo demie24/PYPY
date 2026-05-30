@@ -3,7 +3,7 @@ import random
 import json
 import logging
 from typing import Dict, Any
-from hardware_state_manager import HardwareStateManager
+from core.hardware.hardware_state_manager import HardwareStateManager
 
 logger = logging.getLogger("hardware.esp32_bridge")
 

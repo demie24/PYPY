@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smart-grid-cybersecurity"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+markers = [
+    "integration: marks tests requiring live external services (MQTT broker, etc.)",
+    "slow: marks tests that take a long time to run",
+]

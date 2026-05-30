@@ -141,6 +141,11 @@ class MQTTManager:
             client.subscribe("assistant/conditions")
             client.subscribe("assistant/n8n_bridge")
             client.subscribe("assistant/routines")
+            client.subscribe("assistant/conversation_planning")
+            client.subscribe("assistant/task_chains")
+            client.subscribe("assistant/live_stream")
+            client.subscribe("assistant/dialogue")
+            client.subscribe("assistant/orchestration_planner")
 
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
@@ -331,6 +336,16 @@ class MQTTManager:
                 store.update_assistant_n8n_bridge(payload)
             elif topic == "assistant/routines":
                 store.update_assistant_routines(payload)
+            elif topic == "assistant/conversation_planning":
+                store.update_assistant_conversation_planning(payload)
+            elif topic == "assistant/task_chains":
+                store.update_assistant_task_chains(payload)
+            elif topic == "assistant/live_stream":
+                store.update_assistant_live_stream(payload)
+            elif topic == "assistant/dialogue":
+                store.update_assistant_dialogue(payload)
+            elif topic == "assistant/orchestration_planner":
+                store.update_assistant_orchestration_planner(payload)
 
 
                 

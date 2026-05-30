@@ -6,11 +6,11 @@ from typing import Dict, Any, List
 # Setup logger
 logger = logging.getLogger("self_healing.orchestrator_agent")
 
-from cyber_defense_agent import CyberDefenseAgent
-from restoration_agent import RestorationAgent
-from stabilization_agent import StabilizationAgent
-from survival_agent import SurvivalAgent
-from prediction_agent import PredictionAgent
+from core.self_healing.cyber_defense_agent import CyberDefenseAgent
+from core.self_healing.restoration_agent import RestorationAgent
+from core.self_healing.stabilization_agent import StabilizationAgent
+from core.self_healing.survival_agent import SurvivalAgent
+from core.self_healing.prediction_agent import PredictionAgent
 
 class OrchestratorAgent:
     """

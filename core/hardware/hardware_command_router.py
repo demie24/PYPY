@@ -1,10 +1,10 @@
 import time
 import logging
 from typing import Dict, Any, Tuple
-from hardware_state_manager import HardwareStateManager
-from esp32_bridge import ESP32Bridge
-from plc_interface import PLCInterface
-from relay_controller import RelayController
+from core.hardware.hardware_state_manager import HardwareStateManager
+from core.hardware.esp32_bridge import ESP32Bridge
+from core.hardware.plc_interface import PLCInterface
+from core.hardware.relay_controller import RelayController
 
 logger = logging.getLogger("hardware.command_router")
 

@@ -1,10 +1,10 @@
 import time
 import logging
 from typing import Dict, Any, List, Optional
-from digispark_attack_engine import DigisparkAttackEngine
-from badusb_payload_manager import BadUSBPayloadManager
-from rogue_device_monitor import RogueDeviceMonitor
-from hardware_intrusion_detector import HardwareIntrusionDetector
+from core.hardware.digispark_attack_engine import DigisparkAttackEngine
+from core.hardware.badusb_payload_manager import BadUSBPayloadManager
+from core.hardware.rogue_device_monitor import RogueDeviceMonitor
+from core.hardware.hardware_intrusion_detector import HardwareIntrusionDetector
 
 logger = logging.getLogger("hardware.attack_orchestrator")
 

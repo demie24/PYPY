@@ -13,13 +13,13 @@ sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "self_healing", 
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "self_healing")))
 
 try:
-    import rl_metrics
+    import core.self_healing.rl.rl_metrics as rl_metrics
 except ImportError:
     pass
 
-from decision_engine import OrchestrationDecisionEngine
-from action_recommender import ActionRecommender
-from orchestrator_agent import OrchestratorAgent
+from core.orchestrator.decision_engine import OrchestrationDecisionEngine
+from core.orchestrator.action_recommender import ActionRecommender
+from core.self_healing.orchestrator_agent import OrchestratorAgent
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("orchestrator.main")

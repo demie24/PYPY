@@ -11,10 +11,10 @@ sys.path.append(CURRENT_DIR)
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..")))
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", "digital_twin")))
 
-from ppo_agent import PPOAgent
-from dqn_agent import DQNAgent
-from rl_environment import GridRLEnvironment
-from rl_trainer import get_target_for_action
+from core.self_healing.rl.ppo_agent import PPOAgent
+from core.self_healing.rl.dqn_agent import DQNAgent
+from core.self_healing.rl_environment import GridRLEnvironment
+from core.self_healing.rl.rl_trainer import get_target_for_action
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("self_healing.rl.rl_evaluator")

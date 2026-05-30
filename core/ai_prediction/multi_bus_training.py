@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 
-from dataset_loader import TelemetryDataset
+from core.ai_prediction.dataset_loader import TelemetryDataset
 from multi_bus_model import MultiBusPredictorLSTM
 
 # Configure paths

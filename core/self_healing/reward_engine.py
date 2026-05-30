@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict, Any, Tuple
-from recovery_reward_engine import RecoveryRewardEngine
+from core.self_healing.recovery_reward_engine import RecoveryRewardEngine
 
 class RewardEngine:
     def __init__(self):

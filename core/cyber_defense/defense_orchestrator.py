@@ -10,13 +10,13 @@ import paho.mqtt.client as mqtt
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CURRENT_DIR)
 
-from autonomous_defense_coordinator import AutonomousDefenseCoordinator
-from adaptive_defense_engine import AdaptiveDefenseEngine
-from campaign_response_engine import CampaignResponseEngine
-from defense_escalation import DefenseEscalator
-from defense_memory import DefenseMemory
-from containment_engine import ContainmentEngine
-from campaign_timeline import CampaignTimeline
+from core.cyber_defense.autonomous_defense_coordinator import AutonomousDefenseCoordinator
+from core.cyber_defense.adaptive_defense_engine import AdaptiveDefenseEngine
+from core.cyber_defense.campaign_response_engine import CampaignResponseEngine
+from core.cyber_defense.defense_escalation import DefenseEscalator
+from core.cyber_defense.defense_memory import DefenseMemory
+from core.cyber_defense.containment_engine import ContainmentEngine
+from core.cyber_defense.campaign_timeline import CampaignTimeline
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

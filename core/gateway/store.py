@@ -99,6 +99,11 @@ class MemoryStore:
         self.latest_assistant_conditions: Optional[Dict[str, Any]] = None
         self.latest_assistant_n8n_bridge: Optional[Dict[str, Any]] = None
         self.latest_assistant_routines: Optional[Dict[str, Any]] = None
+        self.latest_assistant_conversation_planning: Optional[Dict[str, Any]] = None
+        self.latest_assistant_task_chains: Optional[Dict[str, Any]] = None
+        self.latest_assistant_live_stream: Optional[Dict[str, Any]] = None
+        self.latest_assistant_dialogue: Optional[Dict[str, Any]] = None
+        self.latest_assistant_orchestration_planner: Optional[Dict[str, Any]] = None
 
         
         # Add initial system startup event
@@ -374,6 +379,21 @@ class MemoryStore:
     def update_assistant_routines(self, payload: Dict[str, Any]):
         self.latest_assistant_routines = payload
 
+    def update_assistant_conversation_planning(self, payload: Dict[str, Any]):
+        self.latest_assistant_conversation_planning = payload
+
+    def update_assistant_task_chains(self, payload: Dict[str, Any]):
+        self.latest_assistant_task_chains = payload
+
+    def update_assistant_live_stream(self, payload: Dict[str, Any]):
+        self.latest_assistant_live_stream = payload
+
+    def update_assistant_dialogue(self, payload: Dict[str, Any]):
+        self.latest_assistant_dialogue = payload
+
+    def update_assistant_orchestration_planner(self, payload: Dict[str, Any]):
+        self.latest_assistant_orchestration_planner = payload
+
 
 
     def add_event(self, event: Dict[str, Any]):
@@ -481,7 +501,12 @@ class MemoryStore:
             "assistant_reminders": self.latest_assistant_reminders,
             "assistant_conditions": self.latest_assistant_conditions,
             "assistant_n8n_bridge": self.latest_assistant_n8n_bridge,
-            "assistant_routines": self.latest_assistant_routines
+            "assistant_routines": self.latest_assistant_routines,
+            "assistant_conversation_planning": self.latest_assistant_conversation_planning,
+            "assistant_task_chains": self.latest_assistant_task_chains,
+            "assistant_live_stream": self.latest_assistant_live_stream,
+            "assistant_dialogue": self.latest_assistant_dialogue,
+            "assistant_orchestration_planner": self.latest_assistant_orchestration_planner
 
         }
 

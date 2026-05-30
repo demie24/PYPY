@@ -1,7 +1,7 @@
 import time
 import logging
 from typing import Dict, Any, List, Optional, Tuple
-from hardware_state_manager import HardwareStateManager
+from core.hardware.hardware_state_manager import HardwareStateManager
 
 logger = logging.getLogger("hardware.device_manager")
 

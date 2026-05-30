@@ -7,9 +7,9 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 
-from dataset_loader import TelemetryDataset
-from pinn_model import PhysicsInformedPredictorLSTM
-from physics_informed_loss import compute_pinn_loss
+from core.ai_prediction.dataset_loader import TelemetryDataset
+from core.ai_prediction.pinn_model import PhysicsInformedPredictorLSTM
+from core.ai_prediction.physics_informed_loss import compute_pinn_loss
 
 # Configure paths
 AI_DIR = os.path.dirname(os.path.abspath(__file__))

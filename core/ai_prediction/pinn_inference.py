@@ -6,7 +6,7 @@ from collections import deque
 import numpy as np
 import torch
 
-from pinn_model import PhysicsInformedPredictorLSTM
+from core.ai_prediction.pinn_model import PhysicsInformedPredictorLSTM
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

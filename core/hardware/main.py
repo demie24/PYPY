@@ -4,35 +4,35 @@ import json
 import logging
 import threading
 import paho.mqtt.client as mqtt
-from hardware_state_manager import HardwareStateManager
-from virtual_esp32 import VirtualESP32
-from virtual_relay_faults import VirtualRelayFaults
-from virtual_plc import VirtualPLC
-from virtual_sensor_faults import VirtualSensorFaults
-from hardware_command_router import HardwareCommandRouter
-from hardware_fault_orchestrator import HardwareFaultOrchestrator
+from core.hardware.hardware_state_manager import HardwareStateManager
+from core.hardware.virtual_esp32 import VirtualESP32
+from core.hardware.virtual_relay_faults import VirtualRelayFaults
+from core.hardware.virtual_plc import VirtualPLC
+from core.hardware.virtual_sensor_faults import VirtualSensorFaults
+from core.hardware.hardware_command_router import HardwareCommandRouter
+from core.hardware.hardware_fault_orchestrator import HardwareFaultOrchestrator
 
 # Import Cyber-Physical Attack Layer Skeletons
-from digispark_attack_engine import DigisparkAttackEngine
-from badusb_payload_manager import BadUSBPayloadManager
-from rogue_device_monitor import RogueDeviceMonitor
-from hardware_intrusion_detector import HardwareIntrusionDetector
-from cyber_physical_attack_orchestrator import CyberPhysicalAttackOrchestrator
-from hardware_orchestrator import HardwareOrchestrator
+from core.hardware.digispark_attack_engine import DigisparkAttackEngine
+from core.hardware.badusb_payload_manager import BadUSBPayloadManager
+from core.hardware.rogue_device_monitor import RogueDeviceMonitor
+from core.hardware.hardware_intrusion_detector import HardwareIntrusionDetector
+from core.hardware.cyber_physical_attack_orchestrator import CyberPhysicalAttackOrchestrator
+from core.hardware.hardware_orchestrator import HardwareOrchestrator
 
 # Import Physical Execution & Edge Reliability Layer
-from deployment_profiles import DeploymentProfiles
-from physical_telemetry_validator import PhysicalTelemetryValidator
-from edge_reliability_monitor import EdgeReliabilityMonitor
-from safe_relay_guard import SafeRelayGuard
-from hardware_execution_gateway import HardwareExecutionGateway
+from core.hardware.deployment_profiles import DeploymentProfiles
+from core.hardware.physical_telemetry_validator import PhysicalTelemetryValidator
+from core.hardware.edge_reliability_monitor import EdgeReliabilityMonitor
+from core.hardware.safe_relay_guard import SafeRelayGuard
+from core.hardware.hardware_execution_gateway import HardwareExecutionGateway
 
 # Import Distributed Resilience & Deployment Hardening Layer
-from distributed_resilience_manager import DistributedResilienceManager
-from disaster_recovery_engine import DisasterRecoveryEngine
-from redundancy_coordinator import RedundancyCoordinator
-from deployment_hardening_engine import DeploymentHardeningEngine
-from large_scale_synchronization_manager import LargeScaleSynchronizationManager
+from core.hardware.distributed_resilience_manager import DistributedResilienceManager
+from core.hardware.disaster_recovery_engine import DisasterRecoveryEngine
+from core.hardware.redundancy_coordinator import RedundancyCoordinator
+from core.hardware.deployment_hardening_engine import DeploymentHardeningEngine
+from core.hardware.large_scale_synchronization_manager import LargeScaleSynchronizationManager
 
 
 

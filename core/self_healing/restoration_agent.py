@@ -14,13 +14,13 @@ class RestorationAgent:
         
         # Fallback inline objects if not provided
         if fsm is None:
-            from recovery_state_machine import RecoveryStateMachine
+            from core.self_healing.recovery_state_machine import RecoveryStateMachine
             self.fsm = RecoveryStateMachine()
         else:
             self.fsm = fsm
 
         if memory is None:
-            from adaptive_recovery_memory import AdaptiveRecoveryMemory
+            from core.self_healing.adaptive_recovery_memory import AdaptiveRecoveryMemory
             self.memory = AdaptiveRecoveryMemory()
         else:
             self.memory = memory

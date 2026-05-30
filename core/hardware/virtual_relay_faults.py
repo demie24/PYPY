@@ -2,8 +2,8 @@ import time
 import logging
 import random
 from typing import Dict, Any, Set, Tuple, Optional
-from relay_controller import RelayController
-from hardware_state_manager import HardwareStateManager
+from core.hardware.relay_controller import RelayController
+from core.hardware.hardware_state_manager import HardwareStateManager
 
 logger = logging.getLogger("hardware.virtual_relay_faults")
 

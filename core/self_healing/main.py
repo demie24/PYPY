@@ -3,8 +3,8 @@ import json
 import time
 import logging
 import paho.mqtt.client as mqtt
-from relay import ProtectiveRelay
-from flisr import FLISREngine
+from core.self_healing.relay import ProtectiveRelay
+from core.self_healing.flisr import FLISREngine
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -16,25 +16,25 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 # Instantiate modules
 relay = ProtectiveRelay()
 flisr = FLISREngine()
-from recovery_state_machine import RecoveryStateMachine
+from core.self_healing.recovery_state_machine import RecoveryStateMachine
 l6_fsm = RecoveryStateMachine()
 
-from recovery_scoring_engine import RecoveryScoringEngine
-from cascading_containment_engine import CascadingContainmentEngine
-from adaptive_recovery_memory import AdaptiveRecoveryMemory
-from degraded_operation_manager import DegradedOperationManager
+from core.self_healing.recovery_scoring_engine import RecoveryScoringEngine
+from core.self_healing.cascading_containment_engine import CascadingContainmentEngine
+from core.self_healing.adaptive_recovery_memory import AdaptiveRecoveryMemory
+from core.self_healing.degraded_operation_manager import DegradedOperationManager
 
 l6_scorer = RecoveryScoringEngine()
 l6_containment = CascadingContainmentEngine(l6_fsm.topo_engine)
 l6_memory = AdaptiveRecoveryMemory()
 l6_degraded = DegradedOperationManager()
 
-from islanding_engine import IslandingEngine
-from microgrid_manager import MicrogridManager
-from blackstart_engine import BlackstartEngine
-from survival_optimizer import SurvivalOptimizer
-from autonomous_balancer import AutonomousBalancer
-from critical_infrastructure_guard import CriticalInfrastructureGuard
+from core.self_healing.islanding_engine import IslandingEngine
+from core.self_healing.microgrid_manager import MicrogridManager
+from core.self_healing.blackstart_engine import BlackstartEngine
+from core.self_healing.survival_optimizer import SurvivalOptimizer
+from core.self_healing.autonomous_balancer import AutonomousBalancer
+from core.self_healing.critical_infrastructure_guard import CriticalInfrastructureGuard
 
 l6_islanding = IslandingEngine(l6_fsm.topo_engine)
 l6_microgrid = MicrogridManager(l6_fsm.topo_engine)
@@ -43,14 +43,14 @@ l6_survival = SurvivalOptimizer()
 l6_balancer = AutonomousBalancer()
 l6_guard = CriticalInfrastructureGuard()
 
-from orchestrator_agent import OrchestratorAgent
+from core.self_healing.orchestrator_agent import OrchestratorAgent
 l6_orchestrator = OrchestratorAgent(fsm=l6_fsm, memory=l6_memory, guard=l6_guard)
 
-from predictive_stability_engine import PredictiveStabilityEngine
-from proactive_rerouting_engine import ProactiveReroutingEngine
-from preemptive_isolation_engine import PreemptiveIsolationEngine
-from survival_forecasting_engine import SurvivalForecastingEngine
-from self_preservation_policy_engine import SelfPreservationPolicyEngine
+from core.self_healing.predictive_stability_engine import PredictiveStabilityEngine
+from core.self_healing.proactive_rerouting_engine import ProactiveReroutingEngine
+from core.self_healing.preemptive_isolation_engine import PreemptiveIsolationEngine
+from core.self_healing.survival_forecasting_engine import SurvivalForecastingEngine
+from core.self_healing.self_preservation_policy_engine import SelfPreservationPolicyEngine
 
 l6_predictive_stability = PredictiveStabilityEngine()
 l6_proactive_rerouting = ProactiveReroutingEngine(l6_fsm.topo_engine)

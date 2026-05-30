@@ -7,7 +7,7 @@ from typing import Dict, Any, List
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CURRENT_DIR)
 
-from restoration_sandbox import RestorationSandbox
+from core.self_healing.restoration_sandbox import RestorationSandbox
 
 logger = logging.getLogger("self_healing.restoration_validator")
 

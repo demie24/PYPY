@@ -5,7 +5,7 @@ from typing import Dict, Any, List, Set, Tuple
 
 # Setup import paths
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from topology_recovery_engine import TopologyRecoveryEngine
+from core.self_healing.topology_recovery_engine import TopologyRecoveryEngine
 
 logger = logging.getLogger("self_healing.islanding_engine")
 

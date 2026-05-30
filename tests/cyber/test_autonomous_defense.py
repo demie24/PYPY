@@ -7,20 +7,16 @@ import numpy as np
 from unittest.mock import MagicMock
 
 # Add core directories to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "core")))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "core", "cyber_defense")))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "core", "self_healing")))
 
 from core.cyber_defense.defense_escalation import DefenseEscalator
-from campaign_response_engine import CampaignResponseEngine
-from adaptive_defense_engine import AdaptiveDefenseEngine
-from autonomous_defense_coordinator import AutonomousDefenseCoordinator
-from containment_engine import ContainmentEngine
-from defense_memory import DefenseMemory
-from campaign_timeline import CampaignTimeline
-from rl_environment import GridRLEnvironment
-from reward_engine import RewardEngine
+from core.cyber_defense.campaign_response_engine import CampaignResponseEngine
+from core.cyber_defense.adaptive_defense_engine import AdaptiveDefenseEngine
+from core.cyber_defense.autonomous_defense_coordinator import AutonomousDefenseCoordinator
+from core.cyber_defense.containment_engine import ContainmentEngine
+from core.cyber_defense.defense_memory import DefenseMemory
+from core.cyber_defense.campaign_timeline import CampaignTimeline
+from core.self_healing.rl_environment import GridRLEnvironment
+from core.self_healing.reward_engine import RewardEngine
 
 class TestAutonomousDefense(unittest.TestCase):
     def setUp(self):

@@ -2,8 +2,8 @@ import time
 import random
 import logging
 from typing import Dict, Any, List, Optional
-from hardware_state_manager import HardwareStateManager
-from relay_controller import RelayController
+from core.hardware.hardware_state_manager import HardwareStateManager
+from core.hardware.relay_controller import RelayController
 
 logger = logging.getLogger("hardware.plc_interface")
 

@@ -1,3 +1,20 @@
+"""
+PYPY Cybersecurity Research Test Suite
+
+This test module validates simulated Digispark attack simulation behavior
+for defensive cybersecurity research, smart-grid resilience evaluation,
+and cyber-physical attack detection studies.
+
+These simulations are intended strictly for:
+
+* educational purposes
+* controlled laboratory environments
+* defensive security validation
+* cyber range experimentation
+
+No offensive deployment functionality is provided or intended.
+"""
+
 import unittest
 import sys
 import os

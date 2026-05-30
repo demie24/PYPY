@@ -153,7 +153,7 @@ class TestAIOrchestrator(unittest.TestCase):
         """Test 4: Verify Emergency Mode State & Operator Escalation (Low Stability)"""
         tel = json.loads(json.dumps(self.base_telemetry))
         tel["state"]["breakers"]["L1_4"] = "OPEN"
-        tel["state"]["breakers"]["L3_6"] = "OPEN"
+        tel["state"]["breakers"]["L3_9"] = "OPEN"
         tel["state"]["breakers"]["L5_6"] = "OPEN"
         tel["state"]["breakers"]["L8_9"] = "OPEN"
         

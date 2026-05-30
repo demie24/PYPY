@@ -3,7 +3,7 @@
     {
       "query": "buka youtube",
       "action": "open_youtube",
-      "timestamp": 1780164225502,
+      "timestamp": 1780166065431,
       "temporal_bin": "NIGHT",
       "hour": 2
     }
@@ -15,7 +15,7 @@
       "bins": {
         "NIGHT": 1
       },
-      "last_seen": 1780164225502
+      "last_seen": 1780166065431
     }
   }
 }

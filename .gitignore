@@ -1,24 +1,18 @@
 # Python
-__pycache__/
-<<<<<<< HEAD
-*.pyc
-*.pyo
-*.egg-info/
-.pytest_cache/
-*.egg
-dist/
-build/
 
-# Virtual environments
-venv/
-env/
-ENV/
-=======
+**pycache**/
 *.py[cod]
 *$py.class
 *.so
 .Python
+*.egg
+*.egg-info/
+.installed.cfg
+
+# Build / Distribution
+
 build/
+dist/
 develop-eggs/
 eggs/
 .eggs/
@@ -30,70 +24,28 @@ var/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 MANIFEST
 
 # Virtual environments
+
 venv/
 ENV/
 env/
-.venv
->>>>>>> bf060ca (chore: repository cleanup & modernization)
+.venv/
 
 # IDE
+
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-<<<<<<< HEAD
-
-# Node/Frontend
-node_modules/
-.vite/
-dashboard/dist/
-dashboard/node_modules/
-dashboard/.env.local
-
-# Machine Learning
-*.pt
-<<<<<<< HEAD
-*.pth
-*.pkl
-*.h5
-*.model
-training_logs/
-scratch/
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Docker
-.dockerignore
-=======
-*.egg-info/
-training_logs/
-analytics/*.csv
-__pycache__/
-=======
 .project
 .pydevproject
 .settings/
 
 # OS
+
 .DS_Store
 .DS_Store?
 ._*
@@ -102,45 +54,58 @@ __pycache__/
 ehthumbs.db
 Thumbs.db
 
-# Project-specific generated directories
+# Project generated directories
+
 scratch/
 training_logs/
 analytics/
 checkpoints/
 logs/
+
+# Logs
+
 *.log
 *.pid
 
 # Environment
+
 .env
 .env.local
 .env.*.local
 
 # Docker
-.docker
+
 docker-compose.override.yml
 
 # Node / Dashboard
+
 node_modules/
 .next/
 out/
 dashboard/dist/
 dashboard/node_modules/
+dashboard/.env.local
 .vite/
 
 # Tests & Coverage
->>>>>>> bf060ca (chore: repository cleanup & modernization)
+
 .pytest_cache/
 .coverage
 htmlcov/
 coverage.xml
 
-# ML Models & data
+# ML Models & Data
+
 *.h5
 *.pkl
 *.joblib
 *.pt
+*.pth
+*.model
+*.hex
+
+# Simulation / Analytics
+
+analytics/*.csv
 models/checkpoints/
 simulation_data/
-*.hex
-analytics/*.csv

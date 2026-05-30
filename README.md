@@ -49,6 +49,92 @@ A modular, cyber-physical platform for simulating power distribution grids with 
 │                                                               │
 └─────────────────────────────────────────────────────────────┘
 ```
+## 🚀 Quick Start
+
+### Prerequisites
+
+Required software:
+
+* Python 3.10+
+* Docker & Docker Compose
+* Node.js 18+
+* npm
+* Git
+
+Recommended environment:
+
+* Linux (Ubuntu/Kali/Debian)
+* 8GB+ RAM for AI modules
+* Docker Desktop or native Docker Engine
+
+---
+
+### Environment Setup
+
+Clone repository:
+
+```bash
+git clone https://github.com/demie24/PYPY.git
+cd PYPY
+```
+
+Create environment configuration:
+
+```bash
+cp .env.example .env
+```
+
+Install backend dependencies:
+
+```bash
+pip install -r core/requirements.txt
+```
+
+Install dashboard dependencies:
+
+```bash
+cd dashboard
+npm install
+cd ..
+```
+
+---
+
+### Running the Platform
+
+Start all services:
+
+```bash
+docker compose up --build
+```
+
+Dashboard access:
+
+```text
+http://localhost:5173
+```
+
+Gateway API:
+
+```text
+http://localhost:8000
+```
+
+---
+
+### Running Tests
+
+Run full regression suite:
+
+```bash
+pytest
+```
+
+Run specific test module:
+
+```bash
+pytest tests/self_healing/test_rl_self_healing.py
+```
 
 ---
 

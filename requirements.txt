@@ -1,9 +1,0 @@
-pytest
-numpy
-pandas
-torch
-paho-mqtt
-fastapi
-uvicorn
-websockets
-scikit-learn

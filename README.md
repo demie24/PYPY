@@ -56,35 +56,51 @@ A modular, cyber-physical platform for simulating power distribution grids with 
 
 ```
 smart-grid-cybersecurity/
-├── core/                          # Core backend services
-│   ├── requirements.txt           # Python dependencies
-│   ├── requirements-ai.txt        # AI-specific packages
-│   ├── gateway/                   # WebSocket & MQTT router
-│   ├── digital_twin/              # Power grid simulator
-│   ├── ai_detection/              # ML anomaly detection
-│   ├── self_healing/              # FLISR orchestrator
+├── core/                          # All backend Python packages
+│   ├── requirements.txt           # Base Python dependencies
+│   ├── requirements-ai.txt        # AI/ML packages (torch, sklearn, etc.)
+│   ├── gateway/                   # FastAPI WebSocket + MQTT bridge
+│   ├── digital_twin/              # IEEE 9-Bus power flow simulator
+│   ├── ai_detection/              # FDIA/UCIA anomaly detection
+│   ├── ai_prediction/             # PINN/LSTM inference engine
+│   ├── self_healing/              # FLISR + RL restoration engine
+│   │   └── rl/                    # PPO / DQN agents
+│   ├── cyber_defense/             # Adaptive defense orchestration
+│   ├── physics_validation/        # KCL/KVL telemetry validation
+│   ├── orchestrator/              # Multi-agent AI orchestrator
 │   ├── relay_protection/          # IED protection logic
-│   ├── attack_simulator/          # Cyber-attack injector
-│   └── shared/                    # Common utilities
+│   ├── attack_simulator/          # Cyber-attack injector (red-team)
+│   ├── hardware/                  # ESP32 HIL control layer
+│   └── assistant/                 # Voice/NLP operator assistant
 │
-├── dashboard/                     # React frontend
-│   ├── src/
-│   ├── public/
+├── dashboard/                     # React/Vite frontend
 │   └── Dockerfile
 │
-├── hardware/                      # ESP32 firmware (pending)
-│   ├── esp32_firmware/
+├── hardware/                      # ESP32 firmware (pending hardware)
 │   └── README.md
 │
-├── tests/                         # Unit & integration tests
-│   ├── test_*.py
-│   └── conftest.py
+├── tests/                         # 379-test suite (355 unit + integration)
+│   ├── conftest.py                # Shared fixtures (MQTT, grid state, etc.)
+│   ├── unit/                      # Unit tests — no external services needed
+│   ├── integration/               # Integration tests (requires MQTT broker)
+│   ├── cyber/                     # Cyber defense scenario tests
+│   ├── physics/                   # PINN / physics validation tests
+│   └── self_healing/              # RL self-healing tests
 │
+├── docs/                          # Reference documentation
+│   ├── API_REFERENCE.md           # Gateway API endpoints
+│   └── MQTT_TOPICS.md             # MQTT message specification
+│
+├── logs/                          # Service log output (gitignored)
+├── checkpoints/                   # RL model checkpoints (gitignored)
+├── analytics/                     # Training run analytics (gitignored)
+│
+├── ARCHITECTURE.md                # Detailed system design
+├── CONTRIBUTING.md                # Development guide
 ├── docker-compose.yml             # Service orchestration
 ├── mosquitto.conf                 # MQTT broker config
-├── .gitignore                     # Git ignore rules
-├── README.md                      # This file
-└── ARCHITECTURE.md                # Detailed design docs
+├── pyproject.toml                 # Python package config + pytest settings
+└── .gitignore
 
 ```
 
@@ -211,42 +227,23 @@ hardware/sensor/readings       # Hardware sensor data
 
 ## 🧪 Testing
 
-### Run Unit Tests
-
 ```bash
-# Install test dependencies
-pip install pytest pytest-cov pytest-asyncio
+# Install the package (required for `from core.X.Y import Z` imports)
+pip install -e .
 
-# Run all tests
-pytest tests/ -v
+# Fast check — no external services needed (379 tests)
+pytest tests/ -m "not integration" -q
 
-# Run with coverage
-pytest tests/ --cov=core --cov-report=html
-```
+# Full unit suite with verbose output
+pytest tests/unit/ -v
 
-### Run Integration Tests
+# With coverage report
+pytest tests/unit/ --cov=core --cov-report=html
+open htmlcov/index.html
 
-```bash
-# Ensure docker-compose services are running
-docker-compose up -d
-
-# Run integration tests
-pytest tests/integration -v
-```
-
-### Test File Organization
-
-```
-tests/
-├── unit/
-│   ├── test_digital_twin.py
-│   ├── test_ai_detection.py
-│   ├── test_self_healing.py
-│   └── test_gateway.py
-├── integration/
-│   ├── test_system_flow.py
-│   └── test_mqtt_communication.py
-└── conftest.py               # Pytest fixtures
+# Integration tests (requires MQTT broker running)
+docker-compose up -d mqtt
+pytest tests/integration/ -v
 ```
 
 ---
@@ -359,32 +356,21 @@ docker-compose up -d
 
 ## 🔄 CI/CD
 
-This project uses GitHub Actions for:
-- ✅ Running tests on every push
-- ✅ Building Docker images
-- ✅ Code quality checks (coming soon)
-
-See `.github/workflows/` for details.
+This project uses **GitHub Actions** (`.github/workflows/test.yml`) for:
+- ✅ Running unit + non-integration tests on every push/PR
+- ✅ Flake8 lint (syntax errors block; style warnings are advisory)
+- ✅ Coverage report uploaded to Codecov
+- ✅ Docker image build validation on `main` branch pushes
 
 ---
 
 ## 🤝 Contributing
 
-1. Create feature branch: `git checkout -b feature/my-feature`
-2. Write tests for new code
-3. Run tests: `pytest tests/ -v`
-4. Commit with clear message: `git commit -m "Add feature: description"`
-5. Push and create Pull Request
-
-**Code Style**: Follow PEP 8, use `black` for formatting
-
-```bash
-# Format code
-black core/
-
-# Check style
-flake8 core/
-```
+See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the full development guide, including:
+- Branch and commit conventions
+- Import style requirements (`from core.X.Y import Z`)
+- How to add a new service
+- Testing guidelines and fixture usage
 
 ---
 

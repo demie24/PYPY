@@ -1,6 +1,10 @@
 version: '3.9'
 
 services:
+
+  # ═══════════════════════════════════════
+  # INFRASTRUCTURE
+  # ═══════════════════════════════════════
   mqtt:
     image: eclipse-mosquitto:latest
     container_name: smart_grid_mqtt
@@ -9,10 +13,20 @@ services:
       - "9001:9001"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mqtt_data:/mosquitto/data
+      - mqtt_logs:/mosquitto/log
     restart: always
     networks:
       - grid-net
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "test", "-C", "1", "-E"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # ═══════════════════════════════════════
+  # ACTIVE CORE SERVICES
+  # ═══════════════════════════════════════
   gateway:
     build:
       context: ./core
@@ -23,11 +37,15 @@ services:
     environment:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
     depends_on:
-      - mqtt
+      mqtt:
+        condition: service_healthy
     restart: always
     networks:
       - grid-net
+    volumes:
+      - ./logs/gateway:/app/logs
 
   digital_twin:
     build:
@@ -37,11 +55,15 @@ services:
     environment:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
     depends_on:
-      - mqtt
+      mqtt:
+        condition: service_healthy
     restart: always
     networks:
       - grid-net
+    volumes:
+      - ./logs/digital_twin:/app/logs
 
   self_healing:
     build:
@@ -51,28 +73,41 @@ services:
     environment:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
     depends_on:
-      - mqtt
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_started
     restart: always
     networks:
       - grid-net
+    volumes:
+      - ./logs/self_healing:/app/logs
 
   ai_detection:
-    image: python:3.10-slim
+    build:
+      context: ./core
+      dockerfile: ./ai_detection/Dockerfile
     container_name: smart_grid_ai_detection
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python ai_detection/detector.py"
     environment:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
     depends_on:
-      - mqtt
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_started
     restart: always
     networks:
       - grid-net
+    volumes:
+      - ./logs/ai_detection:/app/logs
 
+  # ═══════════════════════════════════════
+  # FRONTEND
+  # ═══════════════════════════════════════
   dashboard:
     build:
       context: ./dashboard
@@ -85,183 +120,137 @@ services:
     restart: always
     networks:
       - grid-net
-
-  threat_engine:
-    image: python:3.10-slim
-    container_name: smart_grid_threat_engine
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python threat_engine/scorer.py"
     environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+      - REACT_APP_API_URL=http://localhost:8000
 
-  data_collector:
-    image: python:3.10-slim
-    container_name: smart_grid_data_collector
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python data_collector/collector.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+  # ═══════════════════════════════════════
+  # INCOMPLETE SERVICES (enable when ready)
+  # ═══════════════════════════════════════
 
-  ai_prediction:
-    image: python:3.10-slim
-    container_name: smart_grid_ai_prediction_live
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt && python ai_prediction/pinn_inference.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
-
-  # ai_prediction_multi_bus:
-  #   image: python:3.10-slim
-  #   container_name: smart_grid_ai_prediction_multi_bus
-  #   working_dir: /app
-  #   volumes:
-  #     - ./core:/app
-  #   command: sh -c "pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt && python ai_prediction/multi_bus_inference.py"
+  # threat_engine:  # Status: paused – scorer.py not yet production-ready
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./threat_engine/Dockerfile
+  #   container_name: smart_grid_threat_engine
   #   environment:
   #     - MQTT_BROKER=mqtt
   #     - MQTT_PORT=1883
   #   depends_on:
-  #     - mqtt
+  #     mqtt:
+  #       condition: service_healthy
   #   restart: always
   #   networks:
   #     - grid-net
 
-  # ai_prediction_threat_aware:
-  #   image: python:3.10-slim
-  #   container_name: smart_grid_ai_prediction_threat_aware
-  #   working_dir: /app
-  #   volumes:
-  #     - ./core:/app
-  #   command: sh -c "pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt && python ai_prediction/threat_aware_inference.py"
+  # data_collector:  # Status: paused – collector.py not yet production-ready
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./data_collector/Dockerfile
+  #   container_name: smart_grid_data_collector
   #   environment:
   #     - MQTT_BROKER=mqtt
   #     - MQTT_PORT=1883
   #   depends_on:
-  #     - mqtt
+  #     mqtt:
+  #       condition: service_healthy
   #   restart: always
   #   networks:
   #     - grid-net
 
-  physics_validation:
-    image: python:3.10-slim
-    container_name: smart_grid_physics_validation
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python physics_validation/validation_engine.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+  # ai_prediction:  # Status: paused – PINN live inference (awaiting trained model)
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./ai_prediction/Dockerfile
+  #   container_name: smart_grid_ai_prediction
+  #   environment:
+  #     - MQTT_BROKER=mqtt
+  #     - MQTT_PORT=1883
+  #   depends_on:
+  #     mqtt:
+  #       condition: service_healthy
+  #   restart: always
+  #   networks:
+  #     - grid-net
 
-  ai_orchestrator:
-    image: python:3.10-slim
-    container_name: smart_grid_ai_orchestrator
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python orchestrator/ai_orchestrator.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+  # physics_validation:  # Status: paused – runs as test suite component, not daemon
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./physics_validation/Dockerfile
+  #   container_name: smart_grid_physics_validation
+  #   environment:
+  #     - MQTT_BROKER=mqtt
+  #     - MQTT_PORT=1883
+  #   depends_on:
+  #     mqtt:
+  #       condition: service_healthy
+  #   restart: always
+  #   networks:
+  #     - grid-net
 
-  pre_rl:
-    image: python:3.10-slim
-    container_name: smart_grid_pre_rl
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt && python self_healing/rl_environment.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+  # ai_orchestrator:  # Status: paused – integrated via self_healing service
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./orchestrator/Dockerfile
+  #   container_name: smart_grid_ai_orchestrator
+  #   environment:
+  #     - MQTT_BROKER=mqtt
+  #     - MQTT_PORT=1883
+  #   depends_on:
+  #     mqtt:
+  #       condition: service_healthy
+  #   restart: always
+  #   networks:
+  #     - grid-net
 
-  cyber_defense:
-    image: python:3.10-slim
-    container_name: smart_grid_cyber_defense
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python cyber_defense/defense_orchestrator.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+  # cyber_defense:  # Status: paused – integrated via self_healing orchestrator
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./cyber_defense/Dockerfile
+  #   container_name: smart_grid_cyber_defense
+  #   environment:
+  #     - MQTT_BROKER=mqtt
+  #     - MQTT_PORT=1883
+  #   depends_on:
+  #     mqtt:
+  #       condition: service_healthy
+  #   restart: always
+  #   networks:
+  #     - grid-net
 
-  hardware:
-    image: python:3.10-slim
-    container_name: smart_grid_hardware
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python hardware/main.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+  # hardware:  # Status: pending – ESP32 hardware not yet available
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./hardware/Dockerfile
+  #   container_name: smart_grid_hardware
+  #   environment:
+  #     - MQTT_BROKER=mqtt
+  #     - MQTT_PORT=1883
+  #   depends_on:
+  #     mqtt:
+  #       condition: service_healthy
+  #   restart: always
+  #   networks:
+  #     - grid-net
 
-  assistant:
-    image: python:3.10-slim
-    container_name: smart_grid_assistant
-    working_dir: /app
-    volumes:
-      - ./core:/app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python assistant/assistant_daemon.py"
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      - mqtt
-    restart: always
-    networks:
-      - grid-net
+  # assistant:  # Status: paused – voice orchestration not production-ready
+  #   build:
+  #     context: ./core
+  #     dockerfile: ./assistant/Dockerfile
+  #   container_name: smart_grid_assistant
+  #   environment:
+  #     - MQTT_BROKER=mqtt
+  #     - MQTT_PORT=1883
+  #   depends_on:
+  #     mqtt:
+  #       condition: service_healthy
+  #   restart: always
+  #   networks:
+  #     - grid-net
 
 networks:
   grid-net:
     driver: bridge
+
+volumes:
+  mqtt_data:
+  mqtt_logs:

@@ -18,4 +18,14 @@ addopts = "-v --tb=short"
 markers = [
     "integration: marks tests requiring live external services (MQTT broker, etc.)",
     "slow: marks tests that take a long time to run",
+    "unit: marks fast, isolated unit tests",
+]
+
+[tool.coverage.run]
+source = ["core"]
+omit = [
+    "core/*/main.py",
+    "core/*/train*.py",
+    "core/*/training*.py",
+    "*/__pycache__/*",
 ]

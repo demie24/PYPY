@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+<<<<<<< HEAD
 *.pyc
 *.pyo
 *.egg-info/
@@ -12,6 +13,34 @@ build/
 venv/
 env/
 ENV/
+=======
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+>>>>>>> bf060ca (chore: repository cleanup & modernization)
 
 # IDE
 .vscode/
@@ -19,6 +48,7 @@ ENV/
 *.swp
 *.swo
 *~
+<<<<<<< HEAD
 
 # Node/Frontend
 node_modules/
@@ -58,4 +88,59 @@ Thumbs.db
 training_logs/
 analytics/*.csv
 __pycache__/
+=======
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project-specific generated directories
+scratch/
+training_logs/
+analytics/
+checkpoints/
+logs/
+*.log
+*.pid
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Docker
+.docker
+docker-compose.override.yml
+
+# Node / Dashboard
+node_modules/
+.next/
+out/
+dashboard/dist/
+dashboard/node_modules/
+.vite/
+
+# Tests & Coverage
+>>>>>>> bf060ca (chore: repository cleanup & modernization)
 .pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ML Models & data
+*.h5
+*.pkl
+*.joblib
+*.pt
+models/checkpoints/
+simulation_data/
+*.hex
+analytics/*.csv

@@ -19,3 +19,94 @@ The dashboard is a dynamic frontend visualization platform built with React, Vit
    npm run dev
    ```
 3. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+
+# Repository Architecture
+
+## Core Backend
+
+Located under:
+
+core/
+
+Subsystems include:
+
+* AI anomaly detection
+* cyber defense orchestration
+* assistant cognition runtime
+* digital twin simulation
+* hardware abstraction
+* reinforcement learning self-healing
+* predictive coordination
+
+## Dashboard Frontend
+
+Located under:
+
+dashboard/
+
+Built using:
+
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+
+Provides:
+
+* telemetry visualization
+* orchestration monitoring
+* cyber attack controls
+* assistant cognition interfaces
+* resilience monitoring
+
+## Testing
+
+Located under:
+
+tests/
+
+Test suites:
+
+* unit
+* integration
+* cyber
+* physics
+* self_healing
+
+## Documentation
+
+Located under:
+
+docs/
+
+Includes:
+
+* API references
+* MQTT topic mapping
+* architecture documentation
+
+## Hardware Layer
+
+Located under:
+
+hardware/
+
+Current support:
+
+* virtual hardware simulation
+* ESP32-ready architecture
+* relay orchestration preparation
+
+---
+
+# Development Status
+
+| Phase     | Status                 |
+| --------- | ---------------------- |
+| Phase 1–6 | Complete               |
+| Phase 7   | Hardware-pending       |
+| Phase 8   | Hardware-pending       |
+| Phase 9   | Complete               |
+| Phase 10  | Paused                 |
+| Phase 11  | Thesis & documentation |

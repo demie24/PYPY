@@ -3,9 +3,9 @@
     {
       "query": "buka youtube",
       "action": "open_youtube",
-      "timestamp": 1780151246221,
-      "temporal_bin": "EVENING",
-      "hour": 22
+      "timestamp": 1780160346766,
+      "temporal_bin": "NIGHT",
+      "hour": 0
     }
   ],
   "recurrence_history": {
@@ -13,9 +13,9 @@
       "action": "open_youtube",
       "count": 1,
       "bins": {
-        "EVENING": 1
+        "NIGHT": 1
       },
-      "last_seen": 1780151246221
+      "last_seen": 1780160346766
     }
   }
 }

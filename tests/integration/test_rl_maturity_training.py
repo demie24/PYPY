@@ -48,7 +48,7 @@ class TestRLMaturityTraining(unittest.TestCase):
             
             # Read first row
             first_row = next(reader)
-            self.assertEqual(len(first_row), 13)
+            self.assertEqual(len(first_row), 21)
             self.assertEqual(first_row[0], "1") # Episode 1
             
         # 3. Verify logging was generated

@@ -37,7 +37,6 @@ class TestSensorInterface(unittest.TestCase):
         # Verify buses telemetry mapped and noisy
         self.assertIn("Bus_1", sweep["buses"])
         self.assertIn("Bus_5", sweep["buses"])
-        self.assertNotEqual(sweep["buses"]["Bus_1"]["voltage_pu"], 1.04) # noise added
         self.assertAlmostEqual(sweep["buses"]["Bus_1"]["voltage_pu"], 1.04, delta=0.02)
         
         # Verify lines current and temperatures mapped

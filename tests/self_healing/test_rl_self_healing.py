@@ -134,7 +134,8 @@ class TestRLSelfHealing(unittest.TestCase):
         dqn_agent = DQNAgent(state_dim=self.state_dim, action_dim=self.action_dim)
         
         temp_dir = os.path.join(CURRENT_DIR, "core", "models")
-        
+        os.makedirs(temp_dir, exist_ok=True)
+
         # PPO save/load
         ppo_agent.save_checkpoint(temp_dir, "test_ppo.pt")
         loaded_ppo = PPOAgent(state_dim=self.state_dim, action_dim=self.action_dim)

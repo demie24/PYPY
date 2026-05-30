@@ -146,6 +146,36 @@ class MQTTManager:
             client.subscribe("assistant/live_stream")
             client.subscribe("assistant/dialogue")
             client.subscribe("assistant/orchestration_planner")
+            
+            # Phase 9.6 subscriptions
+            client.subscribe("assistant/predictive_coordination")
+            client.subscribe("assistant/persistent_memory")
+            client.subscribe("assistant/pattern_awareness")
+            client.subscribe("assistant/workflow_optimizer")
+            client.subscribe("assistant/cross_system_coordination")
+            
+            # Phase 9.7 subscriptions
+            client.subscribe("assistant/edge_awareness")
+            client.subscribe("assistant/relay_health")
+            client.subscribe("assistant/telemetry_correlation")
+            client.subscribe("assistant/synchronization_awareness")
+            client.subscribe("assistant/cyber_physical_reasoning")
+
+            # Phase 9.8 subscriptions
+            client.subscribe("assistant/agent_coordination")
+            client.subscribe("assistant/telemetry_agent")
+            client.subscribe("assistant/relay_agent")
+            client.subscribe("assistant/workflow_agent")
+            client.subscribe("assistant/security_agent")
+
+            # Phase 9.9 subscriptions
+            client.subscribe("assistant/swarm_coordination")
+            client.subscribe("assistant/federated_memory")
+            client.subscribe("assistant/distributed_consensus")
+            client.subscribe("assistant/edge_mesh")
+            client.subscribe("assistant/swarm_anomaly_fusion")
+
+
 
         else:
             logger.error(f"MQTT Connection failed with return code {rc}")
@@ -346,6 +376,56 @@ class MQTTManager:
                 store.update_assistant_dialogue(payload)
             elif topic == "assistant/orchestration_planner":
                 store.update_assistant_orchestration_planner(payload)
+                
+            # Phase 9.6 updaters
+            elif topic == "assistant/predictive_coordination":
+                store.update_assistant_predictive_coordination(payload)
+            elif topic == "assistant/persistent_memory":
+                store.update_assistant_persistent_memory(payload)
+            elif topic == "assistant/pattern_awareness":
+                store.update_assistant_pattern_awareness(payload)
+            elif topic == "assistant/workflow_optimizer":
+                store.update_assistant_workflow_optimizer(payload)
+            elif topic == "assistant/cross_system_coordination":
+                store.update_assistant_cross_system_coordination(payload)
+
+            # Phase 9.7 updaters
+            elif topic == "assistant/edge_awareness":
+                store.update_assistant_edge_awareness(payload)
+            elif topic == "assistant/relay_health":
+                store.update_assistant_relay_health(payload)
+            elif topic == "assistant/telemetry_correlation":
+                store.update_assistant_telemetry_correlation(payload)
+            elif topic == "assistant/synchronization_awareness":
+                store.update_assistant_synchronization_awareness(payload)
+            elif topic == "assistant/cyber_physical_reasoning":
+                store.update_assistant_cyber_physical_reasoning(payload)
+
+            # Phase 9.8 updaters
+            elif topic == "assistant/agent_coordination":
+                store.update_assistant_agent_coordination(payload)
+            elif topic == "assistant/telemetry_agent":
+                store.update_assistant_telemetry_agent(payload)
+            elif topic == "assistant/relay_agent":
+                store.update_assistant_relay_agent(payload)
+            elif topic == "assistant/workflow_agent":
+                store.update_assistant_workflow_agent(payload)
+            elif topic == "assistant/security_agent":
+                store.update_assistant_security_agent(payload)
+
+            # Phase 9.9 handlers
+            elif topic == "assistant/swarm_coordination":
+                store.update_assistant_swarm_coordination(payload)
+            elif topic == "assistant/federated_memory":
+                store.update_assistant_federated_memory(payload)
+            elif topic == "assistant/distributed_consensus":
+                store.update_assistant_distributed_consensus(payload)
+            elif topic == "assistant/edge_mesh":
+                store.update_assistant_edge_mesh(payload)
+            elif topic == "assistant/swarm_anomaly_fusion":
+                store.update_assistant_swarm_anomaly_fusion(payload)
+
+
 
 
                 

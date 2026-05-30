@@ -144,6 +144,35 @@ export default function App() {
   const [assistantLiveStream, setAssistantLiveStream] = useState<any>(null);
   const [assistantDialogue, setAssistantDialogue] = useState<any>(null);
   const [assistantOrchestrationPlanner, setAssistantOrchestrationPlanner] = useState<any>(null);
+  
+  // Phase 9.6 states
+  const [assistantPredictiveCoordination, setAssistantPredictiveCoordination] = useState<any>(null);
+  const [assistantPersistentMemory, setAssistantPersistentMemory] = useState<any>(null);
+  const [assistantPatternAwareness, setAssistantPatternAwareness] = useState<any>(null);
+  const [assistantWorkflowOptimizer, setAssistantWorkflowOptimizer] = useState<any>(null);
+  const [assistantCrossSystemCoordination, setAssistantCrossSystemCoordination] = useState<any>(null);
+
+  // Phase 9.7 states
+  const [assistantEdgeAwareness, setAssistantEdgeAwareness] = useState<any>(null);
+  const [assistantRelayHealth, setAssistantRelayHealth] = useState<any>(null);
+  const [assistantTelemetryCorrelation, setAssistantTelemetryCorrelation] = useState<any>(null);
+  const [assistantSynchronizationAwareness, setAssistantSynchronizationAwareness] = useState<any>(null);
+  const [assistantCyberPhysicalReasoning, setAssistantCyberPhysicalReasoning] = useState<any>(null);
+
+  // Phase 9.8 states
+  const [assistantAgentCoordination, setAssistantAgentCoordination] = useState<any>(null);
+  const [assistantTelemetryAgent, setAssistantTelemetryAgent] = useState<any>(null);
+  const [assistantRelayAgent, setAssistantRelayAgent] = useState<any>(null);
+  const [assistantWorkflowAgent, setAssistantWorkflowAgent] = useState<any>(null);
+  const [assistantSecurityAgent, setAssistantSecurityAgent] = useState<any>(null);
+
+  // Phase 9.9 states
+  const [assistantSwarmCoordination, setAssistantSwarmCoordination] = useState<any>(null);
+  const [assistantFederatedMemory, setAssistantFederatedMemory] = useState<any>(null);
+  const [assistantDistributedConsensus, setAssistantDistributedConsensus] = useState<any>(null);
+  const [assistantEdgeMesh, setAssistantEdgeMesh] = useState<any>(null);
+  const [assistantSwarmAnomalyFusion, setAssistantSwarmAnomalyFusion] = useState<any>(null);
+
 
   const [proactiveAutoMode, setProactiveAutoMode] = useState<boolean>(true);
   const [flisrAuto, setFlisrAuto] = useState<boolean>(true);
@@ -300,6 +329,34 @@ export default function App() {
       assistantLiveStream,
       assistantDialogue,
       assistantOrchestrationPlanner,
+
+      // Phase 9.6 states
+      assistantPredictiveCoordination,
+      assistantPersistentMemory,
+      assistantPatternAwareness,
+      assistantWorkflowOptimizer,
+      assistantCrossSystemCoordination,
+
+      // Phase 9.7 states
+      assistantEdgeAwareness,
+      assistantRelayHealth,
+      assistantTelemetryCorrelation,
+      assistantSynchronizationAwareness,
+      assistantCyberPhysicalReasoning,
+
+      // Phase 9.8 states
+      assistantAgentCoordination,
+      assistantTelemetryAgent,
+      assistantRelayAgent,
+      assistantWorkflowAgent,
+      assistantSecurityAgent,
+
+      // Phase 9.9 states
+      assistantSwarmCoordination,
+      assistantFederatedMemory,
+      assistantDistributedConsensus,
+      assistantEdgeMesh,
+      assistantSwarmAnomalyFusion,
 
       flisrState,
       flisrIsolated,
@@ -644,6 +701,76 @@ export default function App() {
           if (data.assistant_orchestration_planner) {
             setAssistantOrchestrationPlanner(data.assistant_orchestration_planner);
           }
+          
+          // Phase 9.6 bootstrap
+          if (data.assistant_predictive_coordination) {
+            setAssistantPredictiveCoordination(data.assistant_predictive_coordination);
+          }
+          if (data.assistant_persistent_memory) {
+            setAssistantPersistentMemory(data.assistant_persistent_memory);
+          }
+          if (data.assistant_pattern_awareness) {
+            setAssistantPatternAwareness(data.assistant_pattern_awareness);
+          }
+          if (data.assistant_workflow_optimizer) {
+            setAssistantWorkflowOptimizer(data.assistant_workflow_optimizer);
+          }
+          if (data.assistant_cross_system_coordination) {
+            setAssistantCrossSystemCoordination(data.assistant_cross_system_coordination);
+          }
+          
+          // Phase 9.7 bootstrap
+          if (data.assistant_edge_awareness) {
+            setAssistantEdgeAwareness(data.assistant_edge_awareness);
+          }
+          if (data.assistant_relay_health) {
+            setAssistantRelayHealth(data.assistant_relay_health);
+          }
+          if (data.assistant_telemetry_correlation) {
+            setAssistantTelemetryCorrelation(data.assistant_telemetry_correlation);
+          }
+          if (data.assistant_synchronization_awareness) {
+            setAssistantSynchronizationAwareness(data.assistant_synchronization_awareness);
+          }
+          if (data.assistant_cyber_physical_reasoning) {
+            setAssistantCyberPhysicalReasoning(data.assistant_cyber_physical_reasoning);
+          }
+
+          // Phase 9.8 bootstrap
+          if (data.assistant_agent_coordination) {
+            setAssistantAgentCoordination(data.assistant_agent_coordination);
+          }
+          if (data.assistant_telemetry_agent) {
+            setAssistantTelemetryAgent(data.assistant_telemetry_agent);
+          }
+          if (data.assistant_relay_agent) {
+            setAssistantRelayAgent(data.assistant_relay_agent);
+          }
+          if (data.assistant_workflow_agent) {
+            setAssistantWorkflowAgent(data.assistant_workflow_agent);
+          }
+          if (data.assistant_security_agent) {
+            setAssistantSecurityAgent(data.assistant_security_agent);
+          }
+
+          // Phase 9.9 bootstrap
+          if (data.assistant_swarm_coordination) {
+            setAssistantSwarmCoordination(data.assistant_swarm_coordination);
+          }
+          if (data.assistant_federated_memory) {
+            setAssistantFederatedMemory(data.assistant_federated_memory);
+          }
+          if (data.assistant_distributed_consensus) {
+            setAssistantDistributedConsensus(data.assistant_distributed_consensus);
+          }
+          if (data.assistant_edge_mesh) {
+            setAssistantEdgeMesh(data.assistant_edge_mesh);
+          }
+          if (data.assistant_swarm_anomaly_fusion) {
+            setAssistantSwarmAnomalyFusion(data.assistant_swarm_anomaly_fusion);
+          }
+
+
         } 
 
         // Handle active MQTT stream broadcasts
@@ -782,6 +909,35 @@ export default function App() {
               assistantLiveStream: currentStates.assistantLiveStream,
               assistantDialogue: currentStates.assistantDialogue,
               assistantOrchestrationPlanner: currentStates.assistantOrchestrationPlanner,
+              
+              // Phase 9.6 timeline
+              assistantPredictiveCoordination: currentStates.assistantPredictiveCoordination,
+              assistantPersistentMemory: currentStates.assistantPersistentMemory,
+              assistantPatternAwareness: currentStates.assistantPatternAwareness,
+              assistantWorkflowOptimizer: currentStates.assistantWorkflowOptimizer,
+              assistantCrossSystemCoordination: currentStates.assistantCrossSystemCoordination,
+
+              // Phase 9.7 timeline
+              assistantEdgeAwareness: currentStates.assistantEdgeAwareness,
+              assistantRelayHealth: currentStates.assistantRelayHealth,
+              assistantTelemetryCorrelation: currentStates.assistantTelemetryCorrelation,
+              assistantSynchronizationAwareness: currentStates.assistantSynchronizationAwareness,
+              assistantCyberPhysicalReasoning: currentStates.assistantCyberPhysicalReasoning,
+
+              // Phase 9.8 timeline
+              assistantAgentCoordination: currentStates.assistantAgentCoordination,
+              assistantTelemetryAgent: currentStates.assistantTelemetryAgent,
+              assistantRelayAgent: currentStates.assistantRelayAgent,
+              assistantWorkflowAgent: currentStates.assistantWorkflowAgent,
+              assistantSecurityAgent: currentStates.assistantSecurityAgent,
+
+              // Phase 9.9 timeline
+              assistantSwarmCoordination: currentStates.assistantSwarmCoordination,
+              assistantFederatedMemory: currentStates.assistantFederatedMemory,
+              assistantDistributedConsensus: currentStates.assistantDistributedConsensus,
+              assistantEdgeMesh: currentStates.assistantEdgeMesh,
+              assistantSwarmAnomalyFusion: currentStates.assistantSwarmAnomalyFusion,
+
               flisrState: currentStates.flisrState,
               flisrIsolated: currentStates.flisrIsolated,
               flisrReconfigured: currentStates.flisrReconfigured,
@@ -1077,6 +1233,55 @@ export default function App() {
             setAssistantDialogue(payload);
           } else if (topic === "assistant/orchestration_planner") {
             setAssistantOrchestrationPlanner(payload);
+            
+          // Phase 9.6 incremental handlers
+          } else if (topic === "assistant/predictive_coordination") {
+            setAssistantPredictiveCoordination(payload);
+          } else if (topic === "assistant/persistent_memory") {
+            setAssistantPersistentMemory(payload);
+          } else if (topic === "assistant/pattern_awareness") {
+            setAssistantPatternAwareness(payload);
+          } else if (topic === "assistant/workflow_optimizer") {
+            setAssistantWorkflowOptimizer(payload);
+          } else if (topic === "assistant/cross_system_coordination") {
+            setAssistantCrossSystemCoordination(payload);
+
+          // Phase 9.7 incremental handlers
+          } else if (topic === "assistant/edge_awareness") {
+            setAssistantEdgeAwareness(payload);
+          } else if (topic === "assistant/relay_health") {
+            setAssistantRelayHealth(payload);
+          } else if (topic === "assistant/telemetry_correlation") {
+            setAssistantTelemetryCorrelation(payload);
+          } else if (topic === "assistant/synchronization_awareness") {
+            setAssistantSynchronizationAwareness(payload);
+          } else if (topic === "assistant/cyber_physical_reasoning") {
+            setAssistantCyberPhysicalReasoning(payload);
+
+          // Phase 9.8 incremental handlers
+          } else if (topic === "assistant/agent_coordination") {
+            setAssistantAgentCoordination(payload);
+          } else if (topic === "assistant/telemetry_agent") {
+            setAssistantTelemetryAgent(payload);
+          } else if (topic === "assistant/relay_agent") {
+            setAssistantRelayAgent(payload);
+          } else if (topic === "assistant/workflow_agent") {
+            setAssistantWorkflowAgent(payload);
+          } else if (topic === "assistant/security_agent") {
+            setAssistantSecurityAgent(payload);
+
+          // Phase 9.9 incremental handlers
+          } else if (topic === "assistant/swarm_coordination") {
+            setAssistantSwarmCoordination(payload);
+          } else if (topic === "assistant/federated_memory") {
+            setAssistantFederatedMemory(payload);
+          } else if (topic === "assistant/distributed_consensus") {
+            setAssistantDistributedConsensus(payload);
+          } else if (topic === "assistant/edge_mesh") {
+            setAssistantEdgeMesh(payload);
+          } else if (topic === "assistant/swarm_anomaly_fusion") {
+            setAssistantSwarmAnomalyFusion(payload);
+
           } else if (topic === "grid/config") {
             if ("proactive_auto" in payload) {
               setProactiveAutoMode(payload.proactive_auto);
@@ -1385,7 +1590,34 @@ export default function App() {
   const dispAssistantLiveStream = currentFrame ? currentFrame.assistantLiveStream : assistantLiveStream;
   const dispAssistantDialogue = currentFrame ? currentFrame.assistantDialogue : assistantDialogue;
   const dispAssistantOrchestrationPlanner = currentFrame ? currentFrame.assistantOrchestrationPlanner : assistantOrchestrationPlanner;
+  
+  // Phase 9.6 derived values
+  const dispAssistantPredictiveCoordination = currentFrame ? currentFrame.assistantPredictiveCoordination : assistantPredictiveCoordination;
+  const dispAssistantPersistentMemory = currentFrame ? currentFrame.assistantPersistentMemory : assistantPersistentMemory;
+  const dispAssistantPatternAwareness = currentFrame ? currentFrame.assistantPatternAwareness : assistantPatternAwareness;
+  const dispAssistantWorkflowOptimizer = currentFrame ? currentFrame.assistantWorkflowOptimizer : assistantWorkflowOptimizer;
+  const dispAssistantCrossSystemCoordination = currentFrame ? currentFrame.assistantCrossSystemCoordination : assistantCrossSystemCoordination;
 
+  // Phase 9.7 derived values
+  const dispAssistantEdgeAwareness = currentFrame ? currentFrame.assistantEdgeAwareness : assistantEdgeAwareness;
+  const dispAssistantRelayHealth = currentFrame ? currentFrame.assistantRelayHealth : assistantRelayHealth;
+  const dispAssistantTelemetryCorrelation = currentFrame ? currentFrame.assistantTelemetryCorrelation : assistantTelemetryCorrelation;
+  const dispAssistantSynchronizationAwareness = currentFrame ? currentFrame.assistantSynchronizationAwareness : assistantSynchronizationAwareness;
+  const dispAssistantCyberPhysicalReasoning = currentFrame ? currentFrame.assistantCyberPhysicalReasoning : assistantCyberPhysicalReasoning;
+
+  // Phase 9.8 derived values
+  const dispAssistantAgentCoordination = currentFrame ? currentFrame.assistantAgentCoordination : assistantAgentCoordination;
+  const dispAssistantTelemetryAgent = currentFrame ? currentFrame.assistantTelemetryAgent : assistantTelemetryAgent;
+  const dispAssistantRelayAgent = currentFrame ? currentFrame.assistantRelayAgent : assistantRelayAgent;
+  const dispAssistantWorkflowAgent = currentFrame ? currentFrame.assistantWorkflowAgent : assistantWorkflowAgent;
+  const dispAssistantSecurityAgent = currentFrame ? currentFrame.assistantSecurityAgent : assistantSecurityAgent;
+
+  // Phase 9.9 derived values
+  const dispAssistantSwarmCoordination = currentFrame ? currentFrame.assistantSwarmCoordination : assistantSwarmCoordination;
+  const dispAssistantFederatedMemory = currentFrame ? currentFrame.assistantFederatedMemory : assistantFederatedMemory;
+  const dispAssistantDistributedConsensus = currentFrame ? currentFrame.assistantDistributedConsensus : assistantDistributedConsensus;
+  const dispAssistantEdgeMesh = currentFrame ? currentFrame.assistantEdgeMesh : assistantEdgeMesh;
+  const dispAssistantSwarmAnomalyFusion = currentFrame ? currentFrame.assistantSwarmAnomalyFusion : assistantSwarmAnomalyFusion;
 
 
 
@@ -1709,6 +1941,35 @@ export default function App() {
             assistantLiveStream={dispAssistantLiveStream}
             assistantDialogue={dispAssistantDialogue}
             assistantOrchestrationPlanner={dispAssistantOrchestrationPlanner}
+            
+            // Phase 9.6 props
+            assistantPredictiveCoordination={dispAssistantPredictiveCoordination}
+            assistantPersistentMemory={dispAssistantPersistentMemory}
+            assistantPatternAwareness={dispAssistantPatternAwareness}
+            assistantWorkflowOptimizer={dispAssistantWorkflowOptimizer}
+            assistantCrossSystemCoordination={dispAssistantCrossSystemCoordination}
+
+            // Phase 9.7 props
+            assistantEdgeAwareness={dispAssistantEdgeAwareness}
+            assistantRelayHealth={dispAssistantRelayHealth}
+            assistantTelemetryCorrelation={dispAssistantTelemetryCorrelation}
+            assistantSynchronizationAwareness={dispAssistantSynchronizationAwareness}
+            assistantCyberPhysicalReasoning={dispAssistantCyberPhysicalReasoning}
+
+            // Phase 9.8 props
+            assistantAgentCoordination={dispAssistantAgentCoordination}
+            assistantTelemetryAgent={dispAssistantTelemetryAgent}
+            assistantRelayAgent={dispAssistantRelayAgent}
+            assistantWorkflowAgent={dispAssistantWorkflowAgent}
+            assistantSecurityAgent={dispAssistantSecurityAgent}
+
+            // Phase 9.9 props
+            assistantSwarmCoordination={dispAssistantSwarmCoordination}
+            assistantFederatedMemory={dispAssistantFederatedMemory}
+            assistantDistributedConsensus={dispAssistantDistributedConsensus}
+            assistantEdgeMesh={dispAssistantEdgeMesh}
+            assistantSwarmAnomalyFusion={dispAssistantSwarmAnomalyFusion}
+
             connected={connected}
             onSendControl={sendDirectMqtt}
           />

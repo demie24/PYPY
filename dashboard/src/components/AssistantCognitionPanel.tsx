@@ -171,7 +171,33 @@ interface AssistantCognitionPanelProps {
   assistantLiveStream?: LiveStream | null;
   assistantDialogue?: Dialogue | null;
   assistantOrchestrationPlanner?: OrchestrationPlanner | null;
+  // Phase 9.6 props
+  assistantPredictiveCoordination?: any | null;
+  assistantPersistentMemory?: any | null;
+  assistantPatternAwareness?: any | null;
+  assistantWorkflowOptimizer?: any | null;
+  assistantCrossSystemCoordination?: any | null;
+  // Phase 9.7 props
+  assistantEdgeAwareness?: any | null;
+  assistantRelayHealth?: any | null;
+  assistantTelemetryCorrelation?: any | null;
+  assistantSynchronizationAwareness?: any | null;
+  assistantCyberPhysicalReasoning?: any | null;
+  // Phase 9.8 props
+  assistantAgentCoordination?: any | null;
+  assistantTelemetryAgent?: any | null;
+  assistantRelayAgent?: any | null;
+  assistantWorkflowAgent?: any | null;
+  assistantSecurityAgent?: any | null;
+  // Phase 9.9 props
+  assistantSwarmCoordination?: any | null;
+  assistantFederatedMemory?: any | null;
+  assistantDistributedConsensus?: any | null;
+  assistantEdgeMesh?: any | null;
+  assistantSwarmAnomalyFusion?: any | null;
 }
+
+
 
 export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = ({
   assistantState,
@@ -196,14 +222,40 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
   assistantTaskChains,
   assistantLiveStream,
   assistantDialogue,
-  assistantOrchestrationPlanner
+  assistantOrchestrationPlanner,
+  // Phase 9.6 destruct
+  assistantPredictiveCoordination,
+  assistantPersistentMemory,
+  assistantPatternAwareness,
+  assistantWorkflowOptimizer,
+  assistantCrossSystemCoordination,
+  // Phase 9.7 destruct
+  assistantEdgeAwareness,
+  assistantRelayHealth,
+  assistantTelemetryCorrelation,
+  assistantSynchronizationAwareness,
+  assistantCyberPhysicalReasoning,
+  // Phase 9.8 destruct
+  assistantAgentCoordination,
+  assistantTelemetryAgent,
+  assistantRelayAgent,
+  assistantWorkflowAgent,
+  assistantSecurityAgent,
+  // Phase 9.9 destruct
+  assistantSwarmCoordination,
+  assistantFederatedMemory,
+  assistantDistributedConsensus,
+  assistantEdgeMesh,
+  assistantSwarmAnomalyFusion
 }) => {
+
   const [chatText, setChatText] = useState("");
   const [clarifyAnswerText, setClarifyAnswerText] = useState("");
   const [isListeningVoice, setIsListeningVoice] = useState(false);
   const [voiceSimProgress, setVoiceSimProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState<"reasoning" | "planning" | "dialogue" | "workflows" | "presence">("reasoning");
+  const [activeTab, setActiveTab] = useState<"reasoning" | "planning" | "dialogue" | "workflows" | "presence" | "autonomy" | "cyberPhysical" | "multiAgent" | "swarm">("reasoning");
   const chatEndRef = useRef<HTMLDivElement>(null);
+
 
   // Extract variables with defaults
   const state = assistantState?.state ?? "IDLE";
@@ -337,6 +389,37 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     validation_logs_count: 0,
     validation_logs: []
   };
+
+  // Phase 9.6 defaults
+  const predictive = assistantPredictiveCoordination ?? { latency_history: [], forecasts: [], suggestions: [], workflow_timings: {} };
+  const persistentMemory = assistantPersistentMemory ?? { total_interactions: 0, recurring_count: 0, recurring_actions: [], latest_interactions: [] };
+  const patterns = assistantPatternAwareness ?? { active_patterns_count: 0, active_patterns: [], voltage_oscillations_count: 0, consecutive_failures: {} };
+  const optimizer = assistantWorkflowOptimizer ?? { recommendations_count: 0, recommendations: [], active_optimizations_count: 0, active_optimizations: [] };
+  const coordination = assistantCrossSystemCoordination ?? { sync_state: "SYNCED", drift_sec: 0, conflict_logs_count: 0, conflict_logs: [], last_sync_timestamp: 0 };
+
+  // Phase 9.7 defaults
+  const edgeAwareness = assistantEdgeAwareness ?? { nodes: {}, anomalies: {}, worst_node: null, worst_node_health: 1.0, average_latency_ms: 0.0, distributed_anomaly_count: 0 };
+  const relayHealth = assistantRelayHealth ?? { breakers: {}, unstable_breakers: [], timing_anomalies: [], wear_report: {}, recommendations: [], unstable_count: 0 };
+  const telemetryCorrelation = assistantTelemetryCorrelation ?? { high_correlations: [], cascades: [], linkage_logs: [], correlation_matrix_size: 0 };
+  const syncAwareness = assistantSynchronizationAwareness ?? { node_sync_states: {}, skewed_nodes: [], critical_skewed_nodes: [], max_drift_node: null, max_drift_ms: 0.0, warnings: [], skewed_count: 0 };
+  const cpReasoning = assistantCyberPhysicalReasoning ?? { severity_score: 0.0, severity_level: "LOW", suggestions: [], reasoning_logs: ["Reasoning engine stand-by."] };
+
+  // Phase 9.8 defaults
+  const agentCoord = assistantAgentCoordination ?? { status: "NOMINAL", consensus_state: "IDLE", consensus_score: 1.0, delegation_chain: [], inter_agent_logs: [] };
+  const telAgent = assistantTelemetryAgent ?? agentCoord.telemetry_agent ?? { status: "NOMINAL", confidence_score: 1.0, anomalies: [], drift_summary: {}, rolling_averages: {}, event_priority_matrix: {} };
+  const relAgent = assistantRelayAgent ?? agentCoord.relay_agent ?? { status: "NOMINAL", confidence_score: 1.0, relay_anomalies: [], stabilization_recommendations: [], breaker_oscillations: [], timing_latencies: {} };
+  const wfAgent = assistantWorkflowAgent ?? agentCoord.workflow_agent ?? { status: "NOMINAL", confidence_score: 1.0, workflow_runs: {}, recovery_plans: [], stalled_chains: [], escalations: [] };
+  const secAgent = assistantSecurityAgent ?? agentCoord.security_agent ?? { status: "NOMINAL", confidence_score: 1.0, threat_alerts: [], safety_recommendations: [], threat_scores: {} };
+
+  // Phase 9.9 defaults
+  const swarmCoord = assistantSwarmCoordination ?? { status: "NOMINAL", coordination_chain: [], coordination_logs: [], simulation_mode: null };
+  const fedMemory = assistantFederatedMemory ?? swarmCoord.federated_memory ?? { status: "NOMINAL", sync_status: "SYNCED", lamport_clock: 0, sync_count: 0, conflict_logs: [], shared_memory: {} };
+  const distConsensus = assistantDistributedConsensus ?? swarmCoord.distributed_consensus ?? { status: "NOMINAL", consensus_state: "IDLE", consensus_score: 1.0, consensus_drift: 0.0, votes: {}, drift_history: [], consensus_logs: [] };
+  const edgeMesh = assistantEdgeMesh ?? swarmCoord.edge_mesh ?? { status: "NOMINAL", mesh_status: "CONNECTED", links: [], partition_failures: [], cascade_risk_paths: [], relay_groups: {} };
+  const swarmAnomalyFusion = assistantSwarmAnomalyFusion ?? swarmCoord.anomaly_fusion ?? { status: "NOMINAL", fused_anomalies: [], swarm_threat_score: 0.0, priority_queue: [], correlation_matrix: {} };
+
+
+
 
   // SVG Breathing core coordinate calculation
   const [localBreathingCoordinate, setLocalBreathingCoordinate] = useState(0);
@@ -588,6 +671,175 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
       payload: { action: "accept", routine_type: routineType }
     });
   };
+
+  const handleApproveOptimization = (workflowName: string) => {
+    onSendControl({
+      topic: "assistant/workflow_optimizer_simulation",
+      payload: { action: "approve", workflow_name: workflowName }
+    });
+  };
+  // Phase 9.7 simulation triggers
+  const triggerRelayInstability = () => {
+    onSendControl({
+      topic: "assistant/relay_health_simulation",
+      payload: { action: "set_wear", breaker_id: "L3_6", switch_count: 172 }
+    });
+  };
+
+  const triggerSyncDriftSpikes = () => {
+    onSendControl({
+      topic: "assistant/synchronization_awareness_simulation",
+      payload: { action: "trigger_drift", node_id: "esp32_zone3", drift_sec: 0.085 }
+    });
+  };
+
+  const triggerTelemetryCorrelationAnomalies = () => {
+    onSendControl({
+      topic: "assistant/telemetry_correlation_simulation",
+      payload: {
+        action: "inject_correlation",
+        snapshot: {
+          bus_5_v: 0.82,
+          line_L4_5_load: 108.5,
+          breaker_L4_5: 0.0
+        }
+      }
+    });
+  };
+
+  const triggerCascadingNodeFailures = () => {
+    onSendControl({
+      topic: "assistant/edge_awareness_simulation",
+      payload: { action: "set_health", node_id: "esp32_zone1", latency_ms: 185.0, packet_loss_pct: 12.0, online: true, drift_sec: 0.04 }
+    });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/edge_awareness_simulation",
+        payload: { action: "set_health", node_id: "esp32_zone2", latency_ms: 220.0, packet_loss_pct: 18.0, online: true, drift_sec: 0.06 }
+      });
+    }, 100);
+  };
+
+  const triggerDistributedTimingSkew = () => {
+    onSendControl({
+      topic: "assistant/synchronization_awareness_simulation",
+      payload: { action: "trigger_drift", node_id: "esp32_zone1", drift_sec: 0.035 }
+    });
+    onSendControl({
+      topic: "assistant/synchronization_awareness_simulation",
+      payload: { action: "trigger_drift", node_id: "esp32_zone2", drift_sec: 0.042 }
+    });
+    onSendControl({
+      topic: "assistant/synchronization_awareness_simulation",
+      payload: { action: "trigger_drift", node_id: "esp32_zone3", drift_sec: 0.049 }
+    });
+  };
+
+  const triggerRelayOscillationBehavior = () => {
+    onSendControl({
+      topic: "assistant/relay_health_simulation",
+      payload: { action: "trigger_oscillation", breaker_id: "L3_6" }
+    });
+  };
+
+  const triggerEdgeNodeDegradationReplay = () => {
+    onSendControl({
+      topic: "assistant/edge_awareness_simulation",
+      payload: { action: "set_health", node_id: "esp32_zone3", latency_ms: 280.0, packet_loss_pct: 25.0, online: true, drift_sec: 0.07 }
+    });
+  };
+
+  const triggerClearCPReasoning = () => {
+    onSendControl({
+      topic: "assistant/edge_awareness_simulation",
+      payload: { action: "reset" }
+    });
+    onSendControl({
+      topic: "assistant/relay_health_simulation",
+      payload: { action: "reset" }
+    });
+    onSendControl({
+      topic: "assistant/telemetry_correlation_simulation",
+      payload: { action: "reset" }
+    });
+    onSendControl({
+      topic: "assistant/synchronization_awareness_simulation",
+      payload: { action: "reset" }
+    });
+  };
+
+  const triggerRecurringAnomaly = () => {
+    onSendControl({
+      topic: "assistant/predictive_coordination_simulation",
+      payload: { action: "add_latency", latency: 55.0 }
+    });
+    setTimeout(() => onSendControl({
+      topic: "assistant/predictive_coordination_simulation",
+      payload: { action: "add_latency", latency: 75.0 }
+    }), 100);
+    setTimeout(() => onSendControl({
+      topic: "assistant/predictive_coordination_simulation",
+      payload: { action: "add_latency", latency: 95.0 }
+    }), 200);
+  };
+
+  const triggerRepeatedWorkflowFailure = () => {
+    onSendControl({
+      topic: "assistant/workflow_trigger",
+      payload: { action: "execute", workflow_name: "system_status_check" }
+    });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/pattern_awareness_simulation",
+        payload: { action: "analyze" }
+      });
+    }, 100);
+  };
+
+  const triggerOrchestrationDrift = () => {
+    onSendControl({
+      topic: "assistant/predictive_coordination_simulation",
+      payload: { action: "add_latency", latency: 185.0 }
+    });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/cross_system_coordination_simulation",
+        payload: { action: "tick" }
+      });
+    }, 100);
+  };
+
+  const triggerConfidenceInstability = () => {
+    onSendControl({
+      topic: "assistant/orchestration_simulation",
+      payload: { action: "set_safety", confidence_threshold: 0.95 }
+    });
+  };
+
+  const triggerClearMemory = () => {
+    onSendControl({
+      topic: "assistant/persistent_memory_simulation",
+      payload: { action: "clear" }
+    });
+  };
+
+  const triggerOptimizationConflict = () => {
+    onSendControl({
+      topic: "assistant/proactive_trigger",
+      payload: { threat_score: 10.0, latency_ms: 25.0 }
+    });
+    setTimeout(() => {
+      onSendControl({
+        topic: "assistant/proactive_trigger",
+        payload: { threat_score: 85.0, latency_ms: 180.0 }
+      });
+      onSendControl({
+        topic: "assistant/cross_system_coordination_simulation",
+        payload: { action: "tick" }
+      });
+    }, 200);
+  };
+
 
   // Helper styles for FSM States
   const getFsmStateStyle = (nodeState: string) => {
@@ -869,7 +1121,44 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
               <Clock size={9} />
               Presence
             </button>
+            <button
+              onClick={() => setActiveTab("autonomy")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "autonomy" ? "border-indigo-500 text-white bg-indigo-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              }`}
+            >
+              <Sliders size={9} />
+              Autonomy
+            </button>
+            <button
+              onClick={() => setActiveTab("cyberPhysical")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "cyberPhysical" ? "border-rose-500 text-white bg-rose-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              }`}
+            >
+              <Activity size={9} />
+              CP-Aware
+            </button>
+            <button
+              onClick={() => setActiveTab("multiAgent")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "multiAgent" ? "border-amber-500 text-white bg-amber-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              }`}
+            >
+              <Cpu size={9} />
+              Multi-Agent
+            </button>
+            <button
+              onClick={() => setActiveTab("swarm")}
+              className={`flex-1 py-1.5 text-[7.5px] uppercase tracking-wider font-bold text-center border-b-2 transition-all flex items-center justify-center gap-0.5 ${
+                activeTab === "swarm" ? "border-fuchsia-500 text-white bg-fuchsia-500/10" : "border-transparent text-scada-dimText hover:text-white"
+              }`}
+            >
+              <Bot size={9} />
+              Swarm
+            </button>
           </div>
+
 
           <div className="flex-1 overflow-hidden flex flex-col justify-between">
             <div className="flex-1 overflow-y-auto mb-1.5 pr-0.5 scrollbar-thin">
@@ -1307,40 +1596,1084 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                   </div>
                 </div>
               )}
+
+              {/* Tab 6: Autonomy */}
+              {activeTab === "autonomy" && (
+                <div className="space-y-1.5">
+                  {/* Predictive Coordination */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                      <span>Predictive Coordination & Trends</span>
+                      <span className="text-cyan-400 font-bold">Sync: {coordination.sync_state}</span>
+                    </div>
+                    <div className="text-[6.5px] space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-scada-dimText">Clock Drift Offset:</span>
+                        <span className={coordination.drift_sec > 0 ? "text-amber-400 font-bold animate-pulse" : "text-emerald-400 font-bold"}>
+                          {coordination.drift_sec > 0 ? `+${coordination.drift_sec}s` : "0.00s (Stable)"}
+                        </span>
+                      </div>
+                      
+                      {/* Forecasts */}
+                      <div className="mt-1">
+                        <span className="text-scada-dimText font-bold">Recurring Forecasts:</span>
+                        {predictive.forecasts && predictive.forecasts.length > 0 ? (
+                          <div className="space-y-1 mt-1">
+                            {predictive.forecasts.map((f: any, idx: number) => (
+                              <div key={idx} className="bg-black/30 p-1 rounded border border-scada-border/20 flex flex-col">
+                                <div className="flex justify-between font-bold text-white">
+                                  <span>{f.category}</span>
+                                  <span className="text-yellow-400">{(f.confidence * 100).toFixed(0)}% Conf</span>
+                                </div>
+                                <span className="text-scada-dimText mt-0.5">{f.description}</span>
+                                <span className="text-cyan-400 text-[5.8px] mt-0.5">Horizon: {f.time_horizon_sec}s | Projected: {f.predicted_value.toFixed(1)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-scada-dimText/40 italic mt-0.5 pl-1">No upcoming anomalies forecasted.</div>
+                        )}
+                      </div>
+
+                      {/* Suggestions */}
+                      <div className="mt-1">
+                        <span className="text-scada-dimText font-bold">Coordination Suggestions:</span>
+                        {predictive.suggestions && predictive.suggestions.length > 0 ? (
+                          <div className="space-y-1 mt-1">
+                            {predictive.suggestions.map((s: any, idx: number) => (
+                              <div key={idx} className="bg-cyan-950/40 p-1.5 rounded border border-cyan-800/35 flex flex-col">
+                                <span className="font-bold text-cyan-300">{s.title}</span>
+                                <span className="text-white text-[5.8px] leading-tight mt-0.5">{s.description}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-scada-dimText/40 italic mt-0.5 pl-1">No active suggestions.</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Persistent Routine Memory & Pattern Awareness */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col overflow-hidden h-[95px]">
+                      <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                        Persistent Memory
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
+                        <div className="text-[6px] text-scada-dimText">Total interactions stored: {persistentMemory.total_interactions}</div>
+                        {persistentMemory.recurring_actions && persistentMemory.recurring_actions.length > 0 ? (
+                          persistentMemory.recurring_actions.map((act: any, idx: number) => (
+                            <div key={idx} className="bg-black/25 px-1 py-0.5 rounded border border-scada-border/10 text-[5.8px] leading-none flex justify-between">
+                              <span className="text-white font-bold max-w-[55%] truncate">{act.action}</span>
+                              <span className="text-cyan-400 font-mono">Count: {act.count} ({act.dominant_bin})</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-scada-dimText/30 italic text-[6px] h-full flex items-center justify-center">No recurring routine habits stored.</div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col overflow-hidden h-[95px]">
+                      <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                        Pattern Confidence
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
+                        {patterns.active_patterns && patterns.active_patterns.length > 0 ? (
+                          patterns.active_patterns.map((pat: any, idx: number) => (
+                            <div key={idx} className="bg-black/25 p-1 rounded border border-scada-border/15 text-[5.8px] leading-tight flex flex-col">
+                              <div className="flex justify-between font-bold">
+                                <span className="text-white truncate max-w-[55%]">{pat.pattern_id}</span>
+                                <span className="text-amber-400">{(pat.confidence_score * 100).toFixed(0)}% Conf</span>
+                              </div>
+                              <span className="text-scada-dimText mt-0.5">{pat.description}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-scada-dimText/30 italic text-[6px] h-full flex items-center justify-center">No anomaly patterns identified.</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Adaptive Workflow Optimizer */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                      Adaptive Timing Optimization Recommendations
+                    </div>
+                    <div className="space-y-1 mt-1 max-h-[75px] overflow-y-auto scrollbar-thin">
+                      {optimizer.recommendations && optimizer.recommendations.length > 0 ? (
+                        optimizer.recommendations.map((r: any, idx: number) => (
+                          <div key={idx} className="bg-black/25 p-1 rounded border border-scada-border/20 text-[6.5px] flex items-center justify-between gap-2">
+                            <div className="flex flex-col gap-0.5 flex-1 leading-tight">
+                              <div className="flex gap-1.5 font-bold">
+                                <span className="text-white">{r.workflow_name}</span>
+                                <span className="text-amber-400">{r.optimization_type}</span>
+                              </div>
+                              <span className="text-scada-dimText">{r.description}</span>
+                            </div>
+                            {r.status === "PENDING_APPROVAL" ? (
+                              <button
+                                onClick={() => handleApproveOptimization(r.workflow_name)}
+                                className="px-1.5 py-0.5 bg-emerald-950 border border-emerald-500/30 text-emerald-400 rounded font-bold hover:bg-emerald-900 transition-colors text-[5.8px]"
+                              >
+                                Approve
+                              </button>
+                            ) : r.status === "APPROVED" ? (
+                              <span className="text-emerald-400 font-bold font-mono text-[5.8px]">APPLIED</span>
+                            ) : (
+                              <span className="text-rose-400 font-bold font-mono text-[5.8px]">{r.status}</span>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-scada-dimText/40 italic text-[6.5px] pl-1">No timing optimizations recommended.</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Conflict Prevention Log */}
+                  {coordination.conflict_logs && coordination.conflict_logs.length > 0 && (
+                    <div className="bg-rose-950/20 border border-rose-800/30 rounded p-1.5 shrink-0">
+                      <div className="text-[7px] font-bold text-rose-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <AlertTriangle size={8} className="animate-pulse" />
+                        <span>Conflict Prevention & Safety Override Logs</span>
+                      </div>
+                      <div className="space-y-0.5 max-h-[40px] overflow-y-auto scrollbar-thin text-[5.8px] leading-tight font-mono text-rose-300">
+                        {coordination.conflict_logs.map((log: string, idx: number) => (
+                          <div key={idx} className="border-b border-rose-900/10 pb-0.5">
+                            {log}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab 7: Cyber-Physical Awareness (Phase 9.7) */}
+              {activeTab === "cyberPhysical" && (
+                <div className="space-y-1.5">
+                  {/* Cyber-Physical Severity Panel */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                      <span>Cyber-Physical State Analysis</span>
+                      <span className={cpReasoning.severity_level === "CRITICAL" || cpReasoning.severity_level === "HIGH" ? "text-rose-500 font-bold animate-pulse" : "text-cyan-400 font-bold"}>
+                        {cpReasoning.severity_level} (Score: {cpReasoning.severity_score.toFixed(1)})
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1.5 mt-1 shrink-0">
+                      <div className="bg-black/30 p-1.5 rounded border border-scada-border/25 flex flex-col justify-center items-center">
+                        <span className="text-[5.8px] text-scada-dimText uppercase tracking-wider">Average Latency</span>
+                        <span className="text-white font-bold font-mono text-[9px] mt-0.5">{edgeAwareness.average_latency_ms.toFixed(1)}ms</span>
+                      </div>
+                      <div className="bg-black/30 p-1.5 rounded border border-scada-border/25 flex flex-col justify-center items-center">
+                        <span className="text-[5.8px] text-scada-dimText uppercase tracking-wider">Timing Skews</span>
+                        <span className="text-white font-bold font-mono text-[9px] mt-0.5">{syncAwareness.skewed_count} Nodes</span>
+                      </div>
+                    </div>
+
+                    {/* Recommendations Checklist */}
+                    <div className="mt-1">
+                      <span className="text-scada-dimText font-bold text-[6.5px]">CP Advisory Recommendations:</span>
+                      {cpReasoning.suggestions && cpReasoning.suggestions.length > 0 ? (
+                        <div className="space-y-1 mt-1">
+                          {cpReasoning.suggestions.map((s: any, idx: number) => (
+                            <div key={idx} className="bg-black/20 p-1.5 rounded border border-scada-border/15 flex items-center justify-between text-[6px]">
+                              <div className="flex flex-col leading-tight">
+                                <span className={`font-bold ${s.severity === "CRITICAL" ? "text-rose-400" : s.severity === "HIGH" ? "text-amber-400" : "text-cyan-400"}`}>{s.action} ({s.target})</span>
+                                <span className="text-white mt-0.5">{s.description}</span>
+                              </div>
+                              {s.severity === "BLOCKED" ? (
+                                <span className="text-rose-500 font-bold text-[5.5px] uppercase">BLOCKED</span>
+                              ) : (
+                                <span className="text-emerald-400 font-bold text-[5.5px] uppercase">ADVISORY</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-emerald-400 italic text-[6px] pl-1 mt-0.5">Grid state is nominal. No mitigation required.</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Edge Nodes & Relays */}
+                  <div className="grid grid-cols-2 gap-1.5 h-[115px]">
+                    {/* Edge Nodes stability */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col overflow-hidden">
+                      <span className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0 flex justify-between">
+                        <span>Edge Node Status</span>
+                        {edgeAwareness.worst_node && (
+                          <span className="text-rose-400 text-[5.8px]">Worst: {edgeAwareness.worst_node}</span>
+                        )}
+                      </span>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[5.8px] leading-tight">
+                        {edgeAwareness.nodes && Object.keys(edgeAwareness.nodes).map((key) => {
+                          const val = edgeAwareness.nodes[key];
+                          return (
+                            <div key={key} className="bg-black/25 px-1 py-0.5 rounded border border-scada-border/10 flex justify-between">
+                              <span className="text-white font-bold">{key}</span>
+                              <div className="flex gap-1.5 font-mono">
+                                <span className={val.online ? "text-emerald-400" : "text-rose-400"}>{val.online ? "ON" : "OFF"}</span>
+                                <span className="text-cyan-400">{val.latency_ms.toFixed(0)}ms</span>
+                                <span className={Math.abs(val.drift_sec) > 0.025 ? "text-rose-400" : "text-emerald-400"}>{(val.drift_sec * 1000).toFixed(0)}ms</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Relays health */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col overflow-hidden">
+                      <span className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0 flex justify-between">
+                        <span>Relay Breaker Health</span>
+                        {relayHealth.unstable_count > 0 && (
+                          <span className="text-rose-400 animate-pulse text-[5.8px]">Unstable: {relayHealth.unstable_count}</span>
+                        )}
+                      </span>
+                      <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin text-[5.8px] leading-tight">
+                        {relayHealth.breakers && Object.keys(relayHealth.breakers).map((key) => {
+                          const val = relayHealth.breakers[key];
+                          return (
+                            <div key={key} className="bg-black/25 px-1.5 py-0.5 rounded border border-scada-border/10 flex flex-col">
+                              <div className="flex justify-between font-bold">
+                                <span className="text-white">{key}</span>
+                                <span className={val.unstable ? "text-rose-400 font-bold" : "text-cyan-400"}>{val.state}</span>
+                              </div>
+                              <div className="flex justify-between text-[5.2px] text-scada-dimText font-mono mt-0.5">
+                                <span>Wear: {val.wear_pct.toFixed(0)}%</span>
+                                <span className={val.timing_ms > 120 ? "text-rose-400" : "text-emerald-400"}>{val.timing_ms.toFixed(0)}ms</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Telemetry Correlation Mapping & Sync Skew */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 h-[110px] flex flex-col overflow-hidden">
+                    <span className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 shrink-0">
+                      Telemetry Correlations & Skew Warnings
+                    </span>
+                    <div className="flex-1 grid grid-cols-2 gap-1.5 overflow-hidden">
+                      {/* Correlations & Cascades */}
+                      <div className="overflow-y-auto space-y-1 scrollbar-thin text-[5.8px] leading-tight">
+                        <span className="text-[5.5px] font-bold text-scada-dimText uppercase">High Correlation Pairs</span>
+                        {telemetryCorrelation.high_correlations && telemetryCorrelation.high_correlations.length > 0 ? (
+                          telemetryCorrelation.high_correlations.map((c: any, idx: number) => (
+                            <div key={idx} className="bg-black/25 px-1 py-0.5 rounded border border-scada-border/10 flex justify-between font-mono">
+                              <span className="text-white truncate max-w-[70%]">{c.var1.replace("_load","").replace("_v","")} ↔ {c.var2.replace("_load","").replace("_v","")}</span>
+                              <span className="text-yellow-400">{c.correlation > 0 ? `+${c.correlation.toFixed(2)}` : c.correlation.toFixed(2)}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-scada-dimText/40 italic">Waiting for correlation dataset...</div>
+                        )}
+
+                        {telemetryCorrelation.cascades && telemetryCorrelation.cascades.length > 0 && (
+                          <div className="mt-1 space-y-0.5">
+                            <span className="text-[5.5px] font-bold text-rose-400 uppercase">Cascading Links</span>
+                            {telemetryCorrelation.cascades.map((c: any, idx: number) => (
+                              <div key={idx} className="bg-rose-950/20 px-1 py-0.5 rounded border border-rose-900/30 flex justify-between text-rose-300 font-mono">
+                                <span>{c.cause.replace("breaker_","")} → {c.effect.replace("bus_","").replace("_v","")}</span>
+                                <span>{(c.linkage_score * 100).toFixed(0)}% Link</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Sync Warnings & Skews */}
+                      <div className="overflow-y-auto space-y-1 scrollbar-thin text-[5.8px] leading-tight">
+                        <span className="text-[5.5px] font-bold text-scada-dimText uppercase">Clock Sync & Timing Warnings</span>
+                        {syncAwareness.warnings && syncAwareness.warnings.length > 0 ? (
+                          syncAwareness.warnings.map((w: string, idx: number) => (
+                            <div key={idx} className={`p-1 rounded border leading-tight ${w.includes("CRITICAL") ? "bg-rose-950/20 border-rose-900/30 text-rose-300" : "bg-amber-950/20 border-amber-900/30 text-amber-300"}`}>
+                              {w.replace("CLOCK_SKEW_CRITICAL: ", "").replace("CLOCK_SKEW_WARNING: ", "")}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-emerald-400 italic">Timing synchronization is locked and in-sync.</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Reasoning Logs */}
+                  {cpReasoning.reasoning_logs && cpReasoning.reasoning_logs.length > 0 && (
+                    <div className="bg-black/30 border border-scada-border/20 rounded p-1.5 shrink-0 flex flex-col h-[70px] overflow-hidden">
+                      <span className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/10 pb-0.5 shrink-0 flex items-center gap-1">
+                        <Terminal size={8} className="text-purple-400 animate-pulse" />
+                        <span>Cognitive Reasoning Engine Trace</span>
+                      </span>
+                      <div className="flex-1 overflow-y-auto space-y-0.5 text-[5.8px] leading-tight font-mono text-purple-300 scrollbar-thin">
+                        {cpReasoning.reasoning_logs.map((log: string, idx: number) => (
+                          <div key={idx} className="border-b border-purple-900/5 pb-0.5">
+                            {log}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab 8: Multi-Agent Coordination (Phase 9.8) */}
+              {activeTab === "multiAgent" && (
+                <div className="space-y-1.5">
+                  {/* Coordinator & Consensus Gauge */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                      <span className="flex items-center gap-1"><Cpu size={9} className="text-amber-400" /> Multi-Agent Coordinator</span>
+                      <span className={`px-1 rounded text-[6px] font-bold uppercase ${
+                        agentCoord.status === "CRITICAL" ? "bg-rose-950 text-rose-400" :
+                        agentCoord.status === "LOOP_PREVENTED" ? "bg-red-950 text-red-400 animate-bounce" :
+                        agentCoord.status === "DEGRADED" ? "bg-amber-950 text-amber-400" : "bg-emerald-950 text-emerald-400"
+                      }`}>
+                        {agentCoord.status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1.5 mt-1 text-[6.5px] shrink-0">
+                      {/* Consensus Indicator */}
+                      <div className="bg-black/30 p-1.5 rounded border border-scada-border/15 flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between font-bold">
+                            <span className="text-scada-dimText">Consensus:</span>
+                            <span className={`font-mono ${
+                              agentCoord.consensus_state === "APPROVED" ? "text-emerald-400" :
+                              agentCoord.consensus_state.startsWith("BLOCKED") ? "text-rose-400 font-bold" : "text-cyan-400"
+                            }`}>{agentCoord.consensus_state}</span>
+                          </div>
+                          <div className="flex justify-between mt-0.5">
+                            <span className="text-scada-dimText">Score:</span>
+                            <span className="text-white font-mono">{agentCoord.consensus_score.toFixed(2)} (Min: 0.75)</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-scada-border/10 mt-1">
+                          <div 
+                            className={`h-full transition-all duration-500 ${
+                              agentCoord.consensus_score >= 0.75 ? "bg-emerald-500" : "bg-rose-500"
+                            }`}
+                            style={{ width: `${agentCoord.consensus_score * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Sync Timeline & Drift */}
+                      <div className="bg-black/30 p-1.5 rounded border border-scada-border/15 flex flex-col justify-between font-mono text-[6px]">
+                        <div>
+                          <span className="text-scada-dimText font-bold">Timeline Sync:</span>
+                          <div className="flex justify-between mt-0.5">
+                            <span>Telemetry Anomaly:</span>
+                            <span className={telAgent.anomalies?.length > 0 ? "text-rose-400 font-bold" : "text-emerald-400"}>
+                              {telAgent.anomalies?.length > 0 ? "DETECTED" : "NOMINAL"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Security Alerts:</span>
+                            <span className={secAgent.threat_alerts?.length > 0 ? "text-rose-400 font-bold animate-pulse" : "text-emerald-400"}>
+                              {secAgent.threat_alerts?.length > 0 ? "ALERT" : "NOMINAL"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Active Agent Graph (4 agents) */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1.5 border-b border-scada-border/20 pb-0.5 shrink-0">
+                      Active Agent Graph & Statuses
+                    </div>
+                    <div className="grid grid-cols-4 gap-1">
+                      {/* Telemetry Agent Card */}
+                      <div className="bg-black/25 border border-scada-border/15 p-1 rounded flex flex-col justify-between text-[6px] h-[55px]">
+                        <div>
+                          <span className="font-bold text-cyan-400 block truncate">TelemetryAgent</span>
+                          <span className="text-[5.5px] text-scada-dimText font-mono block mt-0.5">Status: <strong className="text-white">{telAgent.status.replace("_ANOMALY","")}</strong></span>
+                        </div>
+                        <div className="mt-1 border-t border-scada-border/10 pt-0.5 font-mono text-[5.2px] flex justify-between">
+                          <span>Conf: {telAgent.confidence_score}</span>
+                          <span className="text-scada-dimText">Anom: {telAgent.anomalies?.length || 0}</span>
+                        </div>
+                      </div>
+
+                      {/* Relay Agent Card */}
+                      <div className="bg-black/25 border border-scada-border/15 p-1 rounded flex flex-col justify-between text-[6px] h-[55px]">
+                        <div>
+                          <span className="font-bold text-amber-400 block truncate">RelayAgent</span>
+                          <span className="text-[5.5px] text-scada-dimText font-mono block mt-0.5">Status: <strong className="text-white">{relAgent.status.replace("_ANOMALY","")}</strong></span>
+                        </div>
+                        <div className="mt-1 border-t border-scada-border/10 pt-0.5 font-mono text-[5.2px] flex justify-between">
+                          <span>Conf: {relAgent.confidence_score}</span>
+                          <span className="text-scada-dimText">Osc: {relAgent.breaker_oscillations?.length || 0}</span>
+                        </div>
+                      </div>
+
+                      {/* Security Agent Card */}
+                      <div className="bg-black/25 border border-scada-border/15 p-1 rounded flex flex-col justify-between text-[6px] h-[55px]">
+                        <div>
+                          <span className="font-bold text-purple-400 block truncate">SecurityAgent</span>
+                          <span className="text-[5.5px] text-scada-dimText font-mono block mt-0.5">Status: <strong className="text-white">{secAgent.status}</strong></span>
+                        </div>
+                        <div className="mt-1 border-t border-scada-border/10 pt-0.5 font-mono text-[5.2px] flex justify-between">
+                          <span>Conf: {secAgent.confidence_score}</span>
+                          <span className="text-scada-dimText">Alts: {secAgent.threat_alerts?.length || 0}</span>
+                        </div>
+                      </div>
+
+                      {/* Workflow Agent Card */}
+                      <div className="bg-black/25 border border-scada-border/15 p-1 rounded flex flex-col justify-between text-[6px] h-[55px]">
+                        <div>
+                          <span className="font-bold text-blue-400 block truncate">WorkflowAgent</span>
+                          <span className="text-[5.5px] text-scada-dimText font-mono block mt-0.5">Status: <strong className="text-white">{wfAgent.status}</strong></span>
+                        </div>
+                        <div className="mt-1 border-t border-scada-border/10 pt-0.5 font-mono text-[5.2px] flex justify-between">
+                          <span>Conf: {wfAgent.confidence_score}</span>
+                          <span className="text-scada-dimText">Plans: {wfAgent.recovery_plans?.length || 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Inter-Agent Communication flow & Logs */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                      <span>Inter-Agent Communication Flow</span>
+                      {agentCoord.delegation_chain?.length > 0 && (
+                        <span className="text-cyan-400 text-[6px] font-mono">Depth: {agentCoord.delegation_chain.length - 1}/3</span>
+                      )}
+                    </div>
+
+                    {agentCoord.delegation_chain?.length > 0 ? (
+                      <div className="bg-black/20 p-1 rounded border border-scada-border/15 mb-1 text-[5.8px] font-mono flex items-center gap-1 flex-wrap shrink-0">
+                        {agentCoord.delegation_chain.map((agent: string, idx: number) => (
+                          <React.Fragment key={idx}>
+                            {idx > 0 && <span className="text-amber-400">➔</span>}
+                            <span className={`px-1 py-0.2 rounded border ${
+                              agent === "TelemetryAgent" ? "bg-cyan-950/40 border-cyan-500/30 text-cyan-300" :
+                              agent === "RelayAgent" ? "bg-amber-950/40 border-amber-500/30 text-amber-300" :
+                              agent === "SecurityAgent" ? "bg-purple-950/40 border-purple-500/30 text-purple-300" :
+                              "bg-blue-950/40 border-blue-500/30 text-blue-300"
+                            }`}>{agent}</span>
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-[6.5px] text-scada-dimText italic mb-1 shrink-0">Delegation chain idle.</div>
+                    )}
+
+                    {/* Logs container */}
+                    <div className="bg-black/30 border border-scada-border/20 rounded p-1 flex flex-col h-[50px] overflow-hidden">
+                      <div className="text-[6.5px] font-bold text-scada-dimText uppercase tracking-wider mb-0.5 flex items-center gap-1 shrink-0 border-b border-scada-border/10 pb-0.5">
+                        <Terminal size={8} className="text-purple-400 animate-pulse" />
+                        <span>Active Delegation Chain Logs</span>
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-0.5 text-[5.8px] leading-tight font-mono text-purple-300 scrollbar-thin">
+                        {agentCoord.inter_agent_logs && agentCoord.inter_agent_logs.length > 0 ? (
+                          agentCoord.inter_agent_logs.map((log: string, idx: number) => {
+                            let color = "text-purple-300";
+                            if (log.includes("ALARM") || log.includes("LOOP") || log.includes("limit")) color = "text-rose-400 font-bold bg-rose-950/20 px-1 rounded border-l border-rose-500";
+                            else if (log.includes("KONSENSUS") || log.includes("APPROVED")) color = "text-emerald-400 font-bold";
+                            else if (log.includes("SEKATAN") || log.includes("BLOCKED")) color = "text-amber-400 font-bold";
+                            return <div key={idx} className={color}>&gt; {log}</div>;
+                          })
+                        ) : (
+                          <div className="text-scada-dimText/30 italic text-[6px] h-full flex items-center justify-center">No active communications.</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
+
             {/* Simulation controls grid at bottom */}
-            <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 shrink-0">
-              <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
-                <Sliders size={8} className="text-amber-400 animate-pulse" />
-                <span>Conversational Planning & Orchestration Simulation Console</span>
+            <div className="bg-scada-bg/70 border border-scada-border/30 rounded p-2 shrink-0 space-y-2 max-h-[105px] overflow-y-auto scrollbar-thin">
+              <div>
+                <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
+                  <Sliders size={8} className="text-cyan-400 animate-pulse" />
+                  <span>Planning & Dialogue Simulation Controls (Phase 9.5)</span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 pt-1">
+                  <button onClick={triggerAmbiguityClarification}
+                    className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <MessageSquare size={8} /> Simulate Ambiguity
+                  </button>
+                  <button onClick={triggerStreamingInterruption}
+                    className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Volume2 size={8} /> Simulate Interruption
+                  </button>
+                  <button onClick={triggerChainedTaskPlan}
+                    className="bg-blue-950 hover:bg-blue-900 border border-blue-500/30 rounded py-1 text-[6.5px] text-blue-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <GitBranch size={8} /> Run Chained Plan
+                  </button>
+                  <button onClick={triggerDependencyFailure}
+                    className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Clock size={8} /> {taskChains.active_chains.length > 0 ? "Trip Active Step" : "Sim Dependency Fail"}
+                  </button>
+                  <button onClick={triggerConfidenceGateBlock}
+                    className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Shield size={8} /> Confidence Gate Block
+                  </button>
+                  <button onClick={triggerRunawayChain}
+                    className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <RotateCcw size={8} /> Runaway/Loop Block
+                  </button>
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-1 pt-1.5">
-                <button onClick={triggerAmbiguityClarification}
-                  className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <MessageSquare size={8} /> Simulate Ambiguity
-                </button>
-                <button onClick={triggerStreamingInterruption}
-                  className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <Volume2 size={8} /> Simulate Interruption
-                </button>
-                <button onClick={triggerChainedTaskPlan}
-                  className="bg-blue-950 hover:bg-blue-900 border border-blue-500/30 rounded py-1 text-[6.5px] text-blue-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <GitBranch size={8} /> Run Chained Plan
-                </button>
-                <button onClick={triggerDependencyFailure}
-                  className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <Clock size={8} /> {taskChains.active_chains.length > 0 ? "Trip Active Step" : "Sim Dependency Fail"}
-                </button>
-                <button onClick={triggerConfidenceGateBlock}
-                  className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <Shield size={8} /> Confidence Gate Block
-                </button>
-                <button onClick={triggerRunawayChain}
-                  className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
-                  <RotateCcw size={8} /> Runaway/Loop Block
-                </button>
+
+              <div>
+                <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
+                  <Sliders size={8} className="text-amber-400 animate-pulse" />
+                  <span>Autonomy & Predictive Simulation Controls (Phase 9.6)</span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 pt-1">
+                  <button onClick={triggerRecurringAnomaly}
+                    className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none animate-pulse">
+                    <Activity size={8} /> Rec Telemetry Anomaly
+                  </button>
+                  <button onClick={triggerRepeatedWorkflowFailure}
+                    className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <AlertTriangle size={8} /> Rep Workflow Failure
+                  </button>
+                  <button onClick={triggerOrchestrationDrift}
+                    className="bg-blue-950 hover:bg-blue-900 border border-blue-500/30 rounded py-1 text-[6.5px] text-blue-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Clock size={8} /> Comms Clock Drift
+                  </button>
+                  <button onClick={triggerConfidenceInstability}
+                    className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Shield size={8} /> Conf Instability
+                  </button>
+                  <button onClick={triggerOptimizationConflict}
+                    className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <AlertTriangle size={8} /> Optimization Conflict
+                  </button>
+                  <button onClick={triggerClearMemory}
+                    className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <RotateCcw size={8} /> Clear Memory
+                  </button>
+                </div>
               </div>
+
+              <div>
+                <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
+                  <Sliders size={8} className="text-rose-400 animate-pulse" />
+                  <span>Cyber-Physical & Edge Simulation Controls (Phase 9.7)</span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 pt-1">
+                  <button onClick={triggerRelayInstability}
+                    className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Activity size={8} /> Instability Simulation
+                  </button>
+                  <button onClick={triggerSyncDriftSpikes}
+                    className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Clock size={8} /> Sync Drift Spike
+                  </button>
+                  <button onClick={triggerTelemetryCorrelationAnomalies}
+                    className="bg-blue-950 hover:bg-blue-900 border border-blue-500/30 rounded py-1 text-[6.5px] text-blue-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Sliders size={8} /> Correlation Anomaly
+                  </button>
+                  <button onClick={triggerCascadingNodeFailures}
+                    className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <AlertTriangle size={8} /> Cascading Failures
+                  </button>
+                  <button onClick={triggerDistributedTimingSkew}
+                    className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Clock size={8} /> Timing Skew
+                  </button>
+                  <button onClick={triggerRelayOscillationBehavior}
+                    className="bg-orange-950 hover:bg-orange-900 border border-orange-500/30 rounded py-1 text-[6.5px] text-orange-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none animate-pulse">
+                    <Activity size={8} /> Relay Oscillation
+                  </button>
+                  <button onClick={triggerEdgeNodeDegradationReplay}
+                    className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Sliders size={8} /> Degradation Replay
+                  </button>
+                  <button onClick={triggerClearCPReasoning}
+                    className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none col-span-2">
+                    <RotateCcw size={8} /> Clear CP Diagnostics
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[7px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
+                  <Sliders size={8} className="text-amber-400 animate-pulse" />
+                  <span>Distributed Multi-Agent Simulation Controls (Phase 9.8)</span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 pt-1">
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "set_mode", mode: null } })}
+                    className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <CheckCircle2 size={8} /> Consensus Agreement
+                  </button>
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "set_mode", mode: "conflicting_recommendations" } })}
+                    className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <AlertTriangle size={8} /> Conflict Arbitration
+                  </button>
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "set_mode", mode: "drift_storm" } })}
+                    className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Clock size={8} /> Drift Storm
+                  </button>
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "set_mode", mode: "cascading_failures" } })}
+                    className="bg-red-950 hover:bg-red-900 border border-red-500/30 rounded py-1 text-[6.5px] text-red-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <RefreshCw size={8} className="animate-spin" /> Recursive Loop Block
+                  </button>
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "set_mode", mode: "relay_spikes" } })}
+                    className="bg-blue-950 hover:bg-blue-900 border border-blue-500/30 rounded py-1 text-[6.5px] text-blue-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Activity size={8} /> Wear & Tear Spike
+                  </button>
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "set_mode", mode: "delegation_timeout" } })}
+                    className="bg-orange-950 hover:bg-orange-900 border border-orange-500/30 rounded py-1 text-[6.5px] text-orange-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                    <Clock size={8} /> Delegation Timeout
+                  </button>
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "consensus_instability" } })}
+                    className="bg-purple-950 hover:bg-purple-900 border border-purple-500/30 rounded py-1 text-[6.5px] text-purple-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none col-span-1">
+                    <Shield size={8} /> Security Rejection
+                  </button>
+                  <button onClick={() => onSendControl({ topic: "assistant/agent_coordination_simulation", payload: { action: "reset" } })}
+                    className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none col-span-2">
+                    <RotateCcw size={8} /> Reset Multi-Agent
+                  </button>
+                </div>
+              </div>
+
+              {/* Tab 9: Swarm Cognition (Phase 9.9) */}
+              {activeTab === "swarm" && (
+                <div className="space-y-1.5">
+                  {/* Row 1: Swarm Coordination Graph & Consensus Gauge */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {/* Swarm Coordination Graph */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[125px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span className="flex items-center gap-1"><Bot size={9} className="text-fuchsia-400" /> Swarm Coordination Graph</span>
+                        <span className={`px-1 rounded text-[6.5px] font-mono ${
+                          swarmCoord.status === "CRITICAL" ? "bg-rose-950 text-rose-400" :
+                          swarmCoord.status === "LOOP_PREVENTED" ? "bg-red-950 text-red-400 animate-bounce" :
+                          swarmCoord.status === "STORM_MITIGATED" ? "bg-amber-950 text-amber-400 animate-pulse" : "bg-emerald-950 text-emerald-400"
+                        }`}>{swarmCoord.status}</span>
+                      </div>
+                      
+                      <div className="flex-1 relative flex items-center justify-center mt-1">
+                        <svg className="w-full h-full max-h-[90px]" viewBox="0 0 100 60">
+                          {/* Connections */}
+                          <line x1="50" y1="30" x2="20" y2="15" stroke="#475569" strokeWidth="1" strokeDasharray={swarmCoord.status === "CRITICAL" ? "1.5" : "0"} />
+                          <line x1="50" y1="30" x2="80" y2="15" stroke="#475569" strokeWidth="1" />
+                          <line x1="50" y1="30" x2="20" y2="45" stroke="#475569" strokeWidth="1" />
+                          <line x1="50" y1="30" x2="80" y2="45" stroke="#475569" strokeWidth="1" />
+
+                          {/* Animation pulses along lines */}
+                          {swarmCoord.status !== "LOOP_PREVENTED" && (
+                            <>
+                              <circle cx="35" cy="22.5" r="1.2" fill="#38bdf8" className="animate-ping" />
+                              <circle cx="65" cy="22.5" r="1.2" fill="#a855f7" />
+                              <circle cx="35" cy="37.5" r="1.2" fill="#f43f5e" />
+                              <circle cx="65" cy="37.5" r="1.2" fill="#10b981" />
+                            </>
+                          )}
+
+                          {/* Spokes */}
+                          <circle cx="20" cy="15" r="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="1" />
+                          <text x="20" y="17" textAnchor="middle" fontSize="4.5" fill="#f8fafc" fontWeight="bold">MEM</text>
+
+                          <circle cx="80" cy="15" r="6" fill="#1e293b" stroke="#a855f7" strokeWidth="1" />
+                          <text x="80" y="17" textAnchor="middle" fontSize="4.5" fill="#f8fafc" fontWeight="bold">CON</text>
+
+                          <circle cx="20" cy="45" r="6" fill="#1e293b" stroke="#f43f5e" strokeWidth="1" />
+                          <text x="20" y="47" textAnchor="middle" fontSize="4.5" fill="#f8fafc" fontWeight="bold">MSH</text>
+
+                          <circle cx="80" cy="45" r="6" fill="#1e293b" stroke="#10b981" strokeWidth="1" />
+                          <text x="80" y="47" textAnchor="middle" fontSize="4.5" fill="#f8fafc" fontWeight="bold">FSN</text>
+
+                          {/* Central Swarm Hub */}
+                          <circle cx="50" cy="30" r="10" fill="#0f172a" stroke="#d946ef" strokeWidth="1.5" />
+                          <text x="50" y="32" textAnchor="middle" fontSize="5" fill="#d946ef" fontWeight="bold" className="animate-pulse">HUB</text>
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Consensus Gauge */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[125px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span className="flex items-center gap-1"><Shield size={9} className="text-purple-400" /> Distributed Consensus Gauge</span>
+                        <span className={`px-1 rounded text-[6.5px] font-bold ${
+                          distConsensus.consensus_state === "APPROVED" ? "bg-emerald-950 text-emerald-400" :
+                          distConsensus.consensus_state.startsWith("BLOCKED") ? "bg-rose-950 text-rose-400" : "bg-cyan-950 text-cyan-400"
+                        }`}>{distConsensus.consensus_state}</span>
+                      </div>
+
+                      <div className="flex-1 flex items-center justify-center gap-2 mt-1">
+                        <div className="w-[50px] h-[50px] relative">
+                          <svg viewBox="0 0 50 50" className="w-full h-full">
+                            <circle cx="25" cy="25" r="20" fill="none" stroke="#1e293b" strokeWidth="4" />
+                            <circle 
+                              cx="25" 
+                              cy="25" 
+                              r="20" 
+                              fill="none" 
+                              stroke={distConsensus.consensus_score >= 0.80 ? "#10b981" : "#f43f5e"} 
+                              strokeWidth="4" 
+                              strokeDasharray={2 * Math.PI * 20}
+                              strokeDashoffset={2 * Math.PI * 20 * (1 - distConsensus.consensus_score)}
+                              transform="rotate(-90 25 25)"
+                              className="transition-all duration-500"
+                            />
+                            <text x="25" y="28" textAnchor="middle" fontSize="7" fill="#ffffff" fontWeight="bold" className="font-mono">
+                              {Math.round(distConsensus.consensus_score * 100)}%
+                            </text>
+                          </svg>
+                        </div>
+                        <div className="flex-1 font-mono text-[5.8px] leading-normal text-scada-dimText">
+                          <div className="flex justify-between">
+                            <span>Score:</span>
+                            <strong className="text-white">{(distConsensus.consensus_score ?? 0).toFixed(2)}</strong>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Threshold:</span>
+                            <span className="text-cyan-400">0.80</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Drift Rate:</span>
+                            <span className={distConsensus.consensus_drift > 0.40 ? "text-rose-400 font-bold" : "text-white"}>
+                              {(distConsensus.consensus_drift ?? 0).toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Active Nodes:</span>
+                            <span className="text-white">{Object.keys(distConsensus.votes ?? {}).length} nodes</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Edge-Mesh Topology Map & Swarm Anomaly Fusion Heatmap */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {/* Edge-Mesh Topology Map */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[125px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span className="flex items-center gap-1"><Compass size={9} className="text-rose-400 animate-spin" style={{ animationDuration: '6s' }} /> Edge-Mesh Topology Map</span>
+                        <span className={`px-1 rounded text-[6.5px] font-mono ${
+                          edgeMesh.mesh_status === "CONNECTED" ? "bg-emerald-950 text-emerald-400" :
+                          edgeMesh.mesh_status === "PARTITIONED" ? "bg-rose-950 text-rose-400 animate-pulse" : "bg-amber-950 text-amber-400"
+                        }`}>{edgeMesh.mesh_status}</span>
+                      </div>
+
+                      <div className="flex-1 mt-1 relative bg-black/20 rounded border border-scada-border/10">
+                        <svg className="w-full h-full" viewBox="0 0 100 65">
+                          {((edgeMesh.links && edgeMesh.links.length > 0) ? edgeMesh.links : [
+                            { source: "esp32_zone1", target: "plc_primary", status: "ACTIVE" },
+                            { source: "esp32_zone2", target: "plc_primary", status: "ACTIVE" },
+                            { source: "esp32_zone2", target: "esp32_zone3", status: "ACTIVE" },
+                            { source: "esp32_zone3", target: "plc_backup", status: "ACTIVE" },
+                            { source: "esp32_zone3", target: "esp32_backup", status: "ACTIVE" },
+                            { source: "plc_backup", target: "esp32_backup", status: "ACTIVE" }
+                          ]).map((link: any, idx: number) => {
+                            const nodePositions: Record<string, { x: number; y: number }> = {
+                              plc_primary: { x: 25, y: 15 },
+                              esp32_zone1: { x: 12, y: 48 },
+                              esp32_zone2: { x: 38, y: 48 },
+                              plc_backup: { x: 75, y: 15 },
+                              esp32_zone3: { x: 62, y: 48 },
+                              esp32_backup: { x: 88, y: 48 }
+                            };
+                            const pS = nodePositions[link.source];
+                            const pT = nodePositions[link.target];
+                            if (!pS || !pT) return null;
+                            const isBroken = link.status === "BROKEN";
+                            return (
+                              <line 
+                                key={idx} 
+                                x1={pS.x} 
+                                y1={pS.y} 
+                                x2={pT.x} 
+                                y2={pT.y} 
+                                stroke={isBroken ? "#ef4444" : "#10b981"} 
+                                strokeWidth={isBroken ? 1.5 : 1}
+                                strokeDasharray={isBroken ? "2,2" : "0"}
+                              />
+                            );
+                          })}
+
+                          {[
+                            { id: "plc_primary", label: "PLC 1", x: 25, y: 15, col: "#38bdf8" },
+                            { id: "esp32_zone1", label: "Z1", x: 12, y: 48, col: "#10b981" },
+                            { id: "esp32_zone2", label: "Z2", x: 38, y: 48, col: "#10b981" },
+                            { id: "plc_backup", label: "PLC 2", x: 75, y: 15, col: "#a855f7" },
+                            { id: "esp32_zone3", label: "Z3", x: 62, y: 48, col: "#10b981" },
+                            { id: "esp32_backup", label: "BCK", x: 88, y: 48, col: "#f59e0b" }
+                          ].map((n) => {
+                            const isWorst = edgeMesh.worst_node === n.id;
+                            return (
+                              <g key={n.id}>
+                                <circle 
+                                  cx={n.x} 
+                                  cy={n.y} 
+                                  r={isWorst ? 4.5 : 3.5} 
+                                  fill="#0f172a" 
+                                  stroke={isWorst ? "#ef4444" : n.col} 
+                                  strokeWidth={isWorst ? 1.5 : 1} 
+                                  className={isWorst ? "animate-pulse" : ""}
+                                />
+                                <text x={n.x} y={n.y + 1.5} textAnchor="middle" fontSize="3.8" fill="#f8fafc" fontWeight="bold">{n.label}</text>
+                              </g>
+                            );
+                          })}
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Swarm Anomaly Fusion Heatmap */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[125px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span className="flex items-center gap-1"><Activity size={9} className="text-emerald-400" /> Swarm Anomaly Fusion Heatmap</span>
+                        <span className="text-[6.5px] text-scada-dimText font-mono">Score: <strong className="text-white">{swarmAnomalyFusion.swarm_threat_score.toFixed(1)}/10.0</strong></span>
+                      </div>
+
+                      <div className="flex-1 mt-1 grid grid-cols-4 gap-1 p-0.5 bg-black/10 rounded">
+                        {(() => {
+                          const keys = ["telemetry", "relay", "security", "edge"];
+                          const defaultMatrix: Record<string, Record<string, number>> = {
+                            telemetry: { telemetry: 1.0, relay: 0.15, security: 0.15, edge: 0.15 },
+                            relay: { telemetry: 0.15, relay: 1.0, security: 0.15, edge: 0.15 },
+                            security: { telemetry: 0.15, relay: 0.15, security: 1.0, edge: 0.15 },
+                            edge: { telemetry: 0.15, relay: 0.15, security: 0.15, edge: 1.0 }
+                          };
+                          const matrix = swarmAnomalyFusion.correlation_matrix && Object.keys(swarmAnomalyFusion.correlation_matrix).length > 0 
+                            ? swarmAnomalyFusion.correlation_matrix 
+                            : defaultMatrix;
+
+                          return keys.map((k1) => 
+                            keys.map((k2) => {
+                              const val = Number(matrix[k1]?.[k2] ?? 0.0);
+                              return (
+                                <div 
+                                  key={`${k1}-${k2}`} 
+                                  className={`rounded-[2px] flex flex-col justify-center items-center font-mono text-[5.5px] leading-tight select-none border border-scada-border/5 ${
+                                    val >= 0.8 ? "bg-rose-500/80 text-white font-bold animate-pulse" :
+                                    val >= 0.5 ? "bg-amber-500/50 text-amber-100" :
+                                    val > 0.2 ? "bg-cyan-500/30 text-cyan-200" : "bg-black/35 text-scada-dimText"
+                                  }`}
+                                  title={`${k1} <-> ${k2}: ${val.toFixed(2)}`}
+                                >
+                                  <span className="text-[4px] uppercase text-white/40">{k1.substring(0,3)}/{k2.substring(0,3)}</span>
+                                  <span>{val.toFixed(2)}</span>
+                                </div>
+                              );
+                            })
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 3: Federated Memory & Consensus Drift Timeline */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {/* Federated Memory Sync */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[115px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span className="flex items-center gap-1"><GitBranch size={9} className="text-cyan-400" /> Federated Memory Workspace</span>
+                        <span className={`px-1 rounded text-[6px] font-bold uppercase ${
+                          fedMemory.sync_status === "SYNCED" ? "bg-emerald-950 text-emerald-400" :
+                          fedMemory.sync_status === "STORM_PREVENTED" ? "bg-red-950 text-red-400 animate-bounce" : "bg-amber-950 text-amber-400"
+                        }`}>{fedMemory.sync_status}</span>
+                      </div>
+
+                      <div className="flex-1 grid grid-cols-2 gap-1.5 mt-1 overflow-hidden">
+                        <div className="bg-black/20 border border-scada-border/10 p-1.5 rounded text-[5.8px] font-mono leading-relaxed overflow-y-auto scrollbar-thin">
+                          <div className="text-[6.5px] font-bold text-cyan-400 uppercase mb-0.5">Shared Variables</div>
+                          {Object.keys(fedMemory.shared_memory ?? {}).length > 0 ? (
+                            Object.entries(fedMemory.shared_memory).map(([key, val]: [string, any]) => (
+                              <div key={key} className="border-b border-scada-border/5 pb-0.5 flex justify-between">
+                                <span className="text-scada-dimText truncate pr-1 max-w-[50px]">{key}:</span>
+                                <span className="text-white font-bold truncate max-w-[40px]">{String(val)}</span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-[5.5px] text-scada-dimText">Tiada pembolehubah dikongsi.</div>
+                          )}
+                        </div>
+
+                        <div className="bg-black/20 border border-scada-border/10 p-1.5 rounded text-[5.8px] font-mono leading-relaxed overflow-hidden flex flex-col">
+                          <div className="text-[6.5px] font-bold text-cyan-400 uppercase mb-0.5 shrink-0">State Metrics</div>
+                          <div className="flex-1 space-y-0.5 text-[5.5px] overflow-y-auto scrollbar-thin">
+                            <div>Lamport Clock: <strong className="text-white">{fedMemory.lamport_clock}</strong></div>
+                            <div>Sync Count: <strong className="text-white">{fedMemory.sync_count}</strong></div>
+                            {fedMemory.conflict_logs?.length > 0 ? (
+                              <div className="border-t border-scada-border/10 mt-1 pt-0.5">
+                                <span className="text-amber-400 font-bold block">Conflict Logs:</span>
+                                <div className="text-[4.8px] text-amber-200/80 leading-normal max-h-[40px] overflow-y-auto scrollbar-thin">
+                                  {fedMemory.conflict_logs.map((log: string, idx: number) => (
+                                    <div key={idx} className="border-b border-scada-border/5 pb-0.5">{log}</div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-emerald-400 font-bold mt-1 text-[5px]">Replikasi memori bersih dari konflik.</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Consensus Drift Timeline */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[115px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
+                        <span className="flex items-center gap-1"><Clock size={9} className="text-pink-400" /> Consensus Drift Timeline</span>
+                        <span className="text-[6.5px] text-scada-dimText font-mono">Max Drift: <strong className="text-white">{(distConsensus.consensus_drift ?? 0).toFixed(2)}</strong></span>
+                      </div>
+
+                      <div className="flex-1 mt-1.5 flex flex-col justify-between">
+                        <div className="flex-1 bg-black/35 rounded border border-scada-border/10 p-1 flex items-center justify-center">
+                          {(() => {
+                            const driftHistory = distConsensus.drift_history ?? [];
+                            const points = driftHistory.length > 0 ? driftHistory : [
+                              { drift: 0.05 }, { drift: 0.08 }, { drift: 0.06 }, { drift: 0.12 }, { drift: 0.09 }, { drift: 0.15 }, { drift: 0.10 }
+                            ];
+                            const pointsStr = points.map((p: any, idx: number) => {
+                              const x = (idx / Math.max(1, points.length - 1)) * 95 + 2.5;
+                              const y = 35 - Math.min(1.0, p.drift ?? 0) * 30;
+                              return `${x},${y}`;
+                            }).join(" ");
+
+                            return (
+                              <svg className="w-full h-full max-h-[50px]" viewBox="0 0 100 40">
+                                <line x1="0" y1="35" x2="100" y2="35" stroke="#334155" strokeWidth="0.5" strokeDasharray="2,2" />
+                                <line x1="0" y1="20" x2="100" y2="20" stroke="#334155" strokeWidth="0.5" strokeDasharray="2,2" />
+                                <line x1="0" y1="5" x2="100" y2="5" stroke="#334155" strokeWidth="0.5" strokeDasharray="2,2" />
+                                <polyline fill="none" stroke="#ec4899" strokeWidth="1.2" points={pointsStr} />
+                              </svg>
+                            );
+                          })()}
+                        </div>
+                        <span className="text-[5.2px] font-mono text-scada-dimText mt-1 block text-center uppercase tracking-wider">Historical Drift Divergence Curve</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 4: Federated Synchronization Activity & Collaborative Orchestration Chains */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {/* Federated Sync Activity */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[105px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 shrink-0">
+                        <span className="flex items-center gap-1"><Bell size={9} className="text-amber-400" /> Federated Synchronization Activity</span>
+                      </div>
+                      <div className="flex-1 mt-1 font-mono text-[5.8px] space-y-1 overflow-y-auto scrollbar-thin">
+                        <div className="flex justify-between">
+                          <span>Sync Status:</span>
+                          <span className={fedMemory.sync_status === "STORM_PREVENTED" ? "text-red-400 font-bold animate-ping" : "text-emerald-400 font-bold"}>
+                            {fedMemory.sync_status}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Consensus State:</span>
+                          <span className={distConsensus.consensus_state === "APPROVED" ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>
+                            {distConsensus.consensus_state}
+                          </span>
+                        </div>
+                        <div className="w-full bg-black/40 h-2 rounded border border-scada-border/10 overflow-hidden relative">
+                          <div 
+                            className={`h-full transition-all duration-300 ${
+                              fedMemory.sync_status === "STORM_PREVENTED" ? "bg-red-500 animate-pulse" : "bg-cyan-500"
+                            }`} 
+                            style={{ width: `${Math.min(100, (fedMemory.sync_count ?? 0) % 100)}%` }}
+                          />
+                        </div>
+                        <div className="text-[5px] text-scada-dimText text-right">
+                          Sync iteration cycle index: {fedMemory.sync_count}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Collaborative Orchestration Chains */}
+                    <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[105px]">
+                      <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 shrink-0">
+                        <span className="flex items-center gap-1"><GitBranch size={9} className="text-fuchsia-400" /> Collaborative Orchestration Chains</span>
+                      </div>
+                      <div className="flex-1 mt-1 flex flex-col justify-between overflow-hidden">
+                        <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none whitespace-nowrap text-[5.5px] bg-black/25 p-1 rounded border border-scada-border/10 shrink-0">
+                          {swarmCoord.coordination_chain?.length > 0 ? (
+                            swarmCoord.coordination_chain.map((c: string, idx: number) => (
+                              <React.Fragment key={idx}>
+                                {idx > 0 && <span className="text-scada-dimText font-mono">➔</span>}
+                                <span className={`px-1 rounded-[2px] font-bold ${
+                                  c === "EdgeMeshOrchestrator" ? "bg-rose-950 text-rose-300" :
+                                  c === "FederatedMemoryManager" ? "bg-cyan-950 text-cyan-300" :
+                                  c === "SwarmAnomalyFusionEngine" ? "bg-emerald-950 text-emerald-300" : "bg-purple-950 text-purple-300"
+                                }`}>{c.replace("Orchestrator","").replace("Manager","").replace("Engine","")}</span>
+                              </React.Fragment>
+                            ))
+                          ) : (
+                            <span className="text-scada-dimText italic">Tiada rantaian koordinasi aktif.</span>
+                          )}
+                        </div>
+
+                        <div className="flex-1 mt-1 bg-black/25 rounded border border-scada-border/10 p-1 font-mono text-[5.2px] leading-tight text-fuchsia-300 overflow-y-auto scrollbar-thin">
+                          {swarmCoord.coordination_logs?.length > 0 ? (
+                            swarmCoord.coordination_logs.map((log: string, idx: number) => (
+                              <div key={idx} className="border-b border-scada-border/5 pb-0.5">{log}</div>
+                            ))
+                          ) : (
+                            <div className="text-scada-dimText italic">Menunggu log koordinasi swarm...</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 5: Swarm Cognition Simulation Console */}
+                  <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 shrink-0">
+                    <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 flex items-center gap-1 border-b border-scada-border/20 pb-0.5">
+                      <Sliders size={8} className="text-fuchsia-400 animate-pulse" />
+                      <span>Federated Swarm Cognition Simulation Console (Phase 9.9)</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1 pt-1 shrink-0">
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: null } })}
+                        className="bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 rounded py-1 text-[6.5px] text-cyan-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <CheckCircle2 size={8} /> Swarm Consensus
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: "swarm_consensus_instability" } })}
+                        className="bg-purple-950 hover:bg-purple-900 border border-purple-500/30 rounded py-1 text-[6.5px] text-purple-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <AlertTriangle size={8} /> Instability Failure
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: "federated_memory_conflicts" } })}
+                        className="bg-yellow-950 hover:bg-yellow-900 border border-yellow-500/30 rounded py-1 text-[6.5px] text-yellow-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <GitBranch size={8} /> Memory Conflict
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: "edge_mesh_partition_failures" } })}
+                        className="bg-rose-950 hover:bg-rose-900 border border-rose-500/30 rounded py-1 text-[6.5px] text-rose-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <Compass size={8} /> Mesh Partition
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: "anomaly_fusion_overload" } })}
+                        className="bg-red-950 hover:bg-red-900 border border-red-500/30 rounded py-1 text-[6.5px] text-red-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <Activity size={8} /> Fusion Overload
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: "synchronization_storms" } })}
+                        className="bg-amber-950 hover:bg-amber-900 border border-amber-500/30 rounded py-1 text-[6.5px] text-amber-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <Clock size={8} /> Sync Storm
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: "distributed_drift_escalation" } })}
+                        className="bg-orange-950 hover:bg-orange-900 border border-orange-500/30 rounded py-1 text-[6.5px] text-orange-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <RefreshCw size={8} className="animate-spin" /> Drift Escalation
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "set_mode", mode: "collaborative_recovery_failures" } })}
+                        className="bg-pink-950 hover:bg-pink-900 border border-pink-500/30 rounded py-1 text-[6.5px] text-pink-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none">
+                        <AlertTriangle size={8} /> Recovery Failure
+                      </button>
+                      <button onClick={() => onSendControl({ topic: "assistant/swarm_coordination_simulation", payload: { action: "reset" } })}
+                        className="bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/30 rounded py-1 text-[6.5px] text-emerald-300 font-bold transition-all hover:scale-102 flex flex-col items-center justify-center gap-0.5 leading-none col-span-1">
+                        <RotateCcw size={8} /> Reset Swarm
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1348,3 +2681,4 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     </div>
   );
 };
+

@@ -104,6 +104,35 @@ class MemoryStore:
         self.latest_assistant_live_stream: Optional[Dict[str, Any]] = None
         self.latest_assistant_dialogue: Optional[Dict[str, Any]] = None
         self.latest_assistant_orchestration_planner: Optional[Dict[str, Any]] = None
+        
+        # Phase 9.6 variables
+        self.latest_assistant_predictive_coordination: Optional[Dict[str, Any]] = None
+        self.latest_assistant_persistent_memory: Optional[Dict[str, Any]] = None
+        self.latest_assistant_pattern_awareness: Optional[Dict[str, Any]] = None
+        self.latest_assistant_workflow_optimizer: Optional[Dict[str, Any]] = None
+        self.latest_assistant_cross_system_coordination: Optional[Dict[str, Any]] = None
+
+        # Phase 9.7 variables
+        self.latest_assistant_edge_awareness: Optional[Dict[str, Any]] = None
+        self.latest_assistant_relay_health: Optional[Dict[str, Any]] = None
+        self.latest_assistant_telemetry_correlation: Optional[Dict[str, Any]] = None
+        self.latest_assistant_synchronization_awareness: Optional[Dict[str, Any]] = None
+        self.latest_assistant_cyber_physical_reasoning: Optional[Dict[str, Any]] = None
+
+        # Phase 9.8 variables
+        self.latest_assistant_agent_coordination: Optional[Dict[str, Any]] = None
+        self.latest_assistant_telemetry_agent: Optional[Dict[str, Any]] = None
+        self.latest_assistant_relay_agent: Optional[Dict[str, Any]] = None
+        self.latest_assistant_workflow_agent: Optional[Dict[str, Any]] = None
+        self.latest_assistant_security_agent: Optional[Dict[str, Any]] = None
+
+        # Phase 9.9 variables
+        self.latest_assistant_swarm_coordination: Optional[Dict[str, Any]] = None
+        self.latest_assistant_federated_memory: Optional[Dict[str, Any]] = None
+        self.latest_assistant_distributed_consensus: Optional[Dict[str, Any]] = None
+        self.latest_assistant_edge_mesh: Optional[Dict[str, Any]] = None
+        self.latest_assistant_swarm_anomaly_fusion: Optional[Dict[str, Any]] = None
+
 
         
         # Add initial system startup event
@@ -394,6 +423,72 @@ class MemoryStore:
     def update_assistant_orchestration_planner(self, payload: Dict[str, Any]):
         self.latest_assistant_orchestration_planner = payload
 
+    # Phase 9.6 updater methods
+    def update_assistant_predictive_coordination(self, payload: Dict[str, Any]):
+        self.latest_assistant_predictive_coordination = payload
+
+    def update_assistant_persistent_memory(self, payload: Dict[str, Any]):
+        self.latest_assistant_persistent_memory = payload
+
+    def update_assistant_pattern_awareness(self, payload: Dict[str, Any]):
+        self.latest_assistant_pattern_awareness = payload
+
+    def update_assistant_workflow_optimizer(self, payload: Dict[str, Any]):
+        self.latest_assistant_workflow_optimizer = payload
+
+    def update_assistant_cross_system_coordination(self, payload: Dict[str, Any]):
+        self.latest_assistant_cross_system_coordination = payload
+
+    # Phase 9.7 updater methods
+    def update_assistant_edge_awareness(self, payload: Dict[str, Any]):
+        self.latest_assistant_edge_awareness = payload
+
+    def update_assistant_relay_health(self, payload: Dict[str, Any]):
+        self.latest_assistant_relay_health = payload
+
+    def update_assistant_telemetry_correlation(self, payload: Dict[str, Any]):
+        self.latest_assistant_telemetry_correlation = payload
+
+    def update_assistant_synchronization_awareness(self, payload: Dict[str, Any]):
+        self.latest_assistant_synchronization_awareness = payload
+
+    def update_assistant_cyber_physical_reasoning(self, payload: Dict[str, Any]):
+        self.latest_assistant_cyber_physical_reasoning = payload
+
+    # Phase 9.8 updater methods
+    def update_assistant_agent_coordination(self, payload: Dict[str, Any]):
+        self.latest_assistant_agent_coordination = payload
+
+    def update_assistant_telemetry_agent(self, payload: Dict[str, Any]):
+        self.latest_assistant_telemetry_agent = payload
+
+    def update_assistant_relay_agent(self, payload: Dict[str, Any]):
+        self.latest_assistant_relay_agent = payload
+
+    def update_assistant_workflow_agent(self, payload: Dict[str, Any]):
+        self.latest_assistant_workflow_agent = payload
+
+    def update_assistant_security_agent(self, payload: Dict[str, Any]):
+        self.latest_assistant_security_agent = payload
+
+    # Phase 9.9 updater methods
+    def update_assistant_swarm_coordination(self, payload: Dict[str, Any]):
+        self.latest_assistant_swarm_coordination = payload
+
+    def update_assistant_federated_memory(self, payload: Dict[str, Any]):
+        self.latest_assistant_federated_memory = payload
+
+    def update_assistant_distributed_consensus(self, payload: Dict[str, Any]):
+        self.latest_assistant_distributed_consensus = payload
+
+    def update_assistant_edge_mesh(self, payload: Dict[str, Any]):
+        self.latest_assistant_edge_mesh = payload
+
+    def update_assistant_swarm_anomaly_fusion(self, payload: Dict[str, Any]):
+        self.latest_assistant_swarm_anomaly_fusion = payload
+
+
+
 
 
     def add_event(self, event: Dict[str, Any]):
@@ -506,9 +601,37 @@ class MemoryStore:
             "assistant_task_chains": self.latest_assistant_task_chains,
             "assistant_live_stream": self.latest_assistant_live_stream,
             "assistant_dialogue": self.latest_assistant_dialogue,
-            "assistant_orchestration_planner": self.latest_assistant_orchestration_planner
+            "assistant_orchestration_planner": self.latest_assistant_orchestration_planner,
+            
+            # Phase 9.6 bootstrap payload
+            "assistant_predictive_coordination": self.latest_assistant_predictive_coordination,
+            "assistant_persistent_memory": self.latest_assistant_persistent_memory,
+            "assistant_pattern_awareness": self.latest_assistant_pattern_awareness,
+            "assistant_workflow_optimizer": self.latest_assistant_workflow_optimizer,
+            "assistant_cross_system_coordination": self.latest_assistant_cross_system_coordination,
+            
+            # Phase 9.7 bootstrap payload
+            "assistant_edge_awareness": self.latest_assistant_edge_awareness,
+            "assistant_relay_health": self.latest_assistant_relay_health,
+            "assistant_telemetry_correlation": self.latest_assistant_telemetry_correlation,
+            "assistant_synchronization_awareness": self.latest_assistant_synchronization_awareness,
+            "assistant_cyber_physical_reasoning": self.latest_assistant_cyber_physical_reasoning,
+            
+            # Phase 9.8 bootstrap payload
+            "assistant_agent_coordination": self.latest_assistant_agent_coordination,
+            "assistant_telemetry_agent": self.latest_assistant_telemetry_agent,
+            "assistant_relay_agent": self.latest_assistant_relay_agent,
+            "assistant_workflow_agent": self.latest_assistant_workflow_agent,
+            "assistant_security_agent": self.latest_assistant_security_agent,
 
+            # Phase 9.9 bootstrap payload
+            "assistant_swarm_coordination": self.latest_assistant_swarm_coordination,
+            "assistant_federated_memory": self.latest_assistant_federated_memory,
+            "assistant_distributed_consensus": self.latest_assistant_distributed_consensus,
+            "assistant_edge_mesh": self.latest_assistant_edge_mesh,
+            "assistant_swarm_anomaly_fusion": self.latest_assistant_swarm_anomaly_fusion
         }
+
 
     def clear_alerts(self):
         self.alerts = []

@@ -1,0 +1,21 @@
+{
+  "interactions": [
+    {
+      "query": "buka youtube",
+      "action": "open_youtube",
+      "timestamp": 1780151246221,
+      "temporal_bin": "EVENING",
+      "hour": 22
+    }
+  ],
+  "recurrence_history": {
+    "open_youtube": {
+      "action": "open_youtube",
+      "count": 1,
+      "bins": {
+        "EVENING": 1
+      },
+      "last_seen": 1780151246221
+    }
+  }
+}

@@ -50,6 +50,35 @@ from core.assistant.live_conversation_stream import LiveConversationStream
 from core.assistant.adaptive_dialogue_engine import AdaptiveDialogueEngine
 from core.assistant.orchestration_planner_bridge import OrchestrationPlannerBridge
 
+# Phase 9.6 engines imports
+from core.assistant.predictive_coordination_engine import PredictiveCoordinationEngine
+from core.assistant.persistent_routine_memory import PersistentRoutineMemory
+from core.assistant.pattern_awareness_engine import PatternAwarenessEngine
+from core.assistant.adaptive_workflow_optimizer import AdaptiveWorkflowOptimizer
+from core.assistant.cross_system_coordination_manager import CrossSystemCoordinationManager
+
+# Phase 9.7 engines imports
+from core.assistant.edge_awareness_engine import EdgeAwarenessEngine
+from core.assistant.relay_health_monitor import RelayHealthMonitor
+from core.assistant.telemetry_correlation_engine import TelemetryCorrelationEngine
+from core.assistant.synchronization_awareness_manager import SynchronizationAwarenessManager
+from core.assistant.cyber_physical_reasoning_engine import CyberPhysicalReasoningEngine
+
+# Phase 9.8 agent imports
+from core.assistant.telemetry_agent import TelemetryAgent
+from core.assistant.relay_agent import RelayAgent
+from core.assistant.workflow_agent import WorkflowAgent
+from core.assistant.security_agent import SecurityAgent
+from core.assistant.agent_coordination_engine import AgentCoordinationEngine
+
+# Phase 9.9 swarm imports
+from core.assistant.federated_memory_manager import FederatedMemoryManager
+from core.assistant.distributed_consensus_engine import DistributedConsensusEngine
+from core.assistant.edge_mesh_orchestrator import EdgeMeshOrchestrator
+from core.assistant.swarm_anomaly_fusion_engine import SwarmAnomalyFusionEngine
+from core.assistant.swarm_coordination_engine import SwarmCoordinationEngine
+
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("assistant.daemon")
 
@@ -96,6 +125,57 @@ class AssistantDaemon:
         self.live_stream = LiveConversationStream()
         self.dialogue_engine = AdaptiveDialogueEngine()
         self.planner_bridge = OrchestrationPlannerBridge()
+        
+        # Phase 9.6 engines initialization
+        self.predictive_coordination = PredictiveCoordinationEngine()
+        self.persistent_memory = PersistentRoutineMemory()
+        self.pattern_awareness = PatternAwarenessEngine()
+        self.workflow_optimizer = AdaptiveWorkflowOptimizer()
+        self.cross_coordination = CrossSystemCoordinationManager()
+
+        # Phase 9.7 engines initialization
+        self.edge_awareness = EdgeAwarenessEngine()
+        self.relay_health = RelayHealthMonitor()
+        self.telemetry_correlation = TelemetryCorrelationEngine()
+        self.sync_awareness = SynchronizationAwarenessManager()
+        self.cyber_physical_reasoning = CyberPhysicalReasoningEngine()
+
+        # Phase 9.8 engines initialization
+        self.telemetry_agent = TelemetryAgent()
+        self.relay_agent = RelayAgent()
+        self.workflow_agent = WorkflowAgent()
+        self.security_agent = SecurityAgent()
+        self.agent_coordination = AgentCoordinationEngine(
+            self.telemetry_agent,
+            self.relay_agent,
+            self.workflow_agent,
+            self.security_agent
+        )
+        self.latest_agent_coordination = self.agent_coordination.get_status_summary()
+
+        # Phase 9.9 swarm initialization
+        self.federated_memory = FederatedMemoryManager()
+        self.distributed_consensus = DistributedConsensusEngine()
+        self.edge_mesh = EdgeMeshOrchestrator()
+        self.anomaly_fusion = SwarmAnomalyFusionEngine()
+        self.swarm_coordination = SwarmCoordinationEngine(
+            self.federated_memory,
+            self.distributed_consensus,
+            self.edge_mesh,
+            self.anomaly_fusion
+        )
+        self.latest_swarm_coordination = self.swarm_coordination.get_status_summary()
+
+        # Phase 9.7 simulation overrides
+        self.edge_sim_overrides = {
+            "esp32_zone1": {},
+            "esp32_zone2": {},
+            "esp32_zone3": {},
+            "plc_primary": {},
+            "plc_backup": {},
+            "esp32_backup": {}
+        }
+        self.breaker_sim_overrides = {}
         
         # Hardware simulation state registers for proactive triggers
         self.hardware_sim_state = {
@@ -151,6 +231,31 @@ class AssistantDaemon:
         self.latest_live_stream = self.live_stream.get_status_summary()
         self.latest_dialogue = self.dialogue_engine.get_status_summary()
         self.latest_planner_bridge = self.planner_bridge.get_status_summary()
+        
+        # New Phase 9.6 caches
+        self.latest_predictive_coordination = self.predictive_coordination.get_status_summary()
+        self.latest_persistent_memory = self.persistent_memory.get_status_summary()
+        self.latest_pattern_awareness = self.pattern_awareness.get_status_summary()
+        self.latest_workflow_optimizer = self.workflow_optimizer.get_status_summary()
+        self.latest_cross_system_coordination = self.cross_coordination.get_status_summary()
+
+        # New Phase 9.7 caches
+        self.latest_edge_awareness = self.edge_awareness.get_status_summary()
+        self.latest_relay_health = self.relay_health.get_status_summary()
+        self.latest_telemetry_correlation = self.telemetry_correlation.get_status_summary()
+        self.latest_synchronization_awareness = self.sync_awareness.get_status_summary()
+        self.latest_cyber_physical_reasoning = self.cyber_physical_reasoning.evaluate_state(
+            self.latest_edge_awareness,
+            self.latest_relay_health,
+            self.latest_telemetry_correlation,
+            self.latest_synchronization_awareness
+        )
+        
+        # New Phase 9.8 caches
+        self.latest_agent_coordination = self.agent_coordination.get_status_summary()
+        
+        # New Phase 9.9 caches
+        self.latest_swarm_coordination = self.swarm_coordination.get_status_summary()
         
         # Grid cache
         self.grid_state = {
@@ -343,6 +448,111 @@ class AssistantDaemon:
         self.live_stream.tick()
         self.task_chain_mgr.tick(self._execute_chain_step, self.grid_state)
         
+        # Phase 9.6 ticks
+        latency_val = self.grid_state.get("telemetry", {}).get("latency_ms", 45.0)
+        self.predictive_coordination.add_latency_point(latency_val)
+        self.predictive_coordination.analyze_trends(self.grid_state, self.hardware_sim_state)
+        self.pattern_awareness.analyze_patterns(self.grid_state, self.latest_workflows)
+        self.workflow_optimizer.evaluate_efficiency(
+            self.grid_state,
+            self.latest_workflows,
+            self.predictive_coordination.get_status_summary().get("workflow_timings", {})
+        )
+        self.cross_coordination.tick_synchronization(
+            self.grid_state,
+            self.hardware_sim_state,
+            self.workflow_optimizer.recommendations
+        )
+
+        # Phase 9.7 ticks
+        # 1. Update edge awareness states
+        for node_id in self.edge_sim_overrides:
+            override = self.edge_sim_overrides[node_id]
+            if node_id == "esp32_zone1":
+                default_latency = self.grid_state.get("telemetry", {}).get("latency_ms", 45.0)
+                default_online = self.grid_state.get("comms_online", True)
+                default_drift = self.hardware_sim_state.get("drift_sec", 0.0)
+            else:
+                default_latency = 45.0 if "esp32" in node_id else 12.0
+                default_online = True
+                default_drift = 0.0
+                
+            latency = override.get("latency_ms", default_latency)
+            packet_loss = override.get("packet_loss_pct", 0.0)
+            online = override.get("online", default_online)
+            drift = override.get("drift_sec", default_drift)
+            
+            self.edge_awareness.update_edge_state(node_id, latency, packet_loss, online, drift)
+
+        # 2. Update relay health states based on breaker telemetry
+        telemetry = self.grid_state.get("telemetry", {})
+        breaker_keys = ["L1_4", "L2_8", "L3_6", "L4_5", "L5_6", "L6_7", "L7_8", "L8_9", "L4_9"]
+        for bk in breaker_keys:
+            tel_key = f"breaker_{bk}"
+            if tel_key in telemetry:
+                state_val = "CLOSED" if telemetry[tel_key] == 1.0 else "OPEN"
+                timing = self.breaker_sim_overrides.get(bk, {}).get("timing_ms", 50.0)
+                self.relay_health.update_relay_state(bk, state_val, timing_ms=timing)
+
+        # 3. Add telemetry snapshot to correlation engine
+        self.telemetry_correlation.add_telemetry_snapshot(telemetry, time.time())
+
+        # 4. Update sync awareness drifts
+        for node_id in self.edge_sim_overrides:
+            override = self.edge_sim_overrides[node_id]
+            if node_id == "esp32_zone1":
+                default_drift = self.hardware_sim_state.get("drift_sec", 0.0)
+            else:
+                default_drift = 0.0
+            drift = override.get("drift_sec", default_drift)
+            self.sync_awareness.update_node_drift(node_id, drift)
+
+        # 5. Evaluate unified cyber-physical reasoning
+        t_score = self.grid_state.get("threat", {}).get("threat_score", 0.0)
+        t_conf = self.grid_state.get("threat", {}).get("confidence", 1.0)
+        self.latest_cyber_physical_reasoning = self.cyber_physical_reasoning.evaluate_state(
+            edge_sum=self.edge_awareness.get_status_summary(),
+            relay_sum=self.relay_health.get_status_summary(),
+            correlation_sum=self.telemetry_correlation.get_status_summary(),
+            sync_sum=self.sync_awareness.get_status_summary(),
+            threat_score=t_score,
+            threat_confidence=t_conf
+        )
+
+        # Update Phase 9.7 caches
+        self.latest_edge_awareness = self.edge_awareness.get_status_summary()
+        self.latest_relay_health = self.relay_health.get_status_summary()
+        self.latest_telemetry_correlation = self.telemetry_correlation.get_status_summary()
+        self.latest_synchronization_awareness = self.sync_awareness.get_status_summary()
+
+        # Phase 9.8 Coordinate specialized assistant agents
+        active_attacks = []
+        attack_status = telemetry.get("attack_status", {})
+        if isinstance(attack_status, dict) and attack_status.get("active_attack"):
+            active_attacks.append(attack_status["active_attack"])
+        elif telemetry.get("attack_active") == 1:
+            active_attacks.append("stealthy_fdia")
+
+        self.latest_agent_coordination = self.agent_coordination.coordinate_agents(
+            telemetry=telemetry,
+            sync_states=self.latest_synchronization_awareness,
+            relay_summary=self.latest_relay_health,
+            workflows_summary=self.latest_workflows,
+            task_chains_summary=self.latest_task_chains,
+            threat_summary=self.grid_state.get("threat", {}),
+            active_attacks=active_attacks
+        )
+        
+        # Phase 9.9 Swarm Coordination Tick
+        self.latest_swarm_coordination = self.swarm_coordination.coordinate_swarm(
+            telemetry=telemetry,
+            sync_states=self.latest_synchronization_awareness,
+            edge_summary=self.latest_edge_awareness,
+            relay_summary=self.latest_agent_coordination.get("relay_agent", {}),
+            security_summary=self.latest_agent_coordination.get("security_agent", {}),
+            active_attacks=active_attacks
+        )
+        
         # 5. Update voice orchestration summaries
         self.latest_voice_state = self.voice_orch_eng.get_status_summary()
         self.latest_wake_word = self.wake_word_mgr.get_status_summary()
@@ -365,7 +575,15 @@ class AssistantDaemon:
         self.latest_dialogue = self.dialogue_engine.get_status_summary()
         self.latest_planner_bridge = self.planner_bridge.get_status_summary()
         
+        # Update Phase 9.6 caches
+        self.latest_predictive_coordination = self.predictive_coordination.get_status_summary()
+        self.latest_persistent_memory = self.persistent_memory.get_status_summary()
+        self.latest_pattern_awareness = self.pattern_awareness.get_status_summary()
+        self.latest_workflow_optimizer = self.workflow_optimizer.get_status_summary()
+        self.latest_cross_system_coordination = self.cross_coordination.get_status_summary()
+        
         self.publish_telemetry()
+
             
     def _on_connect(self, client, userdata, flags, rc):
         if rc == 0:
@@ -391,6 +609,22 @@ class AssistantDaemon:
             client.subscribe("assistant/stream_simulation")
             client.subscribe("assistant/dialogue_simulation")
             client.subscribe("assistant/orchestration_simulation")
+            
+            # Subscribe to Phase 9.6 simulation topics
+            client.subscribe("assistant/predictive_coordination_simulation")
+            client.subscribe("assistant/persistent_memory_simulation")
+            client.subscribe("assistant/pattern_awareness_simulation")
+            client.subscribe("assistant/workflow_optimizer_simulation")
+            client.subscribe("assistant/cross_system_coordination_simulation")
+            
+            client.subscribe("assistant/edge_awareness_simulation")
+            client.subscribe("assistant/relay_health_simulation")
+            client.subscribe("assistant/telemetry_correlation_simulation")
+            client.subscribe("assistant/synchronization_awareness_simulation")
+            client.subscribe("assistant/cyber_physical_reasoning_simulation")
+            client.subscribe("assistant/agent_coordination_simulation")
+            client.subscribe("assistant/swarm_coordination_simulation")
+
         else:
             logger.error(f"MQTT Connection failed with code {rc}")
             
@@ -553,6 +787,163 @@ class AssistantDaemon:
                     )
                 self.latest_planner_bridge = self.planner_bridge.get_status_summary()
                 self.publish_telemetry()
+            elif topic == "assistant/predictive_coordination_simulation":
+                action = payload.get("action")
+                if action == "add_latency":
+                    self.predictive_coordination.add_latency_point(float(payload.get("latency", 45.0)))
+                self.latest_predictive_coordination = self.predictive_coordination.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/persistent_memory_simulation":
+                action = payload.get("action")
+                if action == "add_interaction":
+                    self.persistent_memory.add_interaction(
+                        payload.get("query", "Default query"),
+                        payload.get("resolved_action", "MEASURE_LATENCY")
+                    )
+                elif action == "clear":
+                    self.persistent_memory.clear_memory()
+                self.latest_persistent_memory = self.persistent_memory.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/pattern_awareness_simulation":
+                action = payload.get("action")
+                if action == "analyze":
+                    self.pattern_awareness.analyze_patterns(self.grid_state, self.latest_workflows)
+                elif action == "reset":
+                    self.pattern_awareness.reset_counters()
+                self.latest_pattern_awareness = self.pattern_awareness.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/workflow_optimizer_simulation":
+                action = payload.get("action")
+                if action == "approve":
+                    self.workflow_optimizer.approve_recommendation(payload.get("workflow_name"))
+                self.latest_workflow_optimizer = self.workflow_optimizer.get_status_summary()
+                self.publish_telemetry()
+            elif topic == "assistant/cross_system_coordination_simulation":
+                self.cross_coordination.tick_synchronization(
+                    self.grid_state,
+                    self.hardware_sim_state,
+                    self.workflow_optimizer.recommendations
+                )
+                self.latest_cross_system_coordination = self.cross_coordination.get_status_summary()
+                self.publish_telemetry()
+                
+            elif topic == "assistant/edge_awareness_simulation":
+                action = payload.get("action")
+                if action == "set_health":
+                    node_id = payload.get("node_id")
+                    if node_id in self.edge_sim_overrides:
+                        self.edge_sim_overrides[node_id] = {
+                            "latency_ms": payload.get("latency_ms"),
+                            "packet_loss_pct": payload.get("packet_loss_pct"),
+                            "online": payload.get("online"),
+                            "drift_sec": payload.get("drift_sec")
+                        }
+                elif action == "reset":
+                    for k in self.edge_sim_overrides:
+                        self.edge_sim_overrides[k].clear()
+                self.latest_edge_awareness = self.edge_awareness.get_status_summary()
+                self.publish_telemetry()
+                
+            elif topic == "assistant/relay_health_simulation":
+                action = payload.get("action")
+                breaker_id = payload.get("breaker_id")
+                if action == "trigger_oscillation" and breaker_id:
+                    # Toggle multiple times to trigger rapid transitions
+                    initial_state = self.relay_health.breakers.get(breaker_id, {}).get("state", "CLOSED")
+                    for i in range(5):
+                        temp_state = "OPEN" if i % 2 == 0 else "CLOSED"
+                        self.relay_health.update_relay_state(breaker_id, temp_state, timing_ms=50.0)
+                    # Restore initial state
+                    self.relay_health.update_relay_state(breaker_id, initial_state, timing_ms=50.0)
+                elif action == "set_wear" and breaker_id:
+                    if breaker_id in self.relay_health.breakers:
+                        self.relay_health.breakers[breaker_id]["switch_count"] = int(payload.get("switch_count", 170))
+                        self.relay_health.breakers[breaker_id]["wear_pct"] = min(100.0, self.relay_health.breakers[breaker_id]["switch_count"] * 0.5)
+                elif action == "set_latency" and breaker_id:
+                    if breaker_id in self.relay_health.breakers:
+                        self.relay_health.breakers[breaker_id]["timing_ms"] = float(payload.get("timing_ms", 150.0))
+                elif action == "reset":
+                    self.relay_health.reset_engine()
+                self.latest_relay_health = self.relay_health.get_status_summary()
+                self.publish_telemetry()
+                
+            elif topic == "assistant/telemetry_correlation_simulation":
+                action = payload.get("action")
+                if action == "inject_correlation":
+                    injected = payload.get("snapshot", {})
+                    self.telemetry_correlation.add_telemetry_snapshot(injected, time.time())
+                elif action == "reset":
+                    self.telemetry_correlation.reset_engine()
+                self.latest_telemetry_correlation = self.telemetry_correlation.get_status_summary()
+                self.publish_telemetry()
+                
+            elif topic == "assistant/synchronization_awareness_simulation":
+                action = payload.get("action")
+                if action == "trigger_drift":
+                    node_id = payload.get("node_id")
+                    drift_sec = float(payload.get("drift_sec", 0.08))
+                    if node_id in self.edge_sim_overrides:
+                        self.edge_sim_overrides[node_id]["drift_sec"] = drift_sec
+                elif action == "reset":
+                    self.sync_awareness.reset_engine()
+                self.latest_synchronization_awareness = self.sync_awareness.get_status_summary()
+                self.publish_telemetry()
+                
+            elif topic == "assistant/cyber_physical_reasoning_simulation":
+                # Simulated threat update
+                threat_score = float(payload.get("threat_score", 0.0))
+                threat_confidence = float(payload.get("confidence", 1.0))
+                self.grid_state["threat"] = {"threat_score": threat_score, "confidence": threat_confidence}
+                self.latest_cyber_physical_reasoning = self.cyber_physical_reasoning.evaluate_state(
+                    edge_sum=self.latest_edge_awareness,
+                    relay_sum=self.latest_relay_health,
+                    correlation_sum=self.latest_telemetry_correlation,
+                    sync_sum=self.latest_synchronization_awareness,
+                    threat_score=threat_score,
+                    threat_confidence=threat_confidence
+                )
+                self.publish_telemetry()
+                
+            elif topic == "assistant/agent_coordination_simulation":
+                action = payload.get("action")
+                if action == "set_mode":
+                    mode = payload.get("mode")
+                    self.agent_coordination.simulation_mode = mode
+                    if mode == "drift_storm":
+                        self.edge_sim_overrides["esp32_zone1"]["drift_sec"] = 0.03
+                        self.edge_sim_overrides["esp32_zone2"]["drift_sec"] = 0.04
+                        self.edge_sim_overrides["esp32_zone3"]["drift_sec"] = 0.05
+                    elif mode == "relay_spikes":
+                        for i in range(5):
+                            temp_state = "OPEN" if i % 2 == 0 else "CLOSED"
+                            self.relay_health.update_relay_state("L1_4", temp_state, timing_ms=50.0)
+                elif action == "reset":
+                    self.agent_coordination.reset_engine()
+                    for k in self.edge_sim_overrides:
+                        self.edge_sim_overrides[k].clear()
+                    self.relay_health.reset_engine()
+                self.latest_agent_coordination = self.agent_coordination.get_status_summary()
+                self.publish_telemetry()
+
+            elif topic == "assistant/swarm_coordination_simulation":
+                action = payload.get("action")
+                if action == "set_mode":
+                    mode = payload.get("mode")
+                    self.swarm_coordination.simulation_mode = mode
+                    if mode == "drift_storm" or mode == "distributed_drift_escalation":
+                        self.edge_sim_overrides["esp32_zone1"]["drift_sec"] = 0.03
+                        self.edge_sim_overrides["esp32_zone2"]["drift_sec"] = 0.04
+                        self.edge_sim_overrides["esp32_zone3"]["drift_sec"] = 0.05
+                    elif mode == "edge_mesh_partition_failures":
+                        self.edge_sim_overrides["esp32_zone2"]["online"] = True
+                        self.edge_sim_overrides["esp32_zone3"]["online"] = True
+                elif action == "reset":
+                    self.swarm_coordination.reset_engine()
+                    for k in self.edge_sim_overrides:
+                        self.edge_sim_overrides[k].clear()
+                self.latest_swarm_coordination = self.swarm_coordination.get_status_summary()
+                self.publish_telemetry()
+
             elif topic in ["assistant/chat_input", "assistant/voice_input"]:
                 # Process user request
                 is_voice = (topic == "assistant/voice_input")
@@ -633,6 +1024,66 @@ class AssistantDaemon:
             self.voice_orch_eng.transition_to("THINKING")
         self.publish_telemetry()
         
+        # Cyber-Physical reasoning query intercept (Phase 9.7)
+        threat_score = self.grid_state.get("threat", {}).get("threat_score", 0.0)
+        threat_confidence = self.grid_state.get("threat", {}).get("confidence", 1.0)
+        grid_critical = (threat_score > 70.0)
+        
+        # Multi-Agent query intercept (Phase 9.8)
+        # Swarm query intercept (Phase 9.9)
+        swarm_response = self.swarm_coordination.handle_query(text)
+        if swarm_response:
+            self._respond(
+                swarm_response,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "swarm_coordination_query",
+                    "reasoning_logs": ["Swarm intelligence query resolved by Swarm Coordinator."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+
+        agent_response = self.agent_coordination.handle_query(text)
+        if agent_response:
+            self._respond(
+                agent_response,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "agent_coordination_query",
+                    "reasoning_logs": ["Multi-agent coordination query resolved by Coordinator."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+        
+        cp_response = self.cyber_physical_reasoning.handle_query(
+            text,
+            edge_sum=self.latest_edge_awareness,
+            relay_sum=self.latest_relay_health,
+            correlation_sum=self.latest_telemetry_correlation,
+            sync_sum=self.latest_synchronization_awareness,
+            threat_score=threat_score,
+            threat_confidence=threat_confidence
+        )
+        if cp_response:
+            self._respond(
+                cp_response,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "cyber_physical_query",
+                    "reasoning_logs": ["Cyber-physical awareness query resolved directly by Reasoning Engine."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+            
         # 4. Intent detection & Dialogue Clarification Check
         semantic_intent = None
         if self.dialogue_engine.state == "AWAITING_CLARIFICATION":
@@ -679,6 +1130,8 @@ class AssistantDaemon:
             intent_action=semantic_intent.get("action"), 
             entities=semantic_intent.get("parameters")
         )
+        self.persistent_memory.add_interaction(text, semantic_intent.get("action"))
+
         
         # 8. Conversational planning check (Multi-Step task sequencing)
         plan = self.planning_engine.create_plan(text, semantic_intent)
@@ -851,8 +1304,46 @@ class AssistantDaemon:
         self.latest_dialogue = self.dialogue_engine.get_status_summary()
         self.latest_planner_bridge = self.planner_bridge.get_status_summary()
         
+        # Reset Phase 9.6 engines and states
+        self.predictive_coordination.latency_history.clear()
+        self.predictive_coordination.workflow_execution_history.clear()
+        self.predictive_coordination.forecasts.clear()
+        self.predictive_coordination.suggestions.clear()
+        self.persistent_memory.clear_memory()
+        self.pattern_awareness.reset_counters()
+        self.workflow_optimizer.recommendations.clear()
+        self.workflow_optimizer.active_optimizations.clear()
+        self.cross_coordination.conflict_logs.clear()
+        self.cross_coordination.sync_state = "SYNCED"
+        self.cross_coordination.drift_sec = 0.0
+        
+        # Phase 9.7 resets
+        self.edge_awareness.reset_engine()
+        self.relay_health.reset_engine()
+        self.telemetry_correlation.reset_engine()
+        self.sync_awareness.reset_engine()
+        for k in self.edge_sim_overrides:
+            self.edge_sim_overrides[k].clear()
+        self.breaker_sim_overrides.clear()
+        
+        # Phase 9.8 resets
+        self.agent_coordination.reset_engine()
+        self.latest_agent_coordination = self.agent_coordination.get_status_summary()
+        
+        # Phase 9.9 resets
+        self.swarm_coordination.reset_engine()
+        self.latest_swarm_coordination = self.swarm_coordination.get_status_summary()
+
+        
+        self.latest_predictive_coordination = self.predictive_coordination.get_status_summary()
+        self.latest_persistent_memory = self.persistent_memory.get_status_summary()
+        self.latest_pattern_awareness = self.pattern_awareness.get_status_summary()
+        self.latest_workflow_optimizer = self.workflow_optimizer.get_status_summary()
+        self.latest_cross_system_coordination = self.cross_coordination.get_status_summary()
+        
         self.state_mgr.transition_to("IDLE")
         self.publish_telemetry()
+
         
     def _respond(self, response_text: str, is_voice: bool, action_result: Dict[str, Any] = {}, reasoning: Dict[str, Any] = {}, hook_status: Dict[str, Any] = {}):
         # Calculate presence delay simulation
@@ -1036,6 +1527,56 @@ class AssistantDaemon:
         self.client.publish("assistant/dialogue", json.dumps(self.latest_dialogue))
         # 27. assistant/orchestration_planner [NEW]
         self.client.publish("assistant/orchestration_planner", json.dumps(self.latest_planner_bridge))
+        
+        # Phase 9.6 publishes
+        # 28. assistant/predictive_coordination [NEW]
+        self.client.publish("assistant/predictive_coordination", json.dumps(self.latest_predictive_coordination))
+        # 29. assistant/persistent_memory [NEW]
+        self.client.publish("assistant/persistent_memory", json.dumps(self.latest_persistent_memory))
+        # 30. assistant/pattern_awareness [NEW]
+        self.client.publish("assistant/pattern_awareness", json.dumps(self.latest_pattern_awareness))
+        # 31. assistant/workflow_optimizer [NEW]
+        self.client.publish("assistant/workflow_optimizer", json.dumps(self.latest_workflow_optimizer))
+        # 32. assistant/cross_system_coordination [NEW]
+        self.client.publish("assistant/cross_system_coordination", json.dumps(self.latest_cross_system_coordination))
+        
+        # Phase 9.7 publishes
+        # 33. assistant/edge_awareness [NEW]
+        self.client.publish("assistant/edge_awareness", json.dumps(self.latest_edge_awareness))
+        # 34. assistant/relay_health [NEW]
+        self.client.publish("assistant/relay_health", json.dumps(self.latest_relay_health))
+        # 35. assistant/telemetry_correlation [NEW]
+        self.client.publish("assistant/telemetry_correlation", json.dumps(self.latest_telemetry_correlation))
+        # 36. assistant/synchronization_awareness [NEW]
+        self.client.publish("assistant/synchronization_awareness", json.dumps(self.latest_synchronization_awareness))
+        # 37. assistant/cyber_physical_reasoning [NEW]
+        self.client.publish("assistant/cyber_physical_reasoning", json.dumps(self.latest_cyber_physical_reasoning))
+
+        # Phase 9.8 publishes
+        # 38. assistant/agent_coordination [NEW]
+        self.client.publish("assistant/agent_coordination", json.dumps(self.latest_agent_coordination))
+        # 39. assistant/telemetry_agent [NEW]
+        self.client.publish("assistant/telemetry_agent", json.dumps(self.latest_agent_coordination["telemetry_agent"]))
+        # 40. assistant/relay_agent [NEW]
+        self.client.publish("assistant/relay_agent", json.dumps(self.latest_agent_coordination["relay_agent"]))
+        # 41. assistant/workflow_agent [NEW]
+        self.client.publish("assistant/workflow_agent", json.dumps(self.latest_agent_coordination["workflow_agent"]))
+        # 42. assistant/security_agent [NEW]
+        self.client.publish("assistant/security_agent", json.dumps(self.latest_agent_coordination["security_agent"]))
+
+        # Phase 9.9 publishes
+        # 43. assistant/swarm_coordination [NEW]
+        self.client.publish("assistant/swarm_coordination", json.dumps(self.latest_swarm_coordination))
+        # 44. assistant/federated_memory [NEW]
+        self.client.publish("assistant/federated_memory", json.dumps(self.latest_swarm_coordination["federated_memory"]))
+        # 45. assistant/distributed_consensus [NEW]
+        self.client.publish("assistant/distributed_consensus", json.dumps(self.latest_swarm_coordination["distributed_consensus"]))
+        # 46. assistant/edge_mesh [NEW]
+        self.client.publish("assistant/edge_mesh", json.dumps(self.latest_swarm_coordination["edge_mesh"]))
+        # 47. assistant/swarm_anomaly_fusion [NEW]
+        self.client.publish("assistant/swarm_anomaly_fusion", json.dumps(self.latest_swarm_coordination["anomaly_fusion"]))
+
+
 
 if __name__ == "__main__":
     daemon = AssistantDaemon()

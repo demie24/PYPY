@@ -1,5 +1,38 @@
 # Smart Grid Cybersecurity Platform (PYPY)
 
+## Research Platform Context
+
+PYPY is an actively developed cyber-physical smart grid research platform following a phased modular roadmap architecture.
+
+The repository includes:
+- operational simulation modules
+- staged AI subsystems
+- experimental cybersecurity research components
+- hardware abstraction layers for HIL (Hardware-in-the-Loop) validation
+
+Several services and modules are intentionally staged, paused, or partially integrated as part of the ongoing phased development lifecycle and academic research process.
+
+This repository is designed for:
+- cybersecurity research
+- smart-grid resilience studies
+- AI-assisted grid protection experiments
+- cyber-physical system simulation
+- reinforcement learning safety validation
+
+---
+
+## Development Status
+
+PYPY is currently under active development and validation.
+
+Some modules are:
+- fully operational
+- partially integrated
+- experimental
+- pending future hardware deployment
+
+The platform prioritizes modular incremental development rather than monolithic full-stack deployment.
+
 A modular, cyber-physical platform for simulating power distribution grids with real-time digital twin monitoring, AI-driven anomaly detection, self-healing logic, and hardware-in-the-loop (HIL) control via ESP32 edge devices.
 
 **Project Status**: 🔄 **In Active Development**

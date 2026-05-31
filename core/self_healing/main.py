@@ -90,7 +90,7 @@ def on_connect(client, userdata, flags, rc):
         logger.error(f"MQTT Connection failed with code {rc}")
 
 def on_message(client, userdata, msg):
-    global _telemetry_frame_count, _post_trip_settle_remaining, _alert_cooldown
+    global _telemetry_frame_count, _post_trip_settle_remaining
     try:
         topic = msg.topic
         payload = json.loads(msg.payload.decode("utf-8"))

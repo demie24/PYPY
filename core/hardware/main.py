@@ -47,7 +47,6 @@ client = None
 
 # Callback for bus command execution
 def on_bus_execution(cmd_payload, success, reason):
-    global client
     if not client:
         return
     if success:
@@ -444,7 +443,6 @@ def run_relay_transition_loop():
 
 if __name__ == "__main__":
     # Initialize MQTT Client
-    global client
     client = mqtt.Client(client_id="smart_grid_hardware_abstraction_layer")
     client.on_connect = on_connect
     client.on_message = on_message
@@ -493,7 +491,7 @@ if __name__ == "__main__":
             # Evaluate redundancy and primary-backup health
             redundancy_coordinator.evaluate_redundancy_health(fleet_payload, large_scale_sync.timing_deviations)
             
-            # Evaluate global distributed resilience state
+            # Evaluate fglobal distributed resilience state
             resilience_manager.evaluate_resilience(
                 current_state,
                 fleet_payload,

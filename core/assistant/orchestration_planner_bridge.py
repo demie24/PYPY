@@ -19,6 +19,9 @@ class OrchestrationPlannerBridge:
         Enforces:
         - Confidence threshold (>= 0.50)
         - Excess escalation prevention (stability >= 30.0%)
+        - Trust score validation (trust_score >= 90.0%)
+        - Active cyberattack automation suspension (threat_score <= 70.0% under attack)
+        - Critical bus protection (block operations on Bus 1, 2, 3, 4)
         """
         objective = step.get("objective")
         parameters = step.get("parameters", {})
@@ -54,6 +57,33 @@ class OrchestrationPlannerBridge:
                 err_msg = "Grid stability collapsed below 30%. Operator manual override required."
                 self.validation_logs.append(f"CRITICAL ESCALATION: {err_msg}")
                 return {"status": "FAILED", "error": "escalate_to_operator", "reason": err_msg}
+
+            # Rule C: Trust Validation Safety check (Stage 3G)
+            validation = grid_state.get("telemetry", {}).get("validation", {})
+            trust_score = validation.get("trust_score", 100.0)
+            if trust_score < 90.0:
+                err_msg = f"Telemetry trust score too low ({trust_score:.1f}% < 90.0%). Automation suspended due to suspected measurement tampering."
+                self.validation_logs.append(f"SAFETY REJECTION: {err_msg}")
+                return {"status": "FAILED", "error": err_msg}
+
+            # Rule D: Active Cyberattack suppression gating (Stage 3G)
+            affected_nodes = threat_data.get("affected_nodes", [])
+            active_scenarios = grid_state.get("telemetry", {}).get("attack_status", {}).get("active_scenarios", [])
+            is_active_attack = len(affected_nodes) > 0 or len(active_scenarios) > 0 or grid_state.get("telemetry", {}).get("attack_active", False)
+            if is_active_attack and threat_score > 70.0:
+                err_msg = f"Active cyberattack and threat score high ({threat_score:.1f}% > 70.0%). Automatic restoration and switching suspended for cybersecurity safety."
+                self.validation_logs.append(f"SAFETY REJECTION: {err_msg}")
+                return {"status": "FAILED", "error": "cyberattack_suppression", "reason": err_msg}
+
+            # Rule E: Critical Bus Protection (Stage 3G)
+            bus_id = parameters.get("bus_id") or parameters.get("target") or ""
+            normalized_bus = str(bus_id).replace(" ", "_").capitalize()
+            if not normalized_bus.startswith("Bus_") and normalized_bus:
+                normalized_bus = f"Bus_{normalized_bus}"
+            if normalized_bus in ["Bus_1", "Bus_2", "Bus_3", "Bus_4"]:
+                err_msg = f"Operation on critical infrastructure bus {normalized_bus} blocked. Automated switching is prohibited on Slack/Generator buses."
+                self.validation_logs.append(f"SAFETY REJECTION: {err_msg}")
+                return {"status": "FAILED", "error": err_msg}
 
         return {"status": "SUCCESS"}
 

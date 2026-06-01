@@ -233,20 +233,23 @@ services:
   #   networks:
   #     - grid-net
 
-  # assistant:  # Status: paused – voice orchestration not production-ready
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./assistant/Dockerfile
-  #   container_name: smart_grid_assistant
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
+  assistant:
+    build:
+      context: ./core
+      dockerfile: ./assistant/Dockerfile
+    container_name: smart_grid_assistant
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    volumes:
+      - ./logs/assistant:/app/logs
 
 networks:
   grid-net:

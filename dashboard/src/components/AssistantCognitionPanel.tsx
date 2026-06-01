@@ -84,6 +84,17 @@ interface Reasoning {
   followup_recommendation: string | null;
   reasoning_logs: string[];
   grid_critical: boolean;
+  rag_hits?: Array<{ title: string; source: string; score: number }>;
+  confidence?: number;
+  topology_details?: {
+    target?: string;
+    neighbors?: string[];
+    lines?: string[];
+    islanding?: string[];
+    relays?: string[];
+    failed_line?: string;
+  };
+  event_timeline?: Array<{ time_offset_sec: number; type: string; details: string; severity: string }>;
 }
 
 interface AutomationHooks {
@@ -1194,6 +1205,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                       {reasoning.reasoning_logs.map((log: string, index: number) => {
                         let color = "text-white/80";
                         if (log.includes("SAFETY OVERRIDE")) color = "text-rose-400 font-bold bg-rose-950/20 pl-1 border-l border-rose-500";
+                        else if (log.includes("RAG")) color = "text-fuchsia-400 font-bold bg-fuchsia-950/20 pl-1 border-l border-fuchsia-500";
                         else if (log.includes("Decomposing")) color = "text-cyan-400";
                         else if (log.includes("Matched pattern")) color = "text-amber-400";
                         else if (log.includes("resolving") || log.includes("resolved")) color = "text-emerald-400";
@@ -1201,6 +1213,136 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                       })}
                     </div>
                   </div>
+
+                  {/* RAG Stage 3: Smart Grid Intelligence Panel (Fuchsia Theme) */}
+                  {reasoning.resolved_action === "rag_knowledge_query" && (
+                    <div className="bg-fuchsia-950/20 border border-fuchsia-500/40 rounded p-1.5 space-y-1.5 shadow-[0_0_10px_rgba(240,79,207,0.1)]">
+                      <div className="text-[7.5px] font-bold text-fuchsia-400 uppercase tracking-wider flex justify-between items-center border-b border-fuchsia-500/30 pb-0.5 shrink-0">
+                        <div className="flex items-center gap-1">
+                          <Sparkles size={9} />
+                          <span>Cyber-Physical RAG Intelligence</span>
+                        </div>
+                        <span className="text-[6.5px] px-1 bg-fuchsia-950 border border-fuchsia-500/30 rounded text-fuchsia-300">STAGE 3 ACTIVE</span>
+                      </div>
+
+                      {/* 1. Engineering Confidence Gauge */}
+                      <div className="text-[6.5px] space-y-0.5">
+                        <div className="flex justify-between text-scada-dimText">
+                          <span>Engineering Confidence Score:</span>
+                          <span className="text-fuchsia-400 font-bold font-mono">
+                            {((reasoning.confidence ?? 0.90) * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-scada-bg border border-scada-border/30 h-1.5 rounded overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-purple-500 to-fuchsia-500 h-full shadow-[0_0_4px_#f04fcf]"
+                            style={{ width: `${(reasoning.confidence ?? 0.90) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 2. Topology Context Inspector */}
+                      {reasoning.topology_details && reasoning.topology_details.target && (
+                        <div className="bg-black/30 border border-fuchsia-900/30 rounded p-1 text-[6.5px] space-y-1">
+                          <div className="font-bold text-fuchsia-300 flex items-center gap-1 text-[6.8px]">
+                            <Compass size={8} />
+                            <span>Topology Inspector ({reasoning.topology_details.target})</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-1 text-[6px] leading-tight">
+                            {reasoning.topology_details.neighbors && (
+                              <div className="bg-black/20 p-0.5 border border-scada-border/10 rounded">
+                                <span className="text-scada-dimText block">Neighbor Nodes:</span>
+                                <span className="text-white font-mono">{reasoning.topology_details.neighbors.join(", ")}</span>
+                              </div>
+                            )}
+                            {reasoning.topology_details.relays && (
+                              <div className="bg-black/20 p-0.5 border border-scada-border/10 rounded">
+                                <span className="text-scada-dimText block">Protecting Relays:</span>
+                                <span className="text-white font-mono truncate block" title={reasoning.topology_details.relays.join(", ")}>
+                                  {reasoning.topology_details.relays.join(", ")}
+                                </span>
+                              </div>
+                            )}
+                            {reasoning.topology_details.lines && (
+                              <div className="bg-black/20 p-0.5 border border-scada-border/10 rounded">
+                                <span className="text-scada-dimText block">Incident Lines:</span>
+                                <span className="text-white font-mono">{reasoning.topology_details.lines.join(", ")}</span>
+                              </div>
+                            )}
+                            {reasoning.topology_details.islanding && (
+                              <div className="bg-black/20 p-0.5 border border-scada-border/10 rounded">
+                                <span className="text-scada-dimText block">Islanding Risk Zone:</span>
+                                <span className="text-rose-400 font-bold font-mono">
+                                  {reasoning.topology_details.islanding.length > 0 ? reasoning.topology_details.islanding.join(", ") : "None"}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 3. Cascading & Failed Line view */}
+                      {reasoning.topology_details && reasoning.topology_details.failed_line && (
+                        <div className="bg-black/35 border border-rose-900/30 rounded p-1 text-[6.5px] space-y-0.5">
+                          <div className="font-bold text-rose-400 flex items-center gap-1 text-[6.8px]">
+                            <AlertTriangle size={8} />
+                            <span>Cascading Cascade Propagation</span>
+                          </div>
+                          <p className="text-white text-[5.8px] leading-tight">
+                            Line <span className="text-rose-400 font-bold font-mono">{reasoning.topology_details.failed_line}</span> open trip redirects load to adjacent lines (L8_9, L4_9) causing high thermal stress and voltage collapse.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* 4. Temporal Timeline Panel */}
+                      {reasoning.event_timeline && reasoning.event_timeline.length > 0 && (
+                        <div className="space-y-0.5">
+                          <div className="font-bold text-fuchsia-300 flex items-center gap-1 text-[6.8px]">
+                            <Clock size={8} />
+                            <span>Temporal Event Log Timeline</span>
+                          </div>
+                          <div className="max-h-[60px] overflow-y-auto space-y-0.5 pr-0.5 scrollbar-thin text-[5.8px]">
+                            {reasoning.event_timeline.map((ev, idx) => (
+                              <div key={idx} className="bg-black/20 p-0.5 border border-scada-border/10 rounded flex justify-between gap-1 items-center">
+                                <span className="text-fuchsia-400 font-mono">[-{ev.time_offset_sec}s]</span>
+                                <span className="text-white/90 truncate flex-1">{ev.details}</span>
+                                <span className={`px-0.5 rounded text-[5px] font-bold ${
+                                  ev.severity === "CRITICAL" ? "bg-rose-950 text-rose-400 border border-rose-500/20" :
+                                  ev.severity === "WARNING" ? "bg-amber-950 text-amber-400 border border-amber-500/20" :
+                                  "bg-cyan-950 text-cyan-400"
+                                }`}>
+                                  {ev.type}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 5. Retrieval Source Explorer */}
+                      {reasoning.rag_hits && reasoning.rag_hits.length > 0 && (
+                        <div className="space-y-0.5">
+                          <div className="font-bold text-fuchsia-300 flex items-center gap-1 text-[6.8px]">
+                            <Compass size={8} />
+                            <span>Retrieval Source Explorer</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-1 text-[5.8px]">
+                            {reasoning.rag_hits.map((hit, idx) => (
+                              <div key={idx} className="bg-black/20 p-0.5 border border-scada-border/10 rounded flex justify-between items-center">
+                                <div className="truncate flex-1">
+                                  <span className="text-white block truncate">{hit.title}</span>
+                                  <span className="text-scada-dimText truncate block text-[5px]">{hit.source}</span>
+                                </div>
+                                <span className="text-emerald-400 font-bold font-mono pl-1">
+                                  {hit.score.toFixed(3)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Voice state info */}
                   <div className="bg-scada-bg/40 border border-scada-border/30 rounded p-1.5 text-[7px] space-y-1">

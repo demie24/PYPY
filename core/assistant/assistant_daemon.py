@@ -77,7 +77,7 @@ from core.assistant.distributed_consensus_engine import DistributedConsensusEngi
 from core.assistant.edge_mesh_orchestrator import EdgeMeshOrchestrator
 from core.assistant.swarm_anomaly_fusion_engine import SwarmAnomalyFusionEngine
 from core.assistant.swarm_coordination_engine import SwarmCoordinationEngine
-
+from core.assistant.rag_engine import RAGEngine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("assistant.daemon")
@@ -87,6 +87,9 @@ class AssistantDaemon:
         self.broker = os.getenv("MQTT_BROKER", "localhost")
         self.port = int(os.getenv("MQTT_PORT", 1883))
         self.client = mqtt.Client(client_id="assistant_service")
+        
+        # Phase 9.10 RAG Initialization
+        self.rag_engine = RAGEngine()
         
         # Original Engines initialization
         self.intent_eng = IntentEngine()
@@ -1081,6 +1084,28 @@ class AssistantDaemon:
                     "reasoning_logs": ["Cyber-physical awareness query resolved directly by Reasoning Engine."],
                     "grid_critical": grid_critical
                 }
+            )
+            return
+
+        # RAG query intercept (Phase 9.10 / Stage 3)
+        rag_res = self.rag_engine.handle_query(text, self.grid_state.get("telemetry", {}), self.grid_state.get("threat", {}), self.memory_orch)
+        if rag_res:
+            reasoning_payload = {
+                "should_execute": False,
+                "should_respond": True,
+                "resolved_action": "rag_knowledge_query",
+                "reasoning_logs": rag_res["reasoning_logs"],
+                "grid_critical": grid_critical,
+                "rag_hits": rag_res.get("hits", []),
+                "confidence": rag_res.get("confidence", 0.90),
+                "topology_details": rag_res.get("topology_details", {}),
+                "event_timeline": rag_res.get("event_timeline", [])
+            }
+            self.latest_reasoning = reasoning_payload
+            self._respond(
+                rag_res["response"],
+                is_voice,
+                reasoning=reasoning_payload
             )
             return
             

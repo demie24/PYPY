@@ -109,3 +109,4 @@ coverage.xml
 analytics/*.csv
 models/checkpoints/
 simulation_data/
+core/assistant/routine_memory.json

@@ -10,9 +10,9 @@ services:
     ports:
       - "1884:1883"
       - "9001:9001"
-# External host access uses port 1884
-# Internal container communication remains on 1883 
-   volumes:
+     # External host access uses port 1884
+     # Internal container communication remains on 1883 
+    volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mqtt_data:/mosquitto/data
       - mqtt_logs:/mosquitto/log

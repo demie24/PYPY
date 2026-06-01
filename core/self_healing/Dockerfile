@@ -6,7 +6,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
-COPY . .
+# Copy source code to /app/core
+COPY . ./core
 
-CMD ["python", "self_healing/main.py"]
+RUN mkdir -p /app/logs
+
+ENV PYTHONPATH=/app
+
+CMD ["python", "-m", "core.self_healing.main"]

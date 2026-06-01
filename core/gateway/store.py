@@ -132,9 +132,8 @@ class MemoryStore:
         self.latest_assistant_distributed_consensus: Optional[Dict[str, Any]] = None
         self.latest_assistant_edge_mesh: Optional[Dict[str, Any]] = None
         self.latest_assistant_swarm_anomaly_fusion: Optional[Dict[str, Any]] = None
+        self.last_telemetry_time = 0.0
 
-
-        
         # Add initial system startup event
         self.add_event({
             "timestamp": int(time.time() * 1000),
@@ -145,6 +144,7 @@ class MemoryStore:
 
     def update_telemetry(self, telemetry: Dict[str, Any]):
         self.latest_telemetry = telemetry
+        self.last_telemetry_time = time.time()
 
     def update_config(self, config: Dict[str, Any]):
         self.latest_config.update(config)
@@ -505,9 +505,18 @@ class MemoryStore:
         """
         Returns the initialization payload for newly connected clients.
         """
+        now = time.time()
+        simulator_offline = self.last_telemetry_time == 0.0 or (now - self.last_telemetry_time) > 4.0
+        
+        telemetry_payload = self.latest_telemetry
+        if simulator_offline and telemetry_payload:
+            telemetry_payload = telemetry_payload.copy()
+            telemetry_payload["simulator_status"] = "OFFLINE"
+            
         return {
             "type": "BOOTSTRAP",
-            "telemetry": self.latest_telemetry,
+            "telemetry": telemetry_payload,
+            "simulator_offline": simulator_offline,
             "events": self.events,
             "alerts": self.alerts,
             "config": self.latest_config,

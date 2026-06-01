@@ -28,13 +28,18 @@ class TelemetryPublisher:
         self.client.on_message = self._on_message
 
     def start(self):
-        try:
-            self.client.connect(self.broker, self.port, keepalive=60)
-            self.client.loop_start()
-            logger.info(f"Publisher MQTT connected to {self.broker}:{self.port}")
-        except Exception as e:
-            logger.error(f"Publisher MQTT connection failed: {e}")
-            raise e
+        connected = False
+        retry_delay = 1.0
+        while not connected:
+            try:
+                self.client.connect(self.broker, self.port, keepalive=60)
+                self.client.loop_start()
+                connected = True
+                logger.info(f"Publisher MQTT connected successfully to {self.broker}:{self.port}")
+            except Exception as e:
+                logger.warning(f"Publisher MQTT connection failed: {e}. Retrying in {retry_delay}s...")
+                time.sleep(retry_delay)
+                retry_delay = min(15.0, retry_delay * 1.5)
 
     def stop(self):
         self.client.loop_stop()

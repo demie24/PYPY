@@ -22,12 +22,22 @@ class MQTTManager:
 
     def start(self, loop: asyncio.AbstractEventLoop):
         self.loop = loop
-        try:
-            self.client.connect(self.broker, self.port, keepalive=60)
-            self.client.loop_start()
-            logger.info(f"MQTT client started. Connecting to {self.broker}:{self.port}")
-        except Exception as e:
-            logger.error(f"MQTT client failed to start: {e}")
+        def connect_loop():
+            import time
+            connected = False
+            retry_delay = 1.0
+            while not connected:
+                try:
+                    self.client.connect(self.broker, self.port, keepalive=60)
+                    self.client.loop_start()
+                    connected = True
+                    logger.info(f"MQTT client connected successfully to {self.broker}:{self.port}")
+                except Exception as e:
+                    logger.warning(f"MQTT client connection failed: {e}. Retrying in {retry_delay}s...")
+                    time.sleep(retry_delay)
+                    retry_delay = min(15.0, retry_delay * 1.5)
+        import threading
+        threading.Thread(target=connect_loop, daemon=True).start()
 
     def stop(self):
         self.client.loop_stop()

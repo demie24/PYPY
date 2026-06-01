@@ -228,8 +228,19 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_message = on_message
     
+    connected = False
+    retry_delay = 1.0
+    while not connected:
+        try:
+            client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+            connected = True
+            logger.info("AI Detector connected to MQTT successfully!")
+        except Exception as e:
+            logger.warning(f"AI Detector MQTT connection failed: {e}. Retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
+            retry_delay = min(15.0, retry_delay * 1.5)
+            
     try:
-        client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
         client.loop_forever()
     except KeyboardInterrupt:
         logger.info("Stopping AI Detector...")

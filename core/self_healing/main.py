@@ -90,7 +90,7 @@ def on_connect(client, userdata, flags, rc):
         logger.error(f"MQTT Connection failed with code {rc}")
 
 def on_message(client, userdata, msg):
-    global _telemetry_frame_count, _post_trip_settle_remaining
+    global _telemetry_frame_count, _post_trip_settle_remaining, proactive_auto_mode
     try:
         topic = msg.topic
         payload = json.loads(msg.payload.decode("utf-8"))
@@ -478,7 +478,6 @@ def on_message(client, userdata, msg):
                 }
                 client.publish("grid/config", json.dumps(config_update))
             elif cmd == "TOGGLE_PROACTIVE_AUTO":
-                global proactive_auto_mode
                 proactive_auto_mode = payload.get("proactive_auto", not proactive_auto_mode)
                 logger.info(f"Operator set Proactive Autonomous Mode to {proactive_auto_mode}")
                 client.publish("grid/config", json.dumps({"proactive_auto": proactive_auto_mode}))
@@ -498,7 +497,6 @@ def on_message(client, userdata, msg):
                 client.publish("grid/config", json.dumps(config_update))
             
             if "proactive_auto" in payload:
-                global proactive_auto_mode
                 proactive_auto_mode = bool(payload["proactive_auto"])
                 logger.info(f"Operator set Proactive Autonomous Mode to {proactive_auto_mode}")
                 client.publish("grid/config", json.dumps({"proactive_auto": proactive_auto_mode}))
@@ -511,8 +509,19 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_message = on_message
     
+    connected = False
+    retry_delay = 1.0
+    while not connected:
+        try:
+            client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+            connected = True
+            logger.info("Self-Healing Subsystem connected to MQTT successfully!")
+        except Exception as e:
+            logger.warning(f"Self-Healing MQTT connection failed: {e}. Retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
+            retry_delay = min(15.0, retry_delay * 1.5)
+            
     try:
-        client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
         logger.info("Starting Self-Healing / Protection Relay daemon...")
         client.loop_forever()
     except KeyboardInterrupt:

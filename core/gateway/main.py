@@ -29,11 +29,30 @@ app.add_middleware(
 # Include HTTP API routes
 app.include_router(system_router, prefix="/api")
 
+async def check_telemetry_freshness_task():
+    import time
+    while True:
+        await asyncio.sleep(2.0)
+        now = time.time()
+        last_time = getattr(store, "last_telemetry_time", 0.0)
+        if last_time > 0.0 and (now - last_time) > 4.0:
+            offline_payload = {
+                "topic": "grid/telemetry/status",
+                "payload": {
+                    "status": "OFFLINE",
+                    "timestamp": int(now * 1000),
+                    "msg": "COMMUNICATION LOST: Digital Twin simulator went offline."
+                }
+            }
+            await ws_manager.broadcast(offline_payload)
+            logger.warning("Digital Twin simulator went offline. Broadcasted status update.")
+
 @app.on_event("startup")
 async def startup_event():
     # Capture the running event loop and initialize the MQTT subscriber client
     loop = asyncio.get_running_loop()
     mqtt_manager.start(loop)
+    asyncio.create_task(check_telemetry_freshness_task())
     logger.info("Gateway service startup completed.")
 
 @app.on_event("shutdown")

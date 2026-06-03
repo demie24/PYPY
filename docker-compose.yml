@@ -158,20 +158,23 @@ services:
   #   networks:
   #     - grid-net
 
-  # ai_prediction:  # Status: paused – PINN live inference (awaiting trained model)
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./ai_prediction/Dockerfile
-  #   container_name: smart_grid_ai_prediction
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
+  ai_prediction:
+    build:
+      context: ./core
+      dockerfile: ./ai_prediction/Dockerfile
+    container_name: smart_grid_ai_prediction
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    volumes:
+      - ./logs/ai_prediction:/app/logs
 
   # physics_validation:  # Status: paused – runs as test suite component, not daemon
   #   build:

@@ -132,6 +132,15 @@ class MemoryStore:
         self.latest_assistant_distributed_consensus: Optional[Dict[str, Any]] = None
         self.latest_assistant_edge_mesh: Optional[Dict[str, Any]] = None
         self.latest_assistant_swarm_anomaly_fusion: Optional[Dict[str, Any]] = None
+        
+        # Layer 11A Predictive Defense variables
+        self.latest_prediction_threat_forecast: Optional[Dict[str, Any]] = None
+        self.latest_prediction_pre_attack_alert: Optional[Dict[str, Any]] = None
+        self.latest_prediction_future_risk: Optional[Dict[str, Any]] = None
+        self.latest_prediction_trust_forecast: Optional[Dict[str, Any]] = None
+        self.latest_prediction_escalation_probability: Optional[Dict[str, Any]] = None
+        self.latest_prediction_recommended_prevention: Optional[Dict[str, Any]] = None
+
         self.last_telemetry_time = 0.0
 
         # Add initial system startup event
@@ -487,6 +496,25 @@ class MemoryStore:
     def update_assistant_swarm_anomaly_fusion(self, payload: Dict[str, Any]):
         self.latest_assistant_swarm_anomaly_fusion = payload
 
+    # Layer 11A Predictive Defense updaters
+    def update_prediction_threat_forecast(self, payload: Dict[str, Any]):
+        self.latest_prediction_threat_forecast = payload
+
+    def update_prediction_pre_attack_alert(self, payload: Dict[str, Any]):
+        self.latest_prediction_pre_attack_alert = payload
+
+    def update_prediction_future_risk(self, payload: Dict[str, Any]):
+        self.latest_prediction_future_risk = payload
+
+    def update_prediction_trust_forecast(self, payload: Dict[str, Any]):
+        self.latest_prediction_trust_forecast = payload
+
+    def update_prediction_escalation_probability(self, payload: Dict[str, Any]):
+        self.latest_prediction_escalation_probability = payload
+
+    def update_prediction_recommended_prevention(self, payload: Dict[str, Any]):
+        self.latest_prediction_recommended_prevention = payload
+
 
 
 
@@ -638,7 +666,15 @@ class MemoryStore:
             "assistant_federated_memory": self.latest_assistant_federated_memory,
             "assistant_distributed_consensus": self.latest_assistant_distributed_consensus,
             "assistant_edge_mesh": self.latest_assistant_edge_mesh,
-            "assistant_swarm_anomaly_fusion": self.latest_assistant_swarm_anomaly_fusion
+            "assistant_swarm_anomaly_fusion": self.latest_assistant_swarm_anomaly_fusion,
+            
+            # Layer 11A Predictive Defense bootstrap payload
+            "prediction_threat_forecast": self.latest_prediction_threat_forecast,
+            "prediction_pre_attack_alert": self.latest_prediction_pre_attack_alert,
+            "prediction_future_risk": self.latest_prediction_future_risk,
+            "prediction_trust_forecast": self.latest_prediction_trust_forecast,
+            "prediction_escalation_probability": self.latest_prediction_escalation_probability,
+            "prediction_recommended_prevention": self.latest_prediction_recommended_prevention
         }
 
 

@@ -74,6 +74,15 @@ class MQTTManager:
             client.subscribe("grid/recommended_actions")
             client.subscribe("grid/pre_rl")
             client.subscribe("grid/defense")
+            
+            # Layer 11A Predictive Defense subscriptions
+            client.subscribe("prediction/threat_forecast")
+            client.subscribe("prediction/pre_attack_alert")
+            client.subscribe("prediction/future_risk")
+            client.subscribe("prediction/trust_forecast")
+            client.subscribe("prediction/escalation_probability")
+            client.subscribe("prediction/recommended_prevention")
+
             client.subscribe("grid/l6_recovery")
             client.subscribe("grid/l6_adaptive_recovery")
             client.subscribe("grid/l6_containment")
@@ -228,6 +237,18 @@ class MQTTManager:
                 store.update_pre_rl(payload)
             elif topic == "grid/defense":
                 store.update_defense(payload)
+            elif topic == "prediction/threat_forecast":
+                store.update_prediction_threat_forecast(payload)
+            elif topic == "prediction/pre_attack_alert":
+                store.update_prediction_pre_attack_alert(payload)
+            elif topic == "prediction/future_risk":
+                store.update_prediction_future_risk(payload)
+            elif topic == "prediction/trust_forecast":
+                store.update_prediction_trust_forecast(payload)
+            elif topic == "prediction/escalation_probability":
+                store.update_prediction_escalation_probability(payload)
+            elif topic == "prediction/recommended_prevention":
+                store.update_prediction_recommended_prevention(payload)
             elif topic == "grid/l6_recovery":
                 store.update_l6_recovery(payload)
             elif topic == "grid/l6_adaptive_recovery":

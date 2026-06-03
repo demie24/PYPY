@@ -83,27 +83,27 @@ export const CyberDefensePanel: React.FC<CyberDefensePanelProps> = ({
   }
 
   const {
-    escalation_level,
-    operator_authority,
-    rl_permissions,
-    telemetry_trust_threshold,
-    rollback_restrictions,
-    strategies,
-    restoration_lockdown_active,
-    campaign_detected,
-    active_campaigns,
-    adaptive_trust_threshold,
-    trust_penalty_multiplier,
-    filtering_smoothing_alpha,
-    next_attack_window_prediction_seconds,
-    defense_confidence_score,
-    repeated_attacker_detected,
-    total_attacks_recorded,
-    total_containments_recorded,
-    total_rollbacks_recorded,
-    total_failed_restorations,
-    timeline_events,
-    containment_status
+    escalation_level = "ADVISORY",
+    operator_authority = "READ_ONLY",
+    rl_permissions = "RESTRICTED",
+    telemetry_trust_threshold = 100,
+    rollback_restrictions = "NONE",
+    strategies = [],
+    restoration_lockdown_active = false,
+    campaign_detected = false,
+    active_campaigns = [],
+    adaptive_trust_threshold = 100,
+    trust_penalty_multiplier = 1.0,
+    filtering_smoothing_alpha = 1.0,
+    next_attack_window_prediction_seconds = null,
+    defense_confidence_score = 100.0,
+    repeated_attacker_detected = false,
+    total_attacks_recorded = 0,
+    total_containments_recorded = 0,
+    total_rollbacks_recorded = 0,
+    total_failed_restorations = 0,
+    timeline_events = [],
+    containment_status = { isolated_telemetry_sources: [], locked_breakers: [], active_containments: [] }
   } = defenseData;
 
   // Escalation level specs
@@ -152,7 +152,7 @@ export const CyberDefensePanel: React.FC<CyberDefensePanelProps> = ({
         <div className="flex items-center gap-2 font-mono text-[9px]">
           <span className="text-scada-dimText">CONFIDENCE INDEX:</span>
           <span className={`font-scada-nums ${getConfidenceColor(defense_confidence_score)}`}>
-            {defense_confidence_score.toFixed(1)}%
+            {(defense_confidence_score ?? 100.0).toFixed(1)}%
           </span>
           <button 
             onClick={() => onSendControl("RESET_ALARMS", "SYSTEM")}
@@ -292,7 +292,7 @@ export const CyberDefensePanel: React.FC<CyberDefensePanelProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-scada-dimText">SEVERITY INDEX:</span>
-                  <span className="text-white font-scada-nums font-bold">{currentCampaign.severity.toFixed(0)} / 100</span>
+                  <span className="text-white font-scada-nums font-bold">{(currentCampaign?.severity ?? 0.0).toFixed(0)} / 100</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-scada-dimText">COMPROMISED TARGETS:</span>
@@ -317,23 +317,23 @@ export const CyberDefensePanel: React.FC<CyberDefensePanelProps> = ({
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-scada-dimText">ADAPTIVE THR:</span>
-                  <span className="text-white font-scada-nums">{adaptive_trust_threshold.toFixed(0)}%</span>
+                  <span className="text-white font-scada-nums">{(adaptive_trust_threshold ?? 100.0).toFixed(0)}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-scada-dimText">FILTER SMOOTH ALPHA:</span>
-                  <span className="text-white font-scada-nums">{filtering_smoothing_alpha.toFixed(2)}</span>
+                  <span className="text-white font-scada-nums">{(filtering_smoothing_alpha ?? 1.0).toFixed(2)}</span>
                 </div>
               </div>
               <div className="space-y-1 border-l border-scada-border/20 pl-2">
                 <div className="flex justify-between">
                   <span className="text-scada-dimText">DECAY MULTIPLIER:</span>
-                  <span className="text-white font-scada-nums">x{trust_penalty_multiplier.toFixed(1)}</span>
+                  <span className="text-white font-scada-nums">x{(trust_penalty_multiplier ?? 1.0).toFixed(1)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-scada-dimText">ATTACK PREDICT WINDOW:</span>
                   <span className="text-amber-400 font-bold">
-                    {next_attack_window_prediction_seconds !== null 
-                      ? `${next_attack_window_prediction_seconds.toFixed(0)}s` 
+                    {next_attack_window_prediction_seconds !== null && next_attack_window_prediction_seconds !== undefined 
+                      ? `${(next_attack_window_prediction_seconds ?? 0).toFixed(0)}s` 
                       : "ESTIMATING"}
                   </span>
                 </div>

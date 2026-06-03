@@ -57,7 +57,7 @@ export const OrchestratorPanel: React.FC<OrchestratorPanelProps> = ({
   // Operator checklist state (completed step IDs)
   const [completedChecklistSteps, setCompletedChecklistSteps] = useState<Record<string, boolean>>({});
 
-  const hasData = orchestratorData !== null;
+  const hasData = orchestratorData !== null && orchestratorData !== undefined;
   const globalState = orchestratorData?.global_state ?? "NORMAL";
   const riskLevel = orchestratorData?.global_risk_level ?? "LOW";
   const stability = orchestratorData?.stability_score ?? 100.0;
@@ -239,7 +239,7 @@ export const OrchestratorPanel: React.FC<OrchestratorPanelProps> = ({
               <span className="text-[7px] text-scada-dimText uppercase font-semibold">Risk & stability</span>
               <div className="flex justify-between items-center leading-none mb-0.5">
                 <span className={`font-extrabold ${getRiskStyle(riskLevel)}`}>{riskLevel} RISK</span>
-                <span className="text-[9px] font-bold text-white font-scada-nums">{stability.toFixed(0)}% STB</span>
+                <span className="text-[9px] font-bold text-white font-scada-nums">{(stability ?? 100).toFixed(0)}% STB</span>
               </div>
             </div>
           </div>
@@ -248,7 +248,7 @@ export const OrchestratorPanel: React.FC<OrchestratorPanelProps> = ({
           <div className="mb-2 shrink-0 font-mono text-[8.5px] bg-scada-bg/40 border border-scada-border/20 rounded p-1">
             <div className="flex justify-between text-scada-dimText mb-0.5">
               <span>RESTORATION CONFIDENCE</span>
-              <span className="text-white font-bold font-scada-nums">{confidence.toFixed(1)}%</span>
+              <span className="text-white font-bold font-scada-nums">{(confidence ?? 100).toFixed(1)}%</span>
             </div>
             <div className="w-full bg-scada-bg h-1 rounded-full overflow-hidden border border-scada-border/40">
               <div
@@ -342,31 +342,31 @@ export const OrchestratorPanel: React.FC<OrchestratorPanelProps> = ({
                   <div>
                     <span className="text-emerald-400 font-bold">MODE:</span>{" "}
                     <span className="text-white font-semibold">
-                      {orchestratorData.escalation_mode ?? "NORMAL"}
+                      {orchestratorData?.escalation_mode ?? "NORMAL"}
                     </span>
                   </div>
                   <div>
                     <span className="text-emerald-400 font-bold">RECOVERY:</span>{" "}
                     <span className="text-white font-semibold">
-                      {orchestratorData.coordinated_recovery_state ?? "STANDBY"}
+                      {orchestratorData?.coordinated_recovery_state ?? "STANDBY"}
                     </span>
                   </div>
                   <div>
                     <span className="text-emerald-400 font-bold">DOMINANT AI:</span>{" "}
                     <span className="text-white font-semibold">
-                      {orchestratorData.dominant_decision_source ?? "LSTM"}
+                      {orchestratorData?.dominant_decision_source ?? "LSTM"}
                     </span>
                   </div>
                   <div>
                     <span className="text-emerald-400 font-bold">OVERRIDE:</span>{" "}
                     <span className="text-white font-semibold">
-                      {orchestratorData.emergency_override_state ? "ACTIVE" : "INACTIVE"}
+                      {orchestratorData?.emergency_override_state ? "ACTIVE" : "INACTIVE"}
                     </span>
                   </div>
                   <div className="col-span-2">
                     <span className="text-emerald-400 font-bold">ACTIVE AI:</span>{" "}
                     <span className="text-white font-mono font-medium">
-                      {(orchestratorData.active_modules ?? ["LSTM", "PINN", "PPO"]).join(", ")}
+                      {(orchestratorData?.active_modules ?? ["LSTM", "PINN", "PPO"]).join(", ")}
                     </span>
                   </div>
                 </div>
@@ -446,7 +446,7 @@ export const OrchestratorPanel: React.FC<OrchestratorPanelProps> = ({
           <div className="flex justify-between items-center border-t border-scada-border/20 pt-1 shrink-0 font-mono text-[7.5px] text-scada-dimText mt-1">
             <span className="uppercase text-[6px]">AI Orchestration Engine</span>
             <span>
-              {new Date(orchestratorData.timestamp).toLocaleTimeString([], { hour12: false })}
+              {new Date(orchestratorData?.timestamp ?? Date.now()).toLocaleTimeString([], { hour12: false })}
             </span>
           </div>
         </div>

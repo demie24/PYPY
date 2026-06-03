@@ -202,11 +202,11 @@ export const HardwareFoundationPanel: React.FC<HardwareFoundationPanelProps> = (
                   <div className="grid grid-cols-2 gap-y-1 text-[10px] text-scada-dimText">
                     <span>Latency:</span>
                     <span className="text-right text-scada-text font-bold">
-                      {dev.latency_ms >= 0 ? `${dev.latency_ms.toFixed(1)} ms` : "timeout"}
+                      {typeof dev?.latency_ms === "number" ? `${dev.latency_ms.toFixed(1)} ms` : "timeout"}
                     </span>
                     <span>Trust Index:</span>
-                    <span className={`text-right font-bold ${getTrustColor(dev.trust)}`}>
-                      {(dev.trust * 100).toFixed(0)}%
+                    <span className={`text-right font-bold ${getTrustColor(dev?.trust ?? 1.0)}`}>
+                      {((dev?.trust ?? 1.0) * 100).toFixed(0)}%
                     </span>
                     <span>Type:</span>
                     <span className="text-right text-scada-text uppercase text-[9px]">{dev.type}</span>
@@ -292,7 +292,7 @@ export const HardwareFoundationPanel: React.FC<HardwareFoundationPanelProps> = (
                 {Object.entries(sensors.buses || {}).map(([bid, bus]) => (
                   <div key={bid} className="border border-scada-border/30 rounded p-0.5 bg-scada-cardBG">
                     <span className="text-scada-dimText mr-1">{bid.replace("Bus_", "B")}</span>
-                    <span className="text-scada-text font-bold">{bus.voltage_pu.toFixed(3)}</span>
+                    <span className="text-scada-text font-bold">{(bus?.voltage_pu ?? 1.0).toFixed(3)}</span>
                   </div>
                 ))}
               </div>
@@ -305,11 +305,11 @@ export const HardwareFoundationPanel: React.FC<HardwareFoundationPanelProps> = (
                 {Object.entries(sensors.lines || {}).map(([lid, line]) => (
                   <div key={lid} className="flex justify-between items-center border border-scada-border/30 rounded p-0.5 bg-scada-cardBG">
                     <span className="text-cyan-400 font-bold">{lid}</span>
-                    <span className="text-scada-text">{line.current_pu.toFixed(2)} pu</span>
+                    <span className="text-scada-text">{(line?.current_pu ?? 0.0).toFixed(2)} pu</span>
                     <span className="text-scada-dimText">|</span>
                     <span className="text-amber-400 flex items-center">
                       <Thermometer className="w-2.5 h-2.5 inline" />
-                      {line.temperature_c.toFixed(0)}°C
+                      {(line?.temperature_c ?? 25.0).toFixed(0)}°C
                     </span>
                   </div>
                 ))}

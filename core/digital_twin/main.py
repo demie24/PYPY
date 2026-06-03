@@ -61,21 +61,35 @@ class SmartGridDigitalTwin:
         # Predefined Attack Scenarios
         self.predefined_scenarios = {
             "coordinated_cascade": [
-                {"time": 0, "type": "SENSOR_SPOOFING", "target": "Bus_5", "config": {"noise": 0.04, "drift": -0.015}, "desc": "Phase 1: Substation 5 PT Sensor Drift"},
-                {"time": 5, "type": "BREAKER_MANIPULATION", "target": "L4_5", "config": {"command": "OPEN"}, "desc": "Phase 2: Unauthorized Trip of Line 4-5"},
-                {"time": 10, "type": "DOS", "target": "Bus_6", "config": {}, "desc": "Phase 3: DoS Attack on Bus 6 Comm Link"},
-                {"time": 15, "type": "FDIA", "target": "Bus_9", "config": {"bias": 0.18, "scale": 1.05}, "desc": "Phase 4: Coordinated FDIA on Bus 9"},
-                {"time": 20, "type": "BREAKER_MANIPULATION", "target": "L1_4", "config": {"command": "OPEN"}, "desc": "Phase 5: Coordinated Outage Cascade"}
+                {"id": "phase1", "time": 0, "type": "SENSOR_SPOOFING", "target": "Bus_5", "config": {"noise": 0.04, "drift": -0.015}, "desc": "Phase 1: Substation 5 PT Sensor Drift"},
+                {"id": "phase2", "time": 5, "type": "BREAKER_MANIPULATION", "target": "L4_5", "config": {"command": "OPEN"}, "desc": "Phase 2: Unauthorized Trip of Line 4-5"},
+                {"id": "phase3", "time": 10, "type": "DOS", "target": "Bus_6", "config": {}, "desc": "Phase 3: DoS Attack on Bus 6 Comm Link"},
+                {"id": "phase4", "time": 15, "type": "FDIA", "target": "Bus_9", "config": {"bias": 0.18, "scale": 1.05}, "desc": "Phase 4: Coordinated FDIA on Bus 9"},
+                {"id": "phase5", "time": 20, "type": "BREAKER_MANIPULATION", "target": "L1_4", "config": {"command": "OPEN"}, "desc": "Phase 5: Coordinated Outage Cascade"}
             ],
             "stealthy_fdia": [
-                {"time": 0, "type": "FDIA", "target": "Bus_5", "config": {"bias": 0.03, "scale": 1.0}, "desc": "Phase 1: Stealthy Injection on Bus 5 (+0.03 pu)"},
-                {"time": 6, "type": "FDIA", "target": "Bus_6", "config": {"bias": 0.06, "scale": 1.0}, "desc": "Phase 2: Stealthy Injection on Bus 6 (+0.06 pu)"},
-                {"time": 12, "type": "FDIA", "target": "Bus_8", "config": {"bias": 0.12, "scale": 1.05}, "desc": "Phase 3: Cumulative Spoofing on Bus 8 (+0.12 pu)"}
+                {"id": "stealth1", "time": 0, "type": "FDIA", "target": "Bus_5", "config": {"bias": 0.03, "scale": 1.0}, "desc": "Phase 1: Stealthy Injection on Bus 5 (+0.03 pu)"},
+                {"id": "stealth2", "time": 6, "type": "FDIA", "target": "Bus_6", "config": {"bias": 0.06, "scale": 1.0}, "desc": "Phase 2: Stealthy Injection on Bus 6 (+0.06 pu)"},
+                {"id": "stealth3", "time": 12, "type": "FDIA", "target": "Bus_8", "config": {"bias": 0.12, "scale": 1.05}, "desc": "Phase 3: Cumulative Spoofing on Bus 8 (+0.12 pu)"}
             ],
             "coordinated_cyber_physical": [
-                {"time": 0, "type": "DOS", "target": "L7_8", "config": {}, "desc": "Phase 1: DoS Jamming on restoration line L7_8"},
-                {"time": 5, "type": "BREAKER_MANIPULATION", "target": "L4_9", "config": {"command": "OPEN"}, "desc": "Phase 2: Intrusion on Line 4-9 Breaker"},
-                {"time": 10, "type": "SENSOR_SPOOFING", "target": "Bus_4", "config": {"noise": 0.06}, "desc": "Phase 3: High-Noise Spoofing on Bus 4"}
+                {"id": "corp1", "time": 0, "type": "DOS", "target": "L7_8", "config": {}, "desc": "Phase 1: DoS Jamming on restoration line L7_8"},
+                {"id": "corp2", "time": 5, "type": "BREAKER_MANIPULATION", "target": "L4_9", "config": {"command": "OPEN"}, "desc": "Phase 2: Intrusion on Line 4-9 Breaker"},
+                {"id": "corp3", "time": 10, "type": "SENSOR_SPOOFING", "target": "Bus_4", "config": {"noise": 0.06}, "desc": "Phase 3: High-Noise Spoofing on Bus 4"}
+            ],
+            "cascading_wave_attack": [
+                {"id": "wave1_spoof", "wave": 1, "time": 0, "type": "SENSOR_SPOOFING", "target": "Bus_5", "config": {"noise": 0.05, "drift": -0.01}, "desc": "Wave 1: PT sensor noise injection on Bus 5"},
+                {"id": "wave2_breaker", "wave": 2, "depends_on": ["wave1_spoof"], "time": 5, "type": "BREAKER_MANIPULATION", "target": "L4_5", "config": {"command": "OPEN"}, "desc": "Wave 2: Dependency trigger - trip breaker L4_5 after Bus 5 compromise"},
+                {"id": "wave3_cascade", "wave": 3, "depends_on_grid": {"bus": "Bus_5", "voltage_below": 0.94}, "delay": 3.0, "time": 0, "type": "DOS", "target": "Bus_6", "config": {}, "desc": "Wave 3: Physics-dependent cascade - DoS Bus 6 after Bus 5 undervoltage"}
+            ],
+            "stress_test_burst": [
+                {"id": "burst_1", "time": 0, "type": "FDIA", "target": "Bus_5", "config": {"bias": 0.15}, "desc": "Burst Stage 1: Bus 5 FDIA"},
+                {"id": "burst_2", "time": 1, "type": "SENSOR_SPOOFING", "target": "Bus_4", "config": {"noise": 0.08}, "desc": "Burst Stage 2: Bus 4 Sensor Spoofing"},
+                {"id": "burst_3", "time": 1, "type": "DOS", "target": "Bus_6", "config": {}, "desc": "Burst Stage 3: Bus 6 DoS Link"},
+                {"id": "burst_4", "time": 2, "type": "BREAKER_MANIPULATION", "target": "L4_5", "config": {"command": "OPEN"}, "desc": "Burst Stage 4: Breaker L4_5 Trip"}
+            ],
+            "high_frequency_corruption": [
+                {"id": "hf_noise", "time": 0, "type": "SENSOR_SPOOFING", "target": "Bus_5", "config": {"noise": 0.10, "high_frequency": True}, "desc": "Phase 1: High-Frequency Sensor Corruption on Bus 5"}
             ]
         }
         
@@ -88,6 +102,13 @@ class SmartGridDigitalTwin:
         self.breaker_lockouts = {}
         self.scheduled_actions = []
         self.attacker_retrips = {}
+        
+        # Phase 5B Realism states
+        self.breaker_cooldowns = {}
+        self.last_commands = {}
+        self.attack_rate_limit_bucket = []
+        self.stage_trigger_times = {}
+        self.activated_stages = set()
         
         self.publisher = TelemetryPublisher(
             broker=mqtt_broker,
@@ -141,6 +162,8 @@ class SmartGridDigitalTwin:
         Callback for remote control command: sets breaker status.
         Bypassed if breaker communication is blocked by active DoS.
         """
+        now = time.time()
+        
         if target == "SYSTEM" and command == "RESET_ALARMS":
             logger.info("Resetting digital twin simulator transient and thermal state, breakers, and active attacks.")
             self.prev_telemetry = None
@@ -148,6 +171,11 @@ class SmartGridDigitalTwin:
             self.breakers = {line["id"]: "CLOSED" for line in self.topo.lines}
             self.breakers["L7_8"] = "OPEN"
             self.breaker_lockouts.clear()
+            self.breaker_cooldowns.clear()
+            self.last_commands.clear()
+            self.attack_rate_limit_bucket.clear()
+            self.stage_trigger_times.clear()
+            self.activated_stages.clear()
             self.scheduled_actions.clear()
             self.attacker_retrips.clear()
             self.attack_steps.clear()
@@ -163,6 +191,26 @@ class SmartGridDigitalTwin:
             self.island_frequencies.clear()
             self.island_freq_violations.clear()
             return
+
+        # Duplicate suppression (suppress identical control commands within 3.0s)
+        cmd_key = f"{target}:{command}"
+        if now - self.last_commands.get(cmd_key, 0.0) < 3.0:
+            logger.info(f"[DUPLICATE SUPPRESSION] Suppressed identical control command: {cmd_key}")
+            return
+        self.last_commands[cmd_key] = now
+
+        # Breaker cooldown enforcement (e.g. 5.0 seconds)
+        if target in self.breakers and command in ["CLOSE", "OPEN"]:
+            last_op = self.breaker_cooldowns.get(target, 0.0)
+            if now - last_op < 5.0:
+                logger.warning(f"[COOLDOWN] Control command BLOCKED: Breaker {target} is under motor operator cooldown.")
+                self.publisher.publish_event(
+                    source="SCADA_GATEWAY",
+                    event_desc=f"Control command BLOCKED: Breaker '{target}' cooldown active.",
+                    severity="WARNING"
+                )
+                return
+            self.breaker_cooldowns[target] = now
 
         if command == "REJECT_TELEMETRY":
             logger.info(f"Operator distrusted sensor {target}. Triggering attacker adaptive escalation loop.")
@@ -426,6 +474,18 @@ class SmartGridDigitalTwin:
                                 event_desc=f"Attacker Persistence: detected closure of compromised breaker '{target}'. Scheduling re-trip.",
                                 severity="WARNING"
                             )
+                
+                # Restoration-Aware Attacker: Tripping tie-breaker if operator/FLISR tries to restore
+                if command == "CLOSE" and target == "L7_8" and self.active_attack:
+                    logger.warning("[RESTORATION-AWARE ATTACK] Attacker detected healing attempt on tie-breaker L7_8. Intercepting and re-tripping.")
+                    self.publisher.publish_event(
+                        source="ATTACK_ORCHESTRATOR",
+                        event_desc="Restoration Intercepted: Attacker blocked close command on tie-breaker L7_8.",
+                        severity="CRITICAL"
+                    )
+                    # Re-trip breaker in 1 second
+                    re_trip_time = time.time() + 1.0
+                    self.scheduled_actions.append((re_trip_time, "L7_8", "OPEN"))
         else:
             logger.warning(f"Control command received for invalid breaker target: {target}")
 
@@ -433,28 +493,58 @@ class SmartGridDigitalTwin:
         """
         Callback for cyber attack configurations.
         """
+        now = time.time()
         action = payload.get("action")
         
+        # 1. Duplicate Suppression (identical attack command within 3.0s)
+        payload_key = json.dumps({k: v for k, v in payload.items() if k not in ["timestamp", "msg_id"]})
+        if now - self.last_commands.get(payload_key, 0.0) < 3.0:
+            logger.info(f"[DUPLICATE SUPPRESSION] Suppressed identical attack command.")
+            return
+        self.last_commands[payload_key] = now
+
         if action == "START":
-            self.active_attack = payload.get("type")
+            # 2. Attack Rate Limiting (max 2 attacks per 10s window)
+            self.attack_rate_limit_bucket = [t for t in self.attack_rate_limit_bucket if now - t < 10.0]
+            if len(self.attack_rate_limit_bucket) >= 2:
+                logger.warning("[RATE LIMIT] Attack start BLOCKED: Max 2 attacks per 10 seconds.")
+                self.publisher.publish_event(
+                    source="ATTACK_ORCHESTRATOR",
+                    event_desc="Attack start BLOCKED: rate limit of 2 attacks per 10 seconds exceeded.",
+                    severity="WARNING"
+                )
+                return
+            self.attack_rate_limit_bucket.append(now)
+
+            atype = payload.get("type")
+            self.active_attack = atype
             self.attack_config = payload.get("config", {})
-            self.active_compromises = {
-                self.attack_config.get("target"): {
-                    "type": self.active_attack,
-                    "config": self.attack_config
-                }
+            target = self.attack_config.get("target")
+            
+            # Support concurrent overlapping attacks by adding targets dynamically
+            self.active_compromises[target] = {
+                "type": self.active_attack,
+                "config": self.attack_config
             }
-            logger.info(f"Initiated single-node cyber attack simulation: {self.active_attack}")
+            self.attack_steps[target] = 0
+            
+            logger.info(f"Initiated cyber attack simulation: {self.active_attack} targeting {target}")
             self.publisher.publish_event(
                 source="ATTACK_ORCHESTRATOR",
-                event_desc=f"Cyber Attack activated: {self.active_attack} targeting {self.attack_config.get('target')}",
+                event_desc=f"Cyber Attack activated: {self.active_attack} targeting {target}",
                 severity="CRITICAL"
             )
             
             if self.active_attack == "BREAKER_MANIPULATION":
-                target = self.attack_config.get("target")
                 cmd = self.attack_config.get("command", "OPEN")
                 if target in self.breakers:
+                    # Enforce breaker cooldown on breaker attack commands
+                    last_op = self.breaker_cooldowns.get(target, 0.0)
+                    if now - last_op < 5.0:
+                        logger.warning(f"[COOLDOWN] Breaker attack command BLOCKED: Breaker {target} is under cooldown.")
+                        return
+                    self.breaker_cooldowns[target] = now
+                    
                     self.breakers[target] = cmd
                     logger.info(f"[ATTACK EVENT] Forced single-node breaker manipulation on {target} -> {cmd}")
             
@@ -476,6 +566,8 @@ class SmartGridDigitalTwin:
             self.scenario_elapsed_time = 0.0
             self.active_compromises = {}
             self.sensor_drifts = {}
+            self.stage_trigger_times = {}
+            self.activated_stages = set()
             
             logger.info(f"Initiated Advanced Scenario: {scen_name}")
             self.publisher.publish_event(
@@ -496,6 +588,8 @@ class SmartGridDigitalTwin:
             self.active_scenario = None
             self.active_compromises = {}
             self.sensor_drifts = {}
+            self.stage_trigger_times = {}
+            self.activated_stages.clear()
             self.prev_telemetry = None
             self.physics.prev_currents = {}
             
@@ -543,34 +637,117 @@ class SmartGridDigitalTwin:
         # 1. Update Scenario Timeline Scheduler
         if self.active_attack == "SCENARIO" and self.active_scenario:
             stages = self.active_scenario["stages"]
-            for stage in stages:
-                if self.scenario_elapsed_time >= stage["time"] and not stage.get("activated", False):
-                    stage["activated"] = True
-                    target = stage["target"]
-                    stype = stage["type"]
-                    desc = stage["desc"]
+            for idx, stage in enumerate(stages):
+                stage_id = stage.get("id", f"stage_{idx}")
+                
+                # If already activated, continue
+                if stage.get("activated", False):
+                    continue
+                
+                # Check wave dependencies
+                stage_wave = stage.get("wave")
+                if stage_wave is not None and stage_wave > 1:
+                    # Check if all stages in previous waves are activated
+                    prev_waves_done = True
+                    for other_stage in stages:
+                        other_wave = other_stage.get("wave")
+                        if other_wave is not None and other_wave < stage_wave:
+                            if not other_stage.get("activated", False):
+                                prev_waves_done = False
+                                break
+                    if not prev_waves_done:
+                        continue
+                
+                # Check explicit "depends_on" list
+                depends_on = stage.get("depends_on")
+                if depends_on:
+                    dep_satisfied = True
+                    for dep_id in depends_on:
+                        dep_active = False
+                        for other_stage in stages:
+                            if other_stage.get("id") == dep_id and other_stage.get("activated", False):
+                                dep_active = True
+                                break
+                        if not dep_active:
+                            dep_satisfied = False
+                            break
+                    if not dep_satisfied:
+                        continue
+                
+                # Check "depends_on_grid" physical conditions
+                depends_on_grid = stage.get("depends_on_grid")
+                if depends_on_grid and self.prev_telemetry:
+                    grid_satisfied = False
+                    bus_tgt = depends_on_grid.get("bus")
+                    v_below = depends_on_grid.get("voltage_below")
+                    v_above = depends_on_grid.get("voltage_above")
                     
-                    # Force breaker trip immediately if breaker manipulation
-                    if stype == "BREAKER_MANIPULATION":
-                        cmd = stage["config"].get("command", "OPEN")
-                        if target in self.breakers:
-                            self.breakers[target] = cmd
-                            logger.info(f"[SCENARIO EVENT] Forced breaker manipulation on {target} -> {cmd}")
-                            self.publisher.publish_event(
-                                source="ATTACK_ORCHESTRATOR",
-                                event_desc=f"Breaker manipulation: forced {target} to {cmd} ({desc})",
-                                severity="CRITICAL"
-                            )
-                    else:
-                        logger.info(f"[SCENARIO EVENT] Activated {stype} compromise on {target} ({desc})")
+                    buses_state = self.prev_telemetry.get("state", {}).get("buses", {})
+                    if bus_tgt and bus_tgt in buses_state:
+                        v_actual = buses_state[bus_tgt].get("voltage_pu", 1.0)
+                        if v_below is not None and v_actual < v_below:
+                            grid_satisfied = True
+                        elif v_above is not None and v_actual > v_above:
+                            grid_satisfied = True
+                    
+                    if not grid_satisfied:
+                        continue
+                
+                # Check timeline trigger: did we reach the stage's local time?
+                if self.scenario_elapsed_time < stage.get("time", 0):
+                    continue
+                
+                # All trigger conditions met! Handle delay/propagation latency
+                delay = stage.get("delay", 0.0)
+                if delay > 0:
+                    trigger_time = self.stage_trigger_times.get(stage_id)
+                    if trigger_time is None:
+                        self.stage_trigger_times[stage_id] = now
+                        logger.info(f"[ATTACK PROPAGATION] Stage '{stage_id}' trigger conditions met. Delaying compromise by {delay}s...")
+                        continue
+                    elif now - trigger_time < delay:
+                        continue
+                
+                # ACTIVATE STAGE!
+                stage["activated"] = True
+                target = stage["target"]
+                stype = stage["type"]
+                desc = stage["desc"]
+                
+                # Event Prioritization: severity ranking & operator alert escalation
+                is_critical_infra = target in ["Bus_1", "Bus_2", "Bus_3", "Bus_4", "L1_4", "L2_5", "L3_6"]
+                severity = "CRITICAL" if (is_critical_infra or stype in ["BREAKER_MANIPULATION", "DOS"]) else "WARNING"
+                
+                if is_critical_infra:
+                    logger.warning(f"[OPERATOR ESCALATION] ATTACK ON CRITICAL INFRASTRUCTURE TARGET '{target}' DETECTED!")
+                    self.publisher.publish_event(
+                        source="ATTACK_ORCHESTRATOR",
+                        event_desc=f"CRITICAL ESCALATION: Attack targeted critical grid asset '{target}'",
+                        severity="CRITICAL"
+                    )
+
+                # Force breaker trip immediately if breaker manipulation
+                if stype == "BREAKER_MANIPULATION":
+                    cmd = stage["config"].get("command", "OPEN")
+                    if target in self.breakers:
+                        self.breakers[target] = cmd
+                        logger.info(f"[SCENARIO EVENT] Forced breaker manipulation on {target} -> {cmd}")
                         self.publisher.publish_event(
                             source="ATTACK_ORCHESTRATOR",
-                            event_desc=f"Compromised node status: {target} under {stype} ({desc})",
-                            severity="CRITICAL"
+                            event_desc=f"Breaker manipulation: forced {target} to {cmd} ({desc})",
+                            severity=severity
                         )
-                        
-                    # Cache under active compromises
-                    self.active_compromises[target] = stage
+                else:
+                    logger.info(f"[SCENARIO EVENT] Activated {stype} compromise on {target} ({desc})")
+                    self.publisher.publish_event(
+                        source="ATTACK_ORCHESTRATOR",
+                        event_desc=f"Compromised node status: {target} under {stype} ({desc})",
+                        severity=severity
+                    )
+                    
+                # Cache under active compromises
+                self.active_compromises[target] = stage
+                self.attack_steps[target] = 0
 
         # 2. Simulate small load fluctuations (representing standard grid demand profile variance)
         for bus_idx in self.topo.loads.keys():
@@ -849,15 +1026,21 @@ class SmartGridDigitalTwin:
                 elif target in telemetry["state"]["breakers"]:
                     telemetry["state"]["breakers"][target] = "OPEN"
             
-            # 3. Sensor Spoofing (Drifts & White Noise)
+            # 3. Sensor Spoofing (Drifts & White Noise / High-Frequency)
             elif stype == "SENSOR_SPOOFING":
                 ramp = min(1.0, self.attack_steps.get(target, 1) / 5.0)
                 noise_lvl = config.get("noise", 0.02) * ramp
                 drift_rate = config.get("drift", 0.0) * ramp
+                high_freq = config.get("high_frequency", False)
+                
+                if high_freq:
+                    # Inject high-frequency rapid oscillations (up to +/- 0.15 pu)
+                    noise = random.uniform(-0.15, 0.15)
+                else:
+                    noise = random.uniform(-noise_lvl, noise_lvl)
                 
                 # Accumulate drift over time
                 self.sensor_drifts[target] = self.sensor_drifts.get(target, 0.0) + drift_rate
-                noise = random.uniform(-noise_lvl, noise_lvl)
                 
                 if target in telemetry["state"]["buses"]:
                     orig_val = telemetry["state"]["buses"][target]["voltage_pu"]

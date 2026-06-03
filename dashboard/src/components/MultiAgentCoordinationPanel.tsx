@@ -138,8 +138,8 @@ export const MultiAgentCoordinationPanel: React.FC<MultiAgentCoordinationPanelPr
   const getVoteText = (vote: number) => {
     if (vote === -1.0) return "VETO (-1.0)";
     if (vote === 0.0) return "ABSTAIN (0.0)";
-    if (vote > 0.0) return `APPROVE (+${vote.toFixed(1)})`;
-    return `DISAGREE (${vote.toFixed(1)})`;
+    if (vote > 0.0) return `APPROVE (+${(vote ?? 0.0).toFixed(1)})`;
+    return `DISAGREE (${(vote ?? 0.0).toFixed(1)})`;
   };
 
   return (
@@ -254,7 +254,7 @@ export const MultiAgentCoordinationPanel: React.FC<MultiAgentCoordinationPanelPr
                         </span>
                         <div className="flex items-center gap-1.5 text-[6.5px]">
                           <span className="bg-cyan-500/10 px-1 py-0.2 rounded border border-cyan-500/20 text-cyan-300">
-                            WT: {agent.weight.toFixed(1)}
+                            WT: {(agent?.weight ?? 1.0).toFixed(1)}
                           </span>
                           <span className="bg-emerald-500/10 px-1 py-0.2 rounded border border-emerald-500/20 text-emerald-400">
                             CONF: {Math.round(agentConf * 100)}%
@@ -274,7 +274,7 @@ export const MultiAgentCoordinationPanel: React.FC<MultiAgentCoordinationPanelPr
                             style={{ width: `${agent.trust * 100}%` }}
                           ></div>
                         </div>
-                        <span className="text-[7px] text-white font-bold shrink-0">{agent.trust.toFixed(2)}</span>
+                        <span className="text-[7px] text-white font-bold shrink-0">{(agent?.trust ?? 1.0).toFixed(2)}</span>
                       </div>
                     </div>
                   );
@@ -306,7 +306,7 @@ export const MultiAgentCoordinationPanel: React.FC<MultiAgentCoordinationPanelPr
 
                     <div className="flex justify-between items-center text-[7px] text-scada-dimText border-b border-scada-border/15 pb-0.5">
                       <span>Source: {result.proposal.source} ({result.proposal.source_agent?.replace("Agent", "") || "External"})</span>
-                      <span className="text-white font-semibold">Weighted Score: <span className={result.consensus_score >= 0.15 ? "text-emerald-400" : "text-red-400"}>{result.consensus_score.toFixed(2)}</span> / 0.15</span>
+                      <span className="text-white font-semibold">Weighted Score: <span className={(result?.consensus_score ?? 0.0) >= 0.15 ? "text-emerald-400" : "text-red-400"}>{(result?.consensus_score ?? 0.0).toFixed(2)}</span> / 0.15</span>
                     </div>
 
                     {/* Votes breakdown */}

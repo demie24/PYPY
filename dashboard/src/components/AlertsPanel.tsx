@@ -216,7 +216,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({
               <div className="bg-black/30 border border-scada-border/40 rounded p-1.5 px-2.5 flex justify-between items-center text-[10px] font-mono mb-2 shrink-0">
                 <span className="text-scada-dimText">Scenario: <strong className="text-white uppercase">{attackStatus?.active_scenario_name?.replace("_", " ")}</strong></span>
                 <span className="text-scada-trip font-bold flex items-center gap-1">
-                  <Clock size={11} className="animate-spin" /> {attackStatus?.scenario_time?.toFixed(0)}s
+                  <Clock size={11} className="animate-spin" /> {typeof attackStatus?.scenario_time === "number" ? attackStatus.scenario_time.toFixed(0) : "0"}s
                 </span>
               </div>
 

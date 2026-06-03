@@ -62,12 +62,12 @@ export const AdaptiveRecoveryPanel: React.FC<AdaptiveRecoveryPanelProps> = ({
   const hasDegradedData = degradedModeData !== null && degradedModeData !== undefined;
 
   // Defaults
-  const optScore = hasRecoveryData ? adaptiveRecoveryData.optimization_score : 100.0;
-  const histConfidence = hasRecoveryData ? adaptiveRecoveryData.historical_confidence : 1.0;
-  const successRuns = hasRecoveryData ? adaptiveRecoveryData.total_successful_runs : 0;
-  const failedRuns = hasRecoveryData ? adaptiveRecoveryData.total_failed_runs : 0;
+  const optScore = hasRecoveryData ? (adaptiveRecoveryData.optimization_score ?? 100.0) : 100.0;
+  const histConfidence = hasRecoveryData ? (adaptiveRecoveryData.historical_confidence ?? 1.0) : 1.0;
+  const successRuns = hasRecoveryData ? (adaptiveRecoveryData.total_successful_runs ?? 0) : 0;
+  const failedRuns = hasRecoveryData ? (adaptiveRecoveryData.total_failed_runs ?? 0) : 0;
 
-  const spreadRisk = hasContainmentData ? containmentData.instability_spread_risk : 0.0;
+  const spreadRisk = hasContainmentData ? (containmentData.instability_spread_risk ?? 0.0) : 0.0;
   const propZones = hasContainmentData ? containmentData.propagation_zones : [];
   const isoBoundary = hasContainmentData ? containmentData.isolation_boundary : [];
 
@@ -197,35 +197,35 @@ export const AdaptiveRecoveryPanel: React.FC<AdaptiveRecoveryPanelProps> = ({
               <div className="flex-1 overflow-y-auto grid grid-cols-2 gap-1.5 p-1.5 bg-scada-bg/25 border border-scada-border/20 rounded font-mono text-[7.5px] text-scada-dimText">
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Voltage Stability:</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.voltage_stability_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.voltage_stability_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Thermal Loading:</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.thermal_loading_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.thermal_loading_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Restoration Speed:</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.restoration_speed_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.restoration_speed_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Switch Operations:</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.switching_operations_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.switching_operations_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Cascading Risk:</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.cascading_risk_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.cascading_risk_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Rollback Guard:</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.rollback_probability_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.rollback_probability_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Isolated Load:</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.isolated_load_count_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.isolated_load_count_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
                 <div className="flex justify-between border-b border-scada-border/10 pb-0.5">
                   <span>Instability Risk (ML):</span>
-                  <strong className="text-white">{hasRecoveryData ? adaptiveRecoveryData.instability_risk_score.toFixed(1) : "100.0"}</strong>
+                  <strong className="text-white">{hasRecoveryData ? (adaptiveRecoveryData.instability_risk_score ?? 100.0).toFixed(1) : "100.0"}</strong>
                 </div>
               </div>
             </div>

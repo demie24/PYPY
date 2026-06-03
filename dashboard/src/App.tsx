@@ -26,6 +26,7 @@ import { HardwareOrchestrationPanel } from "./components/HardwareOrchestrationPa
 import { HardwareExecutionPanel } from "./components/HardwareExecutionPanel.tsx";
 import { InfrastructureResiliencePanel } from "./components/InfrastructureResiliencePanel.tsx";
 import { AssistantCognitionPanel } from "./components/AssistantCognitionPanel.tsx";
+import { FloatingChatbot } from "./components/FloatingChatbot.tsx";
 
 
 
@@ -2067,14 +2068,14 @@ export default function App() {
           <div className="flex flex-col items-end">
             <span className="text-[9px] text-scada-dimText uppercase">Total Generation</span>
             <span className="text-scada-nominal font-bold text-sm tracking-wide font-scada-nums scada-text-glow-green">
-              {getSumGenPower().toFixed(1)} MW
+              {(getSumGenPower() ?? 0).toFixed(1)} MW
             </span>
           </div>
 
           <div className="flex flex-col items-end">
             <span className="text-[9px] text-scada-dimText uppercase">Total Net Load</span>
             <span className="text-scada-nominal font-bold text-sm tracking-wide font-scada-nums scada-text-glow-green">
-              {getSumLoadPower().toFixed(1)} MW
+              {(getSumLoadPower() ?? 0).toFixed(1)} MW
             </span>
           </div>
 
@@ -2370,6 +2371,23 @@ export default function App() {
           </span>
         </div>
       </footer>
+
+      <FloatingChatbot
+        connected={connected}
+        onSendControl={sendDirectMqtt}
+        assistantState={dispAssistantState}
+        assistantEmotion={dispAssistantEmotion}
+        assistantContext={dispAssistantContext}
+        assistantMemory={dispAssistantMemory}
+        assistantResponse={dispAssistantResponse}
+        assistantRuntime={dispAssistantRuntime}
+        assistantSemanticResponse={dispAssistantSemanticResponse}
+        assistantContextualMemory={dispAssistantContextualMemory}
+        assistantDialogue={dispAssistantDialogue}
+        assistantLiveStream={dispAssistantLiveStream}
+        assistantVoiceState={dispAssistantVoiceState}
+        activeAttack={dispActiveAttack}
+      />
     </div>
   );
 }

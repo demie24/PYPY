@@ -64,9 +64,9 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
     if (!hasData) return [];
     return [
       { name: "Now", prob: 0 },
-      { name: "10s", prob: Math.round(pinnForecastData.horizons["10s"].cyber_instability_probability * 100) },
-      { name: "30s", prob: Math.round(pinnForecastData.horizons["30s"].cyber_instability_probability * 100) },
-      { name: "60s", prob: Math.round(pinnForecastData.horizons["60s"].cyber_instability_probability * 100) },
+      { name: "10s", prob: Math.round((pinnForecastData.horizons?.["10s"]?.cyber_instability_probability ?? 0) * 100) },
+      { name: "30s", prob: Math.round((pinnForecastData.horizons?.["30s"]?.cyber_instability_probability ?? 0) * 100) },
+      { name: "60s", prob: Math.round((pinnForecastData.horizons?.["60s"]?.cyber_instability_probability ?? 0) * 100) },
     ];
   };
 
@@ -140,8 +140,8 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                 
                 {/* Heatmap cells */}
                 <div className="grid grid-cols-3 gap-1.5 flex-1 items-center justify-center">
-                  {currentForecast?.voltages.map((v, idx) => {
-                    const std = currentForecast.uncertainty_std || 0.025;
+                  {currentForecast?.voltages?.map((v, idx) => {
+                    const std = currentForecast?.uncertainty_std ?? 0.025;
                     return (
                       <div
                         key={idx}
@@ -149,10 +149,10 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                       >
                         <span className="text-[7px] text-scada-dimText font-mono uppercase font-bold leading-none">Bus {idx + 1}</span>
                         <span className={`text-[9px] font-bold font-scada-nums mt-0.5 leading-none ${getVoltageColorClass(v)}`}>
-                          {v.toFixed(3)}
+                          {(v ?? 0).toFixed(3)}
                         </span>
                         <span className="text-[6.5px] text-scada-dimText/80 font-mono leading-none mt-0.5">
-                          ±{std.toFixed(3)}
+                          ±{(std ?? 0.025).toFixed(3)}
                         </span>
                       </div>
                     );
@@ -167,12 +167,12 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                   <div>
                     <div className="flex justify-between text-[8px] font-mono font-semibold text-scada-dimText">
                       <span>LEARNED PINN CONFIDENCE:</span>
-                      <span className="text-white font-bold font-mono">{(currentForecast!.confidence * 100).toFixed(0)}%</span>
+                      <span className="text-white font-bold font-mono">{((currentForecast?.confidence ?? 0.90) * 100).toFixed(0)}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-scada-bg rounded overflow-hidden border border-scada-border/40 mt-0.5">
                       <div
                         className="h-full bg-cyan-500 transition-all duration-500"
-                        style={{ width: `${currentForecast!.confidence * 100}%` }}
+                        style={{ width: `${(currentForecast?.confidence ?? 0.90) * 100}%` }}
                       ></div>
                     </div>
                   </div>
@@ -181,17 +181,17 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                   <div>
                     <div className="flex justify-between text-[8px] font-mono font-semibold text-scada-dimText">
                       <span>KCL CONSERVATION BIAS:</span>
-                      <span className={`font-mono ${currentForecast!.kcl_error > 0.01 ? "text-yellow-400" : "text-emerald-400"}`}>
-                        {currentForecast!.kcl_error.toFixed(5)} MW
+                      <span className={`font-mono ${(currentForecast?.kcl_error ?? 0) > 0.01 ? "text-yellow-400" : "text-emerald-400"}`}>
+                        {(currentForecast?.kcl_error ?? 0).toFixed(5)} MW
                       </span>
                     </div>
                     <div className="w-full h-1.5 bg-scada-bg rounded overflow-hidden border border-scada-border/40 mt-0.5">
                       <div
                         className={`h-full transition-all duration-500 ${
-                          currentForecast!.kcl_error > 0.05 ? "bg-red-500" :
-                          currentForecast!.kcl_error > 0.01 ? "bg-yellow-500" : "bg-emerald-500"
+                          (currentForecast?.kcl_error ?? 0) > 0.05 ? "bg-red-500" :
+                          (currentForecast?.kcl_error ?? 0) > 0.01 ? "bg-yellow-500" : "bg-emerald-500"
                         }`}
-                        style={{ width: `${Math.min(100, currentForecast!.kcl_error * 2000)}%` }}
+                        style={{ width: `${Math.min(100, (currentForecast?.kcl_error ?? 0) * 2000)}%` }}
                       ></div>
                     </div>
                   </div>
@@ -292,19 +292,19 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                   <div className="flex items-start gap-1 p-1 bg-scada-bg rounded border border-scada-border/20">
                     <span className="text-cyan-400 font-bold">[10s]</span>
                     <span className="text-white leading-none">
-                      Risk: {Math.round(pinnForecastData.horizons["10s"].cyber_instability_probability * 100)}%
+                      Risk: {Math.round((pinnForecastData.horizons?.["10s"]?.cyber_instability_probability ?? 0) * 100)}%
                     </span>
                   </div>
                   <div className="flex items-start gap-1 p-1 bg-scada-bg rounded border border-scada-border/20">
                     <span className="text-yellow-400 font-bold">[30s]</span>
                     <span className="text-white leading-none">
-                      Risk: {Math.round(pinnForecastData.horizons["30s"].cyber_instability_probability * 100)}%
+                      Risk: {Math.round((pinnForecastData.horizons?.["30s"]?.cyber_instability_probability ?? 0) * 100)}%
                     </span>
                   </div>
                   <div className="flex items-start gap-1 p-1 bg-scada-bg rounded border border-scada-border/20">
                     <span className="text-red-400 font-bold animate-pulse">[60s]</span>
                     <span className="text-white leading-none">
-                      Risk: {Math.round(pinnForecastData.horizons["60s"].cyber_instability_probability * 100)}%
+                      Risk: {Math.round((pinnForecastData.horizons?.["60s"]?.cyber_instability_probability ?? 0) * 100)}%
                     </span>
                   </div>
                 </div>
@@ -315,7 +315,7 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                     Cascading Severity
                   </span>
                   <p className="text-[7px] font-mono text-scada-dimText mt-0.5 leading-tight">
-                    {pinnForecastData.horizons["60s"].cyber_instability_probability > 0.5
+                    {(pinnForecastData.horizons?.["60s"]?.cyber_instability_probability ?? 0) > 0.5
                       ? "High cascade propagation warning. Cyber attack is spreading across lines, leading to potential islanding."
                       : "Unstable loops suppressed. Cascading risk propagation under nominal safety limits."}
                   </p>
@@ -336,16 +336,16 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                 <div className="space-y-1.5 flex-1 flex flex-col justify-center">
                   <div className="flex justify-between items-center text-[7.5px] font-mono p-1 bg-scada-bg rounded border border-scada-border/20">
                     <span className="text-scada-dimText">KCL Power mismatch:</span>
-                    <span className="text-white font-bold">{currentForecast!.kcl_error.toFixed(6)} p.u.</span>
+                    <span className="text-white font-bold">{(currentForecast?.kcl_error ?? 0).toFixed(6)} p.u.</span>
                   </div>
                   <div className="flex justify-between items-center text-[7.5px] font-mono p-1 bg-scada-bg rounded border border-scada-border/20">
                     <span className="text-scada-dimText">KVL Voltage drop mismatch:</span>
-                    <span className="text-white font-bold">{currentForecast!.kvl_error.toFixed(6)} p.u.</span>
+                    <span className="text-white font-bold">{(currentForecast?.kvl_error ?? 0).toFixed(6)} p.u.</span>
                   </div>
                   <div className="flex justify-between items-center text-[7.5px] font-mono p-1 bg-scada-bg rounded border border-scada-border/20">
                     <span className="text-scada-dimText">DC flow angle consistency:</span>
                     <span className="text-white font-bold">
-                      {currentForecast!.dc_flow_error ? currentForecast!.dc_flow_error.toFixed(6) : "0.000000"} p.u.
+                      {currentForecast?.dc_flow_error ? currentForecast.dc_flow_error.toFixed(6) : "0.000000"} p.u.
                     </span>
                   </div>
                 </div>
@@ -357,7 +357,7 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                   <span className="text-[8px] text-scada-dimText uppercase font-mono font-semibold">
                     Anomaly Explainability Report:
                   </span>
-                  {currentForecast!.adversarial_anomaly && (
+                  {currentForecast?.adversarial_anomaly && (
                     <div className="flex items-center gap-0.5 text-red-400 font-mono font-bold animate-pulse text-[7px] bg-red-950/20 border border-red-500/30 px-1 rounded">
                       <AlertTriangle size={8} />
                       <span>ADVERSARIAL ATTACK</span>
@@ -367,7 +367,7 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
 
                 <div className="p-2 bg-scada-bg border border-scada-border/50 rounded flex-1 flex flex-col justify-center min-h-[60px]">
                   <div className="flex items-center gap-1 mb-1">
-                    {!currentForecast!.topology_valid || currentForecast!.kcl_error > 0.03 || currentForecast!.adversarial_anomaly ? (
+                    {!currentForecast?.topology_valid || (currentForecast?.kcl_error ?? 0) > 0.03 || currentForecast?.adversarial_anomaly ? (
                       <>
                         <ShieldAlert size={11} className="text-red-400 animate-bounce" />
                         <span className="text-[7.5px] font-bold font-mono text-red-400 uppercase">Tampering Detected</span>
@@ -380,7 +380,7 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
                     )}
                   </div>
                   <p className="text-[8px] font-mono text-scada-dimText leading-tight">
-                    {currentForecast!.explainability_log || 
+                    {currentForecast?.explainability_log || 
                       "Forecasted profiles satisfy KCL, KVL, and breaker topology constraints. No active anomalies detected."}
                   </p>
                 </div>
@@ -396,12 +396,12 @@ export const PinnForecastPanel: React.FC<PinnForecastPanelProps> = ({ pinnForeca
             </div>
             <div className="flex items-center gap-1">
               <span>LATENCY:</span>
-              <span className="text-white font-scada-nums">{pinnForecastData.latency_ms.toFixed(1)}ms</span>
+              <span className="text-white font-scada-nums">{(pinnForecastData.latency_ms ?? 0).toFixed(1)}ms</span>
             </div>
             <div className="flex items-center gap-1">
               <span>UPDATED:</span>
               <span className="text-white font-scada-nums">
-                {new Date(pinnForecastData.timestamp).toLocaleTimeString([], { hour12: false })}
+                {new Date(pinnForecastData.timestamp ?? Date.now()).toLocaleTimeString([], { hour12: false })}
               </span>
             </div>
           </div>

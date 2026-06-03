@@ -64,7 +64,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
             <div className="flex flex-col">
               <span className="text-[6.5px] text-scada-dimText uppercase">WS LATENCY</span>
               <span className="text-white font-bold font-scada-nums leading-none mt-0.5">
-                {connected ? `${wsLatency.toFixed(0)} ms` : "OFFLINE"}
+                {connected ? `${(wsLatency ?? 0).toFixed(0)} ms` : "OFFLINE"}
               </span>
             </div>
           </div>
@@ -75,7 +75,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
             <div className="flex flex-col">
               <span className="text-[6.5px] text-scada-dimText uppercase">MQTT TELEM RATE</span>
               <span className="text-white font-bold font-scada-nums leading-none mt-0.5">
-                {connected ? `${msgRate.toFixed(1)} Hz` : "0.0 Hz"}
+                {connected ? `${(msgRate ?? 0.0).toFixed(1)} Hz` : "0.0 Hz"}
               </span>
             </div>
           </div>

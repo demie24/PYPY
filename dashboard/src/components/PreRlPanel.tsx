@@ -263,8 +263,8 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                         </span>
                       </div>
                       <div className="flex justify-between text-[7px] text-scada-dimText mt-1">
-                        <span>Safety: {(item.safety_score*100).toFixed(0)}%</span>
-                        <span>Risk: {(item.operational_risk*100).toFixed(0)}%</span>
+                        <span>Safety: {((item.safety_score ?? 1.0)*100).toFixed(0)}%</span>
+                        <span>Risk: {((item.operational_risk ?? 0.0)*100).toFixed(0)}%</span>
                       </div>
                     </div>
                   ))}
@@ -299,9 +299,9 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                         <p><strong>Telemetry:</strong> {actionQueue[selectedQueueIndex].explainability?.trusted_telemetry_basis}</p>
                         
                         <div className="flex justify-between border-t border-scada-border/10 pt-1 mt-1 text-[7px]">
-                          <span>Est. Reward: <strong className="text-emerald-400">+{actionQueue[selectedQueueIndex].explainability?.expected_reward_gain}</strong></span>
-                          <span>Cascade Reduc: <strong className="text-emerald-400">-{actionQueue[selectedQueueIndex].explainability?.expected_cascade_reduction * 100}%</strong></span>
-                          <span>Success Prob: <strong className="text-emerald-400">{(actionQueue[selectedQueueIndex].explainability?.restoration_probability * 100).toFixed(0)}%</strong></span>
+                          <span>Est. Reward: <strong className="text-emerald-400">+{actionQueue[selectedQueueIndex].explainability?.expected_reward_gain ?? 0}</strong></span>
+                          <span>Cascade Reduc: <strong className="text-emerald-400">-{((actionQueue[selectedQueueIndex].explainability?.expected_cascade_reduction ?? 0.0) * 100).toFixed(0)}%</strong></span>
+                          <span>Success Prob: <strong className="text-emerald-400">{((actionQueue[selectedQueueIndex].explainability?.restoration_probability ?? 1.0) * 100).toFixed(0)}%</strong></span>
                         </div>
                       </div>
                       
@@ -378,7 +378,7 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                         >
                           <span className="text-[5.5px] text-scada-dimText font-mono leading-none font-semibold">{label}</span>
                           <span className="text-[7.5px] font-mono font-bold text-yellow-400 mt-0.5 leading-none">
-                            {val.toFixed(2)}
+                            {(val ?? 0.0).toFixed(2)}
                           </span>
                         </div>
                       );
@@ -474,7 +474,7 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                   <div>
                     <div className="flex justify-between text-[8px] font-mono font-semibold text-scada-dimText">
                       <span>SAFETY INDEX:</span>
-                      <span className="text-white font-bold">{(safety.overall_score * 100).toFixed(0)}%</span>
+                      <span className="text-white font-bold">{((safety?.overall_score ?? 1.0) * 100).toFixed(0)}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-scada-bg rounded overflow-hidden border border-scada-border/40 mt-0.5">
                       <div
@@ -653,22 +653,22 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                     </div>
                     <div className="flex justify-between">
                       <span>Current loss:</span>
-                      <span className="text-red-400 font-bold">{preRlData.rl_status?.loss ? preRlData.rl_status.loss.toFixed(4) : "0.0000"}</span>
+                      <span className="text-red-400 font-bold">{typeof preRlData.rl_status?.loss === "number" ? preRlData.rl_status.loss.toFixed(4) : "0.0000"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Entropy (PPO):</span>
-                      <span className="text-purple-400 font-bold">{preRlData.rl_status?.entropy ? preRlData.rl_status.entropy.toFixed(4) : "0.0000"}</span>
+                      <span className="text-purple-400 font-bold">{typeof preRlData.rl_status?.entropy === "number" ? preRlData.rl_status.entropy.toFixed(4) : "0.0000"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Explore Ratio:</span>
                       <span className="text-amber-400 font-bold">
-                        {preRlData.rl_status?.explore_ratio !== undefined ? `${(preRlData.rl_status.explore_ratio * 100).toFixed(0)}%` : "0%"}
+                        {typeof preRlData.rl_status?.explore_ratio === "number" ? `${(preRlData.rl_status.explore_ratio * 100).toFixed(0)}%` : "0%"}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Action Diversity:</span>
                       <span className="text-cyan-400 font-bold">
-                        {preRlData.rl_status?.action_diversity !== undefined ? `${(preRlData.rl_status.action_diversity * 100).toFixed(0)}%` : "0%"}
+                        {typeof preRlData.rl_status?.action_diversity === "number" ? `${(preRlData.rl_status.action_diversity * 100).toFixed(0)}%` : "0%"}
                       </span>
                     </div>
                   </div>
@@ -679,7 +679,7 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                   <div>
                     <div className="flex justify-between text-[7px]">
                       <span>Restoration Success Rate:</span>
-                      <strong className="text-emerald-400">{((preRlData.rl_status?.success_rate || 1.0) * 100).toFixed(0)}%</strong>
+                      <strong className="text-emerald-400">{((preRlData.rl_status?.success_rate ?? 1.0) * 100).toFixed(0)}%</strong>
                     </div>
                     <div className="w-full h-1 bg-scada-bg rounded overflow-hidden mt-0.5">
                       <div 
@@ -711,21 +711,21 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                     <span className="text-[7.5px] text-scada-dimText uppercase font-semibold block mb-0.5">Reward Trend:</span>
                     <div className="flex justify-between text-[7px]">
                       <span>Latest:</span>
-                      <strong className={(preRlData.rl_status?.reward || 0.0) >= 0 ? "text-emerald-400" : "text-red-400"}>
-                        {(preRlData.rl_status?.reward || 0.0).toFixed(2)}
+                      <strong className={(preRlData.rl_status?.reward ?? 0.0) >= 0 ? "text-emerald-400" : "text-red-400"}>
+                        {(preRlData.rl_status?.reward ?? 0.0).toFixed(2)}
                       </strong>
                     </div>
                     <div className="flex justify-between text-[7px]">
                       <span>10-Ep Avg:</span>
-                      <strong className={(preRlData.rl_status?.avg_reward || 0.0) >= 0 ? "text-emerald-400" : "text-red-400"}>
-                        {(preRlData.rl_status?.avg_reward || 0.0).toFixed(2)}
+                      <strong className={(preRlData.rl_status?.avg_reward ?? 0.0) >= 0 ? "text-emerald-400" : "text-red-400"}>
+                        {(preRlData.rl_status?.avg_reward ?? 0.0).toFixed(2)}
                       </strong>
                     </div>
                     <div className="w-full h-8 bg-scada-bg/60 border border-scada-border/10 rounded overflow-hidden mt-1 relative flex items-center justify-center">
                       <span className="absolute text-[5.5px] text-gray-500 pointer-events-none uppercase">REWARD ENVELOPE</span>
                       <svg className="w-full h-full stroke-yellow-500 fill-none" viewBox="0 0 100 20">
                         <path 
-                          d={`M 0,${15 - Math.max(-10, Math.min(30, preRlData.rl_status?.reward || 0.0)) / 2} L 20,13 L 40,16 L 60,11 L 80,14 L 100,${10 - Math.max(-10, Math.min(30, preRlData.rl_status?.avg_reward || 0.0)) / 2}`} 
+                          d={`M 0,${15 - Math.max(-10, Math.min(30, preRlData.rl_status?.reward ?? 0.0)) / 2} L 20,13 L 40,16 L 60,11 L 80,14 L 100,${10 - Math.max(-10, Math.min(30, preRlData.rl_status?.avg_reward ?? 0.0)) / 2}`} 
                           strokeWidth="1.5"
                         />
                       </svg>
@@ -737,17 +737,17 @@ export const PreRlPanel: React.FC<PreRlPanelProps> = ({ preRlData, onSendControl
                     <span className="text-[7.5px] text-scada-dimText uppercase font-semibold block">Grid Physics Metrics:</span>
                     <div className="flex justify-between text-[7px]">
                       <span>Restored Load:</span>
-                      <strong className="text-emerald-400">{preRlData.rl_status?.restoration_completion_pct !== undefined ? `${preRlData.rl_status.restoration_completion_pct.toFixed(0)}%` : "0%"}</strong>
+                      <strong className="text-emerald-400">{typeof preRlData.rl_status?.restoration_completion_pct === "number" ? `${preRlData.rl_status.restoration_completion_pct.toFixed(0)}%` : "0%"}</strong>
                     </div>
                     <div className="flex justify-between text-[7px]">
                       <span>Unsafe Topo Freq:</span>
-                      <strong className={preRlData.rl_status?.unsafe_topology_freq > 0.3 ? "text-red-400" : "text-gray-300"}>
-                        {preRlData.rl_status?.unsafe_topology_freq !== undefined ? `${(preRlData.rl_status.unsafe_topology_freq * 100).toFixed(0)}%` : "0%"}
+                      <strong className={(preRlData.rl_status?.unsafe_topology_freq ?? 0.0) > 0.3 ? "text-red-400" : "text-gray-300"}>
+                        {typeof preRlData.rl_status?.unsafe_topology_freq === "number" ? `${(preRlData.rl_status.unsafe_topology_freq * 100).toFixed(0)}%` : "0%"}
                       </strong>
                     </div>
                     <div className="flex justify-between text-[7px]">
                       <span>Avg V-Dev:</span>
-                      <strong className="text-yellow-400">{preRlData.rl_status?.avg_voltage_deviation !== undefined ? `${preRlData.rl_status.avg_voltage_deviation.toFixed(3)} pu` : "0.000 pu"}</strong>
+                      <strong className="text-yellow-400">{typeof preRlData.rl_status?.avg_voltage_deviation === "number" ? `${preRlData.rl_status.avg_voltage_deviation.toFixed(3)} pu` : "0.000 pu"}</strong>
                     </div>
                     <div className="flex justify-between text-[7px]">
                       <span>Recovery Latency:</span>

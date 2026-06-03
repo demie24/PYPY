@@ -88,8 +88,8 @@ export const AutonomousSurvivalPanel: React.FC<AutonomousSurvivalPanelProps> = (
   const blackstartDesc = hasBlackstart ? blackstartData.step_description : "System fully synchronized.";
   const blackstartProgress = hasBlackstart ? blackstartData.progress_percentage : 100;
 
-  const frequencies = hasBalancing ? balancingData.frequencies : {};
-  const mismatches = hasBalancing ? balancingData.mismatches : {};
+  const frequencies = hasBalancing ? (balancingData.frequencies ?? {}) : {};
+  const mismatches = hasBalancing ? (balancingData.mismatches ?? {}) : {};
   const balancingCommands = hasBalancing ? balancingData.balancing_commands : [];
 
   // Helper to determine strategy priority color
@@ -275,7 +275,7 @@ export const AutonomousSurvivalPanel: React.FC<AutonomousSurvivalPanelProps> = (
                               ? "bg-yellow-500/10 text-yellow-400"
                               : "text-emerald-400"
                           }`}>
-                            {freq.toFixed(2)} Hz
+                            {(freq ?? 60.0).toFixed(2)} Hz
                           </span>
                         </div>
                       </div>
@@ -284,7 +284,7 @@ export const AutonomousSurvivalPanel: React.FC<AutonomousSurvivalPanelProps> = (
                       <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[7.5px] text-scada-dimText">
                         <div className="truncate">Buses: <strong className="text-white">{island.buses.join(", ")}</strong></div>
                         <div>Generators: <strong className="text-cyan-400">{island.generators.join(", ") || "None"}</strong></div>
-                        <div>Mismatch: <strong className={mismatch < 0 ? "text-red-400" : mismatch > 0 ? "text-yellow-400" : "text-emerald-400"}>{mismatch > 0 ? "+" : ""}{mismatch.toFixed(1)} MW</strong></div>
+                        <div>Mismatch: <strong className={(mismatch ?? 0.0) < 0 ? "text-red-400" : (mismatch ?? 0.0) > 0 ? "text-yellow-400" : "text-emerald-400"}>{(mismatch ?? 0.0) > 0 ? "+" : ""}{(mismatch ?? 0.0).toFixed(1)} MW</strong></div>
                         <div>Stability: <strong className="text-white">{island.stability_rating ?? 100}%</strong></div>
                       </div>
 

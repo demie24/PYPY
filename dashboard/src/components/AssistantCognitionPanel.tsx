@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Send, Mic, Bot, Sparkles, User, Cpu, Smile, Volume2, RotateCcw,
+  Bot, Sparkles, Cpu, Smile, Volume2, RotateCcw,
   MessageSquare, Compass, GitBranch, Bell, CheckCircle2, XCircle, RefreshCw,
   Terminal, Sliders, Activity, Clock, AlertTriangle, Shield
 } from "lucide-react";
@@ -213,13 +213,9 @@ interface AssistantCognitionPanelProps {
 export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = ({
   assistantState,
   assistantEmotion,
-  assistantContext,
-  assistantMemory,
   assistantRuntime,
   assistantSemanticIntent,
-  assistantContextualMemory,
   assistantReasoning,
-  assistantSemanticResponse,
   connected,
   onSendControl,
   assistantVoiceState,
@@ -260,21 +256,14 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
   assistantSwarmAnomalyFusion
 }) => {
 
-  const [chatText, setChatText] = useState("");
   const [clarifyAnswerText, setClarifyAnswerText] = useState("");
-  const [isListeningVoice, setIsListeningVoice] = useState(false);
-  const [voiceSimProgress, setVoiceSimProgress] = useState(0);
   const [activeTab, setActiveTab] = useState<"reasoning" | "planning" | "dialogue" | "workflows" | "presence" | "autonomy" | "cyberPhysical" | "multiAgent" | "swarm">("reasoning");
-  const chatEndRef = useRef<HTMLDivElement>(null);
 
 
-  // Extract variables with defaults
   const state = assistantState?.state ?? "IDLE";
   const emotion = assistantEmotion?.emotion ?? { assistant_mood: "calm", user_mood: "calm" };
-  const context = assistantContext?.context ?? { session_active: false, current_topic: null, interaction_depth: 0 };
-  const memory = assistantMemory?.memory ?? { interactions: [], user_preferences: { name: "Operator", language: "ms", tone: "casual" }, command_history: [] };
   const runtime = assistantRuntime ?? { status: "OFFLINE", uptime_sec: 0 };
-
+ 
   // Semantic parameters:
   const semanticIntent = assistantSemanticIntent?.semantic_intent ?? {
     category: "UNKNOWN",
@@ -283,13 +272,6 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     parameters: {},
     is_fuzzy: false,
     is_followup: false
-  };
-  const contextualMemory = assistantContextualMemory?.contextual_memory ?? {
-    active_thread_id: null,
-    active_subject: null,
-    recent_references: {},
-    active_messages: [],
-    thread_count: 0
   };
   const reasoning = assistantReasoning?.reasoning ?? {
     should_execute: false,
@@ -302,11 +284,6 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     grid_critical: false
   };
   // Removed unused automationHooks
-  const semanticResponse = assistantSemanticResponse?.semantic_response ?? {
-    text: "",
-    clean_tts_text: "",
-    timestamp: 0
-  };
 
   // Phase 9.3 Parameters:
   const voiceState = assistantVoiceState?.voice_state ?? {
@@ -465,78 +442,11 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
     return () => cancelAnimationFrame(animFrameId);
   }, [state, presence.breathing_frequency_hz]);
 
-  // Determine interactions list
-  const displayInteractions = (contextualMemory.active_messages && contextualMemory.active_messages.length > 0)
-    ? contextualMemory.active_messages
-    : (memory.interactions ?? []);
-
-  // Auto-scroll to bottom of chat
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [displayInteractions.length, state]);
-
-  // Voice simulation logic
-  const handleSimulateVoice = () => {
-    if (isListeningVoice) return;
-    setIsListeningVoice(true);
-    setVoiceSimProgress(0);
-
-    const voicePhrases = [
-      "keadaan grid ok ke?",
-      "buka youtube jap",
-      "siapa diri kau?",
-      "buka dashboard hmi",
-      "main youtube lagu best sikit",
-      "pelayar web mana",
-      "pukul berapa sekarang",
-      "grid under attack ke"
-    ];
-
-    const randomPhrase = voicePhrases[Math.floor(Math.random() * voicePhrases.length)];
-
-    let currentProgress = 0;
-    const interval = setInterval(() => {
-      currentProgress += 10;
-      setVoiceSimProgress(currentProgress);
-      if (currentProgress >= 100) {
-        clearInterval(interval);
-        setIsListeningVoice(false);
-        onSendControl({
-          topic: "assistant/voice_input",
-          payload: { audio_text: randomPhrase }
-        });
-      }
-    }, 150);
-  };
-
-  const handleSendChat = () => {
-    if (!chatText.trim()) return;
-    onSendControl({
-      topic: "assistant/chat_input",
-      payload: { text: chatText }
-    });
-    setChatText("");
-  };
-
   const handleResetMemory = () => {
     onSendControl({
       topic: "assistant/reset",
       payload: {}
     });
-  };
-
-  const handleQuickCommand = (phrase: string, isVoice: boolean) => {
-    if (isVoice) {
-      onSendControl({
-        topic: "assistant/voice_input",
-        payload: { audio_text: phrase }
-      });
-    } else {
-      onSendControl({
-        topic: "assistant/chat_input",
-        payload: { text: phrase }
-      });
-    }
   };
 
   // Phase 9.5 Simulation Controls triggers
@@ -957,135 +867,9 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
       </div>
 
       {/* Main content split */}
-      <div className="flex-1 flex gap-3 overflow-hidden z-10 min-h-0">
-        {/* Left Side: Chat Console */}
-        <div className="w-[45%] flex flex-col overflow-hidden bg-scada-bg/50 border border-scada-border/30 rounded p-2">
-          <div className="flex justify-between items-center mb-1 border-b border-scada-border/20 pb-1.5 shrink-0 text-[8px] text-scada-dimText uppercase tracking-wider font-semibold">
-            <span className="flex items-center gap-1">
-              <Compass size={9} className="text-cyan-400" /> Topic: <span className="text-cyan-300 font-bold">{contextualMemory.active_subject ?? context.current_topic ?? "NONE"}</span>
-            </span>
-            <span>Thread: <span className="text-white font-bold">{contextualMemory.active_thread_id ? `T-${contextualMemory.active_thread_id.substring(0, 4)}` : "NONE"}</span></span>
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-2 scrollbar-thin bg-black/10 rounded p-1.5">
-            {displayInteractions.length === 0 ? (
-              <div className="h-full flex flex-col justify-center items-center text-center p-4">
-                <Sparkles className="w-6 h-6 text-cyan-400/40 mb-1 animate-pulse" />
-                <p className="text-scada-dimText text-[8px] uppercase tracking-wide">Ready for operator requests</p>
-                <p className="text-scada-dimText/60 text-[7.5px] mt-1 max-w-[200px]">
-                  Tanya saya tentang status grid, pasang youtube, atau buka dashboard. Saya boleh respons dalam loghat santai Melayu.
-                </p>
-              </div>
-            ) : (
-              displayInteractions.map((msg: Interaction, idx: number) => {
-                const isUser = msg.role === "user";
-                const isSummary = msg.role === "system_summary" || msg.role === "system";
-
-                if (isSummary) {
-                  return (
-                    <div key={idx} className="flex justify-center my-1.5">
-                      <span className="bg-scada-bg/85 border border-purple-500/20 px-2 py-0.5 rounded text-[7px] text-purple-300 italic text-center max-w-[95%]">
-                        {msg.text}
-                      </span>
-                    </div>
-                  );
-                }
-
-                return (
-                  <div key={idx} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[90%] rounded p-2 border flex gap-1.5 leading-relaxed ${
-                      isUser
-                        ? "bg-cyan-950/40 border-cyan-500/20 text-cyan-100"
-                        : "bg-scada-bg/85 border-scada-border/40 text-emerald-100"
-                    }`}>
-                      <div className="shrink-0 mt-0.5">
-                        {isUser ? <User size={10} className="text-cyan-400" /> : <Bot size={10} className="text-emerald-400" />}
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="text-[7px] text-scada-dimText uppercase tracking-wider mb-0.5">
-                          {isUser ? "OPERATOR" : "GRID_AI"}
-                        </div>
-                        <p className="text-[8.5px] break-words whitespace-pre-wrap leading-tight">{msg.text}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-
-            {state !== "IDLE" && state !== "ERROR" && (
-              <div className="flex justify-start">
-                <div className="bg-scada-bg border border-scada-border/20 rounded p-1.5 px-2.5 flex items-center gap-1.5">
-                  <div className="flex gap-0.5 shrink-0">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "0ms" }}></span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "150ms" }}></span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "300ms" }}></span>
-                  </div>
-                  <span className="text-[7.5px] text-scada-dimText uppercase tracking-wider">
-                    {state === "LISTENING" ? "Listening..." :
-                     state === "THINKING" ? "Analyzing Intent..." :
-                     state === "EXECUTING" ? "Routing Action..." : "Formulating response..."}
-                  </span>
-                </div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-
-          {semanticResponse.clean_tts_text && (
-            <div className="bg-black/10 border border-scada-border/20 rounded p-1 mb-1 shrink-0 text-[6.5px] text-emerald-400 flex items-center gap-1 select-none">
-              <Volume2 size={8} className="shrink-0 text-emerald-400 animate-pulse" />
-              <span className="truncate">TTS Text: {semanticResponse.clean_tts_text}</span>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-1 mb-1.5 shrink-0">
-            <button onClick={() => handleQuickCommand("check latency", false)}
-              className="bg-scada-bg hover:bg-scada-border/20 border border-scada-border/30 rounded p-1 text-left text-[7.5px] text-scada-dimText truncate flex items-center gap-1">
-              <MessageSquare size={8} className="text-cyan-400" /> "Check Latency"
-            </button>
-            <button onClick={() => handleQuickCommand("check latency lepas tu kalau tinggi trigger recovery workflow", false)}
-              className="bg-scada-bg hover:bg-scada-border/20 border border-scada-border/30 rounded p-1 text-left text-[7.5px] text-scada-dimText truncate flex items-center gap-1">
-              <Compass size={8} className="text-purple-400" /> "Run Chained Plan"
-            </button>
-          </div>
-
-          <div className="flex gap-1.5 shrink-0 items-center">
-            <button
-              onClick={handleSimulateVoice}
-              disabled={isListeningVoice || state !== "IDLE"}
-              className={`p-2 rounded border transition-all flex items-center justify-center shrink-0 ${
-                isListeningVoice
-                  ? "bg-rose-950/70 border-rose-500 text-rose-400 animate-pulse"
-                  : "bg-cyan-950/70 border-cyan-500/40 hover:bg-cyan-900 text-cyan-400 disabled:opacity-50"
-              }`}
-              title="Simulate Voice Input"
-            >
-              {isListeningVoice ? <Volume2 size={12} className="animate-bounce" /> : <Mic size={12} />}
-            </button>
-
-            <input
-              type="text"
-              value={chatText}
-              onChange={(e) => setChatText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
-              placeholder={isListeningVoice ? `Listening (${voiceSimProgress}%)...` : "Type request..."}
-              disabled={isListeningVoice || state !== "IDLE"}
-              className="flex-1 bg-scada-bg border border-scada-border/50 text-white rounded p-1.5 text-[8.5px] outline-none placeholder:text-scada-dimText/60"
-            />
-
-            <button
-              onClick={handleSendChat}
-              disabled={!chatText.trim() || state !== "IDLE"}
-              className="p-2 bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-400 rounded disabled:opacity-40 shrink-0 transition-colors"
-            >
-              <Send size={12} />
-            </button>
-          </div>
-        </div>
-
+      <div className="flex-1 flex overflow-hidden z-10 min-h-0">
         {/* Right Side: Cognition Tabs */}
-        <div className="w-[55%] flex flex-col overflow-hidden">
+        <div className="w-full flex flex-col overflow-hidden">
           <div className="flex border-b border-scada-border/30 mb-2 bg-scada-bg/30 rounded-t overflow-hidden shrink-0">
             <button
               onClick={() => setActiveTab("reasoning")}
@@ -1334,7 +1118,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                                   <span className="text-scada-dimText truncate block text-[5px]">{hit.source}</span>
                                 </div>
                                 <span className="text-emerald-400 font-bold font-mono pl-1">
-                                  {hit.score.toFixed(3)}
+                                  {(hit.score ?? 0.0).toFixed(3)}
                                 </span>
                               </div>
                             ))}
@@ -1356,7 +1140,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                       <div className="flex justify-between"><span className="text-scada-dimText">Voice State:</span><span className="text-white">{voiceState.voice_state}</span></div>
                       <div className="flex justify-between"><span className="text-scada-dimText">Remaining Attention:</span><span className="text-white">{wakeWord.time_remaining}s</span></div>
                       <div className="flex justify-between"><span className="text-scada-dimText">Latest Intent:</span><span className="text-cyan-400 truncate max-w-[80px]">{voiceMemory.latest_command ?? semanticIntent.category}</span></div>
-                      <div className="flex justify-between"><span className="text-scada-dimText">Match Conf:</span><span className="text-cyan-400">{(semanticIntent.confidence * 100).toFixed(0)}%</span></div>
+                      <div className="flex justify-between"><span className="text-scada-dimText">Match Conf:</span><span className="text-cyan-400">{((semanticIntent?.confidence ?? 0.0) * 100).toFixed(0)}%</span></div>
                     </div>
                   </div>
                 </div>
@@ -1431,14 +1215,14 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                       <div>
                         <div className="flex justify-between mb-0.5 text-scada-dimText">
                           <span>Threat Score Confidence</span>
-                          <span className={plannerBridge.last_confidence_score >= 0.50 ? "text-emerald-400" : "text-rose-400"}>
-                            {plannerBridge.last_confidence_score.toFixed(2)} (Min: 0.50)
+                          <span className={(plannerBridge.last_confidence_score ?? 1.0) >= 0.50 ? "text-emerald-400" : "text-rose-400"}>
+                            {(plannerBridge.last_confidence_score ?? 1.0).toFixed(2)} (Min: 0.50)
                           </span>
                         </div>
                         <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-scada-border/10">
                           <div 
-                            className={`h-full transition-all duration-500 ${plannerBridge.last_confidence_score >= 0.50 ? "bg-emerald-500" : "bg-rose-500"}`}
-                            style={{ width: `${plannerBridge.last_confidence_score * 100}%` }}
+                            className={`h-full transition-all duration-500 ${(plannerBridge.last_confidence_score ?? 1.0) >= 0.50 ? "bg-emerald-500" : "bg-rose-500"}`}
+                            style={{ width: `${(plannerBridge.last_confidence_score ?? 1.0) * 100}%` }}
                           />
                         </div>
                       </div>
@@ -1696,7 +1480,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                       <div className="flex justify-between"><span className="text-scada-dimText">Breathing Freq:</span><span className="text-cyan-400 font-bold">{presence.breathing_frequency_hz} Hz</span></div>
                       <div className="flex justify-between">
                         <span className="text-scada-dimText">Calculated Pacing:</span>
-                        <span className="text-emerald-400 font-bold">{getPacingDelayValue(emotion.assistant_mood, reasoning.grid_critical).toFixed(2)}s</span>
+                        <span className="text-emerald-400 font-bold">{(getPacingDelayValue(emotion.assistant_mood, reasoning.grid_critical) ?? 0.50).toFixed(2)}s</span>
                       </div>
                       {reasoning.grid_critical && <div className="text-[5.5px] text-rose-400 font-bold animate-pulse">GRID stress: pacing delay bypassed.</div>}
                     </div>
@@ -1765,10 +1549,10 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                               <div key={idx} className="bg-black/30 p-1 rounded border border-scada-border/20 flex flex-col">
                                 <div className="flex justify-between font-bold text-white">
                                   <span>{f.category}</span>
-                                  <span className="text-yellow-400">{(f.confidence * 100).toFixed(0)}% Conf</span>
+                                  <span className="text-yellow-400">{((f.confidence ?? 0.0) * 100).toFixed(0)}% Conf</span>
                                 </div>
                                 <span className="text-scada-dimText mt-0.5">{f.description}</span>
-                                <span className="text-cyan-400 text-[5.8px] mt-0.5">Horizon: {f.time_horizon_sec}s | Projected: {f.predicted_value.toFixed(1)}</span>
+                                <span className="text-cyan-400 text-[5.8px] mt-0.5">Horizon: {f.time_horizon_sec}s | Projected: {(f.predicted_value ?? 0.0).toFixed(1)}</span>
                               </div>
                             ))}
                           </div>
@@ -1827,7 +1611,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                             <div key={idx} className="bg-black/25 p-1 rounded border border-scada-border/15 text-[5.8px] leading-tight flex flex-col">
                               <div className="flex justify-between font-bold">
                                 <span className="text-white truncate max-w-[55%]">{pat.pattern_id}</span>
-                                <span className="text-amber-400">{(pat.confidence_score * 100).toFixed(0)}% Conf</span>
+                                <span className="text-amber-400">{((pat.confidence_score ?? 0.0) * 100).toFixed(0)}% Conf</span>
                               </div>
                               <span className="text-scada-dimText mt-0.5">{pat.description}</span>
                             </div>
@@ -1902,13 +1686,13 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                     <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider mb-1 border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
                       <span>Cyber-Physical State Analysis</span>
                       <span className={cpReasoning.severity_level === "CRITICAL" || cpReasoning.severity_level === "HIGH" ? "text-rose-500 font-bold animate-pulse" : "text-cyan-400 font-bold"}>
-                        {cpReasoning.severity_level} (Score: {cpReasoning.severity_score.toFixed(1)})
+                        {cpReasoning.severity_level} (Score: {(cpReasoning.severity_score ?? 0.0).toFixed(1)})
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-1.5 mt-1 shrink-0">
                       <div className="bg-black/30 p-1.5 rounded border border-scada-border/25 flex flex-col justify-center items-center">
                         <span className="text-[5.8px] text-scada-dimText uppercase tracking-wider">Average Latency</span>
-                        <span className="text-white font-bold font-mono text-[9px] mt-0.5">{edgeAwareness.average_latency_ms.toFixed(1)}ms</span>
+                        <span className="text-white font-bold font-mono text-[9px] mt-0.5">{(edgeAwareness.average_latency_ms ?? 0.0).toFixed(1)}ms</span>
                       </div>
                       <div className="bg-black/30 p-1.5 rounded border border-scada-border/25 flex flex-col justify-center items-center">
                         <span className="text-[5.8px] text-scada-dimText uppercase tracking-wider">Timing Skews</span>
@@ -1958,9 +1742,9 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                             <div key={key} className="bg-black/25 px-1 py-0.5 rounded border border-scada-border/10 flex justify-between">
                               <span className="text-white font-bold">{key}</span>
                               <div className="flex gap-1.5 font-mono">
-                                <span className={val.online ? "text-emerald-400" : "text-rose-400"}>{val.online ? "ON" : "OFF"}</span>
-                                <span className="text-cyan-400">{val.latency_ms.toFixed(0)}ms</span>
-                                <span className={Math.abs(val.drift_sec) > 0.025 ? "text-rose-400" : "text-emerald-400"}>{(val.drift_sec * 1000).toFixed(0)}ms</span>
+                                <span className={val?.online ? "text-emerald-400" : "text-rose-400"}>{val?.online ? "ON" : "OFF"}</span>
+                                <span className="text-cyan-400">{(val?.latency_ms ?? 0).toFixed(0)}ms</span>
+                                <span className={Math.abs(val?.drift_sec ?? 0) > 0.025 ? "text-rose-400" : "text-emerald-400"}>{((val?.drift_sec ?? 0) * 1000).toFixed(0)}ms</span>
                               </div>
                             </div>
                           );
@@ -1983,11 +1767,11 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                             <div key={key} className="bg-black/25 px-1.5 py-0.5 rounded border border-scada-border/10 flex flex-col">
                               <div className="flex justify-between font-bold">
                                 <span className="text-white">{key}</span>
-                                <span className={val.unstable ? "text-rose-400 font-bold" : "text-cyan-400"}>{val.state}</span>
+                                <span className={val?.unstable ? "text-rose-400 font-bold" : "text-cyan-400"}>{val?.state}</span>
                               </div>
                               <div className="flex justify-between text-[5.2px] text-scada-dimText font-mono mt-0.5">
-                                <span>Wear: {val.wear_pct.toFixed(0)}%</span>
-                                <span className={val.timing_ms > 120 ? "text-rose-400" : "text-emerald-400"}>{val.timing_ms.toFixed(0)}ms</span>
+                                <span>Wear: {(val?.wear_pct ?? 0).toFixed(0)}%</span>
+                                <span className={(val?.timing_ms ?? 0) > 120 ? "text-rose-400" : "text-emerald-400"}>{(val?.timing_ms ?? 0).toFixed(0)}ms</span>
                               </div>
                             </div>
                           );
@@ -2009,7 +1793,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                           telemetryCorrelation.high_correlations.map((c: any, idx: number) => (
                             <div key={idx} className="bg-black/25 px-1 py-0.5 rounded border border-scada-border/10 flex justify-between font-mono">
                               <span className="text-white truncate max-w-[70%]">{c.var1.replace("_load","").replace("_v","")} ↔ {c.var2.replace("_load","").replace("_v","")}</span>
-                              <span className="text-yellow-400">{c.correlation > 0 ? `+${c.correlation.toFixed(2)}` : c.correlation.toFixed(2)}</span>
+                              <span className="text-yellow-400">{(c?.correlation ?? 0.0) > 0 ? `+${(c?.correlation ?? 0.0).toFixed(2)}` : (c?.correlation ?? 0.0).toFixed(2)}</span>
                             </div>
                           ))
                         ) : (
@@ -2022,7 +1806,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                             {telemetryCorrelation.cascades.map((c: any, idx: number) => (
                               <div key={idx} className="bg-rose-950/20 px-1 py-0.5 rounded border border-rose-900/30 flex justify-between text-rose-300 font-mono">
                                 <span>{c.cause.replace("breaker_","")} → {c.effect.replace("bus_","").replace("_v","")}</span>
-                                <span>{(c.linkage_score * 100).toFixed(0)}% Link</span>
+                                <span>{((c?.linkage_score ?? 0.0) * 100).toFixed(0)}% Link</span>
                               </div>
                             ))}
                           </div>
@@ -2093,7 +1877,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                           </div>
                           <div className="flex justify-between mt-0.5">
                             <span className="text-scada-dimText">Score:</span>
-                            <span className="text-white font-mono">{agentCoord.consensus_score.toFixed(2)} (Min: 0.75)</span>
+                            <span className="text-white font-mono">{(agentCoord.consensus_score ?? 1.0).toFixed(2)} (Min: 0.75)</span>
                           </div>
                         </div>
                         <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-scada-border/10 mt-1">
@@ -2575,7 +2359,7 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                     <div className="bg-scada-bg/60 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between h-[125px]">
                       <div className="text-[7.5px] font-bold text-scada-dimText uppercase tracking-wider border-b border-scada-border/20 pb-0.5 flex justify-between shrink-0">
                         <span className="flex items-center gap-1"><Activity size={9} className="text-emerald-400" /> Swarm Anomaly Fusion Heatmap</span>
-                        <span className="text-[6.5px] text-scada-dimText font-mono">Score: <strong className="text-white">{swarmAnomalyFusion.swarm_threat_score.toFixed(1)}/10.0</strong></span>
+                        <span className="text-[6.5px] text-scada-dimText font-mono">Score: <strong className="text-white">{(swarmAnomalyFusion.swarm_threat_score ?? 0.0).toFixed(1)}/10.0</strong></span>
                       </div>
 
                       <div className="flex-1 mt-1 grid grid-cols-4 gap-1 p-0.5 bg-black/10 rounded">
@@ -2602,10 +2386,10 @@ export const AssistantCognitionPanel: React.FC<AssistantCognitionPanelProps> = (
                                     val >= 0.5 ? "bg-amber-500/50 text-amber-100" :
                                     val > 0.2 ? "bg-cyan-500/30 text-cyan-200" : "bg-black/35 text-scada-dimText"
                                   }`}
-                                  title={`${k1} <-> ${k2}: ${val.toFixed(2)}`}
+                                  title={`${k1} <-> ${k2}: ${(val ?? 0.0).toFixed(2)}`}
                                 >
                                   <span className="text-[4px] uppercase text-white/40">{k1.substring(0,3)}/{k2.substring(0,3)}</span>
-                                  <span>{val.toFixed(2)}</span>
+                                  <span>{(val ?? 0.0).toFixed(2)}</span>
                                 </div>
                               );
                             })

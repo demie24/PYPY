@@ -327,7 +327,7 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
                   fontSize="10" 
                   className={`${getBusTextClass(v, bid)} font-semibold`}
                 >
-                  {isComp && compType === "DOS" ? "COMM LOSS" : `${v.toFixed(3)} pu`}
+                  {isComp && compType === "DOS" ? "COMM LOSS" : `${(v ?? 0).toFixed(3)} pu`}
                 </text>
 
                 {/* Small indicator icons next to compromised buses */}
@@ -374,7 +374,7 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
                   fontWeight="semibold"
                   className="font-scada-nums"
                 >
-                  {isComp && compType === "DOS" ? "N/A" : `${loading.toFixed(0)}%`}
+                  {isComp && compType === "DOS" ? "N/A" : `${(loading ?? 0).toFixed(0)}%`}
                 </text>
               </g>
             );
@@ -428,8 +428,8 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
         {hoveredEl && (
           <span className="font-mono text-white font-semibold">
             {hoveredEl.type === "bus"
-              ? `${hoveredEl.id.replace("Bus_", "BUS ")}: P=${(hoveredEl.data.P_mw || 0).toFixed(1)}MW Q=${(hoveredEl.data.Q_mvar || 0).toFixed(1)}MVAR`
-              : `LINE ${hoveredEl.id.replace("L", "").replace("_", "-")}: P=${(hoveredEl.data.P_mw || 0).toFixed(1)}MW I=${(hoveredEl.data.current_amp || 0).toFixed(1)}A`}
+              ? `${hoveredEl.id.replace("Bus_", "BUS ")}: P=${(hoveredEl.data?.P_mw ?? 0).toFixed(1)}MW Q=${(hoveredEl.data?.Q_mvar ?? 0).toFixed(1)}MVAR`
+              : `LINE ${hoveredEl.id.replace("L", "").replace("_", "-")}: P=${(hoveredEl.data?.P_mw ?? 0).toFixed(1)}MW I=${(hoveredEl.data?.current_amp ?? 0).toFixed(1)}A`}
           </span>
         )}
       </div>

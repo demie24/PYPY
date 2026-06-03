@@ -212,8 +212,8 @@ export const VirtualHardwareTwinPanel: React.FC<VirtualHardwareTwinPanelProps> =
               <div className="space-y-1 text-[10px] text-scada-dimText">
                 <div className="flex justify-between">
                   <span>Packet Drop Rate:</span>
-                  <span className={`font-bold ${espDetails.packet_drop_rate > 0 ? "text-orange-400" : "text-scada-text"}`}>
-                    {(espDetails.packet_drop_rate * 100).toFixed(0)}%
+                  <span className={`font-bold ${(espDetails.packet_drop_rate ?? 0) > 0 ? "text-orange-400" : "text-scada-text"}`}>
+                    {((espDetails.packet_drop_rate ?? 0) * 100).toFixed(0)}%
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -228,10 +228,10 @@ export const VirtualHardwareTwinPanel: React.FC<VirtualHardwareTwinPanelProps> =
                     {espDetails.heartbeat_failure ? "FAILING" : "OK"}
                   </span>
                 </div>
-                {espDetails.reconnect_time_left > 0 && (
+                {(espDetails.reconnect_time_left ?? 0) > 0 && (
                   <div className="flex justify-between text-cyan-400 animate-pulse text-[9px]">
                     <span>Reconnecting in:</span>
-                    <span>{espDetails.reconnect_time_left.toFixed(1)}s</span>
+                    <span>{(espDetails.reconnect_time_left ?? 0).toFixed(1)}s</span>
                   </div>
                 )}
               </div>
@@ -252,26 +252,26 @@ export const VirtualHardwareTwinPanel: React.FC<VirtualHardwareTwinPanelProps> =
               <div className="space-y-1 text-[10px] text-scada-dimText">
                 <div className="flex justify-between">
                   <span>Modbus Exception:</span>
-                  <span className={`font-bold ${plcDetails.modbus_exception_rate && plcDetails.modbus_exception_rate > 0 ? "text-orange-400" : "text-scada-text"}`}>
-                    {plcDetails.modbus_exception_rate ? (plcDetails.modbus_exception_rate * 100).toFixed(0) : 0}%
+                  <span className={`font-bold ${plcDetails.modbus_exception_rate && (plcDetails.modbus_exception_rate ?? 0) > 0 ? "text-orange-400" : "text-scada-text"}`}>
+                    {plcDetails.modbus_exception_rate ? ((plcDetails.modbus_exception_rate ?? 0) * 100).toFixed(0) : 0}%
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Command Delay:</span>
-                  <span className={`font-bold ${plcDetails.write_delay && plcDetails.write_delay > 0 ? "text-orange-400 animate-pulse" : "text-scada-text"}`}>
-                    {plcDetails.write_delay ? plcDetails.write_delay.toFixed(1) : 0}s
+                  <span className={`font-bold ${plcDetails.write_delay && (plcDetails.write_delay ?? 0) > 0 ? "text-orange-400 animate-pulse" : "text-scada-text"}`}>
+                    {plcDetails.write_delay ? (plcDetails.write_delay ?? 0).toFixed(1) : 0}s
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Queued Commands:</span>
-                  <span className={`font-bold ${plcDetails.queued_commands_count && plcDetails.queued_commands_count > 0 ? "text-amber-400 animate-pulse" : "text-scada-text"}`}>
+                  <span className={`font-bold ${plcDetails.queued_commands_count && (plcDetails.queued_commands_count ?? 0) > 0 ? "text-amber-400 animate-pulse" : "text-scada-text"}`}>
                     {plcDetails.queued_commands_count || 0}
                   </span>
                 </div>
-                {plcDetails.reconnect_time_left > 0 && (
+                {(plcDetails.reconnect_time_left ?? 0) > 0 && (
                   <div className="flex justify-between text-cyan-400 animate-pulse text-[9px]">
                     <span>Reconnecting in:</span>
-                    <span>{plcDetails.reconnect_time_left.toFixed(1)}s</span>
+                    <span>{(plcDetails.reconnect_time_left ?? 0).toFixed(1)}s</span>
                   </div>
                 )}
               </div>
@@ -374,8 +374,8 @@ export const VirtualHardwareTwinPanel: React.FC<VirtualHardwareTwinPanelProps> =
             <div className="border border-scada-border/40 rounded p-1.5 flex flex-col bg-scada-cardBG">
               <div className="border-b border-scada-border/20 pb-0.5 mb-1 font-bold text-cyan-400 text-[10px] flex justify-between items-center">
                 <span>Twin Anomalies Log</span>
-                <span className={`px-1 rounded text-[9px] ${severityScore >= 60 ? "bg-rose-500/25 text-rose-400 animate-pulse font-bold" : (severityScore >= 30 ? "bg-amber-500/25 text-amber-400" : "bg-cyan-500/25 text-cyan-400")}`}>
-                  Sev: {severityScore.toFixed(0)}
+                <span className={`px-1 rounded text-[9px] ${(severityScore ?? 0) >= 60 ? "bg-rose-500/25 text-rose-400 animate-pulse font-bold" : ((severityScore ?? 0) >= 30 ? "bg-amber-500/25 text-amber-400" : "bg-cyan-500/25 text-cyan-400")}`}>
+                  Sev: {(severityScore ?? 0).toFixed(0)}
                 </span>
               </div>
               <div className="flex-1 overflow-y-auto space-y-1 text-[8.5px]">

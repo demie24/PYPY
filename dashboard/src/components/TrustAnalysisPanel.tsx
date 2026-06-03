@@ -39,15 +39,16 @@ interface TrustAnalysisPanelProps {
 }
 
 export const TrustAnalysisPanel: React.FC<TrustAnalysisPanelProps> = ({ trustScores, filterData }) => {
-  const hasData = trustScores !== null && filterData !== null;
+  const hasData = trustScores !== null && trustScores !== undefined && filterData !== null && filterData !== undefined;
   
-  const confidence = hasData ? filterData.global_grid_confidence : 100.0;
+  const confidence = hasData ? (filterData.global_grid_confidence ?? 100.0) : 100.0;
   const degraded = hasData ? filterData.degraded_observability : false;
   const trusted = hasData ? filterData.trusted_state : true;
   
-  const getTrustColor = (score: number) => {
-    if (score >= 90) return "text-emerald-400";
-    if (score >= 70) return "text-yellow-400";
+  const getTrustColor = (score?: number) => {
+    const s = score ?? 100;
+    if (s >= 90) return "text-emerald-400";
+    if (s >= 70) return "text-yellow-400";
     return "text-red-400 font-extrabold animate-pulse";
   };
 
@@ -94,7 +95,7 @@ export const TrustAnalysisPanel: React.FC<TrustAnalysisPanelProps> = ({ trustSco
                   confidence >= 80 ? "text-emerald-400 scada-text-glow-green" :
                   confidence >= 60 ? "text-yellow-400" : "text-red-500 font-extrabold scada-text-glow-red"
                 }`}>
-                  {confidence.toFixed(1)}%
+                  {(confidence ?? 100).toFixed(1)}%
                 </span>
               </div>
             </div>
@@ -121,10 +122,10 @@ export const TrustAnalysisPanel: React.FC<TrustAnalysisPanelProps> = ({ trustSco
                 Bus Trust Scores
               </span>
               <div className="grid grid-cols-3 gap-x-1 gap-y-1.5 font-mono text-[8px] flex-1 items-center">
-                {Object.entries(trustScores.bus_trust).map(([busName, score]) => (
+                {Object.entries(trustScores?.bus_trust || {}).map(([busName, score]) => (
                   <div key={busName} className="flex flex-col items-center">
                     <span className="text-[7px] text-white/50">{busName.replace("Bus_", "B")}</span>
-                    <span className={`font-bold ${getTrustColor(score)}`}>{score.toFixed(0)}%</span>
+                    <span className={`font-bold ${getTrustColor(score)}`}>{(score ?? 100.0).toFixed(0)}%</span>
                   </div>
                 ))}
               </div>
@@ -136,17 +137,17 @@ export const TrustAnalysisPanel: React.FC<TrustAnalysisPanelProps> = ({ trustSco
                 Active Filter Actions
               </span>
               <div className="flex-1 overflow-y-auto space-y-1 pr-0.5">
-                {Object.entries(filterData.filter_actions)
-                  .filter(([_, act]) => act.action !== "PASSED")
+                {Object.entries(filterData?.filter_actions || {})
+                  .filter(([_, act]) => act?.action !== "PASSED")
                   .map(([node, act]) => (
                     <div key={node} className="flex justify-between items-center text-[7.5px] font-mono border-b border-scada-border/10 pb-0.5">
                       <span className="text-white font-semibold uppercase">{node.replace("_", " ")}</span>
-                      <span className={`px-1 rounded-[2px] border text-[6px] scale-90 ${getActionBadge(act.action)}`}>
-                        {act.action}
+                      <span className={`px-1 rounded-[2px] border text-[6px] scale-90 ${getActionBadge(act?.action ?? "")}`}>
+                        {act?.action}
                       </span>
                     </div>
                   ))}
-                {Object.values(filterData.filter_actions).every((act) => act.action === "PASSED") && (
+                {Object.values(filterData?.filter_actions || {}).every((act) => act?.action === "PASSED") && (
                   <p className="text-scada-dimText italic text-[7.5px] text-center mt-4">
                     Telemetry healthy. Filters bypassed.
                   </p>
@@ -166,7 +167,7 @@ export const TrustAnalysisPanel: React.FC<TrustAnalysisPanelProps> = ({ trustSco
             <div className="flex items-center gap-1">
               <span>UPDATED:</span>
               <span className="text-white font-scada-nums">
-                {new Date(filterData.timestamp).toLocaleTimeString([], { hour12: false })}
+                {new Date(filterData?.timestamp ?? Date.now()).toLocaleTimeString([], { hour12: false })}
               </span>
             </div>
           </div>

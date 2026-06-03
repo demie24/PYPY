@@ -346,13 +346,13 @@ export const CyberPhysicalAttackPanel: React.FC<CyberPhysicalAttackPanelProps> =
           <div className="flex items-center gap-1 bg-scada-bg/85 px-1.5 py-0.5 rounded border border-scada-border/30">
             <span className="text-scada-dimText">TRUST:</span>
             <span className={`font-bold ${trust.trust_score >= 0.8 ? "text-emerald-400" : trust.trust_score >= 0.5 ? "text-amber-400" : "text-rose-400 animate-pulse"}`}>
-              {(trust.trust_score * 100).toFixed(0)}%
+              {((trust?.trust_score ?? 1.0) * 100).toFixed(0)}%
             </span>
           </div>
           <div className="flex items-center gap-1 bg-scada-bg/85 px-1.5 py-0.5 rounded border border-scada-border/30">
             <span className="text-scada-dimText">INTR:</span>
             <span className={`font-bold ${attackState.intrusion_score >= 70 ? "text-rose-400 animate-pulse" : attackState.intrusion_score >= 20 ? "text-amber-400" : "text-emerald-400"}`}>
-              {attackState.intrusion_score.toFixed(0)}
+              {(attackState?.intrusion_score ?? 0.0).toFixed(0)}
             </span>
           </div>
           <div className={`px-2 py-0.5 rounded border text-[8px] font-bold uppercase tracking-wider ${getEscalationStyle(attackState.attack_escalation_state)}`}>
@@ -369,7 +369,7 @@ export const CyberPhysicalAttackPanel: React.FC<CyberPhysicalAttackPanelProps> =
         <div className="absolute top-1 left-2 text-[7px] text-scada-dimText uppercase tracking-wider flex items-center gap-1">
           <GitBranch size={7} /> Compromise Propagation Chain
           {propagationLevel > 0 && (
-            <span className="ml-1 text-rose-400 font-bold">{propagationLevel.toFixed(0)}% PROPAGATED</span>
+            <span className="ml-1 text-rose-400 font-bold">{(propagationLevel ?? 0.0).toFixed(0)}% PROPAGATED</span>
           )}
         </div>
         <div className="h-full pt-3">
@@ -521,7 +521,7 @@ export const CyberPhysicalAttackPanel: React.FC<CyberPhysicalAttackPanelProps> =
                   </div>
                   <div className="flex justify-between">
                     <span className="text-scada-dimText">Elapsed:</span>
-                    <span className="text-white">{badusb.time_elapsed.toFixed(1)}s</span>
+                    <span className="text-white">{(badusb?.time_elapsed ?? 0.0).toFixed(1)}s</span>
                   </div>
                   {badusb.attack_state === "EXECUTING" && (
                     <div className="bg-scada-bg border border-scada-border/20 rounded h-2 overflow-hidden mt-1">
@@ -581,7 +581,7 @@ export const CyberPhysicalAttackPanel: React.FC<CyberPhysicalAttackPanelProps> =
               <div className="mt-2 pt-2 border-t border-scada-border/20 text-[7px] space-y-1">
                 <div className="flex justify-between"><span className="text-scada-dimText">Propagation:</span>
                   <span className={`font-bold ${propagationLevel > 50 ? "text-rose-400" : propagationLevel > 25 ? "text-amber-400" : "text-emerald-400"}`}>
-                    {propagationLevel.toFixed(0)}%
+                    {(propagationLevel ?? 0.0).toFixed(0)}%
                   </span>
                 </div>
                 <div className="w-full bg-scada-bg border border-scada-border/20 rounded h-1.5 overflow-hidden">

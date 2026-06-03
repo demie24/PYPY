@@ -251,6 +251,24 @@ services:
     volumes:
       - ./logs/assistant:/app/logs
 
+  notification_service:
+    build:
+      context: ./core
+      dockerfile: ./gateway/Dockerfile
+    container_name: smart_grid_notification_service
+    command: ["python", "gateway/notification_service.py"]
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    volumes:
+      - ./logs:/app/logs
+
 networks:
   grid-net:
     driver: bridge

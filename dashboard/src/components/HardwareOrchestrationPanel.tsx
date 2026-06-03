@@ -246,13 +246,13 @@ export const HardwareOrchestrationPanel: React.FC<HardwareOrchestrationPanelProp
                       </div>
                       <div className="flex justify-between">
                         <span>Trust:</span>
-                        <span className={dev.trust < 0.5 ? "text-rose-400 animate-pulse font-bold" : "text-emerald-400"}>
-                          {dev.trust.toFixed(2)}
+                        <span className={(dev?.trust ?? 1.0) < 0.5 ? "text-rose-400 animate-pulse font-bold" : "text-emerald-400"}>
+                          {(dev?.trust ?? 1.0).toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Latency:</span>
-                        <span className="text-scada-text">{dev.latency_ms > 0 ? `${dev.latency_ms.toFixed(0)}ms` : "N/A"}</span>
+                        <span className="text-scada-text">{(dev?.latency_ms ?? 0) > 0 ? `${dev.latency_ms.toFixed(0)}ms` : "N/A"}</span>
                       </div>
                     </div>
                   </div>
@@ -264,7 +264,7 @@ export const HardwareOrchestrationPanel: React.FC<HardwareOrchestrationPanelProp
             <div className="border border-scada-border/40 rounded p-1.5 bg-scada-cardBG flex-1 flex flex-col justify-between min-h-0">
               <div className="border-b border-scada-border/20 pb-0.5 mb-1 font-bold text-indigo-400 text-[10px] flex justify-between">
                 <span>Active Routing & Failover Paths</span>
-                <span className="text-[9px] text-scada-dimText">Fleet Trust: <strong className="text-emerald-400">{averageTrust.toFixed(2)}</strong></span>
+                <span className="text-[9px] text-scada-dimText">Fleet Trust: <strong className="text-emerald-400">{(averageTrust ?? 1.0).toFixed(2)}</strong></span>
               </div>
               <div className="flex-1 overflow-y-auto grid grid-cols-2 gap-x-2 gap-y-1 text-[9px] pr-1">
                 {Object.keys(failoverRoutes).length === 0 ? (
@@ -422,7 +422,7 @@ export const HardwareOrchestrationPanel: React.FC<HardwareOrchestrationPanelProp
               <div className="flex-1 overflow-y-auto space-y-1 text-[9.5px] text-scada-dimText">
                 <div className="flex justify-between">
                   <span>Bus Load:</span>
-                  <span className="text-scada-text font-bold">{busLoad.toFixed(1)}%</span>
+                  <span className="text-scada-text font-bold">{(busLoad ?? 0).toFixed(1)}%</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tx Packets:</span>
@@ -475,7 +475,7 @@ export const HardwareOrchestrationPanel: React.FC<HardwareOrchestrationPanelProp
                         {devId.replace("esp32_", "ESP-").replace("plc_", "PLC-")}
                       </span>
                       <span className={`text-[8px] font-bold ${drift > 2.0 ? "text-orange-400" : "text-emerald-400"}`}>
-                        +{drift.toFixed(2)}ms
+                        +{(drift ?? 0).toFixed(2)}ms
                       </span>
                       <button
                         onClick={() => handleSyncClock(devId)}

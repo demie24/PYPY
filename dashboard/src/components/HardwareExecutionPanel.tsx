@@ -284,7 +284,7 @@ export const HardwareExecutionPanel: React.FC<HardwareExecutionPanelProps> = ({
                           </span>
                         </div>
                         <span className={`text-[11px] font-scada-nums font-bold ${scoreColor}`}>
-                          {(score * 100).toFixed(0)}%
+                          {((score ?? 1.0) * 100).toFixed(0)}%
                         </span>
                       </div>
                     );
@@ -349,7 +349,7 @@ export const HardwareExecutionPanel: React.FC<HardwareExecutionPanelProps> = ({
                       return (
                         <div key={idx} className="grid grid-cols-12 gap-1 border-b border-scada-border/10 pb-1 items-center">
                           <div className="col-span-3 text-scada-dimText font-scada-nums">
-                            {new Date(entry.timestamp).toLocaleTimeString()}
+                            {new Date(entry.timestamp ?? Date.now()).toLocaleTimeString()}
                           </div>
                           <div className="col-span-2 text-white font-medium">{entry.command}</div>
                           <div className="col-span-2 text-blue-400 font-semibold">{entry.target}</div>

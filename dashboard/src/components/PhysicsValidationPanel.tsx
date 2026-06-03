@@ -48,9 +48,9 @@ export const PhysicsValidationPanel: React.FC<PhysicsValidationPanelProps> = ({ 
   };
 
   const hasData = validationData !== null && validationData.physics_state !== undefined;
-  const score = hasData ? validationData.physics_anomaly_score : 0;
-  const kclErr = hasData ? validationData.kcl_error : 0.0;
-  const kvlErr = hasData ? validationData.kvl_error : 0.0;
+  const score = hasData ? (validationData.physics_anomaly_score ?? 0) : 0;
+  const kclErr = hasData ? (validationData.kcl_error ?? 0.0) : 0.0;
+  const kvlErr = hasData ? (validationData.kvl_error ?? 0.0) : 0.0;
   const physicsState = hasData ? validationData.physics_state : "NORMAL";
   const impossible = hasData ? validationData.impossible_state : false;
   const violations = hasData ? validationData.impossible_violations : [];

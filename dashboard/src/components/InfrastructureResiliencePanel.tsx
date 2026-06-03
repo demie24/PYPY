@@ -148,7 +148,7 @@ export const InfrastructureResiliencePanel: React.FC<InfrastructureResiliencePan
                 <span className="text-[10px] text-scada-dimText">Survivability Score</span>
                 <div className="flex items-baseline gap-1 mt-1">
                   <span className={`text-2xl font-bold tracking-tight ${survivabilityScore >= 70 ? "text-emerald-400" : "text-red-400 animate-pulse"}`}>
-                    {survivabilityScore.toFixed(1)}%
+                    {(survivabilityScore ?? 100.0).toFixed(1)}%
                   </span>
                 </div>
               </div>
@@ -328,7 +328,7 @@ export const InfrastructureResiliencePanel: React.FC<InfrastructureResiliencePan
                     <div key={idx} className="bg-scada-bg/50 border border-scada-border/20 rounded p-1.5 flex flex-col justify-between">
                       <div className="flex justify-between items-start">
                         <span className="text-[9px] text-white font-bold">{primary.replace("esp32_", "Zone ").replace("plc_", "PLC ")}</span>
-                        <span className={`text-[9px] font-bold ${health >= 80 ? "text-emerald-400" : "text-red-400"}`}>{health.toFixed(0)}%</span>
+                        <span className={`text-[9px] font-bold ${health >= 80 ? "text-emerald-400" : "text-red-400"}`}>{(health ?? 100.0).toFixed(0)}%</span>
                       </div>
                       <div className="flex justify-between text-[8px] text-scada-dimText mt-1">
                         <span>Backup: {backup.replace("esp32_", "").replace("plc_", "")}</span>
@@ -374,7 +374,7 @@ export const InfrastructureResiliencePanel: React.FC<InfrastructureResiliencePan
               <div className="bg-scada-bg/50 border border-scada-border/30 rounded p-2 flex flex-col justify-between">
                 <span className="text-[10px] text-scada-dimText">Dynamic Sync Interval</span>
                 <span className="text-[12px] text-scada-text mt-1">
-                  {syncInterval.toFixed(0)} ms
+                  {(syncInterval ?? 1000.0).toFixed(0)} ms
                 </span>
               </div>
             </div>
@@ -386,7 +386,7 @@ export const InfrastructureResiliencePanel: React.FC<InfrastructureResiliencePan
                   <span className={`text-[12px] font-bold ${congestionDetected ? "text-red-500 animate-pulse" : "text-emerald-400"}`}>
                     {congestionDetected ? "CONGESTED" : "NOMINAL"}
                   </span>
-                  <span className="text-[8px] text-scada-dimText">({(loadBalanceFactor * 100).toFixed(0)}% load)</span>
+                  <span className="text-[8px] text-scada-dimText">({((loadBalanceFactor ?? 0.0) * 100).toFixed(0)}% load)</span>
                 </div>
               </div>
               <div className="bg-scada-bg/50 border border-scada-border/30 rounded p-2 flex flex-col justify-between">
@@ -405,7 +405,7 @@ export const InfrastructureResiliencePanel: React.FC<InfrastructureResiliencePan
                   <div key={idx} className="bg-scada-bg/50 border border-scada-border/20 rounded p-1 text-center">
                     <span className="text-[8px] text-scada-dimText block truncate">{zone.replace("zone_", "Zone ").replace("plc_zone", "PLC")}</span>
                     <span className={`text-[10px] font-bold ${Math.abs(offset) > 15.0 ? "text-red-400 animate-pulse" : "text-emerald-400"}`}>
-                      {offset.toFixed(1)}ms
+                      {(offset ?? 0.0).toFixed(1)}ms
                     </span>
                   </div>
                 ))}
@@ -421,7 +421,7 @@ export const InfrastructureResiliencePanel: React.FC<InfrastructureResiliencePan
               <div className="bg-scada-bg/50 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between text-center">
                 <span className="text-[9px] text-scada-dimText">Hardening Score</span>
                 <span className={`text-[13px] font-bold mt-0.5 ${complianceScore >= 90 ? "text-emerald-400" : complianceScore >= 70 ? "text-amber-400" : "text-red-400 animate-pulse"}`}>
-                  {complianceScore.toFixed(0)}%
+                  {(complianceScore ?? 100.0).toFixed(0)}%
                 </span>
               </div>
               <div className="bg-scada-bg/50 border border-scada-border/30 rounded p-1.5 flex flex-col justify-between text-center">

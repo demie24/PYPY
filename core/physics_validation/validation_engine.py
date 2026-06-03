@@ -29,6 +29,10 @@ class PhysicsValidationEngine:
         # State caches
         self.latest_ai_threat_prob = 0.0
         
+        # Validation window buffers (persistence threshold = 3 sweeps)
+        self.anomaly_buffer = []
+        self.impossible_buffer = []
+        
     def process_telemetry(self, telemetry, client):
         try:
             # 1. Run raw physics filter checks
@@ -57,15 +61,26 @@ class PhysicsValidationEngine:
             impossible_state = raw_report["impossible_state"]
             phys_score = raw_report["physics_anomaly_score"]
             
-            if impossible_state:
+            # Maintain persistence buffer for false-positive reduction (validation window = 3 samples)
+            self.anomaly_buffer.append(phys_score >= 30)
+            self.impossible_buffer.append(impossible_state)
+            if len(self.anomaly_buffer) > 3:
+                self.anomaly_buffer.pop(0)
+            if len(self.impossible_buffer) > 3:
+                self.impossible_buffer.pop(0)
+                
+            persistent_anomaly = all(self.anomaly_buffer) if len(self.anomaly_buffer) >= 3 else (phys_score >= 30)
+            persistent_impossible = all(self.impossible_buffer) if len(self.impossible_buffer) >= 3 else impossible_state
+            
+            if persistent_impossible:
                 physics_state = "IMPOSSIBLE_STATE"
             elif has_voltage_deviation:
-                if ai_prob >= 0.50 or phys_score >= 40:
+                if ai_prob >= 0.50 or persistent_anomaly:
                     physics_state = "CYBER_ATTACK_INSTABILITY"
                 else:
                     physics_state = "PHYSICAL_INSTABILITY"
             else:
-                if ai_prob >= 0.30 or phys_score >= 30:
+                if ai_prob >= 0.30 or persistent_anomaly:
                     physics_state = "SUSPICIOUS"
                 else:
                     physics_state = "NORMAL"
@@ -152,7 +167,9 @@ def on_message(client, userdata, msg):
                 engine.latest_ai_threat_prob = 0.0
                 engine.trust_engine = TrustEngine()
                 engine.adaptive_filter = AdaptiveTelemetryFilter()
-                logger.info("Physics Validation and Trust engine states reset.")
+                engine.anomaly_buffer.clear()
+                engine.impossible_buffer.clear()
+                logger.info("Physics Validation, Trust engine, and validation buffers reset.")
             elif cmd == "REJECT_TELEMETRY":
                 tgt = payload.get("target")
                 if tgt:

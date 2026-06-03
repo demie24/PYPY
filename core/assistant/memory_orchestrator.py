@@ -1,10 +1,12 @@
 import time
+import os
+import json
 import numpy as np
 from typing import Dict, Any, List, Optional
 from core.assistant.vector_store import EmbeddingModel
 
 class MemoryOrchestrator:
-    def __init__(self, limit: int = 10):
+    def __init__(self, limit: int = 10, persistence_path: Optional[str] = None, enable_persistence: Optional[bool] = None):
         self.limit = limit
         self.interactions: List[Dict[str, Any]] = []
         self.user_preferences: Dict[str, Any] = {
@@ -21,6 +23,48 @@ class MemoryOrchestrator:
         self.embedder = EmbeddingModel()
         self.max_events = 30
         
+        self.persistence_path = persistence_path or os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "persistence", "memory_orchestrator.json"
+        )
+        
+        if enable_persistence is None:
+            enable_persistence = "PYTEST_CURRENT_TEST" not in os.environ
+        self.enable_persistence = enable_persistence
+        
+        if self.enable_persistence:
+            self.load_from_disk()
+            
+    def load_from_disk(self):
+        if os.path.exists(self.persistence_path):
+            try:
+                with open(self.persistence_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                self.interactions = data.get("interactions", [])
+                self.user_preferences = data.get("user_preferences", self.user_preferences)
+                self.command_history = data.get("command_history", [])
+                self.semantic_memory = data.get("semantic_memory", {})
+                self.event_memory = data.get("event_memory", [])
+                self.retrieval_cache = data.get("retrieval_cache", {})
+            except Exception:
+                pass
+
+    def save_to_disk(self):
+        if self.enable_persistence:
+            try:
+                os.makedirs(os.path.dirname(self.persistence_path), exist_ok=True)
+                data = {
+                    "interactions": self.interactions,
+                    "user_preferences": self.user_preferences,
+                    "command_history": self.command_history,
+                    "semantic_memory": self.semantic_memory,
+                    "event_memory": self.event_memory,
+                    "retrieval_cache": self.retrieval_cache
+                }
+                with open(self.persistence_path, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=2)
+            except Exception:
+                pass
+        
     def add_interaction(self, role: str, text: str):
         """Appends interaction to short-term memory buffer. Summarizes if limits exceeded."""
         self.interactions.append({
@@ -29,12 +73,14 @@ class MemoryOrchestrator:
         })
         if len(self.interactions) > self.limit:
             self.summarize_memory()
+        self.save_to_disk()
             
     def record_command(self, command_name: str):
         """Logs executed actions to history queue."""
         self.command_history.append(command_name)
         if len(self.command_history) > 10:
             self.command_history.pop(0)
+        self.save_to_disk()
             
     def summarize_memory(self):
         """Consolidates old messages in interactions to a summary string to keep buffer short."""
@@ -47,10 +93,12 @@ class MemoryOrchestrator:
         
         summary_text = "Previously: " + " | ".join(summary_lines)
         self.interactions = [{"role": "system_summary", "text": summary_text}] + self.interactions[4:]
+        self.save_to_disk()
         
     def set_user_preference(self, key: str, value: Any):
         """Updates user preferences cache."""
         self.user_preferences[key] = value
+        self.save_to_disk()
 
     def clear_memory(self):
         """Clears all interaction, command, and retrieval memory databases."""
@@ -59,6 +107,7 @@ class MemoryOrchestrator:
         self.semantic_memory = {}
         self.event_memory = []
         self.retrieval_cache = {}
+        self.save_to_disk()
 
     def get_memory_summary(self) -> Dict[str, Any]:
         """Returns serialized representation of memory including evolved categories."""
@@ -81,7 +130,8 @@ class MemoryOrchestrator:
             "severity": severity
         })
         if len(self.event_memory) > self.max_events:
-            self.event_memory.pop(0) # FIFO retention
+            self.event_memory.pop(0)
+        self.save_to_disk()
 
     def cache_retrieval(self, query: str, hits: List[Dict[str, Any]]):
         """Stores query search results to cache."""
@@ -89,6 +139,7 @@ class MemoryOrchestrator:
             "timestamp": time.time(),
             "hits": hits
         }
+        self.save_to_disk()
 
     def get_cached_retrieval(self, query: str) -> Optional[List[Dict[str, Any]]]:
         """Fetches query RAG result from cache if fresh (TTL: 60 seconds)."""
@@ -102,6 +153,7 @@ class MemoryOrchestrator:
     def add_semantic_memory(self, query: str, insight: str):
         """Records long-term key insights from operator questions."""
         self.semantic_memory[query.strip().lower()] = insight
+        self.save_to_disk()
 
     def recall_semantic_memory(self, query: str) -> Optional[str]:
         """Recalls insights from memory using cosine similarity overlap on embeddings."""

@@ -4,6 +4,7 @@ import sys
 import json
 import time
 import logging
+import re
 import paho.mqtt.client as mqtt
 from typing import Dict, Any, List
 
@@ -90,6 +91,12 @@ class AssistantDaemon:
         
         # Phase 9.10 RAG Initialization
         self.rag_engine = RAGEngine()
+        
+        # Copilot Maturity engines
+        from core.assistant.explainability_engine import ExplainabilityEngine
+        from core.assistant.reporting_engine import ReportingEngine
+        self.explainability_engine = ExplainabilityEngine()
+        self.reporting_engine = ReportingEngine()
         
         # Original Engines initialization
         self.intent_eng = IntentEngine()
@@ -599,6 +606,15 @@ class AssistantDaemon:
             client.subscribe("assistant/wake_word_trigger")
             client.subscribe("assistant/proactive_trigger")
             
+            # Subscriptions for Copilot explainability and reporting
+            client.subscribe("grid/defense")
+            client.subscribe("grid/l6_recovery")
+            client.subscribe("grid/l6_degraded_mode")
+            client.subscribe("grid/physics_validation")
+            client.subscribe("grid/trust_scores")
+            client.subscribe("grid/alerts")
+            client.subscribe("grid/events")
+            
             # Subscribe to Phase 9.4 simulation topics
             client.subscribe("assistant/workflow_trigger")
             client.subscribe("assistant/reminder_trigger")
@@ -640,6 +656,32 @@ class AssistantDaemon:
                 self.grid_state["telemetry"] = payload
             elif topic == "grid/threat":
                 self.grid_state["threat"] = payload
+            elif topic == "grid/defense":
+                self.grid_state["defense"] = payload
+            elif topic == "grid/l6_recovery":
+                self.grid_state["l6_recovery"] = payload
+            elif topic == "grid/physics_validation":
+                self.grid_state["physics_val"] = payload
+            elif topic == "grid/trust_scores":
+                self.grid_state["trust_scores"] = payload
+            elif topic == "grid/alerts":
+                if isinstance(payload, list):
+                    self.grid_state["alerts"] = payload
+                else:
+                    self.grid_state.setdefault("alerts", []).append(payload)
+                    if len(self.grid_state["alerts"]) > 20:
+                        self.grid_state["alerts"].pop(0)
+            elif topic == "grid/events":
+                if isinstance(payload, list):
+                    self.grid_state["events"] = payload
+                else:
+                    self.grid_state.setdefault("events", []).append(payload)
+                    if len(self.grid_state["events"]) > 20:
+                        self.grid_state["events"].pop(0)
+                event_type = payload.get("event_type", "EVENT")
+                details = payload.get("details", payload.get("event", "System Event"))
+                severity = payload.get("severity", "INFO")
+                self.memory_orch.add_event(event_type, details, severity)
             elif topic == "assistant/reset":
                 self.reset_assistant()
             elif topic == "assistant/wake_word_trigger":
@@ -1031,6 +1073,132 @@ class AssistantDaemon:
         threat_score = self.grid_state.get("threat", {}).get("threat_score", 0.0)
         threat_confidence = self.grid_state.get("threat", {}).get("confidence", 1.0)
         grid_critical = (threat_score > 70.0)
+
+        # Explainability & Reporting Interception
+        q = text.lower().strip()
+        
+        # 1. Timeline reconstruction query
+        if "timeline" in q or "rentetan peristiwa" in q or "reconstruct timeline" in q:
+            timeline_str = self.reporting_engine.reconstruct_timeline(self.memory_orch.event_memory)
+            self._respond(
+                timeline_str,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "reconstruct_timeline",
+                    "reasoning_logs": ["Reporting Engine compiled timeline chronology from memory."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+            
+        # 2. Incident report query
+        if "laporan insiden" in q or "incident report" in q:
+            id_match = re.search(r"(\d+)", q)
+            inc_id = id_match.group(1) if id_match else "1"
+            report_str = self.reporting_engine.generate_incident_report(
+                inc_id, self.grid_state, self.memory_orch.event_memory
+            )
+            self._respond(
+                report_str,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "generate_incident_report",
+                    "reasoning_logs": [f"Reporting Engine compiled detailed report for Incident {inc_id}."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+
+        # 3. Daily Summary query
+        if "daily summary" in q or "laporan harian" in q or "ringkasan harian" in q:
+            summary_str = self.reporting_engine.generate_daily_summary(
+                self.grid_state, self.memory_orch.event_memory
+            )
+            self._respond(
+                summary_str,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "generate_daily_summary",
+                    "reasoning_logs": ["Reporting Engine synthesized daily narrative summary."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+
+        # 4. Explain isolation query
+        if "diasingkan" in q or "isolated" in q or "quarantine" in q:
+            bus_match = re.search(r"(bus[_\s]*\d+|l\d[_\s-]\d+)", q)
+            target = bus_match.group(1) if bus_match else "Bus_5"
+            explanation = self.explainability_engine.explain_isolation(target, self.grid_state)
+            self._respond(
+                explanation,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "explain_isolation",
+                    "reasoning_logs": [f"Explainability Engine resolved isolation reason for {target}."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+
+        # 5. Explain trust drop query
+        if "trust" in q or "kebolehpercayaan" in q:
+            if "kenapa" in q or "mengapa" in q or "sebab" in q or "turun" in q or "kurang" in q:
+                bus_match = re.search(r"(bus[_\s]*\d+|l\d[_\s-]\d+)", q)
+                target = bus_match.group(1) if bus_match else "Bus_5"
+                explanation = self.explainability_engine.explain_trust_reduction(target, self.grid_state)
+                self._respond(
+                    explanation,
+                    is_voice,
+                    reasoning={
+                        "should_execute": False,
+                        "should_respond": True,
+                        "resolved_action": "explain_trust_reduction",
+                        "reasoning_logs": [f"Explainability Engine resolved trust reduction reason for {target}."],
+                        "grid_critical": grid_critical
+                    }
+                )
+                return
+
+        # 6. Explain blocked restoration query
+        if "disekat" in q or "blocked" in q or "restoration blocked" in q:
+            explanation = self.explainability_engine.explain_blocked_restoration(self.grid_state)
+            self._respond(
+                explanation,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "explain_blocked_restoration",
+                    "reasoning_logs": ["Explainability Engine resolved blocked restoration reason."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
+
+        # 7. Explain rejected recovery query
+        if "ditolak" in q or "rejected" in q or "recovery ditolak" in q:
+            explanation = self.explainability_engine.explain_rejected_recovery(self.grid_state)
+            self._respond(
+                explanation,
+                is_voice,
+                reasoning={
+                    "should_execute": False,
+                    "should_respond": True,
+                    "resolved_action": "explain_rejected_recovery",
+                    "reasoning_logs": ["Explainability Engine resolved rejected recovery reason."],
+                    "grid_critical": grid_critical
+                }
+            )
+            return
         
         # Multi-Agent query intercept (Phase 9.8)
         # Swarm query intercept (Phase 9.9)

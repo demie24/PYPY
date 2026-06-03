@@ -9,11 +9,17 @@ from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger("assistant.vector_store")
 
+def deterministic_hash(s: str) -> int:
+    """Computes a deterministic FNV-1a rolling hash to replace volatile python hash()."""
+    h = 2166136261
+    for char in s:
+        h = (h ^ ord(char)) * 16777619
+        h &= 0xffffffff
+    return h
+
 class EmbeddingModel:
     def __init__(self, dimension: int = 32):
         self.dimension = dimension
-        # A dictionary mapping key technical terms/concepts/synonyms (multilingual) to semantic dimensions
-        # This allows offline, lightweight semantic retrieval that handles Malay & English synonym matching
         self.concept_map = {
             # Voltage / Voltan / Undervoltage / Overvoltage / Voltan Rendah
             "voltan": 0, "voltage": 0, "undervoltage": 0, "overvoltage": 0, "rendah": 0, "tinggi": 0, "pu": 0,
@@ -51,7 +57,7 @@ class EmbeddingModel:
         return re.sub(r"[^a-zA-Z0-9\s_]", "", text)
 
     def get_embedding(self, text: str) -> List[float]:
-        """Generates a deterministic vector representation of text based on concept mapping."""
+        """Generates a deterministic vector representation of text based on concept mapping and FNV-1a hashing."""
         words = self.clean_text(text).split()
         vector = np.zeros(self.dimension)
         
@@ -59,10 +65,10 @@ class EmbeddingModel:
             if word in self.concept_map:
                 idx = self.concept_map[word] % self.dimension
                 vector[idx] += 1.0
-            # Also handle simple character n-grams for out-of-vocab robustness
+            # Handle character n-grams with deterministic hash for out-of-vocab robustness
             for i in range(len(word) - 2):
                 tri = word[i:i+3]
-                h_idx = hash(tri) % self.dimension
+                h_idx = deterministic_hash(tri) % self.dimension
                 vector[h_idx] += 0.05
                 
         # Normalize vector
@@ -79,8 +85,36 @@ class VectorStore:
         raise NotImplementedError
 
 class NumpyVectorStore(VectorStore):
-    def __init__(self):
+    def __init__(self, persistence_path: Optional[str] = None, enable_persistence: Optional[bool] = None):
         self.entries: List[Dict[str, Any]] = []
+        self.persistence_path = persistence_path or os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "persistence", "numpy_vector_store.json"
+        )
+        
+        if enable_persistence is None:
+            enable_persistence = "PYTEST_CURRENT_TEST" not in os.environ
+        self.enable_persistence = enable_persistence
+        
+        if self.enable_persistence:
+            self.load_from_disk()
+
+    def load_from_disk(self):
+        if os.path.exists(self.persistence_path):
+            try:
+                with open(self.persistence_path, "r", encoding="utf-8") as f:
+                    self.entries = json.load(f)
+                logger.info(f"Loaded {len(self.entries)} vector entries from disk: {self.persistence_path}")
+            except Exception as e:
+                logger.error(f"Failed to load vector store from disk: {e}")
+
+    def save_to_disk(self):
+        if self.enable_persistence:
+            try:
+                os.makedirs(os.path.dirname(self.persistence_path), exist_ok=True)
+                with open(self.persistence_path, "w", encoding="utf-8") as f:
+                    json.dump(self.entries, f, indent=2)
+            except Exception as e:
+                logger.error(f"Failed to save vector store to disk: {e}")
 
     def search(self, query_vector: List[float], limit: int = 3, filter_metadata: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
         if not self.entries:
@@ -90,7 +124,6 @@ class NumpyVectorStore(VectorStore):
         results = []
         
         for entry in self.entries:
-            # Metadata filtering check
             payload = entry.get("payload", {})
             match = True
             for k, v in filter_metadata.items():
@@ -101,7 +134,6 @@ class NumpyVectorStore(VectorStore):
                 continue
                 
             e_vec = np.array(entry["vector"])
-            # Cosine similarity
             q_norm = np.linalg.norm(q_vec)
             e_norm = np.linalg.norm(e_vec)
             if q_norm > 0 and e_norm > 0:
@@ -122,22 +154,26 @@ class NumpyVectorStore(VectorStore):
             "vector": vector,
             "payload": payload
         })
+        self.save_to_disk()
         return True
 
 class QdrantVectorStore(VectorStore):
-    def __init__(self, host: str = "qdrant", port: int = 6333, collection_name: str = "pypy_kb", dimension: int = 32):
+    def __init__(self, host: str = "qdrant", port: int = 6333, collection_name: str = "pypy_kb", dimension: int = 32, persistence_path: Optional[str] = None, enable_persistence: Optional[bool] = None):
         self.url = f"http://{host}:{port}/collections/{collection_name}"
         self.collection_name = collection_name
         self.dimension = dimension
         self.fallback_store: Optional[NumpyVectorStore] = None
         self.qdrant_available = False
+        self.persistence_path = persistence_path
         
-        # Test connection and initialize collection
+        if enable_persistence is None:
+            enable_persistence = "PYTEST_CURRENT_TEST" not in os.environ
+        self.enable_persistence = enable_persistence
+        
         self.init_collection()
 
     def init_collection(self):
         try:
-            # Try to fetch collection status
             req = urllib.request.Request(self.url, method="GET")
             with urllib.request.urlopen(req, timeout=1.0) as res:
                 if res.status == 200:
@@ -145,7 +181,7 @@ class QdrantVectorStore(VectorStore):
                     logger.info("Connected to Qdrant service successfully.")
         except Exception as e:
             logger.warning(f"Qdrant service not available at {self.url}: {e}. Falling back to NumpyVectorStore.")
-            self.fallback_store = NumpyVectorStore()
+            self.fallback_store = NumpyVectorStore(persistence_path=self.persistence_path, enable_persistence=self.enable_persistence)
             self.qdrant_available = False
 
     def search(self, query_vector: List[float], limit: int = 3, filter_metadata: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
@@ -184,7 +220,7 @@ class QdrantVectorStore(VectorStore):
         except Exception as e:
             logger.error(f"Qdrant search failed: {e}. Executing Numpy fallback search.")
             if self.fallback_store is None:
-                self.fallback_store = NumpyVectorStore()
+                self.fallback_store = NumpyVectorStore(persistence_path=self.persistence_path, enable_persistence=self.enable_persistence)
             return self.fallback_store.search(query_vector, limit, filter_metadata)
 
     def insert(self, vector: List[float], payload: Dict[str, Any]) -> bool:
@@ -192,7 +228,6 @@ class QdrantVectorStore(VectorStore):
             return self.fallback_store.insert(vector, payload)
             
         try:
-            # We use an autogenerated hash or incremental index as point id
             point_id = hash(json.dumps(payload)) & 0xffffffffffffffff
             points_url = f"{self.url}/points?wait=true"
             body = {
@@ -215,5 +250,5 @@ class QdrantVectorStore(VectorStore):
         except Exception as e:
             logger.error(f"Qdrant insert failed: {e}. Executing Numpy fallback insert.")
             if self.fallback_store is None:
-                self.fallback_store = NumpyVectorStore()
+                self.fallback_store = NumpyVectorStore(persistence_path=self.persistence_path, enable_persistence=self.enable_persistence)
             return self.fallback_store.insert(vector, payload)

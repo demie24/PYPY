@@ -52,18 +52,15 @@ class RewardEngine:
         # ==========================================
         # 1. ADAPTIVE VOLTAGE STABILITY REWARD
         # ==========================================
-        # Scales penalties quadratically when voltages deviate further from nominal
         prev_dev = np.sum(np.maximum(0.0, 0.95 - prev_voltages)**2 + np.maximum(0.0, prev_voltages - 1.05)**2)
         curr_dev = np.sum(np.maximum(0.0, 0.95 - curr_voltages)**2 + np.maximum(0.0, curr_voltages - 1.05)**2)
         
-        # Adaptive gain: larger voltage deviation = steeper penalty (scaled down for stability)
         adaptive_multiplier = 1.0 + 3.0 * curr_dev
         details["reward_stability"] = float(30.0 * (prev_dev - curr_dev) - 0.5 * curr_dev * adaptive_multiplier)
         
         # ==========================================
         # 2. RESTORATION SUCCESS REWARD
         # ==========================================
-        # Transition from islanded/unstable (islanding > 0.5) to healthy grid
         prev_islanded = prev_state[70] > 0.5
         curr_islanded = curr_state[70] > 0.5
         
@@ -74,13 +71,11 @@ class RewardEngine:
         # ==========================================
         # 3. TOPOLOGY PRESERVATION REWARD
         # ==========================================
-        # Encourage keeping transmission lines energized. Value proportional to active breakers.
         details["reward_topology_preservation"] = float(15.0 * (np.sum(curr_breakers) / 9.0))
         
         # ==========================================
         # 4. ANTI-CASCADE REWARD
         # ==========================================
-        # Reward reducing cascading risk index
         prev_risk = prev_state[65]
         curr_risk = curr_state[65]
         details["reward_anti_cascade"] = float(20.0 * max(0.0, prev_risk - curr_risk))
@@ -88,13 +83,11 @@ class RewardEngine:
         # ==========================================
         # 5. TRUSTED STATE REWARD
         # ==========================================
-        # Reward restoring telemetry trust
         details["reward_trusted_state"] = float(10.0 * max(0.0, curr_mean_trust - prev_mean_trust))
 
         # ==========================================
         # 6. OBSERVABILITY REWARD
         # ==========================================
-        # Reward increasing/restoring state observability
         prev_obs = prev_state[67]
         curr_obs = curr_state[67]
         details["reward_observability"] = float(10.0 * max(0.0, curr_obs - prev_obs))
@@ -102,7 +95,6 @@ class RewardEngine:
         # ==========================================
         # 7. MINIMAL CUSTOMER DISRUPTION REWARD
         # ==========================================
-        # Reward keeping load buses energized (V > 0.9 pu). Load buses are at indices 4, 5, 7.
         load_bus_indices = [4, 5, 7]
         prev_serviced = sum(prev_voltages[idx] > 0.9 for idx in load_bus_indices)
         curr_serviced = sum(curr_voltages[idx] > 0.9 for idx in load_bus_indices)
@@ -111,15 +103,13 @@ class RewardEngine:
         # ==========================================
         # 8. POSITIVE LINE LOADING MARGINS REWARD
         # ==========================================
-        # Reward keeping line flows safely below capacity limits (1.0 pu)
         curr_line_loadings = np.sqrt(curr_state[18:27]**2 + curr_state[27:36]**2)
         loading_margins = np.maximum(0.0, 1.0 - curr_line_loadings)
-        details["reward_loading_margins"] = float(5.0 * np.mean(loading_margins))
+        details["reward_loading_margins"] = float(10.0 * np.mean(loading_margins))
 
         # ==========================================
         # 9. POSITIVE VOLTAGE RESTORATION REWARD
         # ==========================================
-        # Reward step improvement of voltages moving closer to 1.0 pu nominal
         prev_dist = np.abs(prev_voltages - 1.0)
         curr_dist = np.abs(curr_voltages - 1.0)
         voltage_improvements = np.sum(np.maximum(0.0, prev_dist - curr_dist))
@@ -147,7 +137,6 @@ class RewardEngine:
         for i in range(9):
             if curr_breakers[i] < 0.5 and prev_breakers[i] > 0.5:
                 line_trust = curr_state[54 + i]
-                # If we tripped a low trust line successfully without rollback
                 if line_trust < 0.5 and not rollback_occurred:
                     details["reward_successful_isolation"] = 15.0
                     break
@@ -160,28 +149,30 @@ class RewardEngine:
         
         is_under_attack = curr_state[68] > 0.5 or prev_state[68] > 0.5
         if is_under_attack:
-            # Containment actions (1: Isolate Line, 3: Reject Telemetry, 6: Isolate Bus)
             if action_id in [1, 3, 6]:
-                # If we targeted a distrusted element (trust < 0.5)
-                # Bus trust starts at 45, Line trust starts at 54
                 is_degraded_target = False
                 if action_id == 3 or action_id == 6:
-                    # Bus action. Check if lowest bus trust is degraded
                     lowest_bus_trust = np.min(curr_state[45:54])
                     if lowest_bus_trust < 0.5:
                         is_degraded_target = True
                 elif action_id == 1:
-                    # Line action. Check if lowest line trust is degraded
                     lowest_line_trust = np.min(curr_state[54:63])
                     if lowest_line_trust < 0.5:
                         is_degraded_target = True
                         
                 if is_degraded_target and not rollback_occurred:
-                    details["reward_cyber_containment"] = 12.0
+                    details["reward_cyber_containment"] = 20.0
                     
             # Premature restoration actions (2: Reconnect Line, 8: Reroute Flow)
             if action_id in [2, 8] and (np.min(curr_state[45:54]) < 0.5 or np.min(curr_state[54:63]) < 0.5):
-                details["penalty_premature_restoration"] = -10.0
+                details["penalty_premature_restoration"] = -20.0
+
+        # ==========================================
+        # 9E. UNSAFE-ACTION PENALTIES (Phase 6.6)
+        # ==========================================
+        # If action was non-zero but had zero physical effect, it means it was blocked by safety constraints
+        action_blocked = (action_id != 0) and np.all(curr_breakers == prev_breakers) and np.all(curr_voltages == prev_voltages)
+        details["penalty_unsafe_action"] = -25.0 if action_blocked else 0.0
 
         # ==========================================
         # 10. PENALTIES: UNSTABLE RESTORATION
@@ -278,7 +269,7 @@ class RewardEngine:
                     details["reward_defense_alignment"] = 20.0
 
         # ==========================================
-        # 18. ADAPTIVE RESTORATION QUALITY REWARDS (Phase 6.2)
+        # 18. ADAPTIVE RESTORATION QUALITY REWARDS
         # ==========================================
         _, rec_details = self.recovery_reward_engine.evaluate_restoration_quality(
             prev_state, curr_state, action_id, rollback_occurred, step_count

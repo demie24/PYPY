@@ -86,6 +86,8 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("grid/events")
         client.subscribe("grid/control")
         client.subscribe("grid/config")
+        client.subscribe("grid/trust_scores")
+        client.subscribe("grid/threat")
     else:
         logger.error(f"MQTT Connection failed with code {rc}")
 
@@ -194,7 +196,12 @@ def on_message(client, userdata, msg):
             fsm_state_before = l6_fsm.state
             executed_before = list(l6_fsm.executed_sequence)
 
-            l6_commands = l6_fsm.update(payload, client, faulted_breakers=flisr.tripped_by_relay)
+            l6_commands = l6_fsm.update(
+                payload, client, 
+                faulted_breakers=flisr.tripped_by_relay, 
+                trust_scores=getattr(l6_fsm, 'latest_trust_scores', None), 
+                threat_data=getattr(l6_fsm, 'latest_threat_data', None)
+            )
             for cmd in l6_commands:
                 logger.info(f"Layer 6 Recovery proposed action: {cmd['command']} on {cmd['target']}")
                 client.publish("grid/control/proposed", json.dumps(cmd))
@@ -500,6 +507,11 @@ def on_message(client, userdata, msg):
                 proactive_auto_mode = bool(payload["proactive_auto"])
                 logger.info(f"Operator set Proactive Autonomous Mode to {proactive_auto_mode}")
                 client.publish("grid/config", json.dumps({"proactive_auto": proactive_auto_mode}))
+
+        elif topic == "grid/trust_scores":
+            l6_fsm.latest_trust_scores = payload
+        elif topic == "grid/threat":
+            l6_fsm.latest_threat_data = payload
 
     except Exception as e:
         logger.error(f"Error handling message on {msg.topic}: {e}")

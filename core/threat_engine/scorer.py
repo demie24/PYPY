@@ -115,19 +115,40 @@ class ThreatScoringEngine:
         # Physical components
         score += min(30, 10 * num_open_breakers)
 
+        # Node criticality impact
+        criticality_offset = 0
+        if worst_bus == "Bus_5":
+            criticality_offset += 20  # Priority hospital bus
+        elif worst_bus == "Bus_8":
+            criticality_offset += 10  # Priority industrial bus
+
         if max_voltage_dev > 0.15:
-            score += 30
+            score += 30 + criticality_offset
         elif max_voltage_dev > 0.10:
-            score += 20
+            score += 20 + min(15, criticality_offset)
         elif max_voltage_dev > 0.05:
-            score += 10
+            score += 10 + min(10, criticality_offset)
+
+        # Line criticality impact
+        line_criticality_offset = 0
+        if worst_line in ["L1_4", "L2_7", "L3_9"]: # Critical generator lines
+            line_criticality_offset += 15
 
         if max_capacity_pct > 120.0:
-            score += 30
+            score += 30 + line_criticality_offset
         elif max_capacity_pct > 100.0:
-            score += 20
+            score += 20 + min(10, line_criticality_offset)
         elif max_capacity_pct > 80.0:
-            score += 10
+            score += 10 + min(5, line_criticality_offset)
+
+        # Persistence duration scaling
+        if active_attack or max_voltage_dev > 0.05 or max_capacity_pct > 100.0 or self.recent_alerts:
+            self.consecutive_anomalous_ticks = getattr(self, "consecutive_anomalous_ticks", 0) + 1
+        else:
+            self.consecutive_anomalous_ticks = 0
+
+        persistence_offset = min(20, self.consecutive_anomalous_ticks * 2)
+        score += persistence_offset
 
         # Remediation offset (reducing threat level when FLISR is actively correcting)
         if self.flisr_state == "RESTORED":
@@ -143,7 +164,7 @@ class ThreatScoringEngine:
         elif threat_score >= 51:
             severity = "HIGH"
         elif threat_score >= 26:
-            severity = "MODERATE"
+            severity = "MEDIUM"
         else:
             severity = "LOW"
 

@@ -18,6 +18,13 @@ from core.cyber_defense.defense_memory import DefenseMemory
 from core.cyber_defense.containment_engine import ContainmentEngine
 from core.cyber_defense.campaign_timeline import CampaignTimeline
 
+# New Layer 8 engines
+from core.cyber_defense.threat_correlation import ThreatCorrelationEngine
+from core.cyber_defense.incident_lifecycle import IncidentLifecycleManager
+from core.cyber_defense.trust_fusion import TrustFusionEngine
+from core.cyber_defense.mitre_mapper import MitreMapper
+from core.cyber_defense.attribution_engine import AttributionEngine
+
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("cyber_defense.orchestrator")
@@ -35,12 +42,24 @@ class DefenseOrchestrator:
         self.containment = ContainmentEngine()
         self.timeline = CampaignTimeline()
 
+        # Instantiate Layer 8 security engines
+        self.correlator = ThreatCorrelationEngine()
+        self.lifecycle = IncidentLifecycleManager()
+        self.trust_fusion = TrustFusionEngine()
+        self.mitre_mapper = MitreMapper()
+        self.attribution_engine = AttributionEngine()
+
         # Shared data caches (MQTT inputs)
         self.latest_telemetry = {}
         self.latest_threat = {}
         self.latest_pinn = {}
         self.latest_physics_val = {}
         self.latest_trust = {}
+        
+        # Subsystem update timestamps for runtime resilience checking
+        self.last_pinn_time = time.time()
+        self.last_threat_time = time.time()
+        self.last_validation_time = time.time()
         
         self.pending_alerts = []
         self.pending_events = []
@@ -108,22 +127,58 @@ class DefenseOrchestrator:
             self.pending_alerts.clear()
             self.pending_events.clear()
 
-        # Check for system reset controls
-        # (Already listened to on grid/control via reset, but we can do a local check too)
+        # 1. Threat Correlation & Unified Incident Processing
+        incidents = self.correlator.correlate_signals(alerts, events, physics_val, trust_scores)
         
-        # 1. Update Adaptive Defense Engine
+        # 2. Stateful Trust Fusion
+        fused_trust = self.trust_fusion.compute_trust(telemetry, alerts, physics_val, self.memory.get_summary())
+        if fused_trust:
+            trust_scores = fused_trust
+            
+        # 3. MITRE ATT&CK Mapping & Attribution
+        for incident in incidents:
+            mapped_techs = self.mitre_mapper.map_alerts_to_techniques(incident.correlated_alerts, incident.events_list)
+            incident.mitre_techniques = mapped_techs
+            
+            attr = self.attribution_engine.attribute_campaign(mapped_techs, incident.correlated_alerts, physics_val)
+            incident.attribution = attr
+            
+            # Integrate global threat level
+            incident.severity = max(incident.severity, float(threat_data.get("threat_score", 0.0)))
+            
+        # 4. Incident Lifecycle Manager
+        self.lifecycle.evaluate_lifecycle(
+            incidents=incidents,
+            telemetry=telemetry,
+            threat_data=threat_data,
+            trust_scores=trust_scores,
+            containment_status=self.containment.get_status()
+        )
+        
+        # 5. Runtime Resilience - Stale feed handling
+        now = time.time()
+        subsystem_stale = False
+        if now - self.last_pinn_time > 10.0 or now - self.last_threat_time > 10.0 or now - self.last_validation_time > 10.0:
+            subsystem_stale = True
+            
+        if subsystem_stale:
+            # Degrade trust scores due to lack of visibility, making orchestrator conservative
+            for bus_id in self.trust_fusion.bus_trust.keys():
+                self.trust_fusion.bus_trust[bus_id] = max(10.0, self.trust_fusion.bus_trust[bus_id] - 5.0)
+            logger.warning("[RESILIENCE] Stale prediction or validation feed. Degraded observability trust.")
+
+        # 6. Update Adaptive Defense Engine
         adaptive_report = self.adaptive.update_and_adapt(telemetry, alerts, trust_scores)
         
-        # 2. Analyze Campaigns
+        # 7. Analyze Campaigns
         campaign_report = self.campaign.analyze_campaigns(alerts, events)
         
-        # 3. Evaluate Escalation Mode
+        # 8. Evaluate Escalation Mode
         threat_score = threat_data.get("threat_score", 0)
         campaign_severity = campaign_report["campaign_severity_score"]
         physics_anomaly = physics_val.get("physics_anomaly_score", 0.0)
         pinn_confidence = pinn_forecast.get("global_physics_confidence", 100.0) / 100.0
         
-        # Extract islanding state
         islanding = False
         if telemetry and "state" in telemetry and "buses" in telemetry["state"]:
             islanding = any(float(b.get("voltage_pu", 1.0)) < 0.20 for b in telemetry["state"]["buses"].values())
@@ -139,10 +194,7 @@ class DefenseOrchestrator:
             stability_score=stability_score
         )
         
-        # Update timeline for escalation transitions
-        prev_level = self.escalator.current_level
-        
-        # 4. Coordinate Defense Actions
+        # 9. Coordinate Defense Actions
         coordinator_report = self.coordinator.coordinate(
             telemetry=telemetry,
             threat_data=threat_data,
@@ -152,7 +204,7 @@ class DefenseOrchestrator:
             escalation_level=escalator_report["escalation_level"]
         )
         
-        # 5. Dispatch Containment Actions
+        # 10. Dispatch Containment Actions
         dispatched_logs = self.containment.dispatch_containment(coordinator_report, mqtt_client)
         for log in dispatched_logs:
             self.memory.record_containment(
@@ -167,10 +219,10 @@ class DefenseOrchestrator:
                 details=log
             )
 
-        # 6. Retrieve Memory Summary
+        # 11. Retrieve Memory Summary
         memory_report = self.memory.get_summary()
         
-        # 7. Package and Publish Unified State Array
+        # 12. Package and Publish Unified State Array
         payload = {
             "timestamp": int(time.time() * 1000),
             
@@ -197,6 +249,11 @@ class DefenseOrchestrator:
             "active_campaigns": campaign_report["active_campaigns"],
             "active_campaign_types": campaign_report["active_campaign_types"],
             
+            # Layer 8 stateful incident tracking
+            "active_incidents": [inc.to_dict() for inc in incidents],
+            "audit_trail": self.lifecycle.get_audit_trail()[-20:],
+            "incident_confidence_score": self.trust_fusion.calculate_incident_confidence(alerts, physics_val),
+            
             # Adaptive thresholds
             "adaptive_trust_threshold": adaptive_report["adaptive_trust_threshold"],
             "trust_penalty_multiplier": adaptive_report["trust_penalty_multiplier"],
@@ -220,7 +277,7 @@ class DefenseOrchestrator:
         
         # Publish
         mqtt_client.publish("grid/defense", json.dumps(payload))
-        logger.info(f"Published Defense Orchestration update. Escalation: {payload['escalation_level']} | Active Containments: {len(payload['containment_status']['active_containments'])}")
+        logger.info(f"Published Defense Orchestration update. Escalation: {payload['escalation_level']} | Incidents: {len(payload['active_incidents'])}")
 
     def handle_reset(self, mqtt_client):
         self.containment.reset(mqtt_client)
@@ -229,6 +286,11 @@ class DefenseOrchestrator:
         self.adaptive = AdaptiveDefenseEngine()
         self.campaign = CampaignResponseEngine()
         self.escalator = DefenseEscalator()
+        
+        # Reset Layer 8 security engines
+        self.correlator.clear()
+        self.lifecycle.clear()
+        self.trust_fusion.clear()
         
         self.timeline.record(
             "SYSTEM_RESET", 
@@ -268,12 +330,15 @@ def on_message(client, userdata, msg):
         elif topic == "grid/threat":
             with orchestrator.lock:
                 orchestrator.latest_threat = payload
+                orchestrator.last_threat_time = time.time()
         elif topic == "grid/pinn_forecast":
             with orchestrator.lock:
                 orchestrator.latest_pinn = payload
+                orchestrator.last_pinn_time = time.time()
         elif topic == "grid/physics_validation":
             with orchestrator.lock:
                 orchestrator.latest_physics_val = payload
+                orchestrator.last_validation_time = time.time()
         elif topic == "grid/trust_scores":
             with orchestrator.lock:
                 orchestrator.latest_trust = payload

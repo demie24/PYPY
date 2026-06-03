@@ -57,6 +57,19 @@ class ContainmentEngine:
                     except Exception as e:
                         logger.error(f"Failed to publish reject command: {e}")
                         
+            elif action_type == "QUARANTINE_BREAKER":
+                if target not in self.locked_breakers:
+                    self.locked_breakers.add(target)
+                    log_msg = f"Quarantining breaker {target} due to low asset trust"
+                    logger.warning(log_msg)
+                    dispatched_logs.append({
+                        "action": "QUARANTINE_BREAKER",
+                        "target": target,
+                        "status": "QUARANTINED",
+                        "message": log_msg,
+                        "reason": reason
+                    })
+
             elif action_type == "ISOLATE_LINE":
                 payload = {
                     "command": "OPEN",

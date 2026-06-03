@@ -16,6 +16,8 @@ class ActionRecommender:
         trust_scores = grid_state.get("trust_scores")
         threat_aware_forecast = grid_state.get("threat_aware_forecast")
         flisr_state = grid_state.get("flisr_state", "NORMAL")
+        failed_recoveries = grid_state.get("failed_recoveries", [])
+        sequencer_state = grid_state.get("sequencer_state", "MONITORING")
         
         recommendations = []
         
@@ -38,7 +40,7 @@ class ActionRecommender:
                 recommendations.append({
                     "action": "ISOLATE_LINE",
                     "target": line_id,
-                    "priority": "CRITICAL" if cap > 120.0 else "HIGH",
+                    "priority": "CRITICAL" if cap > 120.0 or sequencer_state == "ISOLATION" else "HIGH",
                     "description": f"Isolate overloaded transmission line {line_id.replace('_', ' ')}.",
                     "reasoning": f"Line capacity reaches {cap:.1f}% load, creating a severe thermal overload and cascade risk."
                 })
@@ -51,16 +53,27 @@ class ActionRecommender:
                     recommendations.append({
                         "action": "TELEMETRY_DISTRUST",
                         "target": node,
-                        "priority": "HIGH" if t_score < 30.0 else "MEDIUM",
+                        "priority": "HIGH" if t_score < 30.0 or sequencer_state == "VALIDATION" else "MEDIUM",
                         "description": f"Ignore and distrust telemetry measurements from {node.replace('_', ' ')}.",
                         "reasoning": f"Sensor trust score has dropped to {t_score:.1f}% due to repeated physical law violations."
                     })
                     
-        # 3. Recommendation: BREAKER_LOCKOUT (for oscillating or cyber-compromised breakers)
+        # 3. Recommendation: BREAKER_LOCKOUT (for oscillating, compromised, or failed-recovery breakers)
+        # Check failed recoveries from operational memory
+        for fr_breaker in failed_recoveries:
+            if fr_breaker in breakers:
+                recommendations.append({
+                    "action": "BREAKER_LOCKOUT",
+                    "target": fr_breaker,
+                    "priority": "CRITICAL",
+                    "description": f"Engage breaker lockout mechanism on {fr_breaker}.",
+                    "reasoning": f"Automatic restoration failed on breaker {fr_breaker} causing grid instability. Engaging hard lockout to prevent breaker wear and cascade."
+                })
+
         # Check if active attack has compromised breakers
         if active_attack in ["TRIP", "coordinated_cyber_physical"] and attack_status.get("compromised_nodes"):
             for comp_node in attack_status["compromised_nodes"].keys():
-                if comp_node in breakers:
+                if comp_node in breakers and comp_node not in failed_recoveries:
                     recommendations.append({
                         "action": "BREAKER_LOCKOUT",
                         "target": comp_node,
@@ -90,13 +103,13 @@ class ActionRecommender:
                 recommendations.append({
                     "action": "REROUTE_LOAD",
                     "target": "L7_8",
-                    "priority": "HIGH",
+                    "priority": "HIGH" if sequencer_state == "REROUTING" else "MEDIUM",
                     "description": "Close Normally Open tie-breaker L7 8 to restore islanded load sector.",
                     "reasoning": "Sector is unpowered but tie-line sensors are healthy and cyber-consistent."
                 })
                 
         # 6. Recommendation: OPERATOR_ESCALATION (for general emergency/catastrophic failures)
-        if global_state == "EMERGENCY_MODE" or stability_score < 45.0:
+        if global_state == "EMERGENCY_MODE" or stability_score < 45.0 or sequencer_state == "OPERATOR_ESCALATION":
             recommendations.append({
                 "action": "OPERATOR_ESCALATION",
                 "target": "CONTROL_ROOM",

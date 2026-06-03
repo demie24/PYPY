@@ -27,12 +27,186 @@ logger = logging.getLogger("orchestrator.main")
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 
+class OrchestratorMemory:
+    def __init__(self):
+        self.recent_attacks = {}      # target -> timestamp
+        self.unstable_nodes = set()   # nodes with persistent deviations
+        self.failed_recoveries = {}   # breaker_id -> timestamp
+        self.repeated_attacks = {}    # node -> list of timestamps
+        self.unstable_node_counters = {} # node -> consecutive ticks with deviation
+        
+    def record_attack(self, target: str):
+        now = time.time()
+        self.recent_attacks[target] = now
+        if target not in self.repeated_attacks:
+            self.repeated_attacks[target] = []
+        self.repeated_attacks[target].append(now)
+        # Clean up old timestamps > 300 seconds
+        self.repeated_attacks[target] = [t for t in self.repeated_attacks[target] if now - t < 300.0]
+        
+    def record_deviation(self, node: str, has_deviation: bool):
+        if has_deviation:
+            self.unstable_node_counters[node] = self.unstable_node_counters.get(node, 0) + 1
+            if self.unstable_node_counters[node] >= 3:
+                self.unstable_nodes.add(node)
+        else:
+            self.unstable_node_counters[node] = 0
+            if node in self.unstable_nodes:
+                self.unstable_nodes.remove(node)
+                
+    def record_failed_recovery(self, breaker: str):
+        self.failed_recoveries[breaker] = time.time()
+        
+    def is_persistently_targeted(self, node: str) -> bool:
+        # If node was attacked >= 3 times in the last 5 minutes
+        now = time.time()
+        if node in self.repeated_attacks:
+            recent = [t for t in self.repeated_attacks[node] if now - t < 300.0]
+            return len(recent) >= 3
+        return False
+        
+    def is_recovery_blocked(self, breaker: str) -> bool:
+        now = time.time()
+        if breaker in self.failed_recoveries:
+            if now - self.failed_recoveries[breaker] < 60.0:
+                return True
+            else:
+                del self.failed_recoveries[breaker]
+        return False
+        
+    def clean_expired(self):
+        now = time.time()
+        # recent attacks expire after 60s
+        self.recent_attacks = {k: v for k, v in self.recent_attacks.items() if now - v < 60.0}
+        # failed recoveries expire after 60s
+        self.failed_recoveries = {k: v for k, v in self.failed_recoveries.items() if now - v < 60.0}
+
+class ThreatResponseSequencer:
+    def __init__(self):
+        self.state = "MONITORING" # default nominal monitoring
+        self.target = None
+        self.step = 7
+        self.state_timer = time.time()
+        
+    def transition_to(self, new_state: str, target: str = None):
+        logger.info(f"[SEQUENCER] Transitioning state: {self.state} -> {new_state} for target: {target}")
+        self.state = new_state
+        self.target = target
+        self.step = self._get_step_num(new_state)
+        self.state_timer = time.time()
+        
+    def _get_step_num(self, state: str) -> int:
+        steps = {
+            "DETECTION": 1,
+            "VALIDATION": 2,
+            "CORRELATION": 3,
+            "ISOLATION": 4,
+            "REROUTING": 5,
+            "RECOVERY": 6,
+            "MONITORING": 7
+        }
+        return steps.get(state, 7)
+        
+    def update(self, grid_state: dict, decision_report: dict, memory: OrchestratorMemory) -> dict:
+        """
+        Advances FSM based on decision report and current grid state.
+        """
+        global_state = decision_report.get("global_state", "NORMAL")
+        stability = decision_report.get("stability_score", 100.0)
+        
+        # If there is no active threat/attack/anomaly, and we are not recovering, keep MONITORING
+        if global_state == "NORMAL" and self.state not in ["REROUTING", "RECOVERY", "MONITORING"]:
+            self.transition_to("MONITORING")
+            return self.get_pipeline_data()
+            
+        now = time.time()
+        
+        # FSM Transition Rules
+        if self.state == "MONITORING":
+            # Check if any deviation is detected (Detection trigger)
+            if global_state in ["CYBER_ATTACK", "CASCADING_INSTABILITY", "EMERGENCY_STABILIZATION"]:
+                # Identify the target. Find line or bus with deviation/anomaly
+                target_node = None
+                telemetry = grid_state.get("telemetry")
+                if telemetry:
+                    attack_status = telemetry.get("attack_status", {})
+                    compromised = list(attack_status.get("compromised_nodes", {}).keys())
+                    if compromised:
+                        target_node = compromised[0]
+                        
+                if not target_node:
+                    # Find first overloaded line
+                    lines = telemetry.get("state", {}).get("lines", {}) if telemetry else {}
+                    for line_id, l_data in lines.items():
+                        if l_data.get("capacity_pct", 0.0) > 100.0:
+                            target_node = line_id
+                            break
+                            
+                if not target_node:
+                    # Find first voltage deviant bus
+                    buses = telemetry.get("state", {}).get("buses", {}) if telemetry else {}
+                    for bus_id, b_data in buses.items():
+                        v = b_data.get("voltage_pu", 1.0)
+                        if abs(v - 1.0) > 0.05:
+                            target_node = bus_id
+                            break
+                            
+                self.transition_to("DETECTION", target_node)
+                
+        elif self.state == "DETECTION":
+            if self.target:
+                memory.record_attack(self.target)
+            self.transition_to("VALIDATION", self.target)
+            
+        elif self.state == "VALIDATION":
+            self.transition_to("CORRELATION", self.target)
+            
+        elif self.state == "CORRELATION":
+            self.transition_to("ISOLATION", self.target)
+            
+        elif self.state == "ISOLATION":
+            self.transition_to("REROUTING", self.target)
+            
+        elif self.state == "REROUTING":
+            self.transition_to("RECOVERY", self.target)
+            
+        elif self.state == "RECOVERY":
+            self.transition_to("MONITORING", self.target)
+            
+        return self.get_pipeline_data()
+        
+    def get_pipeline_data(self) -> dict:
+        return {
+            "state": self.state,
+            "step": self.step,
+            "target": self.target or "None",
+            "timestamp": int(time.time() * 1000)
+        }
+
 class AIOrchestrator:
     def __init__(self):
         self.decision_engine = OrchestrationDecisionEngine()
         self.action_recommender = ActionRecommender()
         self.defense_mode = "ADVISORY"
         self.orchestrator_agent = OrchestratorAgent()
+        
+        # Stateful helper components
+        self.memory = OrchestratorMemory()
+        self.sequencer = ThreatResponseSequencer()
+        
+        # Resilience & Throttling tracking
+        self.last_cycle_time = 0.0
+        self.last_telemetry_timestamp = 0
+        self.subsystem_last_update = {
+            "LSTM": time.time(),
+            "PINN": time.time(),
+            "TRUST": time.time()
+        }
+        
+        # Rollback tracking
+        self.monitoring_recovery_breaker = None
+        self.monitoring_recovery_ticks = 0
+        self.monitoring_recovery_start_stability = 100.0
         
         # Unified grid state cache
         self.state_cache = {
@@ -79,7 +253,6 @@ class AIOrchestrator:
             "hardware_large_scale_sync": None
         }
 
-
         # Operator overrides and control states
         self.override_state = {
             "pause_autonomous": False,
@@ -97,14 +270,19 @@ class AIOrchestrator:
             self.state_cache["telemetry"] = payload
         elif topic == "grid/ai_prediction":
             self.state_cache["ai_forecast"] = payload
+            self.subsystem_last_update["LSTM"] = time.time()
         elif topic == "grid/ai_forecast_multi_bus":
             self.state_cache["multi_bus_forecast"] = payload
+            self.subsystem_last_update["LSTM"] = time.time()
         elif topic == "grid/ai_threat_forecast":
             self.state_cache["threat_aware_forecast"] = payload
+            self.subsystem_last_update["LSTM"] = time.time()
         elif topic == "grid/physics_validation":
             self.state_cache["physics_validation"] = payload
+            self.subsystem_last_update["PINN"] = time.time()
         elif topic == "grid/trust_scores":
             self.state_cache["trust_scores"] = payload
+            self.subsystem_last_update["TRUST"] = time.time()
         elif topic == "grid/threat":
             self.state_cache["threat"] = payload
         elif topic == "grid/defense":
@@ -261,6 +439,11 @@ class AIOrchestrator:
         if self.override_state.get("pause_autonomous", False):
             return False, "Autonomous execution paused by operator override."
 
+        # Cooldown check for failed recovery breakers
+        if cmd in ["CLOSE", "CLOSED"] and self.memory.is_recovery_blocked(target):
+            if source != "SCADA_OPERATOR":
+                return False, f"Blocked proposed command on {target}: Breaker is cooling down after a failed recovery attempt."
+
         # Hardware Attack Layer / Quarantine & Compromise Checks
         hardware_attack = self.state_cache.get("hardware_attack_state") or {}
         quarantined_ports = hardware_attack.get("quarantined_ports", [])
@@ -394,13 +577,32 @@ class AIOrchestrator:
         if target in self.orchestrator_agent.active_lockdowns and cmd in ["CLOSE", "RECONNECT_LINE", "REROUTE_FLOW"]:
             return False, f"Blocked by active cyber lockdown: CyberDefenseAgent vetoed proposed action {cmd} targeting compromised {target}."
             
+        consensus_score = vote_res["consensus_score"]
+        has_veto = vote_res.get("has_veto", False)
+
+        # Gated Consensus Threshold Rules for autonomous execution
+        is_nominal = (context.get("active_attack") is None) and (stability >= 90.0)
+        if source != "SCADA_OPERATOR" and not is_nominal:
+            if has_veto or consensus_score < 0.40 or stability < 30.0:
+                # Operator approval required
+                return False, f"Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score={consensus_score:.2f}, stability={stability:.1f}%, veto={has_veto})."
+            elif consensus_score < 0.70 or stability < 50.0:
+                # Semi-automatic (propose, but do not auto-execute)
+                return False, f"Blocked: Action is SEMI-AUTOMATIC and requires operator approval (consensus_score={consensus_score:.2f}, stability={stability:.1f}%)."
+
         if not vote_res["approved"]:
             veto_reason = ""
             if vote_res.get("has_veto"):
                 veto_reason = f" Vetoed by {', '.join(vote_res['vetoed_by'])}."
-            return False, f"Agent consensus rejected proposal (score={vote_res['consensus_score']}).{veto_reason}"
+            return False, f"Agent consensus rejected proposal (score={consensus_score:.2f}).{veto_reason}"
 
-        return True, f"Passed all AI orchestrator and agent consensus checks (consensus score={vote_res['consensus_score']})."
+        # Initialize rollback tracking on close command approval
+        if cmd in ["CLOSE", "CLOSED"]:
+            self.monitoring_recovery_breaker = target
+            self.monitoring_recovery_ticks = 0
+            self.monitoring_recovery_start_stability = stability
+
+        return True, f"Passed all AI orchestrator and agent consensus checks (consensus score={consensus_score:.2f})."
 
     def run_cycle(self, client):
         """
@@ -410,10 +612,59 @@ class AIOrchestrator:
             return
             
         try:
+            # Clean expired memory entries
+            self.memory.clean_expired()
+
             # 1. Run Decision Engine
             report = self.decision_engine.evaluate(self.state_cache)
             
+            # Check for stale subsystems
+            now = time.time()
+            stale_subsystems = []
+            for subsystem, last_time in self.subsystem_last_update.items():
+                if now - last_time > 10.0:
+                    stale_subsystems.append(subsystem)
+                    
+            if stale_subsystems:
+                logger.warning(f"[STALE SUBSYSTEMS] Subsystems offline: {stale_subsystems}")
+                report["restoration_confidence"] = max(0.0, report["restoration_confidence"] - 20.0 * len(stale_subsystems))
+                if "stale_subsystems" not in report["active_subsystems_reasoning"]:
+                    report["active_subsystems_reasoning"]["stale_subsystems"] = f"Warning: {', '.join(stale_subsystems)} telemetry feed is stale (>10s)."
+
+            # Rollback Safety Check
+            if self.monitoring_recovery_breaker:
+                self.monitoring_recovery_ticks += 1
+                if report["stability_score"] < self.monitoring_recovery_start_stability - 15.0 or report["stability_score"] < 40.0:
+                    logger.warning(f"[ROLLBACK SAFETY] Collapse detected after restoring {self.monitoring_recovery_breaker}. Initiating ROLLBACK!")
+                    rollback_payload = {
+                        "command": "OPEN",
+                        "target": self.monitoring_recovery_breaker,
+                        "source": "ROLLBACK_SAFETY"
+                    }
+                    client.publish("grid/control", json.dumps(rollback_payload))
+                    
+                    # Record failed recovery in memory
+                    self.memory.record_failed_recovery(self.monitoring_recovery_breaker)
+                    
+                    # Log event
+                    timestamp_ms = int(time.time() * 1000)
+                    client.publish("grid/orchestrator/events", json.dumps({
+                        "timestamp": timestamp_ms,
+                        "event": "ROLLBACK",
+                        "command": "OPEN",
+                        "target": self.monitoring_recovery_breaker,
+                        "source": "ROLLBACK_SAFETY",
+                        "reason": "Stability collapse after restoration attempt"
+                    }))
+                    
+                    self.monitoring_recovery_breaker = None
+                elif self.monitoring_recovery_ticks >= 3:
+                    logger.info(f"[ROLLBACK SAFETY] Breaker {self.monitoring_recovery_breaker} restoration stabilized successfully.")
+                    self.monitoring_recovery_breaker = None
+
             # 2. Run Action Recommender
+            self.state_cache["failed_recoveries"] = list(self.memory.failed_recoveries.keys())
+            self.state_cache["sequencer_state"] = self.sequencer.state
             actions = self.action_recommender.recommend(self.state_cache, report)
             
             # 3. Determine active AI modules
@@ -494,6 +745,10 @@ class AIOrchestrator:
             elif stability_score > 90.0:
                 coordinated_recovery_state = "STABLE"
                 
+            # Run Threat-Response Sequencer
+            pipeline_data = self.sequencer.update(self.state_cache, report, self.memory)
+            client.publish("grid/orchestrator/pipeline", json.dumps(pipeline_data))
+
             # 7. Publish AI Orchestrator Summary
             timestamp_ms = int(time.time() * 1000)
             orchestrator_payload = {
@@ -519,7 +774,7 @@ class AIOrchestrator:
                 "recommendations": actions
             }
             client.publish("grid/recommended_actions", json.dumps(recommended_actions_payload))
-
+ 
             # 9. Autonomous Emergency Defense Execution (when in EMERGENCY_DEFENSE mode)
             if self.defense_mode == "EMERGENCY_DEFENSE" and report["global_state"] == "EMERGENCY_MODE" and report["stability_score"] < 30.0:
                 for act in actions:
@@ -542,7 +797,7 @@ class AIOrchestrator:
             
             logger.info(
                 f"AI Orchestration cycle | Global State: {report['global_state']} | "
-                f"Stability: {report['stability_score']}% | Mode: {escalation_mode} | Recovery: {coordinated_recovery_state}"
+                f"Stability: {report['stability_score']}% | Mode: {escalation_mode} | Recovery: {coordinated_recovery_state} | Sequencer: {pipeline_data['state']}"
             )
             
         except Exception as e:
@@ -744,6 +999,19 @@ def on_message(client, userdata, msg):
                 orchestrator.defense_mode = payload.get("mode", "ADVISORY")
                 logger.info(f"Orchestrator defense mode updated to: {orchestrator.defense_mode}")
         else:
+            # Throttling and duplicate timestamp checks for telemetry
+            if topic == "grid/telemetry":
+                now = time.time()
+                if now - orchestrator.last_cycle_time < 0.5:
+                    return # Skip telemetry flood
+                    
+                packet_time = payload.get("timestamp", 0)
+                if packet_time <= orchestrator.last_telemetry_timestamp:
+                    return # Discard delayed/duplicate telemetry
+                    
+                orchestrator.last_cycle_time = now
+                orchestrator.last_telemetry_timestamp = packet_time
+
             orchestrator.update_state(topic, payload)
             
             # Trigger cycle execution upon receiving telemetry tick

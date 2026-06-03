@@ -43,13 +43,32 @@ class OrchestrationDecisionEngine:
                 overloads_penalty += min(20.0, (cap - 100.0) * 0.5)
         stability -= overloads_penalty
         
-        # Subtract points for voltage deviations
+        # Subtract points for voltage deviations with criticality-aware multipliers and blackout rules
         voltage_penalty = 0.0
         for bus_name, bus_data in buses.items():
             v_pu = bus_data.get("voltage_pu", 1.0)
-            dev = abs(v_pu - 1.0)
-            if dev > 0.05:
-                voltage_penalty += min(15.0, (dev - 0.05) * 150)
+            
+            # Context-aware node criticality scaling
+            if bus_name == "Bus_5":  # Hospital / Control Center
+                weight = 2.0
+                failure_penalty = 40.0
+            elif bus_name == "Bus_8":  # Heavy Industrial
+                weight = 1.5
+                failure_penalty = 25.0
+            elif bus_name == "Bus_6":  # Residential
+                weight = 1.0
+                failure_penalty = 15.0
+            else:
+                weight = 1.0
+                failure_penalty = 10.0
+                
+            if v_pu < 0.2:
+                # Absolute failure/unpowered critical load
+                voltage_penalty += failure_penalty
+            else:
+                dev = abs(v_pu - 1.0)
+                if dev > 0.05:
+                    voltage_penalty += min(15.0, (dev - 0.05) * 150) * weight
         stability -= voltage_penalty
         
         # Subtract points for physics violations
@@ -130,10 +149,12 @@ class OrchestrationDecisionEngine:
                 
         restoration_confidence = max(0.0, min(100.0, round(restoration_confidence, 2)))
         
-        # 3. Classify Autonomous State Logic
+        # 3. Classify Autonomous State Logic with Weighted Decision Fusion
         cyber_prob = 0.0
         if threat_aware_forecast:
             cyber_prob = float(threat_aware_forecast.get("cyber_instability_probability", 0.0))
+        elif ai_forecast:
+            cyber_prob = float(ai_forecast.get("predicted_threat", 0.0)) / 100.0
             
         grid_conf = 100.0
         if physics_val:
@@ -143,9 +164,42 @@ class OrchestrationDecisionEngine:
         if threat_data:
             cascade_prob = float(threat_data.get("cascade_probability", 0.0))
             
+        # Compute Average Telemetry Trust Score (nominal is 100)
+        trust_avg = 100.0
+        if trust_scores and "bus_trust" in trust_scores and len(trust_scores["bus_trust"]) > 0:
+            trust_avg = sum(trust_scores["bus_trust"].values()) / len(trust_scores["bus_trust"])
+        elif trust_scores and "details" in trust_scores and len(trust_scores["details"]) > 0:
+            trust_vals = [d.get("trust_score", 100.0) for d in trust_scores["details"].values() if "trust_score" in d]
+            if trust_vals:
+                trust_avg = sum(trust_vals) / len(trust_vals)
+
+        # Weighted Decision Fusion Formula:
+        # F_fusion = 0.40 * cyber_prob + 0.35 * (phys_score / 100) + 0.25 * (1 - trust_avg / 100)
+        t_factor = 1.0 - (trust_avg / 100.0)
+        consensus_threat_score = 0.40 * cyber_prob + 0.35 * (phys_score / 100.0) + 0.25 * t_factor
+        consensus_threat_score = max(0.0, min(1.0, round(consensus_threat_score, 4)))
+
+        # Conflict Arbitration logic
+        is_cyber_attack = False
+        if active_attack:
+            is_cyber_attack = True
+        elif cyber_prob >= 0.50 and phys_score < 20.0:
+            if trust_avg < 70.0:
+                is_cyber_attack = True  # Arbitrated: sensor tampering/FDIA bypassing physics checks
+        elif phys_score >= 40.0 and cyber_prob < 0.40:
+            if trust_avg >= 75.0:
+                is_cyber_attack = False  # Arbitrated: physical anomaly/fault, not a cyber attack
+            else:
+                is_cyber_attack = True  # Arbitrated: cyber-attack disguised as physical fault with corrupted trust
+        elif phys_score >= 40.0 and cyber_prob >= 0.50:
+            is_cyber_attack = True  # Confirmed cyber-physical attack
+            
+        if consensus_threat_score >= 0.50:
+            is_cyber_attack = True
+
         if stability_score < 40.0 or grid_conf < 40.0 or collapse_prob_val >= 75.0 or horizon_val < 15.0:
             raw_state = "EMERGENCY_STABILIZATION"
-        elif active_attack or cyber_prob >= 0.50 or (physics_val and physics_val.get("physics_state") == "CYBER_ATTACK_INSTABILITY"):
+        elif is_cyber_attack:
             raw_state = "CYBER_ATTACK"
         elif (stability_score < 75.0 and overloads_penalty > 0.0 and cascade_prob >= 0.40) or collapse_prob_val >= 40.0 or horizon_val < 45.0:
             raw_state = "CASCADING_INSTABILITY"
@@ -228,7 +282,7 @@ class OrchestrationDecisionEngine:
             reasoning["flisr_state"] = "Grid reconfiguration committed. Alternate paths active."
         else:
             reasoning["flisr_state"] = f"Automatic FSM actively executing: {flisr_state} sequence."
-
+ 
         # Add Predictive Stability Reasoning
         if pred_stability:
             policy = grid_state.get("l6_self_preservation", {}).get("active_policy", "NOMINAL")
@@ -250,6 +304,8 @@ class OrchestrationDecisionEngine:
             "global_risk_level": global_risk,
             "stability_score": stability_score,
             "restoration_confidence": restoration_confidence,
+            "consensus_threat_score": consensus_threat_score,
+            "trust_avg": round(trust_avg, 2),
             "active_subsystems_reasoning": reasoning
         }
 
@@ -259,6 +315,8 @@ class OrchestrationDecisionEngine:
             "global_risk_level": "LOW",
             "stability_score": 100.0,
             "restoration_confidence": 100.0,
+            "consensus_threat_score": 0.0,
+            "trust_avg": 100.0,
             "active_subsystems_reasoning": {
                 "ai_forecaster": "Inference idle.",
                 "physics_validator": "Validation idle.",

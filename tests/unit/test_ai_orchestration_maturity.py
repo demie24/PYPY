@@ -200,5 +200,166 @@ class TestAIOrchestrationMaturity(unittest.TestCase):
         self.assertEqual(orch_data["escalation_mode"], "COORDINATED_ATTACK")
         self.assertEqual(orch_data["dominant_decision_source"], "DEFENSE")
 
+    def test_decision_arbitration_and_criticality(self):
+        """Verify weighted decision fusion and criticality voltage penalty multipliers."""
+        from core.orchestrator.decision_engine import OrchestrationDecisionEngine
+        engine = OrchestrationDecisionEngine()
+        
+        # Base nominal state
+        nom_state = {
+            "telemetry": self.mock_telemetry,
+            "ai_forecast": None,
+            "threat_aware_forecast": None,
+            "physics_validation": None,
+            "trust_scores": None
+        }
+        
+        # 1. Test nominal stability
+        rep = engine.evaluate(nom_state)
+        self.assertEqual(rep["stability_score"], 100.0)
+        self.assertEqual(rep["consensus_threat_score"], 0.0)
+        
+        # 2. Test Bus 5 undervoltage penalty (should drop stability drastically)
+        state_bus5_fail = json.loads(json.dumps(self.mock_telemetry))
+        state_bus5_fail["state"]["buses"]["Bus_5"]["voltage_pu"] = 0.15 # collapsed
+        state_bus8_fail = json.loads(json.dumps(self.mock_telemetry))
+        state_bus8_fail["state"]["buses"]["Bus_8"]["voltage_pu"] = 0.15 # collapsed
+        
+        rep_bus5 = engine.evaluate({"telemetry": state_bus5_fail})
+        rep_bus8 = engine.evaluate({"telemetry": state_bus8_fail})
+        
+        # Bus 5 failure penalty is 40.0, Bus 8 is 25.0
+        self.assertEqual(rep_bus5["stability_score"], 60.0)
+        self.assertEqual(rep_bus8["stability_score"], 75.0)
+
+        # 3. Test Decision Fusion & Conflict Arbitration
+        # LSTM predicts high risk, but PINN is normal
+        state_conflict = {
+            "telemetry": self.mock_telemetry,
+            "threat_aware_forecast": {"cyber_instability_probability": 0.85},
+            "physics_validation": {"physics_anomaly_score": 5.0},
+            "trust_scores": {
+                "bus_trust": {f"Bus_{i}": 50.0 for i in range(1, 10)} # low trust
+            }
+        }
+        # Run multiple times for hysteresis
+        for _ in range(3):
+            rep_conflict = engine.evaluate(state_conflict)
+        # Should be classified as CYBER_ATTACK due to low trust + high LSTM prob
+        self.assertEqual(rep_conflict["global_state"], "CYBER_ATTACK")
+        
+        # PINN is high, LSTM is low, trust is high
+        state_pinn_high = {
+            "telemetry": json.loads(json.dumps(self.mock_telemetry)),
+            "threat_aware_forecast": {"cyber_instability_probability": 0.10},
+            "physics_validation": {"physics_anomaly_score": 50.0},
+            "trust_scores": {
+                "bus_trust": {f"Bus_{i}": 95.0 for i in range(1, 10)} # high trust
+            },
+            "threat": {"cascade_probability": 0.50}
+        }
+        # Force overloaded line to drop stability below 75.0
+        state_pinn_high["telemetry"]["state"]["lines"]["L1_4"]["capacity_pct"] = 140.0
+        
+        # Run evaluation multiple times to settle hysteresis
+        engine.current_state = "NORMAL"
+        for _ in range(3):
+            rep_pinn = engine.evaluate(state_pinn_high)
+        # Should be classified as CASCADING_INSTABILITY (physical fault)
+        self.assertEqual(rep_pinn["global_state"], "CASCADING_INSTABILITY")
+
+    def test_sequencer_and_rollback(self):
+        """Verify the stateful ThreatResponseSequencer and rollback safety logic."""
+        class MockClient:
+            def __init__(self):
+                self.published = []
+            def publish(self, topic, payload):
+                self.published.append((topic, json.loads(payload)))
+
+        client = MockClient()
+        self.orchestrator.reset()
+        
+        # Nominally monitoring
+        self.orchestrator.update_state("grid/telemetry", self.mock_telemetry)
+        self.orchestrator.run_cycle(client)
+        self.assertEqual(self.orchestrator.sequencer.state, "MONITORING")
+        
+        # 1. Trigger DETECTION phase by causing overload and active attack
+        overload_telemetry = json.loads(json.dumps(self.mock_telemetry))
+        overload_telemetry["state"]["lines"]["L1_4"]["capacity_pct"] = 150.0
+        overload_telemetry["attack_status"] = {
+            "active_attack": "FDIA",
+            "compromised_nodes": {"Bus_5": "voltage"}
+        }
+        self.orchestrator.update_state("grid/telemetry", overload_telemetry)
+        
+        # Run 3 times to allow decision engine state candidate to transition state
+        self.orchestrator.run_cycle(client)
+        self.orchestrator.run_cycle(client)
+        self.orchestrator.run_cycle(client)
+        
+        self.assertEqual(self.orchestrator.sequencer.state, "DETECTION")
+        self.assertEqual(self.orchestrator.sequencer.target, "Bus_5")
+        
+        self.orchestrator.run_cycle(client)
+        self.assertEqual(self.orchestrator.sequencer.state, "VALIDATION")
+        
+        self.orchestrator.run_cycle(client)
+        self.assertEqual(self.orchestrator.sequencer.state, "CORRELATION")
+        
+        # 2. Test Rollback Safety Check
+        # Set up a fake active close command monitoring
+        self.orchestrator.monitoring_recovery_breaker = "L7_8"
+        self.orchestrator.monitoring_recovery_ticks = 0
+        self.orchestrator.monitoring_recovery_start_stability = 90.0
+        
+        # Simulate grid collapse (stability drops below 40)
+        collapse_telemetry = json.loads(json.dumps(self.mock_telemetry))
+        for b in collapse_telemetry["state"]["buses"].values():
+            b["voltage_pu"] = 0.30
+            
+        client.published.clear()
+        self.orchestrator.update_state("grid/telemetry", collapse_telemetry)
+        self.orchestrator.run_cycle(client)
+        
+        # Rollback should trigger OPEN control payload and record in failed recoveries
+        rollback_cmds = [p[1] for p in client.published if p[0] == "grid/control"]
+        self.assertTrue(any(rc.get("command") == "OPEN" and rc.get("target") == "L7_8" for rc in rollback_cmds))
+        self.assertTrue(self.orchestrator.memory.is_recovery_blocked("L7_8"))
+
+    def test_resilience_throttling(self):
+        """Verify telemetry throttling and out-of-order packet drops."""
+        class MockClient:
+            def __init__(self):
+                self.calls = 0
+            def publish(self, topic, payload):
+                self.calls += 1
+                
+        client = MockClient()
+        self.orchestrator.reset()
+        
+        from core.orchestrator.ai_orchestrator import on_message
+        class MockMsg:
+            def __init__(self, topic, payload):
+                self.topic = topic
+                self.payload = json.dumps(payload).encode("utf-8")
+                
+        # Send first telemetry
+        telemetry_1 = {"timestamp": 1000, "state": self.mock_telemetry["state"]}
+        on_message(client, None, MockMsg("grid/telemetry", telemetry_1))
+        self.assertEqual(client.calls, 3) # publishes ai_orchestrator, recommended_actions, and pipeline
+        
+        # Send telemetry immediately within 0.5s floor (should be throttled/ignored)
+        telemetry_2 = {"timestamp": 1001, "state": self.mock_telemetry["state"]}
+        on_message(client, None, MockMsg("grid/telemetry", telemetry_2))
+        self.assertEqual(client.calls, 3) # no new publish calls
+        
+        # Send telemetry out-of-order (timestamp <= last) after waiting a bit
+        # Fake timer forward
+        self.orchestrator.last_cycle_time = time.time() - 10.0
+        telemetry_stale = {"timestamp": 900, "state": self.mock_telemetry["state"]}
+        on_message(client, None, MockMsg("grid/telemetry", telemetry_stale))
+        self.assertEqual(client.calls, 3) # still no new calls due to timestamp check
+
 if __name__ == "__main__":
     unittest.main()

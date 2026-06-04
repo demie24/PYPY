@@ -176,6 +176,42 @@ services:
     volumes:
       - ./logs/ai_prediction:/app/logs
 
+  strategic_coordinator:
+    build:
+      context: ./core
+      dockerfile: ./strategy/Dockerfile
+    container_name: smart_grid_strategic_coordinator
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    volumes:
+      - ./logs/strategy:/app/logs
+
+  adversarial_coordinator:
+    build:
+      context: ./core
+      dockerfile: ./adversarial/Dockerfile
+    container_name: smart_grid_adversarial_coordinator
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - LOG_LEVEL=INFO
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    volumes:
+      - ./logs/adversarial:/app/logs
+
   # physics_validation:  # Status: paused – runs as test suite component, not daemon
   #   build:
   #     context: ./core

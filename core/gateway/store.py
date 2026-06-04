@@ -141,6 +141,18 @@ class MemoryStore:
         self.latest_prediction_escalation_probability: Optional[Dict[str, Any]] = None
         self.latest_prediction_recommended_prevention: Optional[Dict[str, Any]] = None
 
+        # Layer 11B Strategic Coordination variables
+        self.latest_strategy: Optional[Dict[str, Any]] = None
+        self.latest_strategy_priority: Optional[Dict[str, Any]] = None
+        self.latest_strategy_recommendation: Optional[Dict[str, Any]] = None
+        self.latest_strategy_memory: Optional[Dict[str, Any]] = None
+
+        # Layer 11C Adversarial Defense variables
+        self.latest_adversarial_campaign: Optional[Dict[str, Any]] = None
+        self.latest_adversarial_resilience: Optional[Dict[str, Any]] = None
+        self.latest_adversarial_weaknesses: Optional[Dict[str, Any]] = None
+        self.latest_adversarial_recommendations: Optional[Dict[str, Any]] = None
+
         self.last_telemetry_time = 0.0
 
         # Add initial system startup event
@@ -515,6 +527,32 @@ class MemoryStore:
     def update_prediction_recommended_prevention(self, payload: Dict[str, Any]):
         self.latest_prediction_recommended_prevention = payload
 
+    # Layer 11B Strategic Coordination updaters
+    def update_strategy(self, payload: Dict[str, Any]):
+        self.latest_strategy = payload
+
+    def update_strategy_priority(self, payload: Dict[str, Any]):
+        self.latest_strategy_priority = payload
+
+    def update_strategy_recommendation(self, payload: Dict[str, Any]):
+        self.latest_strategy_recommendation = payload
+
+    def update_strategy_memory(self, payload: Dict[str, Any]):
+        self.latest_strategy_memory = payload
+
+    # Layer 11C Adversarial Defense updaters
+    def update_adversarial_campaign(self, payload: Dict[str, Any]):
+        self.latest_adversarial_campaign = payload
+
+    def update_adversarial_resilience(self, payload: Dict[str, Any]):
+        self.latest_adversarial_resilience = payload
+
+    def update_adversarial_weaknesses(self, payload: Dict[str, Any]):
+        self.latest_adversarial_weaknesses = payload
+
+    def update_adversarial_recommendations(self, payload: Dict[str, Any]):
+        self.latest_adversarial_recommendations = payload
+
 
 
 
@@ -674,7 +712,19 @@ class MemoryStore:
             "prediction_future_risk": self.latest_prediction_future_risk,
             "prediction_trust_forecast": self.latest_prediction_trust_forecast,
             "prediction_escalation_probability": self.latest_prediction_escalation_probability,
-            "prediction_recommended_prevention": self.latest_prediction_recommended_prevention
+            "prediction_recommended_prevention": self.latest_prediction_recommended_prevention,
+
+            # Layer 11B Strategic Coordination bootstrap payload
+            "strategy": self.latest_strategy,
+            "strategy_priority": self.latest_strategy_priority,
+            "strategy_recommendation": self.latest_strategy_recommendation,
+            "strategy_memory": self.latest_strategy_memory,
+
+            # Layer 11C Adversarial Defense bootstrap payload
+            "adversarial_campaign": self.latest_adversarial_campaign,
+            "adversarial_resilience": self.latest_adversarial_resilience,
+            "adversarial_weaknesses": self.latest_adversarial_weaknesses,
+            "adversarial_recommendations": self.latest_adversarial_recommendations
         }
 
 

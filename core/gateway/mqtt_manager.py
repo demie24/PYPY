@@ -83,6 +83,18 @@ class MQTTManager:
             client.subscribe("prediction/escalation_probability")
             client.subscribe("prediction/recommended_prevention")
 
+            # Layer 11B Strategic Coordination subscriptions
+            client.subscribe("grid/strategy")
+            client.subscribe("grid/strategy_priority")
+            client.subscribe("grid/strategy_recommendation")
+            client.subscribe("grid/strategy_memory")
+
+            # Layer 11C Adversarial Defense subscriptions
+            client.subscribe("grid/adversarial/campaign")
+            client.subscribe("grid/adversarial/resilience")
+            client.subscribe("grid/adversarial/weaknesses")
+            client.subscribe("grid/adversarial/recommendations")
+
             client.subscribe("grid/l6_recovery")
             client.subscribe("grid/l6_adaptive_recovery")
             client.subscribe("grid/l6_containment")
@@ -249,6 +261,22 @@ class MQTTManager:
                 store.update_prediction_escalation_probability(payload)
             elif topic == "prediction/recommended_prevention":
                 store.update_prediction_recommended_prevention(payload)
+            elif topic == "grid/strategy":
+                store.update_strategy(payload)
+            elif topic == "grid/strategy_priority":
+                store.update_strategy_priority(payload)
+            elif topic == "grid/strategy_recommendation":
+                store.update_strategy_recommendation(payload)
+            elif topic == "grid/strategy_memory":
+                store.update_strategy_memory(payload)
+            elif topic == "grid/adversarial/campaign":
+                store.update_adversarial_campaign(payload)
+            elif topic == "grid/adversarial/resilience":
+                store.update_adversarial_resilience(payload)
+            elif topic == "grid/adversarial/weaknesses":
+                store.update_adversarial_weaknesses(payload)
+            elif topic == "grid/adversarial/recommendations":
+                store.update_adversarial_recommendations(payload)
             elif topic == "grid/l6_recovery":
                 store.update_l6_recovery(payload)
             elif topic == "grid/l6_adaptive_recovery":

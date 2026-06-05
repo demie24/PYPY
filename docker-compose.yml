@@ -313,6 +313,28 @@ services:
       timeout: 10s
       retries: 3
 
+  arena_coordinator:
+    build:
+      context: ./core
+      dockerfile: ./arena/Dockerfile
+    container_name: smart_grid_arena_coordinator
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; cmd = open('/proc/1/cmdline').read(); sys.exit(0 if 'arena_coordinator' in cmd else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 networks:
   grid-net:
     driver: bridge

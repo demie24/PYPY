@@ -95,6 +95,12 @@ class MQTTManager:
             client.subscribe("grid/adversarial/weaknesses")
             client.subscribe("grid/adversarial/recommendations")
 
+            # Layer 11D Adaptive Red vs Blue AI Arena subscriptions
+            client.subscribe("grid/arena/match")
+            client.subscribe("grid/arena/rewards")
+            client.subscribe("grid/arena/evolution")
+            client.subscribe("grid/arena/recommendations")
+
             client.subscribe("grid/l6_recovery")
             client.subscribe("grid/l6_adaptive_recovery")
             client.subscribe("grid/l6_containment")
@@ -277,6 +283,14 @@ class MQTTManager:
                 store.update_adversarial_weaknesses(payload)
             elif topic == "grid/adversarial/recommendations":
                 store.update_adversarial_recommendations(payload)
+            elif topic == "grid/arena/match":
+                store.update_arena_match(payload)
+            elif topic == "grid/arena/rewards":
+                store.update_arena_rewards(payload)
+            elif topic == "grid/arena/evolution":
+                store.update_arena_evolution(payload)
+            elif topic == "grid/arena/recommendations":
+                store.update_arena_recommendations(payload)
             elif topic == "grid/l6_recovery":
                 store.update_l6_recovery(payload)
             elif topic == "grid/l6_adaptive_recovery":

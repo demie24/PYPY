@@ -153,6 +153,12 @@ class MemoryStore:
         self.latest_adversarial_weaknesses: Optional[Dict[str, Any]] = None
         self.latest_adversarial_recommendations: Optional[Dict[str, Any]] = None
 
+        # Layer 11D Adaptive Red vs Blue AI Arena variables
+        self.latest_arena_match: Optional[Dict[str, Any]] = None
+        self.latest_arena_rewards: Optional[Dict[str, Any]] = None
+        self.latest_arena_evolution: Optional[Dict[str, Any]] = None
+        self.latest_arena_recommendations: Optional[Dict[str, Any]] = None
+
         self.last_telemetry_time = 0.0
 
         # Add initial system startup event
@@ -553,6 +559,19 @@ class MemoryStore:
     def update_adversarial_recommendations(self, payload: Dict[str, Any]):
         self.latest_adversarial_recommendations = payload
 
+    # Layer 11D Adaptive Red vs Blue AI Arena updaters
+    def update_arena_match(self, payload: Dict[str, Any]):
+        self.latest_arena_match = payload
+
+    def update_arena_rewards(self, payload: Dict[str, Any]):
+        self.latest_arena_rewards = payload
+
+    def update_arena_evolution(self, payload: Dict[str, Any]):
+        self.latest_arena_evolution = payload
+
+    def update_arena_recommendations(self, payload: Dict[str, Any]):
+        self.latest_arena_recommendations = payload
+
 
 
 
@@ -724,7 +743,13 @@ class MemoryStore:
             "adversarial_campaign": self.latest_adversarial_campaign,
             "adversarial_resilience": self.latest_adversarial_resilience,
             "adversarial_weaknesses": self.latest_adversarial_weaknesses,
-            "adversarial_recommendations": self.latest_adversarial_recommendations
+            "adversarial_recommendations": self.latest_adversarial_recommendations,
+
+            # Layer 11D Adaptive Red vs Blue AI Arena bootstrap payload
+            "arena_match": self.latest_arena_match,
+            "arena_rewards": self.latest_arena_rewards,
+            "arena_evolution": self.latest_arena_evolution,
+            "arena_recommendations": self.latest_arena_recommendations
         }
 
 

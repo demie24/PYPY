@@ -307,6 +307,11 @@ services:
       - grid-net
     volumes:
       - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; cmd = open('/proc/1/cmdline').read(); sys.exit(0 if 'notification_service' in cmd else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   grid-net:

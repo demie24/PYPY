@@ -778,7 +778,7 @@ export default function App() {
         else if (data.topic && data.payload) {
           const { topic, payload } = data;
           
-          if (topic === "grid/telemetry") {
+          if (topic === "pypy/grid/telemetry" || topic === "grid/telemetry") {
             // Track telemetry message rate
             const now = Date.now();
             const telemTimes = telemTimesRef.current;

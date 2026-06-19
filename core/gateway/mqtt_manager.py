@@ -6,6 +6,7 @@ from typing import Dict, Any, Optional
 import paho.mqtt.client as mqtt
 from gateway.store import store
 from gateway.websocket_manager import ws_manager
+from gateway.translator import TelemetryTranslator
 
 logger = logging.getLogger("gateway.mqtt_manager")
 
@@ -14,6 +15,7 @@ class MQTTManager:
         self.broker = os.getenv("MQTT_BROKER", "localhost")
         self.port = int(os.getenv("MQTT_PORT", 1883))
         self.client = mqtt.Client(client_id="fastapi_gateway_service")
+        self.translator = TelemetryTranslator()
         
         # Callbacks registration
         self.client.on_connect = self._on_connect
@@ -55,7 +57,13 @@ class MQTTManager:
     def _on_connect(self, client, userdata, flags, rc):
         if rc == 0:
             logger.info("Connected to MQTT Broker!")
-            # Subscriptions
+            # Hierarchical AC subscriptions
+            client.subscribe("pypy/grid/bus/+/metrics")
+            client.subscribe("pypy/grid/line/+/flow")
+            client.subscribe("pypy/grid/gen/+/status")
+            client.subscribe("pypy/grid/telemetry")
+            
+            # Legacy Subscriptions
             client.subscribe("grid/telemetry")
             client.subscribe("grid/events")
             client.subscribe("grid/alerts")
@@ -222,9 +230,33 @@ class MQTTManager:
             topic = msg.topic
             payload = json.loads(msg.payload.decode("utf-8"))
             
-            # 1. Update historical caches
-            if topic == "grid/telemetry":
+            # 1. Update historical databases and caches
+            if "pypy/grid/bus" in topic:
+                from gateway.database import db
+                db.save_bus_telemetry(payload)
+                self.translator.update_bus(payload)
+                
+                # Trigger legacy translation on last bus update to sync sweeps
+                if payload.get("bus_id") == 38:
+                    legacy_payload = self.translator.build_legacy_telemetry()
+                    self.client.publish("grid/telemetry", json.dumps(legacy_payload))
+                    
+            elif "pypy/grid/line" in topic:
+                from gateway.database import db
+                db.save_line_telemetry(payload)
+                self.translator.update_line(payload)
+                
+            elif "pypy/grid/gen" in topic:
+                from gateway.database import db
+                db.save_gen_telemetry(payload)
+                self.translator.update_gen(payload)
+            
+            # Legacy caches
+            elif topic == "pypy/grid/telemetry":
                 store.update_telemetry(payload)
+            elif topic == "grid/telemetry":
+                if not store.latest_telemetry or len(store.latest_telemetry.get("state", {}).get("buses", {})) <= 9:
+                    store.update_telemetry(payload)
             elif topic == "grid/events":
                 store.add_event(payload)
             elif topic == "grid/alerts":

@@ -14,6 +14,18 @@ from publisher import TelemetryPublisher
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("digital_twin.main")
 
+def find_gen_idx(target, generators):
+    for k, v in generators.items():
+        if target == v["name"] or target == f"Bus_{k+1}" or target == f"Bus_{k}" or target == str(k):
+            return k
+    if "1" in target:
+        return list(generators.keys())[0] if generators else None
+    elif "2" in target:
+        return list(generators.keys())[1] if len(generators) > 1 else None
+    elif "3" in target:
+        return list(generators.keys())[2] if len(generators) > 2 else None
+    return None
+
 class SmartGridDigitalTwin:
     def __init__(self):
         self.topo = GridTopology()
@@ -35,7 +47,7 @@ class SmartGridDigitalTwin:
         # Generator setpoints
         self.generator_P = {k: v["P_nom"] for k, v in self.topo.generators.items()}
         self.generator_Q = {k: v["Q_nom"] for k, v in self.topo.generators.items()}
-        self.generators_online = {0: True, 1: True, 2: True}
+        self.generators_online = {k: True for k in self.topo.generators.keys()}
         
         # Island frequency states
         self.island_frequencies = {}
@@ -185,7 +197,7 @@ class SmartGridDigitalTwin:
             self.active_compromises = {}
             self.sensor_drifts = {}
             self.load_shed_factors = {bus_idx: 1.0 for bus_idx in self.topo.loads.keys()}
-            self.generators_online = {0: True, 1: True, 2: True}
+            self.generators_online = {k: True for k in self.topo.generators.keys()}
             self.generator_P = {k: v["P_nom"] for k, v in self.topo.generators.items()}
             self.generator_Q = {k: v["Q_nom"] for k, v in self.topo.generators.items()}
             self.island_frequencies.clear()
@@ -259,14 +271,7 @@ class SmartGridDigitalTwin:
 
         if command == "START_GEN":
             try:
-                gen_idx = None
-                if "1" in target:
-                    gen_idx = 0
-                elif "2" in target:
-                    gen_idx = 1
-                elif "3" in target:
-                    gen_idx = 2
-                
+                gen_idx = find_gen_idx(target, self.topo.generators)
                 if gen_idx is not None:
                     self.generators_online[gen_idx] = True
                     self.generator_P[gen_idx] = self.topo.generators[gen_idx]["P_nom"]
@@ -283,14 +288,7 @@ class SmartGridDigitalTwin:
 
         if command == "STOP_GEN":
             try:
-                gen_idx = None
-                if "1" in target:
-                    gen_idx = 0
-                elif "2" in target:
-                    gen_idx = 1
-                elif "3" in target:
-                    gen_idx = 2
-                
+                gen_idx = find_gen_idx(target, self.topo.generators)
                 if gen_idx is not None:
                     self.generators_online[gen_idx] = False
                     logger.info(f"Generator {target} (index {gen_idx}) stopped offline.")
@@ -305,14 +303,7 @@ class SmartGridDigitalTwin:
 
         if command == "ADJUST_GEN":
             try:
-                gen_idx = None
-                if "1" in target:
-                    gen_idx = 0
-                elif "2" in target:
-                    gen_idx = 1
-                elif "3" in target:
-                    gen_idx = 2
-                
+                gen_idx = find_gen_idx(target, self.topo.generators)
                 if gen_idx is not None:
                     p_mw = payload.get("P_mw") if payload else None
                     if p_mw is not None:
@@ -350,11 +341,11 @@ class SmartGridDigitalTwin:
                         temp_active_loads[bus_idx]["P"] *= factor
                         temp_active_loads[bus_idx]["Q"] *= factor
                 elif sub_cmd == "START_GEN":
-                    gen_idx = 0 if "1" in target else 1 if "2" in target else 2 if "3" in target else None
+                    gen_idx = find_gen_idx(target, self.topo.generators)
                     if gen_idx is not None:
                         temp_generators_online[gen_idx] = True
                 elif sub_cmd == "STOP_GEN":
-                    gen_idx = 0 if "1" in target else 1 if "2" in target else 2 if "3" in target else None
+                    gen_idx = find_gen_idx(target, self.topo.generators)
                     if gen_idx is not None:
                         temp_generators_online[gen_idx] = False
                 
@@ -378,7 +369,7 @@ class SmartGridDigitalTwin:
                             comp_gen_p = sum(temp_generator_P[b] for b in online_gens) * 100.0
                             comp_load_p = sum(temp_active_loads[b]["P"] for b in comp if b in self.topo.loads) * 100.0
                             mismatch = comp_gen_p - comp_load_p
-                            avg_freq = 60.0 + mismatch * 0.02
+                            avg_freq = 60.0 + mismatch * 0.001
                             break
                     
                     voltages_trajectory.append([round(float(val), 4) for val in V_sim])
@@ -789,7 +780,7 @@ class SmartGridDigitalTwin:
             mismatch_mw = comp_gen_p_mw - comp_load_p_mw
             
             prev_freq = self.island_frequencies.get(comp_key, 60.0)
-            target_freq = 60.0 + mismatch_mw * 0.02
+            target_freq = 60.0 + mismatch_mw * 0.001
             alpha = 0.30
             freq = prev_freq + alpha * (target_freq - prev_freq)
             freq = max(55.0, min(65.0, freq))
@@ -966,6 +957,9 @@ class SmartGridDigitalTwin:
 
         # 9. Publish telemetry broadcast
         self.publisher.publish_telemetry(telemetry)
+        self.publisher.publish_ac_telemetry_fields(
+            V, theta, P, Q, line_flows, self.physics.solver.net, self.breakers, telemetry["timestamp"]
+        )
 
     def apply_attack_tampering(self, telemetry: Dict[str, Any]) -> Dict[str, Any]:
         if not self.active_attack:

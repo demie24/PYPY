@@ -1,38 +1,65 @@
+from grid_loader import IEEE39BusLoader
+
 class GridTopology:
     def __init__(self):
-        # 9-Bus topology index map (0-indexed)
-        # Bus 1, 2, 3 -> Generators
-        # Bus 5, 6, 8 -> Loads
-        # Bus 4, 7, 9 -> Junctions
-        self.num_buses = 9
+        # Load the 39-bus network using the dedicated loader
+        self.loader = IEEE39BusLoader()
+        self.net = self.loader.get_net()
         
-        # Slack bus index (Bus 1)
-        self.slack_bus = 0
+        # Dimensions
+        self.num_buses = self.loader.num_buses
+        self.slack_bus = int(self.net.ext_grid.bus.values[0]) if len(self.net.ext_grid) > 0 else 30
         
-        # Generators: (Bus Index, Nominal Active Power P_pu, Nominal Reactive Power Q_pu, Voltage Setpoint)
-        self.generators = {
-            0: {"name": "Gen_1", "P_nom": 0.72, "Q_nom": 0.27, "V_set": 1.04},   # Slack
-            1: {"name": "Gen_2", "P_nom": 1.63, "Q_nom": 0.06, "V_set": 1.025},
-            2: {"name": "Gen_3", "P_nom": 0.85, "Q_nom": -0.10, "V_set": 1.025}
-        }
-        
-        # Loads: (Bus Index, Nominal P_pu, Nominal Q_pu)
-        self.loads = {
-            4: {"name": "Load_5", "P_nom": 1.25, "Q_nom": 0.50},
-            5: {"name": "Load_6", "P_nom": 0.90, "Q_nom": 0.30},
-            7: {"name": "Load_8", "P_nom": 1.00, "Q_nom": 0.35}
-        }
-        
-        # Transmission Lines: (From, To, R, X, Line ID, Name)
-        # On 100 MVA Base
-        self.lines = [
-            {"from": 0, "to": 3, "R": 0.0,    "X": 0.0576, "id": "L1_4", "name": "Gen 1 Transformer"},
-            {"from": 1, "to": 6, "R": 0.0,    "X": 0.0625, "id": "L2_7", "name": "Gen 2 Transformer"},
-            {"from": 2, "to": 8, "R": 0.0,    "X": 0.0586, "id": "L3_9", "name": "Gen 3 Transformer"},
-            {"from": 3, "to": 4, "R": 0.010,  "X": 0.085,  "id": "L4_5", "name": "Line 4-5"},
-            {"from": 3, "to": 8, "R": 0.017,  "X": 0.092,  "id": "L4_9", "name": "Line 4-9"},
-            {"from": 4, "to": 5, "R": 0.032,  "X": 0.161,  "id": "L5_6", "name": "Line 5-6"},
-            {"from": 5, "to": 6, "R": 0.0085, "X": 0.072,  "id": "L6_7", "name": "Line 6-7"},
-            {"from": 6, "to": 7, "R": 0.032,  "X": 0.161,  "id": "L7_8", "name": "Line 7-8"},
-            {"from": 7, "to": 8, "R": 0.0119, "X": 0.1008, "id": "L8_9", "name": "Line 8-9"}
-        ]
+        # Build generators mapping (merging PV gen and slack ext_grid)
+        self.generators = {}
+        # PV generators
+        for idx, row in self.net.gen.iterrows():
+            bus = int(row.bus)
+            self.generators[bus] = {
+                "name": f"Gen_Bus_{bus}",
+                "P_nom": float(row.p_mw) / 100.0, 
+                "Q_nom": float(row.q_mvar) / 100.0 if hasattr(row, 'q_mvar') else 0.0,
+                "V_set": float(row.vm_pu)
+            }
+        # Slack Generator (ext_grid)
+        for idx, row in self.net.ext_grid.iterrows():
+            bus = int(row.bus)
+            self.generators[bus] = {
+                "name": f"Gen_Slack_Bus_{bus}",
+                "P_nom": 6.7787, 
+                "Q_nom": 2.2157,
+                "V_set": float(row.vm_pu) if hasattr(row, 'vm_pu') else 1.0
+            }
+
+        # Build loads mapping
+        self.loads = {}
+        for idx, row in self.net.load.iterrows():
+            bus = int(row.bus)
+            self.loads[bus] = {
+                "name": f"Load_Bus_{bus}",
+                "P_nom": float(row.p_mw) / 100.0,
+                "Q_nom": float(row.q_mvar) / 100.0
+            }
+            
+        # Build lines/transformers list (lines represent lines + transformers in old logic)
+        self.lines = []
+        # Lines
+        for idx, row in self.net.line.iterrows():
+            self.lines.append({
+                "from": int(row.from_bus),
+                "to": int(row.to_bus),
+                "R": float(row.r_ohm_per_km * row.length_km),
+                "X": float(row.x_ohm_per_km * row.length_km),
+                "id": f"L_line_{idx}",
+                "name": str(row.name) if row.name else f"Line {row.from_bus}-{row.to_bus}"
+            })
+        # Transformers (trafos)
+        for idx, row in self.net.trafo.iterrows():
+            self.lines.append({
+                "from": int(row.hv_bus),
+                "to": int(row.lv_bus),
+                "R": 0.0, 
+                "X": float(row.vk_percent / 100.0), 
+                "id": f"L_trafo_{idx}",
+                "name": str(row.name) if row.name else f"Trafo {row.hv_bus}-{row.lv_bus}"
+            })

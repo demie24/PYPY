@@ -7,6 +7,7 @@ from gateway.websocket_manager import ws_manager
 from gateway.mqtt_manager import mqtt_manager
 from gateway.store import store
 from gateway.routes.system import router as system_router
+from gateway.routes.telemetry import router as telemetry_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -28,6 +29,7 @@ app.add_middleware(
 
 # Include HTTP API routes
 app.include_router(system_router, prefix="/api")
+app.include_router(telemetry_router, prefix="/api")
 
 async def check_telemetry_freshness_task():
     import time

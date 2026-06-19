@@ -4,6 +4,7 @@ import time
 import logging
 from typing import Dict, Any, Callable
 import paho.mqtt.client as mqtt
+from telemetry import ACTelemetryPipeline
 
 logger = logging.getLogger("digital_twin.publisher")
 
@@ -18,6 +19,7 @@ class TelemetryPublisher:
         self.broker = broker
         self.port = port
         self.client = mqtt.Client(client_id="digital_twin_publisher_node")
+        self.ac_pipeline = ACTelemetryPipeline()
         
         # Command hooks
         self.on_control_cmd = on_control_cmd
@@ -48,9 +50,15 @@ class TelemetryPublisher:
 
     def publish_telemetry(self, telemetry: Dict[str, Any]):
         try:
-            self.client.publish("grid/telemetry", json.dumps(telemetry))
+            self.client.publish("pypy/grid/telemetry", json.dumps(telemetry))
         except Exception as e:
             logger.error(f"Failed to publish telemetry to MQTT: {e}")
+
+    def publish_ac_telemetry_fields(self, V, theta, P, Q, line_flows, net, breakers, timestamp=None):
+        try:
+            self.ac_pipeline.serialize_and_publish(self.client, V, theta, P, Q, line_flows, net, breakers, timestamp)
+        except Exception as e:
+            logger.error(f"Failed to publish AC telemetry fields to MQTT: {e}")
 
     def publish_event(self, source: str, event_desc: str, severity: str = "INFO"):
         try:

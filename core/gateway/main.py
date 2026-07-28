@@ -1,13 +1,28 @@
 import asyncio
 import logging
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+import os
+import time
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from gateway.websocket_manager import ws_manager
 from gateway.mqtt_manager import mqtt_manager
 from gateway.store import store
 from gateway.routes.system import router as system_router
 from gateway.routes.telemetry import router as telemetry_router
+from gateway.routes.saas_auth import router as saas_auth_router
+from gateway.routes.billing import router as billing_router
+from gateway.routes.simulation import router as simulation_router
+from gateway.routes.scenarios import router as scenarios_router
+from gateway.routes.experiments import router as experiments_router
+from gateway.routes.copilot import router as copilot_router
+from gateway.routes.operations import router as operations_router, update_api_request_metric
+from gateway.routes.security_hardening import router as security_router
+from gateway.routes.analytics import router as analytics_router
+from gateway.routes.admin_portal import router as admin_portal_router
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -18,10 +33,64 @@ app = FastAPI(
     description="Real-time WebSocket and MQTT integration bus for grid digital twins"
 )
 
-# Enable CORS for dashboard web client
+# Custom Rate Limiting Middleware
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app, max_requests: int = 150, window_seconds: int = 60):
+        super().__init__(app)
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.requests = {}
+
+    async def dispatch(self, request: Request, call_next):
+        # Skip health checks, telemetry websocket, and local unit test triggers
+        path = request.url.path
+        if path.startswith("/ws") or "health" in path:
+            return await call_next(request)
+            
+        ip = request.client.host if request.client else "unknown"
+        now = time.time()
+        
+        timestamps = self.requests.get(ip, [])
+        timestamps = [t for t in timestamps if now - t < self.window_seconds]
+        
+        if len(timestamps) >= self.max_requests:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Too many requests. Rate limit exceeded."}
+            )
+            
+        timestamps.append(now)
+        self.requests[ip] = timestamps
+        return await call_next(request)
+
+app.add_middleware(RateLimitMiddleware)
+
+# Security Headers + Metrics Tracking middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    start = time.time()
+    response = await call_next(request)
+    latency_ms = (time.time() - start) * 1000
+    is_error = response.status_code >= 400
+    # Skip metrics tracking for websocket, health, and prometheus endpoints
+    if not request.url.path.startswith("/ws") and "prometheus" not in request.url.path:
+        update_api_request_metric(latency_ms, is_error)
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    return response
+
+# Hardened CORS configuration
+allowed_origins_str = os.getenv(
+    "ALLOWED_ORIGINS", 
+    "https://pypygrid.com,https://app.pypygrid.com,http://localhost:3000,http://localhost:3001,http://localhost:8080"
+)
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +99,16 @@ app.add_middleware(
 # Include HTTP API routes
 app.include_router(system_router, prefix="/api")
 app.include_router(telemetry_router, prefix="/api")
+app.include_router(saas_auth_router, prefix="/api")
+app.include_router(billing_router, prefix="/api")
+app.include_router(simulation_router, prefix="/api")
+app.include_router(scenarios_router, prefix="/api")
+app.include_router(experiments_router, prefix="/api")
+app.include_router(copilot_router, prefix="/api")
+app.include_router(operations_router, prefix="/api")
+app.include_router(security_router, prefix="/api")
+app.include_router(analytics_router, prefix="/api")
+app.include_router(admin_portal_router, prefix="/api")
 
 async def check_telemetry_freshness_task():
     import time
@@ -51,6 +130,14 @@ async def check_telemetry_freshness_task():
 
 @app.on_event("startup")
 async def startup_event():
+    # Initialize database tables (idempotent)
+    from services.auth.session import init_db
+    try:
+        init_db()
+        logger.info("Database tables initialized successfully.")
+    except Exception as e:
+        logger.error(f"Database initialization error: {e}")
+
     # Capture the running event loop and initialize the MQTT subscriber client
     loop = asyncio.get_running_loop()
     mqtt_manager.start(loop)

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: digital-twin-deployment
+  namespace: default
+  labels:
+    app: pypy-digital-twin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pypy-digital-twin
+  template:
+    metadata:
+      labels:
+        app: pypy-digital-twin
+    spec:
+      containers:
+        - name: digital-twin
+          image: pypygrid/digital-twin:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MQTT_BROKER
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: MQTT_BROKER
+            - name: MQTT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: MQTT_PORT
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: LOG_LEVEL
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

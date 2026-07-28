@@ -1,0 +1,621 @@
+{
+    "title": "IEEE 39-Bus Grid Topology Risk Analysis Report",
+    "structural_analysis": {
+        "top_critical_buses_betweenness": [
+            {
+                "bus_id": 15,
+                "centrality_score": 0.4755808440018967
+            },
+            {
+                "bus_id": 13,
+                "centrality_score": 0.3006164058795638
+            },
+            {
+                "bus_id": 3,
+                "centrality_score": 0.2859174964438123
+            },
+            {
+                "bus_id": 16,
+                "centrality_score": 0.2532005689900427
+            },
+            {
+                "bus_id": 2,
+                "centrality_score": 0.24679943100995733
+            }
+        ],
+        "top_critical_lines_betweenness": [
+            {
+                "from": 13,
+                "to": 14,
+                "line_id": "L_line_18",
+                "centrality_score": 0.24741340530814215
+            },
+            {
+                "from": 14,
+                "to": 15,
+                "line_id": "L_line_19",
+                "centrality_score": 0.24741340530814215
+            },
+            {
+                "from": 15,
+                "to": 16,
+                "line_id": "L_line_20",
+                "centrality_score": 0.24741340530814213
+            },
+            {
+                "from": 1,
+                "to": 2,
+                "line_id": "L_line_2",
+                "centrality_score": 0.21367521367521364
+            },
+            {
+                "from": 3,
+                "to": 4,
+                "line_id": "L_line_6",
+                "centrality_score": 0.21187584345479082
+            }
+        ]
+    },
+    "scenario_dynamic_analysis": {
+        "NORMAL": {
+            "average_node_risk": 0.20714755356311798,
+            "average_edge_risk": 0.37687093019485474,
+            "max_node_risk": 0.3734212815761566,
+            "max_edge_risk": 0.718116044998169,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.3217863615540069
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 1.0213536423137026
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9900734114557038
+                },
+                {
+                    "bus_id": 1,
+                    "risk_score": 0.8441535108173299
+                },
+                {
+                    "bus_id": 28,
+                    "risk_score": 0.7904737964680691
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.838197101090226
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.753261072371277
+                },
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 4.61660473141459
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.297920199133391
+                },
+                {
+                    "from": 3,
+                    "to": 4,
+                    "line_id": "L_line_6",
+                    "risk_score": 4.073335126110739
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        "N1_LINE": {
+            "average_node_risk": 0.2148314267396927,
+            "average_edge_risk": 0.4176311194896698,
+            "max_node_risk": 0.39526671171188354,
+            "max_edge_risk": 0.7393766641616821,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.3365100618389647
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 1.028291622965558
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9868005621343384
+                },
+                {
+                    "bus_id": 1,
+                    "risk_score": 0.889430826195519
+                },
+                {
+                    "bus_id": 28,
+                    "risk_score": 0.7947423533013364
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.895192934010301
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.812076301310333
+                },
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 4.612119545970235
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.355236645437713
+                },
+                {
+                    "from": 3,
+                    "to": 13,
+                    "line_id": "L_line_7",
+                    "risk_score": 4.093970187842927
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        "N1_GENERATOR": {
+            "average_node_risk": 0.19732598960399628,
+            "average_edge_risk": 0.3576657772064209,
+            "max_node_risk": 0.37124934792518616,
+            "max_edge_risk": 0.7501816749572754,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.2916469331768554
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 1.0142746847560244
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9703117895036469
+                },
+                {
+                    "bus_id": 1,
+                    "risk_score": 0.8104715995872427
+                },
+                {
+                    "bus_id": 28,
+                    "risk_score": 0.8077629760315914
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 4.800026316378388
+                },
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.734063715670381
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.6863197514751285
+                },
+                {
+                    "from": 3,
+                    "to": 4,
+                    "line_id": "L_line_6",
+                    "risk_score": 4.339882168242163
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.220201655127044
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        "N2": {
+            "average_node_risk": 0.19155144691467285,
+            "average_edge_risk": 0.3943171799182892,
+            "max_node_risk": 0.35453861951828003,
+            "max_edge_risk": 0.8739731311798096,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.268999603011946
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 0.9783619624068577
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9492165374665986
+                },
+                {
+                    "bus_id": 1,
+                    "risk_score": 0.7993846439207006
+                },
+                {
+                    "bus_id": 28,
+                    "risk_score": 0.7977365389874478
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 4.830372417900834
+                },
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.769521678421769
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.708870137665542
+                },
+                {
+                    "from": 3,
+                    "to": 4,
+                    "line_id": "L_line_6",
+                    "risk_score": 4.3886762351481385
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.273911352850432
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        "VOLTAGE_INSTABILITY": {
+            "average_node_risk": 0.2717103362083435,
+            "average_edge_risk": 0.5300052165985107,
+            "max_node_risk": 0.6594315767288208,
+            "max_edge_risk": 0.9878711700439453,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.218386005976538
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9471519607215653
+                },
+                {
+                    "bus_id": 7,
+                    "risk_score": 0.9455790914920637
+                },
+                {
+                    "bus_id": 13,
+                    "risk_score": 0.9419177843432059
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 0.9263843816211063
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 5.067025507424149
+                },
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.927743900749955
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.720048637125763
+                },
+                {
+                    "from": 3,
+                    "to": 4,
+                    "line_id": "L_line_6",
+                    "risk_score": 4.489025935599035
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.345693667627807
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        "FDIA": {
+            "average_node_risk": 0.2025020867586136,
+            "average_edge_risk": 0.40103283524513245,
+            "max_node_risk": 0.39835312962532043,
+            "max_edge_risk": 0.7690675854682922,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.3112512167480985
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 1.0057576965977986
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9727467882543336
+                },
+                {
+                    "bus_id": 1,
+                    "risk_score": 0.8533043317878652
+                },
+                {
+                    "bus_id": 28,
+                    "risk_score": 0.7778665915539761
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.855346430275712
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.768439460728439
+                },
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 4.616129399273667
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.333870526052947
+                },
+                {
+                    "from": 3,
+                    "to": 4,
+                    "line_id": "L_line_6",
+                    "risk_score": 4.090850576826758
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        "REPLAY": {
+            "average_node_risk": 0.2071753293275833,
+            "average_edge_risk": 0.3769265115261078,
+            "max_node_risk": 0.3735814094543457,
+            "max_edge_risk": 0.7180720567703247,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.3217814262894194
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 1.021318049400075
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9902025687604676
+                },
+                {
+                    "bus_id": 1,
+                    "risk_score": 0.844221299179833
+                },
+                {
+                    "bus_id": 28,
+                    "risk_score": 0.7905385271122952
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.837488139603409
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.753728581402573
+                },
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 4.616787899468217
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.2976815540566395
+                },
+                {
+                    "from": 3,
+                    "to": 4,
+                    "line_id": "L_line_6",
+                    "risk_score": 4.073342564770407
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        "DOS": {
+            "average_node_risk": 0.18392927944660187,
+            "average_edge_risk": 0.4552692770957947,
+            "max_node_risk": 0.39330947399139404,
+            "max_edge_risk": 0.8579462170600891,
+            "critical_buses": [
+                {
+                    "bus_id": 25,
+                    "risk_score": 1.2797804649857085
+                },
+                {
+                    "bus_id": 22,
+                    "risk_score": 0.9712294089704285
+                },
+                {
+                    "bus_id": 15,
+                    "risk_score": 0.9690741610219318
+                },
+                {
+                    "bus_id": 1,
+                    "risk_score": 0.8496153824413228
+                },
+                {
+                    "bus_id": 28,
+                    "risk_score": 0.756686241965582
+                }
+            ],
+            "critical_lines": [
+                {
+                    "from": 14,
+                    "to": 15,
+                    "line_id": "L_line_19",
+                    "risk_score": 4.887057937119279
+                },
+                {
+                    "from": 15,
+                    "to": 16,
+                    "line_id": "L_line_20",
+                    "risk_score": 4.797380531761917
+                },
+                {
+                    "from": 13,
+                    "to": 14,
+                    "line_id": "L_line_18",
+                    "risk_score": 4.614754494462285
+                },
+                {
+                    "from": 1,
+                    "to": 2,
+                    "line_id": "L_line_2",
+                    "risk_score": 4.352583332754607
+                },
+                {
+                    "from": 3,
+                    "to": 13,
+                    "line_id": "L_line_7",
+                    "risk_score": 4.109359952151856
+                }
+            ],
+            "sample_propagation_path_30_to_15": [
+                30,
+                5,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        }
+    }
+}

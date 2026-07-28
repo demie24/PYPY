@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+  namespace: default
+  labels:
+    app: pypy-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pypy-worker
+  template:
+    metadata:
+      labels:
+        app: pypy-worker
+    spec:
+      containers:
+        - name: celery-worker
+          image: pypygrid/gateway:latest
+          imagePullPolicy: IfNotPresent
+          command: ["celery", "-A", "workers.simulation.tasks", "worker", "--loglevel=info"]
+          env:
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: REDIS_URL
+            - name: MQTT_BROKER
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: MQTT_BROKER
+            - name: MQTT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: MQTT_PORT
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):5432/$(DB_NAME)"
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_USER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_HOST
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pypy-secrets
+                  key: DATABASE_PASSWORD
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pypy-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beat-deployment
+  namespace: default
+  labels:
+    app: pypy-beat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pypy-beat
+  template:
+    metadata:
+      labels:
+        app: pypy-beat
+    spec:
+      containers:
+        - name: celery-beat
+          image: pypygrid/gateway:latest
+          imagePullPolicy: IfNotPresent
+          command: ["celery", "-A", "workers.billing.tasks", "beat", "--loglevel=info"]
+          env:
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: REDIS_URL
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):5432/$(DB_NAME)"
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_USER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_HOST
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pypy-secrets
+                  key: DATABASE_PASSWORD
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"

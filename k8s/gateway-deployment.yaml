@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+  namespace: default
+  labels:
+    app: pypy-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pypy-gateway
+  template:
+    metadata:
+      labels:
+        app: pypy-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: pypygrid/gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: REDIS_URL
+            - name: MQTT_BROKER
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: MQTT_BROKER
+            - name: MQTT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: MQTT_PORT
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):5432/$(DB_NAME)"
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_USER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_HOST
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: pypy-config
+                  key: DATABASE_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pypy-secrets
+                  key: DATABASE_PASSWORD
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pypy-secrets
+                  key: JWT_SECRET
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: default
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: pypy-gateway
+  type: ClusterIP

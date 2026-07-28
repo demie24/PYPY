@@ -1,0 +1,10 @@
+{
+    "red_fitness_mean": 206.38748889844268,
+    "blue_fitness_mean": -399.6482264014805,
+    "arms_race_score_final": 60.603571529992315,
+    "adaptation_score_final": 195.6428497253509,
+    "arms_race_emergence": true,
+    "coevolutionary_arms_race": {
+        "description": "Pathogen updates force Immune adaptations. Arms race stabilizes as mutual Nash Equilibrium is reached."
+    }
+}

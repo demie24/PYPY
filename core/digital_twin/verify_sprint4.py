@@ -4,9 +4,9 @@ import time
 import logging
 from typing import Dict, List, Any
 import paho.mqtt.client as mqtt
-from grid_topology import GridTopology
-from physics import GridPhysicsEngine
-from telemetry import ACTelemetryPipeline
+from core.digital_twin.grid_topology import GridTopology
+from core.digital_twin.physics import GridPhysicsEngine
+from core.digital_twin.telemetry import ACTelemetryPipeline
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Sprint4Verification")

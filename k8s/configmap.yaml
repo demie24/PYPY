@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pypy-config
+  namespace: default
+data:
+  DATABASE_HOST: "postgres-service"
+  DATABASE_NAME: "pypy_saas"
+  DATABASE_USER: "pypy_admin"
+  REDIS_URL: "redis://redis-service:6379/0"
+  MQTT_BROKER: "mqtt-service"
+  MQTT_PORT: "1883"
+  LOG_LEVEL: "INFO"

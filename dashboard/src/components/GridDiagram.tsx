@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Activity, ShieldAlert, AlertTriangle, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { Activity, ShieldAlert, AlertTriangle, ZoomIn, ZoomOut, RotateCcw, Maximize } from "lucide-react";
 
 interface GridDiagramProps {
   telemetry: any;
@@ -9,6 +9,7 @@ interface GridDiagramProps {
   flisrIsolated: string[];
   flisrReconfigured: string[];
   flisrTripped: string[];
+  selectedGrid?: string;
 }
 
 // Realistic New England IEEE 39-Bus SCADA coordinates mapping
@@ -61,7 +62,8 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
   flisrState,
   flisrIsolated,
   flisrReconfigured,
-  flisrTripped: _flisrTripped
+  flisrTripped: _flisrTripped,
+  selectedGrid
 }) => {
   const [topology, setTopology] = useState<any>(null);
   const [hoveredEl, setHoveredEl] = useState<{ type: "bus" | "line"; id: string; data: any } | null>(null);
@@ -73,16 +75,18 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Fetch dynamic IEEE 39-bus topology on mount
+  const gridName = selectedGrid || telemetry?.grid_name || "ieee39";
+
+  // Fetch dynamic topology on mount or grid name change
   useEffect(() => {
     const host = window.location.hostname || "localhost";
-    fetch(`http://${host}:8000/api/telemetry/topology`)
+    fetch(`http://${host}:8000/api/telemetry/topology?grid_name=${gridName}`)
       .then((res) => res.json())
       .then((data) => setTopology(data))
       .catch((err) => {
         console.error("Failed to fetch topology:", err);
       });
-  }, []);
+  }, [gridName]);
 
   const state = telemetry?.state || {};
   const buses = state.buses || {};
@@ -100,14 +104,62 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
 
   // Compute raw coords for all active buses
   const rawCoords = activeBuses.reduce((acc, bid) => {
-    let raw = defaultBusCoords[bid];
+    const isIeee39 = gridName === "ieee39";
+    let raw = isIeee39 ? defaultBusCoords[bid] : null;
+    
     if (!raw) {
       const idx = parseInt(bid.replace("Bus_", ""), 10) || 0;
-      const angle = (idx / 39) * 2 * Math.PI;
-      const radius = 400;
+      const total = activeBuses.length;
+      
+      // Concentric rings layout to prevent overlaps in high-density grids
+      const center = { x: 1000, y: 500 };
+      let rings: { radius: number; count: number }[] = [];
+      if (total <= 14) {
+        rings = [
+          { radius: 150, count: 4 },
+          { radius: 320, count: 10 }
+        ];
+      } else if (total <= 57) {
+        rings = [
+          { radius: 120, count: 6 },
+          { radius: 240, count: 14 },
+          { radius: 360, count: 18 },
+          { radius: 480, count: 19 }
+        ];
+      } else {
+        // IEEE 118 or larger
+        rings = [
+          { radius: 80, count: 6 },
+          { radius: 180, count: 12 },
+          { radius: 280, count: 18 },
+          { radius: 380, count: 24 },
+          { radius: 480, count: 28 },
+          { radius: 580, count: 30 }
+        ];
+      }
+      
+      // Find ring matching the index
+      let ringIndex = 0;
+      let accum = 0;
+      for (let r = 0; r < rings.length; r++) {
+        if (idx - 1 < accum + rings[r].count) {
+          ringIndex = r;
+          break;
+        }
+        accum += rings[r].count;
+        ringIndex = r;
+      }
+      
+      const currentRing = rings[ringIndex];
+      const indexInRing = idx - 1 - accum;
+      const angle = (indexInRing / (currentRing?.count || 1)) * 2 * Math.PI;
+      
+      const x = center.x + Math.cos(angle) * (currentRing?.radius || 300);
+      const y = center.y + Math.sin(angle) * (currentRing?.radius || 300);
+      
       raw = {
-        x: 1000 + radius * Math.cos(angle),
-        y: 500 + radius * Math.sin(angle),
+        x: isNaN(x) ? 1000 : x,
+        y: isNaN(y) ? 500 : y,
         label: `B${idx}`,
         name: `Bus ${idx}`
       };
@@ -229,7 +281,7 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
       <div className="flex justify-between items-center border-b border-scada-border/40 pb-2">
         <h2 className="text-xs font-bold tracking-wider text-scada-dimText uppercase flex items-center gap-1.5">
           <Activity size={14} className="text-scada-nominal animate-pulse" />
-          Interactive IEEE 39-Bus Transmission SCADA Diagram
+          Interactive {(telemetry?.grid_name || "ieee39").toUpperCase().replace("IEEE", "IEEE ")} Transmission SCADA Diagram
         </h2>
         
         {/* Navigation & Controls */}
@@ -243,6 +295,9 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
           <button onClick={resetView} className="bg-scada-bg hover:bg-scada-border/40 border border-scada-border text-scada-dimText hover:text-white p-1 rounded" title="Reset View">
             <RotateCcw size={12} />
           </button>
+          <button onClick={() => { setZoom(1.0); setPanX(0); setPanY(0); }} className="bg-scada-bg hover:bg-scada-border/40 border border-scada-border text-scada-dimText hover:text-white p-1 rounded" title="Fit to Screen">
+            <Maximize size={12} />
+          </button>
           {activeAttack && (
             <div className="bg-red-500/10 border border-red-500/30 text-scada-trip text-[10px] px-2 py-0.5 rounded font-mono font-bold animate-pulse flex items-center gap-1">
               <ShieldAlert size={12} /> {activeAttack === "SCENARIO" ? `SCENARIO: ${attackStatus?.active_scenario_name}` : `${activeAttack} ATTACK ACTIVE`}
@@ -253,6 +308,90 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
 
       {/* SVG Canvas Area */}
       <div className="flex-1 relative flex items-center justify-center bg-black/20 rounded-md my-2 border border-scada-border/20 overflow-hidden">
+        {/* Real-time SCADA Inspector Widget */}
+        {hoveredEl && (
+          <div className="absolute top-3 left-3 z-10 w-64 bg-scada-panel/95 border border-cyan-500/30 rounded p-2.5 font-mono text-[9px] text-scada-dimText shadow-2xl backdrop-blur-sm animate-fade-in pointer-events-none">
+            <div className="flex justify-between items-center border-b border-scada-border/40 pb-1.5 mb-1.5">
+              <span className="text-white font-bold tracking-widest text-[10px] uppercase flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-ping"></span>
+                {hoveredEl.type === "bus" ? hoveredEl.id.replace("Bus_", "BUS Bar ") : `Segment ${hoveredEl.id.replace("L_", "").replace("_", "-")}`}
+              </span>
+              <span className="px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 font-bold uppercase text-[8px]">
+                {hoveredEl.type.toUpperCase()}
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              {hoveredEl.type === "bus" ? (
+                <>
+                  <div className="flex justify-between">
+                    <span>Voltage Magnitude:</span>
+                    <strong className="text-white">{(hoveredEl.data?.voltage_pu || 1.0).toFixed(4)} pu</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Absolute Voltage:</span>
+                    <strong className="text-cyan-400">{( (hoveredEl.data?.voltage_pu || 1.0) * (gridName === "ieee39" ? 345 : 115) ).toFixed(2)} kV</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Phase Angle:</span>
+                    <strong className="text-white">{( (hoveredEl.data?.angle_rad || 0) * 180 / Math.PI ).toFixed(2)}°</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Frequency:</span>
+                    <strong className="text-white">{(hoveredEl.data?.frequency_hz || 60.0).toFixed(3)} Hz</strong>
+                  </div>
+                  {hoveredEl.data?.P_mw !== undefined && hoveredEl.data?.P_mw > 0 && (
+                    <div className="flex justify-between text-emerald-400">
+                      <span>Generator Output:</span>
+                      <strong>{hoveredEl.data.P_mw.toFixed(1)} MW</strong>
+                    </div>
+                  )}
+                  {hoveredEl.data?.P_mw === undefined && (
+                    <div className="flex justify-between text-blue-400">
+                      <span>Load Draw:</span>
+                      <strong>{((hoveredEl.data?.active_power || 0) * 100).toFixed(1)} MW</strong>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span>Substation Status:</span>
+                    <span className={compromisedNodes[hoveredEl.id] ? "text-red-400 font-bold" : (hoveredEl.data?.voltage_pu || 1.0) < 0.90 ? "text-yellow-400" : "text-emerald-400"}>
+                      {compromisedNodes[hoveredEl.id] ? compromisedNodes[hoveredEl.id].type : (hoveredEl.data?.voltage_pu || 1.0) < 0.90 ? "UNDERVOLT" : "NOMINAL"}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span>Breaker Status:</span>
+                    <strong className={breakers[hoveredEl.id] === "CLOSED" ? "text-emerald-400" : "text-red-400"}>
+                      {breakers[hoveredEl.id] || "CLOSED"}
+                    </strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Active Power Flow:</span>
+                    <strong className="text-white">{(hoveredEl.data?.active_power_flow || 0).toFixed(2)} MW</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Reactive Power Flow:</span>
+                    <strong className="text-white">{(hoveredEl.data?.reactive_power_flow || 0).toFixed(2)} MVAR</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Line Loading:</span>
+                    <strong className={(hoveredEl.data?.loading_percent || 0) > 100 ? "text-red-400 font-extrabold" : (hoveredEl.data?.loading_percent || 0) > 80 ? "text-yellow-400 font-bold" : "text-emerald-400"}>
+                      {(hoveredEl.data?.loading_percent || 0).toFixed(1)}%
+                    </strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Self-Healing State:</span>
+                    <span className={flisrIsolated.includes(hoveredEl.id) ? "text-red-400 font-bold" : flisrReconfigured.includes(hoveredEl.id) ? "text-emerald-400" : "text-gray-500"}>
+                      {flisrIsolated.includes(hoveredEl.id) ? "ISOLATED" : flisrReconfigured.includes(hoveredEl.id) ? "RECONFIGURED" : "DEFAULT"}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
         <svg 
           viewBox="0 0 2000 1000"
           className="w-full h-full cursor-grab active:cursor-grabbing"
@@ -279,17 +418,19 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
           
           <g transform={`translate(${panX}, ${panY}) scale(${zoom})`}>
             
-            {/* Regional Grouping Boxes (SCADA Zones) */}
-            <g opacity={0.85}>
-              <rect x={50} y={50} width={540} height={900} rx={10} fill="rgba(16, 185, 129, 0.01)" stroke="rgba(16, 185, 129, 0.12)" strokeWidth={1.5} strokeDasharray="6,4" />
-              <text x={320} y={80} textAnchor="middle" fill="#10B981" fontSize="11" fontWeight="bold" opacity={0.5} letterSpacing={2}>WESTERN GENERATION HUB (ZONE 1)</text>
+            {/* Regional Grouping Boxes (SCADA Zones) - only for IEEE 39 */}
+            {(telemetry?.grid_name === "ieee39" || (!telemetry?.grid_name && activeBuses.length === 39)) && (
+              <g opacity={0.85}>
+                <rect x={50} y={50} width={540} height={900} rx={10} fill="rgba(16, 185, 129, 0.01)" stroke="rgba(16, 185, 129, 0.12)" strokeWidth={1.5} strokeDasharray="6,4" />
+                <text x={320} y={80} textAnchor="middle" fill="#10B981" fontSize="11" fontWeight="bold" opacity={0.5} letterSpacing={2}>WESTERN GENERATION HUB (ZONE 1)</text>
 
-              <rect x={600} y={50} width={645} height={900} rx={10} fill="rgba(59, 130, 246, 0.01)" stroke="rgba(59, 130, 246, 0.12)" strokeWidth={1.5} strokeDasharray="6,4" />
-              <text x={922.5} y={80} textAnchor="middle" fill="#3B82F6" fontSize="11" fontWeight="bold" opacity={0.5} letterSpacing={2}>CENTRAL TRANSMISSION GRID (ZONE 2)</text>
+                <rect x={600} y={50} width={645} height={900} rx={10} fill="rgba(59, 130, 246, 0.01)" stroke="rgba(59, 130, 246, 0.12)" strokeWidth={1.5} strokeDasharray="6,4" />
+                <text x={922.5} y={80} textAnchor="middle" fill="#3B82F6" fontSize="11" fontWeight="bold" opacity={0.5} letterSpacing={2}>CENTRAL TRANSMISSION GRID (ZONE 2)</text>
 
-              <rect x={1255} y={50} width={695} height={900} rx={10} fill="rgba(139, 92, 246, 0.01)" stroke="rgba(139, 92, 246, 0.12)" strokeWidth={1.5} strokeDasharray="6,4" />
-              <text x={1602.5} y={80} textAnchor="middle" fill="#8B5CF6" fontSize="11" fontWeight="bold" opacity={0.5} letterSpacing={2}>EASTERN LOAD ZONE (ZONE 3)</text>
-            </g>
+                <rect x={1255} y={50} width={695} height={900} rx={10} fill="rgba(139, 92, 246, 0.01)" stroke="rgba(139, 92, 246, 0.12)" strokeWidth={1.5} strokeDasharray="6,4" />
+                <text x={1602.5} y={80} textAnchor="middle" fill="#8B5CF6" fontSize="11" fontWeight="bold" opacity={0.5} letterSpacing={2}>EASTERN LOAD ZONE (ZONE 3)</text>
+              </g>
+            )}
 
             {/* Draw Transmission Lines & Transformers */}
             {activeLines.map((line: any) => {

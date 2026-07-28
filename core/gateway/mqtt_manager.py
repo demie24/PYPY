@@ -62,6 +62,7 @@ class MQTTManager:
             client.subscribe("pypy/grid/line/+/flow")
             client.subscribe("pypy/grid/gen/+/status")
             client.subscribe("pypy/grid/telemetry")
+            client.subscribe("pypy/+/+/telemetry")
             
             # Legacy Subscriptions
             client.subscribe("grid/telemetry")

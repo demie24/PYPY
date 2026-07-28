@@ -1,0 +1,161 @@
+{
+    "top_targeted_buses": [
+        {
+            "bus_id": 37,
+            "total_attacks": 37,
+            "successful_attacks": 37
+        },
+        {
+            "bus_id": 8,
+            "total_attacks": 32,
+            "successful_attacks": 32
+        },
+        {
+            "bus_id": 0,
+            "total_attacks": 29,
+            "successful_attacks": 29
+        },
+        {
+            "bus_id": 6,
+            "total_attacks": 28,
+            "successful_attacks": 28
+        },
+        {
+            "bus_id": 38,
+            "total_attacks": 28,
+            "successful_attacks": 28
+        }
+    ],
+    "top_targeted_lines": [
+        {
+            "line_id": "L_line_5",
+            "target_index": 44,
+            "total_attacks": 30,
+            "successful_attacks": 30
+        },
+        {
+            "line_id": "L_line_1",
+            "target_index": 40,
+            "total_attacks": 27,
+            "successful_attacks": 27
+        },
+        {
+            "line_id": "L_line_0",
+            "target_index": 39,
+            "total_attacks": 25,
+            "successful_attacks": 25
+        },
+        {
+            "line_id": "L_line_2",
+            "target_index": 41,
+            "total_attacks": 24,
+            "successful_attacks": 24
+        },
+        {
+            "line_id": "L_line_3",
+            "target_index": 42,
+            "total_attacks": 24,
+            "successful_attacks": 24
+        }
+    ],
+    "most_successful_attack_sequences": [
+        {
+            "genome": [
+                "FDIA(Bus17,0.20)",
+                "WAIT",
+                "TRIP_LINE(Line24)",
+                "REPLAY(Bus18)",
+                "REPLAY(Bus39)",
+                "FDIA(Bus8,0.14)",
+                "DOS(Bus12)",
+                "REPLAY(Bus39)",
+                "DOS(Bus0)",
+                "FDIA(Bus26,0.20)",
+                "REPLAY(Bus16)",
+                "REPLAY(Bus0)",
+                "DOS(Bus13)",
+                "REPLAY(Bus43)",
+                "REPLAY(Bus31)",
+                "REPLAY(Bus12)",
+                "TRIP_LINE(Line18)",
+                "REPLAY(Bus1)",
+                "REPLAY(Bus1)",
+                "WAIT",
+                "DOS(Bus14)",
+                "REPLAY(Bus31)",
+                "REPLAY(Bus4)",
+                "FDIA(Bus41,0.20)",
+                "TRIP_LINE(Line18)",
+                "FDIA(Bus9,0.20)",
+                "DOS(Line5)",
+                "WAIT",
+                "FDIA(Bus37,-0.20)",
+                "DOS(Bus20)",
+                "TRIP_LINE(Line13)",
+                "WAIT",
+                "DOS(Bus37)",
+                "WAIT",
+                "WAIT",
+                "WAIT",
+                "WAIT",
+                "REPLAY(Bus32)",
+                "REPLAY(Bus3)",
+                "WAIT",
+                "TRIP_LINE(Line22)",
+                "REPLAY(Bus38)",
+                "REPLAY(Bus30)",
+                "DOS(Bus24)",
+                "TRIP_LINE(Line15)",
+                "TRIP_LINE(Line37)"
+            ],
+            "effectiveness_score": 145.5414
+        },
+        {
+            "genome": [
+                "DOS(Line3)",
+                "REPLAY(Bus41)",
+                "FDIA(Bus13,-0.20)",
+                "DOS(Bus15)",
+                "DOS(Line3)",
+                "WAIT",
+                "FDIA(Bus13,0.20)",
+                "DOS(Bus8)",
+                "TRIP_LINE(Line20)",
+                "FDIA(Bus39,0.20)",
+                "FDIA(Bus14,0.20)",
+                "DOS(Bus3)",
+                "TRIP_LINE(Line8)",
+                "TRIP_LINE(Line36)"
+            ],
+            "effectiveness_score": 113.2879
+        },
+        {
+            "genome": [
+                "DOS(Bus17)"
+            ],
+            "effectiveness_score": 89.0
+        },
+        {
+            "genome": [
+                "DOS(Bus9)"
+            ],
+            "effectiveness_score": 89.0
+        },
+        {
+            "genome": [
+                "DOS(Bus26)"
+            ],
+            "effectiveness_score": 89.0
+        }
+    ],
+    "comparative_audit": {
+        "gnn_critical_buses": [
+            25,
+            15,
+            22,
+            1,
+            28
+        ],
+        "overlap_detected": false
+    }
+}

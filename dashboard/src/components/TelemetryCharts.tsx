@@ -9,6 +9,32 @@ export const TelemetryCharts: React.FC<TelemetryChartsProps> = ({ history }) => 
   const [selectedBus, setSelectedBus] = useState<string>("Bus_5");
   const [selectedLine, setSelectedLine] = useState<string>("L5_6");
 
+  // Get active buses and lines dynamically from the history (or the latest frame)
+  const latestFrame = history[history.length - 1];
+  const busOptions = React.useMemo(() => {
+    return latestFrame?.state?.buses 
+      ? Object.keys(latestFrame.state.buses) 
+      : Array.from({ length: 9 }, (_, i) => `Bus_${i + 1}`);
+  }, [latestFrame?.state?.buses]);
+    
+  const lineOptions = React.useMemo(() => {
+    return latestFrame?.state?.lines 
+      ? Object.keys(latestFrame.state.lines) 
+      : ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6", "L6_7", "L7_8", "L8_9"];
+  }, [latestFrame?.state?.lines]);
+
+  React.useEffect(() => {
+    if (busOptions.length > 0 && !busOptions.includes(selectedBus)) {
+      setSelectedBus(busOptions[0]);
+    }
+  }, [busOptions, selectedBus]);
+
+  React.useEffect(() => {
+    if (lineOptions.length > 0 && !lineOptions.includes(selectedLine)) {
+      setSelectedLine(lineOptions[0]);
+    }
+  }, [lineOptions, selectedLine]);
+
   // Format historical telemetry for Recharts
   const chartData = history.map((frame) => {
     const state = frame.state || {};
@@ -39,7 +65,7 @@ export const TelemetryCharts: React.FC<TelemetryChartsProps> = ({ history }) => 
               onChange={(e) => setSelectedBus(e.target.value)}
               className="bg-scada-bg border border-scada-border rounded px-2 py-1 text-xs text-white focus:outline-none"
             >
-              {Array.from({ length: 9 }, (_, i) => `Bus_${i + 1}`).map((b) => (
+              {busOptions.map((b) => (
                 <option key={b} value={b}>{b.replace("_", " ")}</option>
               ))}
             </select>
@@ -53,8 +79,8 @@ export const TelemetryCharts: React.FC<TelemetryChartsProps> = ({ history }) => 
               onChange={(e) => setSelectedLine(e.target.value)}
               className="bg-scada-bg border border-scada-border rounded px-2 py-1 text-xs text-white focus:outline-none"
             >
-              {["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6", "L6_7", "L7_8", "L8_9"].map((l) => (
-                <option key={l} value={l}>LINE {l.replace("L", "").replace("_", "-")}</option>
+              {lineOptions.map((l) => (
+                <option key={l} value={l}>LINE {l.replace("L_line_", "").replace("L_trafo_", "Trafo ").replace("L", "").replace("_", "-")}</option>
               ))}
             </select>
           </div>

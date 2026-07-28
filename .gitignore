@@ -110,3 +110,8 @@ analytics/*.csv
 models/checkpoints/
 simulation_data/
 core/assistant/routine_memory.json
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3

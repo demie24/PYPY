@@ -1,0 +1,29 @@
+{
+    "ppo_immune_agent": {
+        "average_reward": 4994.097967860154,
+        "attack_mitigation_rate": 0.0,
+        "blackout_prevention_rate": 1.0,
+        "mean_restoration_time": 50.0,
+        "recovery_success_rate": 0.0,
+        "false_isolation_rate": 0.0196,
+        "stealth_attack_detection_rate": 0.0
+    },
+    "rule_based_defender": {
+        "average_reward": 5074.097967860154,
+        "attack_mitigation_rate": 0.0,
+        "blackout_prevention_rate": 1.0,
+        "mean_restoration_time": 50.0,
+        "recovery_success_rate": 0.0,
+        "false_isolation_rate": 0.0,
+        "stealth_attack_detection_rate": 0.0
+    },
+    "random_defender": {
+        "average_reward": 4920.143142057937,
+        "attack_mitigation_rate": 0.005,
+        "blackout_prevention_rate": 1.0,
+        "mean_restoration_time": 50.0,
+        "recovery_success_rate": 7.63,
+        "false_isolation_rate": 0.27140000000000003,
+        "stealth_attack_detection_rate": 0.005
+    }
+}

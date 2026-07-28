@@ -93,14 +93,20 @@ def get_latest_telemetry():
     }
 
 @router.get("/topology")
-def get_grid_topology():
+def get_grid_topology(grid_name: Optional[str] = Query(None)):
+    if not grid_name:
+        if store.latest_telemetry and "grid_name" in store.latest_telemetry:
+            grid_name = store.latest_telemetry["grid_name"]
+        else:
+            grid_name = "ieee39"
+            
     import sys
     import os
     dt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../digital_twin"))
     if dt_path not in sys.path:
         sys.path.append(dt_path)
-    from grid_topology import GridTopology
-    topo = GridTopology()
+    from multi_grid_topology import MultiGridTopology
+    topo = MultiGridTopology(grid_name)
     
     buses = {}
     for i in range(topo.num_buses):

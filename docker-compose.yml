@@ -1,33 +1,56 @@
+version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: smart_grid_postgres
+    environment:
+      POSTGRES_DB: pypy_saas
+      POSTGRES_USER: pypy_admin
+      POSTGRES_PASSWORD: pypy_db_secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pypy_admin -d pypy_saas"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - grid-net
 
-  # ═══════════════════════════════════════
-  # INFRASTRUCTURE
-  # ═══════════════════════════════════════
+  redis:
+    image: redis:7-alpine
+    container_name: smart_grid_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - grid-net
+
   mqtt:
     image: eclipse-mosquitto:latest
     container_name: smart_grid_mqtt
     ports:
       - "1884:1883"
       - "9001:9001"
-     # External host access uses port 1884
-     # Internal container communication remains on 1883 
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mqtt_data:/mosquitto/data
       - mqtt_logs:/mosquitto/log
-    restart: always
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - grid-net
-    healthcheck:
-      test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "test", "-C", "1", "-E"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
-  # ═══════════════════════════════════════
-  # ACTIVE CORE SERVICES
-  # ═══════════════════════════════════════
   gateway:
     build:
       context: ./core
@@ -36,17 +59,73 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - REDIS_URL=redis://redis:6379/0
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
-      - LOG_LEVEL=INFO
     depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       mqtt:
         condition: service_healthy
     restart: always
     networks:
       - grid-net
-    volumes:
-      - ./logs/gateway:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  celery_worker:
+    build:
+      context: ./core
+      dockerfile: ./gateway/Dockerfile
+    container_name: smart_grid_celery_worker
+    command: celery -A workers.simulation.tasks worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - REDIS_URL=redis://redis:6379/0
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "celery", "-A", "workers.simulation.tasks", "inspect", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  celery_beat:
+    build:
+      context: ./core
+      dockerfile: ./gateway/Dockerfile
+    container_name: smart_grid_celery_beat
+    command: celery -A workers.billing.tasks beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import psutil, os, sys; sys.exit(0 if any('beat' in ' '.join(p.cmdline()) for p in psutil.process_iter() if p.pid != os.getpid()) else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   digital_twin:
     build:
@@ -66,49 +145,6 @@ services:
     volumes:
       - ./logs/digital_twin:/app/logs
 
-  self_healing:
-    build:
-      context: ./core
-      dockerfile: ./self_healing/Dockerfile
-    container_name: smart_grid_self_healing
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - LOG_LEVEL=INFO
-    depends_on:
-      mqtt:
-        condition: service_healthy
-      digital_twin:
-        condition: service_started
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs/self_healing:/app/logs
-
-  ai_detection:
-    build:
-      context: ./core
-      dockerfile: ./ai_detection/Dockerfile
-    container_name: smart_grid_ai_detection
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - LOG_LEVEL=INFO
-    depends_on:
-      mqtt:
-        condition: service_healthy
-      digital_twin:
-        condition: service_started
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs/ai_detection:/app/logs
-
-  # ═══════════════════════════════════════
-  # FRONTEND
-  # ═══════════════════════════════════════
   dashboard:
     build:
       context: ./dashboard
@@ -117,228 +153,25 @@ services:
     ports:
       - "3001:80"
     depends_on:
-      - gateway
+      gateway:
+        condition: service_healthy
     restart: always
     networks:
       - grid-net
     environment:
       - REACT_APP_API_URL=http://localhost:8000
-
-  # ═══════════════════════════════════════
-  # INCOMPLETE SERVICES (enable when ready)
-  # ═══════════════════════════════════════
-
-  # threat_engine:  # Status: paused – scorer.py not yet production-ready
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./threat_engine/Dockerfile
-  #   container_name: smart_grid_threat_engine
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
-
-  # data_collector:  # Status: paused – collector.py not yet production-ready
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./data_collector/Dockerfile
-  #   container_name: smart_grid_data_collector
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
-
-  ai_prediction:
-    build:
-      context: ./core
-      dockerfile: ./ai_prediction/Dockerfile
-    container_name: smart_grid_ai_prediction
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - LOG_LEVEL=INFO
-    depends_on:
-      mqtt:
-        condition: service_healthy
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs/ai_prediction:/app/logs
-
-  strategic_coordinator:
-    build:
-      context: ./core
-      dockerfile: ./strategy/Dockerfile
-    container_name: smart_grid_strategic_coordinator
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - LOG_LEVEL=INFO
-    depends_on:
-      mqtt:
-        condition: service_healthy
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs/strategy:/app/logs
-
-  adversarial_coordinator:
-    build:
-      context: ./core
-      dockerfile: ./adversarial/Dockerfile
-    container_name: smart_grid_adversarial_coordinator
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - LOG_LEVEL=INFO
-    depends_on:
-      mqtt:
-        condition: service_healthy
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs/adversarial:/app/logs
-
-  # physics_validation:  # Status: paused – runs as test suite component, not daemon
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./physics_validation/Dockerfile
-  #   container_name: smart_grid_physics_validation
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
-
-  # ai_orchestrator:  # Status: paused – integrated via self_healing service
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./orchestrator/Dockerfile
-  #   container_name: smart_grid_ai_orchestrator
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
-
-  # cyber_defense:  # Status: paused – integrated via self_healing orchestrator
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./cyber_defense/Dockerfile
-  #   container_name: smart_grid_cyber_defense
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
-
-  # hardware:  # Status: pending – ESP32 hardware not yet available
-  #   build:
-  #     context: ./core
-  #     dockerfile: ./hardware/Dockerfile
-  #   container_name: smart_grid_hardware
-  #   environment:
-  #     - MQTT_BROKER=mqtt
-  #     - MQTT_PORT=1883
-  #   depends_on:
-  #     mqtt:
-  #       condition: service_healthy
-  #   restart: always
-  #   networks:
-  #     - grid-net
-
-  assistant:
-    build:
-      context: ./core
-      dockerfile: ./assistant/Dockerfile
-    container_name: smart_grid_assistant
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - LOG_LEVEL=INFO
-    depends_on:
-      mqtt:
-        condition: service_healthy
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs/assistant:/app/logs
-
-  notification_service:
-    build:
-      context: ./core
-      dockerfile: ./gateway/Dockerfile
-    container_name: smart_grid_notification_service
-    command: ["python", "gateway/notification_service.py"]
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      mqtt:
-        condition: service_healthy
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs:/app/logs
     healthcheck:
-      test: ["CMD", "python", "-c", "import sys; cmd = open('/proc/1/cmdline').read(); sys.exit(0 if 'notification_service' in cmd else 1)"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
       retries: 3
-
-  arena_coordinator:
-    build:
-      context: ./core
-      dockerfile: ./arena/Dockerfile
-    container_name: smart_grid_arena_coordinator
-    environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-    depends_on:
-      mqtt:
-        condition: service_healthy
-    restart: always
-    networks:
-      - grid-net
-    volumes:
-      - ./logs:/app/logs
-    healthcheck:
-      test: ["CMD", "python", "-c", "import sys; cmd = open('/proc/1/cmdline').read(); sys.exit(0 if 'arena_coordinator' in cmd else 1)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      start_period: 10s
 
 networks:
   grid-net:
     driver: bridge
 
 volumes:
+  pgdata:
   mqtt_data:
   mqtt_logs:

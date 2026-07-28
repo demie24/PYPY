@@ -1,0 +1,25 @@
+{
+    "num_episodes": 1000,
+    "overall_blackouts": 1000,
+    "overall_steps": 1045,
+    "evolution_metrics": {
+        "early_phase": {
+            "avg_reward": 140.0861140805027,
+            "avg_disruption": 39.48280538700178,
+            "blackout_rate": 1.0,
+            "avg_stealth": 0.2182608695652174
+        },
+        "late_phase": {
+            "avg_reward": 138.89610900000002,
+            "avg_disruption": 39.0,
+            "blackout_rate": 1.0,
+            "avg_stealth": 0.21
+        },
+        "delta_percentage": {
+            "reward_improvement": -0.8494811125490161,
+            "disruption_improvement": -1.2228244222950924,
+            "blackout_rate_delta": 0.0,
+            "stealth_rate_delta": -0.008260869565217405
+        }
+    }
+}

@@ -67,9 +67,8 @@ def compute_pinn_loss(y_pred, y_true,
     pred_V = y_pred[:, 0:9]
     pred_angle = y_pred[:, 9:18]
     pred_P = y_pred[:, 18:27]
-    pred_Q = y_pred[:, 27:35] # Note: Q is cols 27-35 (9 values)
-    # Wait, col 35 is index 35. 27 to 35 inclusive is 9 values: 27, 28, 29, 30, 31, 32, 33, 34, 35.
-    pred_Q = y_pred[:, 27:36] # cols 27-35
+    # Extraction of reactive power flow values (cols 27 to 35 inclusive)
+    pred_Q = y_pred[:, 27:36]
     pred_cyber = y_pred[:, 36]
     pred_logvar = y_pred[:, 37]
     

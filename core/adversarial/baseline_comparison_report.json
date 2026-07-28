@@ -1,0 +1,16 @@
+{
+    "random_attacker": {
+        "blackout_rate": 0.391,
+        "average_reward": -609.4476425396161,
+        "stealth_score": 0.9079185580448925,
+        "consensus_bypass": 0.5370843989769821,
+        "disruption_score": 2.2369730754678256
+    },
+    "heuristic_attacker": {
+        "blackout_rate": 0.0,
+        "average_reward": -857.7306243733068,
+        "stealth_score": 0.99982,
+        "consensus_bypass": 0.0,
+        "disruption_score": 4.274187512533863
+    }
+}

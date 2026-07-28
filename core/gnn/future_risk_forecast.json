@@ -1,0 +1,56 @@
+{
+    "top_future_critical_buses": [
+        {
+            "bus_id": 25,
+            "risk_score": 1.294621002295355
+        },
+        {
+            "bus_id": 15,
+            "risk_score": 0.9810237687518436
+        },
+        {
+            "bus_id": 22,
+            "risk_score": 0.9743921267896425
+        },
+        {
+            "bus_id": 1,
+            "risk_score": 0.8246569805229116
+        },
+        {
+            "bus_id": 28,
+            "risk_score": 0.7695850924065609
+        }
+    ],
+    "top_future_critical_lines": [
+        {
+            "from": 14,
+            "to": 15,
+            "line_id": "L_line_19",
+            "risk_score": 4.902947128746781
+        },
+        {
+            "from": 15,
+            "to": 16,
+            "line_id": "L_line_20",
+            "risk_score": 4.805558443997177
+        },
+        {
+            "from": 13,
+            "to": 14,
+            "line_id": "L_line_18",
+            "risk_score": 4.6227766687014435
+        },
+        {
+            "from": 1,
+            "to": 2,
+            "line_id": "L_line_2",
+            "risk_score": 4.350243266321654
+        },
+        {
+            "from": 3,
+            "to": 13,
+            "line_id": "L_line_7",
+            "risk_score": 4.111684569060883
+        }
+    ]
+}

@@ -1,7 +1,10 @@
 import pandapower as pp
 import numpy as np
 import logging
-from grid_loader import IEEE39BusLoader
+try:
+    from core.digital_twin.grid_loader import IEEE39BusLoader
+except ModuleNotFoundError:
+    from grid_loader import IEEE39BusLoader
 
 logger = logging.getLogger("digital_twin.solver")
 

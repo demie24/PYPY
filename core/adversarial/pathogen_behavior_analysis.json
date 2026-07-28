@@ -1,0 +1,15 @@
+{
+    "stealth_attack_ratio": 0.998,
+    "brute_force_ratio": 0.082,
+    "wait_action_ratio": 0.11372099684904038,
+    "attack_diversity_index": 1.0,
+    "repeated_genome_ratio": 0.0,
+    "average_attack_interval": 1.0,
+    "average_attack_sequence_length": 1.0,
+    "attack_success_rate": 0.082,
+    "attack_detection_rate": 0.002,
+    "blackout_rate": 0.082,
+    "consensus_bypass_rate": 1.0,
+    "average_disruption_score": 4.116,
+    "behavioral_evolution_summary": "The pathogen exhibits a strong initial bias towards brute-force blackout generation due to the dominant utility of the blackout reward (+100.0). Over training epochs, the actor-critic networks optimize for immediate physical line tripping and sensor spoofing which lead to singular-step network collapse, demonstrating high success rate but lower overall stealth ratios."
+}

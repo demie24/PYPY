@@ -1,0 +1,47 @@
+{
+    "individual_seeds": {
+        "42": {
+            "final_reward": 390.3117706707959,
+            "blackout_rate": 0.02,
+            "stealth_score": 0.9775826086956522,
+            "consensus_bypass": 0.5,
+            "disruption_score": 1.257696229376303
+        },
+        "123": {
+            "final_reward": 318.5518593926915,
+            "blackout_rate": 0.01,
+            "stealth_score": 0.9981560975609757,
+            "consensus_bypass": 1.0,
+            "disruption_score": 1.1350916297644773
+        },
+        "999": {
+            "final_reward": 375.5879777650334,
+            "blackout_rate": 0.06,
+            "stealth_score": 0.9797067821067822,
+            "consensus_bypass": 0.16666666666666666,
+            "disruption_score": 1.5428400279344472
+        }
+    },
+    "statistics": {
+        "final_reward": {
+            "mean": 361.4838692761736,
+            "std": 30.946896708819338
+        },
+        "blackout_rate": {
+            "mean": 0.03,
+            "std": 0.021602468994692866
+        },
+        "stealth_score": {
+            "mean": 0.9851484961211368,
+            "std": 0.009238553262764833
+        },
+        "consensus_bypass": {
+            "mean": 0.5555555555555556,
+            "std": 0.3424674446093876
+        },
+        "disruption_score": {
+            "mean": 1.311875962358409,
+            "std": 0.17081426882641337
+        }
+    }
+}

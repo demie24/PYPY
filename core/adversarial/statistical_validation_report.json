@@ -1,0 +1,36 @@
+{
+    "ppo_vs_random": {
+        "reward": {
+            "t_statistic": 22.68842300752275,
+            "p_value": 1.3161625546476239e-48,
+            "significant": true
+        },
+        "blackout_rate": {
+            "t_statistic": -8.422609104288957,
+            "p_value": 1.853502948499877e-13,
+            "significant": true
+        },
+        "stealth_score": {
+            "t_statistic": 7.163997280175742,
+            "p_value": 5.042351480157297e-11,
+            "significant": true
+        }
+    },
+    "ppo_vs_heuristic": {
+        "reward": {
+            "t_statistic": 42.71283646041601,
+            "p_value": 1.1682224904240444e-102,
+            "significant": true
+        },
+        "blackout_rate": {
+            "t_statistic": 3.0409575269004288,
+            "p_value": 0.00256712450187296,
+            "significant": true
+        },
+        "stealth_score": {
+            "t_statistic": -4.001693618633016,
+            "p_value": 7.935895458212422e-05,
+            "significant": true
+        }
+    }
+}

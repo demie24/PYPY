@@ -1,8 +1,8 @@
 import sys
 import logging
 import numpy as np
-from grid_topology import GridTopology
-from physics import GridPhysicsEngine
+from core.digital_twin.grid_topology import GridTopology
+from core.digital_twin.physics import GridPhysicsEngine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Sprint3Verification")

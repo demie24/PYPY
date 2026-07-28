@@ -1,0 +1,146 @@
+{
+  "title": "PYPY Grid Operations Dashboard",
+  "uid": "pypy-ops-v118",
+  "tags": ["pypy", "operations", "v11.8"],
+  "style": "dark",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "5s",
+  "time": {"from": "now-1h", "to": "now"},
+  "templating": {"list": []},
+  "annotations": {"list": []},
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "CPU Usage",
+      "gridPos": {"x": 0, "y": 0, "w": 4, "h": 4},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_cpu_percent", "legendFormat": "CPU %"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 70}, {"color": "red", "value": 90}]},
+          "color": {"mode": "thresholds"}
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "RAM Usage",
+      "gridPos": {"x": 4, "y": 0, "w": 4, "h": 4},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_ram_percent", "legendFormat": "RAM %"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 70}, {"color": "red", "value": 90}]},
+          "color": {"mode": "thresholds"}
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Disk Usage",
+      "gridPos": {"x": 8, "y": 0, "w": 4, "h": 4},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_disk_percent", "legendFormat": "Disk %"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 80}, {"color": "red", "value": 90}]},
+          "color": {"mode": "thresholds"}
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Active Simulations",
+      "gridPos": {"x": 12, "y": 0, "w": 4, "h": 4},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_running_simulations", "legendFormat": "Running"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "fixed", "fixedColor": "blue"}}}
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Queue Length",
+      "gridPos": {"x": 16, "y": 0, "w": 4, "h": 4},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_queued_simulations", "legendFormat": "Queued"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 10}, {"color": "red", "value": 20}]},
+          "color": {"mode": "thresholds"}
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "API Error Rate",
+      "gridPos": {"x": 20, "y": 0, "w": 4, "h": 4},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_api_error_rate_percent", "legendFormat": "Error %"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 2}, {"color": "red", "value": 5}]},
+          "color": {"mode": "thresholds"}
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "CPU & RAM Over Time",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "datasource": "Prometheus",
+      "targets": [
+        {"expr": "pypy_cpu_percent", "legendFormat": "CPU %"},
+        {"expr": "pypy_ram_percent", "legendFormat": "RAM %"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}}
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "API Latency Over Time",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_api_avg_latency_ms", "legendFormat": "Avg Latency ms"}],
+      "fieldConfig": {"defaults": {"unit": "ms"}}
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Simulation Queue & Running",
+      "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8},
+      "datasource": "Prometheus",
+      "targets": [
+        {"expr": "pypy_running_simulations", "legendFormat": "Running"},
+        {"expr": "pypy_queued_simulations", "legendFormat": "Queued"},
+        {"expr": "pypy_failed_simulations", "legendFormat": "Failed"}
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "AI Copilot Messages",
+      "gridPos": {"x": 12, "y": 12, "w": 12, "h": 8},
+      "datasource": "Prometheus",
+      "targets": [{"expr": "pypy_ai_messages_today", "legendFormat": "Messages Today"}]
+    }
+  ]
+}

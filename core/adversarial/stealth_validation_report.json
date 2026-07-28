@@ -1,0 +1,13 @@
+{
+    "consensus_escalation_frequency": {
+        "NORMAL": 0.0,
+        "WARNING": 0.0,
+        "ANOMALY": 0.0,
+        "ATTACK_CONFIRMED": 0.0,
+        "ISOLATE_COMPONENT": 0.0,
+        "RECOVERY_REQUIRED": 0.0
+    },
+    "pinn_violation_frequency": 0.0,
+    "lstm_detection_frequency": 0.0,
+    "average_trust_degradation": 0.0
+}

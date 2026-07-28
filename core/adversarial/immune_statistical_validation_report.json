@@ -1,0 +1,12 @@
+{
+    "ppo_vs_rule_based": {
+        "t_statistic": -15.509744395338657,
+        "p_value": 4.914101588764777e-36,
+        "significant": true
+    },
+    "ppo_vs_random": {
+        "t_statistic": 8.737026135750405,
+        "p_value": 6.08109588378302e-15,
+        "significant": true
+    }
+}

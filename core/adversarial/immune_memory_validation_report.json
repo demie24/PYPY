@@ -1,0 +1,21 @@
+{
+    "memory_enabled": {
+        "detection_latency_mean": 10.0,
+        "mitigation_latency_mean": 10.0,
+        "recovery_time_mean": 50.0,
+        "blackout_frequency": 0.0,
+        "defense_effectiveness": 4994.097967860154
+    },
+    "memory_disabled": {
+        "detection_latency_mean": 10.0,
+        "mitigation_latency_mean": 10.0,
+        "recovery_time_mean": 50.0,
+        "blackout_frequency": 0.0,
+        "defense_effectiveness": 4994.097967860154
+    },
+    "significance": {
+        "t_statistic": NaN,
+        "p_value": 1.0,
+        "significant": false
+    }
+}

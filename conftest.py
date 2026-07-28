@@ -35,3 +35,9 @@ for subpath in CORE_PATHS:
 
     if full_path not in sys.path:
         sys.path.insert(0, full_path)
+
+# Ensure core/ is always first so core/services overrides root services/
+_core_path = os.path.join(ROOT, "core")
+if _core_path in sys.path:
+    sys.path.remove(_core_path)
+sys.path.insert(0, _core_path)

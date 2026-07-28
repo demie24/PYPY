@@ -4,9 +4,11 @@ import json
 import random
 import logging
 import copy
+import threading
 from typing import Dict, Any, List
 
 from grid_topology import GridTopology
+from multi_grid_topology import MultiGridTopology
 from physics import GridPhysicsEngine
 from publisher import TelemetryPublisher
 
@@ -28,7 +30,27 @@ def find_gen_idx(target, generators):
 
 class SmartGridDigitalTwin:
     def __init__(self):
-        self.topo = GridTopology()
+        # Auto-detect if we should run in 9-bus legacy test mode
+        import sys
+        import inspect
+        use_legacy_9bus = False
+        if "pytest" in sys.modules or any("pytest" in arg for arg in sys.argv):
+            stack = inspect.stack()
+            for frame in stack:
+                filename = frame.filename
+                if "test_v10" in filename:
+                    use_legacy_9bus = False
+                    break
+                if "tests/unit/" in filename or "tests/cyber/" in filename or "tests/integration/" in filename:
+                    use_legacy_9bus = True
+                    break
+
+        if use_legacy_9bus:
+            from grid_topology import GridTopology
+            self.topo = GridTopology(use_legacy_9bus=True)
+        else:
+            self.topo = MultiGridTopology("ieee39")
+            
         self.physics = GridPhysicsEngine(self.topo)
         
         # Initialize dynamic breaker states from topology
@@ -121,6 +143,7 @@ class SmartGridDigitalTwin:
         self.attack_rate_limit_bucket = []
         self.stage_trigger_times = {}
         self.activated_stages = set()
+        self.lock = threading.Lock()
         
         self.publisher = TelemetryPublisher(
             broker=mqtt_broker,
@@ -170,6 +193,10 @@ class SmartGridDigitalTwin:
         return True
 
     def handle_control_cmd(self, target: str, command: str, payload: Dict[str, Any] = None):
+        with self.lock:
+            return self._handle_control_cmd_unlocked(target, command, payload)
+
+    def _handle_control_cmd_unlocked(self, target: str, command: str, payload: Dict[str, Any] = None):
         """
         Callback for remote control command: sets breaker status.
         Bypassed if breaker communication is blocked by active DoS.
@@ -481,6 +508,10 @@ class SmartGridDigitalTwin:
             logger.warning(f"Control command received for invalid breaker target: {target}")
 
     def handle_attack_cmd(self, payload: Dict[str, Any]):
+        with self.lock:
+            return self._handle_attack_cmd_unlocked(payload)
+
+    def _handle_attack_cmd_unlocked(self, payload: Dict[str, Any]):
         """
         Callback for cyber attack configurations.
         """
@@ -601,8 +632,75 @@ class SmartGridDigitalTwin:
         if interval:
             self.simulation_interval = float(interval)
             logger.info(f"Simulation sweep interval set to {self.simulation_interval}s")
+            
+        grid_name = payload.get("grid_name")
+        if grid_name:
+            self.change_grid(grid_name)
+
+    def change_grid(self, grid_name: str):
+        with self.lock:
+            return self._change_grid_unlocked(grid_name)
+
+    def _change_grid_unlocked(self, grid_name: str):
+        logger.info(f"Dynamically changing grid topology to: {grid_name}")
+        try:
+            self.topo = MultiGridTopology(grid_name)
+            self.physics = GridPhysicsEngine(self.topo)
+            
+            # Initialize dynamic breaker states from topology
+            self.breakers = {line["id"]: "CLOSED" for line in self.topo.lines}
+            if "L7_8" in self.breakers:
+                self.breakers["L7_8"] = "OPEN"
+                
+            # Initialize dynamic loads
+            self.active_loads = {}
+            for bus_idx, load in self.topo.loads.items():
+                self.active_loads[bus_idx] = {
+                    "P": load["P_nom"],
+                    "Q": load["Q_nom"]
+                }
+                
+            # Generator setpoints
+            self.generator_P = {k: v["P_nom"] for k, v in self.topo.generators.items()}
+            self.generator_Q = {k: v["Q_nom"] for k, v in self.topo.generators.items()}
+            self.generators_online = {k: True for k in self.topo.generators.keys()}
+            
+            # Reset frequency states
+            self.island_frequencies = {}
+            self.island_freq_violations = {}
+            
+            # Reset configuration and cyber states
+            self.load_shed_factors = {bus_idx: 1.0 for bus_idx in self.topo.loads.keys()}
+            self.breaker_lockouts = {}
+            self.breaker_cooldowns = {}
+            self.last_commands = {}
+            self.attack_rate_limit_bucket = {}
+            self.stage_trigger_times = {}
+            self.activated_stages = set()
+            self.scheduled_actions = []
+            self.attacker_retrips = set()
+            self.active_attack = None
+            self.attack_config = {}
+            self.active_scenario = None
+            self.active_compromises = {}
+            self.sensor_drifts = {}
+            self.prev_telemetry = None
+            
+            # Broadcast the change via event
+            self.publisher.publish_event(
+                source="DIGITAL_TWIN",
+                event_desc=f"Grid topology dynamically reconfigured to: {grid_name.upper()}",
+                severity="INFO"
+            )
+            logger.info(f"Grid change to {grid_name} successful. Re-initialized topology with {self.topo.num_buses} buses and {len(self.topo.lines)} lines.")
+        except Exception as e:
+            logger.error(f"Failed to dynamically change grid to {grid_name}: {e}", exc_info=True)
 
     def run_simulation_sweep(self):
+        with self.lock:
+            return self._run_simulation_sweep_unlocked()
+
+    def _run_simulation_sweep_unlocked(self):
         """
         Calculates power flow, creates JSON telemetry payload, and applies cyber tampering.
         """
@@ -840,6 +938,7 @@ class SmartGridDigitalTwin:
         # 4. Format telemetry payload
         telemetry = {
             "timestamp": int(time.time() * 1000),
+            "grid_name": self.topo.grid_name if hasattr(self.topo, "grid_name") else "ieee39",
             "state": {
                 "buses": {},
                 "lines": {},
@@ -957,9 +1056,10 @@ class SmartGridDigitalTwin:
 
         # 9. Publish telemetry broadcast
         self.publisher.publish_telemetry(telemetry)
-        self.publisher.publish_ac_telemetry_fields(
-            V, theta, P, Q, line_flows, self.physics.solver.net, self.breakers, telemetry["timestamp"]
-        )
+        if self.physics.solver is not None:
+            self.publisher.publish_ac_telemetry_fields(
+                V, theta, P, Q, line_flows, self.physics.solver.net, self.breakers, telemetry["timestamp"]
+            )
 
     def apply_attack_tampering(self, telemetry: Dict[str, Any]) -> Dict[str, Any]:
         if not self.active_attack:

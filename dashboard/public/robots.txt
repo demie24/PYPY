@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /faq
+Deny: /dashboard
+Deny: /settings
+Deny: /login
+Deny: /register
+Deny: /verify
+Deny: /reset
+
+Sitemap: https://pypygrid.com/sitemap.xml

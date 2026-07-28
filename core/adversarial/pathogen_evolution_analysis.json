@@ -1,0 +1,18 @@
+{
+    "Stage 1: 1-500": {
+        "cumulative_reward": 65048.4718,
+        "blackout_frequency": 0.046,
+        "stealth_score": 0.9703576,
+        "attack_diversity": 1.0,
+        "average_genome_fitness": 130.0969436,
+        "consensus_bypass_success": 1.0
+    },
+    "Stage 2: 501-1500": {
+        "cumulative_reward": 71222.13260000001,
+        "blackout_frequency": 0.118,
+        "stealth_score": 0.981482,
+        "attack_diversity": 1.0,
+        "average_genome_fitness": 142.44426520000002,
+        "consensus_bypass_success": 1.0
+    }
+}

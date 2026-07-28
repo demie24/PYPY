@@ -1,0 +1,9 @@
+{
+    "total_stored_genomes": 100,
+    "unique_genomes": 100,
+    "reused_genomes": 0,
+    "top_genome_fitness": 267.5526,
+    "average_genome_fitness": 153.455241,
+    "genome_survival_rate": 1.0,
+    "persistence_active": true
+}

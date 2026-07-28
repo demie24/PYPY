@@ -1,6 +1,6 @@
 import logging
 import sys
-from grid_loader import IEEE39BusLoader
+from core.digital_twin.grid_loader import IEEE39BusLoader
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Sprint2Verification")

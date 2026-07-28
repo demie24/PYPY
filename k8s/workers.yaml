@@ -1,0 +1,50 @@
+# k8s/workers.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulation-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: simulation-worker
+  template:
+    metadata:
+      labels:
+        app: simulation-worker
+    spec:
+      containers:
+        - name: worker
+          image: pypy-gateway:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATABASE_URL
+              value: postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+            - name: REDIS_URL
+              value: redis://redis:6379/0
+          command: ["celery", "-A", "workers.simulation.tasks", "worker", "--loglevel=info"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: billing-worker
+  template:
+    metadata:
+      labels:
+        app: billing-worker
+    spec:
+      containers:
+        - name: worker
+          image: pypy-gateway:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATABASE_URL
+              value: postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+            - name: REDIS_URL
+              value: redis://redis:6379/0
+          command: ["celery", "-A", "workers.billing.tasks", "worker", "--loglevel=info"]

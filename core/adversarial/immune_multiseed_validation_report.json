@@ -1,0 +1,47 @@
+{
+    "individual_seeds": {
+        "42": {
+            "final_reward": 4991.725877915456,
+            "mitigation_rate": 0.0,
+            "blackout_prevention": 1.0,
+            "restoration_time": 50.0,
+            "recovery_success": 0.0
+        },
+        "123": {
+            "final_reward": 4991.561882046779,
+            "mitigation_rate": 0.0,
+            "blackout_prevention": 1.0,
+            "restoration_time": 50.0,
+            "recovery_success": 0.0
+        },
+        "999": {
+            "final_reward": 4988.641944322855,
+            "mitigation_rate": 0.0,
+            "blackout_prevention": 1.0,
+            "restoration_time": 50.0,
+            "recovery_success": 1.0
+        }
+    },
+    "statistics": {
+        "final_reward": {
+            "mean": 4990.6432347616965,
+            "std": 1.4167089154527779
+        },
+        "mitigation_rate": {
+            "mean": 0.0,
+            "std": 0.0
+        },
+        "blackout_prevention": {
+            "mean": 1.0,
+            "std": 0.0
+        },
+        "restoration_time": {
+            "mean": 50.0,
+            "std": 0.0
+        },
+        "recovery_success": {
+            "mean": 0.3333333333333333,
+            "std": 0.4714045207910317
+        }
+    }
+}

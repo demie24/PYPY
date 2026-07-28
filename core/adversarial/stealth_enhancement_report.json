@@ -1,0 +1,12 @@
+{
+    "verdict": "V9.7.1b Stealth Enhanced",
+    "final_reward": 390.3117706707959,
+    "blackout_rate": 0.02,
+    "consensus_bypass_rate": 0.5,
+    "late_stealth_rate": 0.9775826086956522,
+    "disruption_score": 1.257696229376303,
+    "metrics_achieved": {
+        "bypass_rate_threshold_passed": true,
+        "late_stealth_threshold_passed": true
+    }
+}

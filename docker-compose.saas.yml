@@ -1,0 +1,95 @@
+# docker-compose.saas.yml
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: pypy-postgres
+    environment:
+      POSTGRES_DB: pypy_saas
+      POSTGRES_USER: pypy_admin
+      POSTGRES_PASSWORD: pypy_db_secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pypy_admin -d pypy_saas"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: pypy-redis
+    ports:
+      - "6379:6379"
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: pypy-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  gateway:
+    build:
+      context: .
+      dockerfile: core/Dockerfile
+    container_name: pypy-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - REDIS_URL=redis://redis:6379/0
+      - MQTT_BROKER=mosquitto
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mosquitto:
+        condition: service_started
+    command: uvicorn gateway.main:app --host 0.0.0.0 --port 8000
+
+  simulation_worker:
+    build:
+      context: .
+      dockerfile: core/Dockerfile
+    container_name: pypy-sim-worker
+    environment:
+      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - REDIS_URL=redis://redis:6379/0
+      - MQTT_BROKER=mosquitto
+    depends_on:
+      redis:
+        condition: service_started
+    command: celery -A workers.simulation.tasks worker --loglevel=info
+
+  billing_worker:
+    build:
+      context: .
+      dockerfile: core/Dockerfile
+    container_name: pypy-billing-worker
+    environment:
+      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_started
+    command: celery -A workers.billing.tasks worker --loglevel=info
+
+  dashboard:
+    build:
+      context: ./dashboard
+    container_name: pypy-dashboard
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+
+volumes:
+  pgdata:

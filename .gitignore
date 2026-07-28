@@ -70,8 +70,12 @@ logs/
 # Environment
 
 .env
+.env.production
 .env.local
 .env.*.local
+*.egg-info/
+backups/*.csv
+docs/architecture.txt
 
 # Docker
 

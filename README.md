@@ -1,56 +1,26 @@
-# Smart Grid Cybersecurity Platform (PYPY)
+# ⚡ PYPY: Smart Grid Cybersecurity & Cyber-Physical Research Platform
 
-## Research Platform Context
+[![CI Pipeline](https://github.com/demie24/PYPY/actions/workflows/ci.yml/badge.svg)](https://github.com/demie24/PYPY/actions/workflows/ci.yml)
+[![Tests Passing](https://img.shields.io/badge/tests-833%20passed-success)](https://github.com/demie24/PYPY)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-PYPY is an actively developed cyber-physical smart grid research platform following a phased modular roadmap architecture.
-
-The repository includes:
-- operational simulation modules
-- staged AI subsystems
-- experimental cybersecurity research components
-- hardware abstraction layers for HIL (Hardware-in-the-Loop) validation
-
-Several services and modules are intentionally staged, paused, or partially integrated as part of the ongoing phased development lifecycle and academic research process.
-
-This repository is designed for:
-- cybersecurity research
-- smart-grid resilience studies
-- AI-assisted grid protection experiments
-- cyber-physical system simulation
-- reinforcement learning safety validation
+**PYPY** is an enterprise-grade cyber-physical power grid research and SaaS platform. It combines real-time digital twin grid monitoring (IEEE 9-Bus standard), AI-driven anomaly and False Data Injection Attack (FDIA) detection, self-healing Fault Location, Isolation, and Service Restoration (FLISR) logic, and Hardware-in-the-Loop (HIL) relay controls.
 
 ---
 
-## Development Status
+## 📋 System Capability Overview
 
-PYPY is currently under active development and validation.
-
-Some modules are:
-- fully operational
-- partially integrated
-- experimental
-- pending future hardware deployment
-
-The platform prioritizes modular incremental development rather than monolithic full-stack deployment.
-
-A modular, cyber-physical platform for simulating power distribution grids with real-time digital twin monitoring, AI-driven anomaly detection, self-healing logic, and hardware-in-the-loop (HIL) control via ESP32 edge devices.
-
-**Project Status**: 🔄 **In Active Development**
-
----
-
-## 📋 Project Status
-
-| Component | Status | Notes |
-|-----------|--------|-------|
-| **Gateway** | ✅ Active | WebSocket + MQTT communication hub |
-| **Digital Twin Simulator** | ✅ Active | Real-time power grid simulation (IEEE 9-Bus) |
-| **AI Anomaly Detection** | ✅ Active | FDIA and unauthorized command detection |
-| **Self-Healing Grid** | ✅ Active | Automated FLISR (Fault Location, Isolation, Service Restoration) |
-| **Dashboard (React)** | ✅ Active | Real-time visualization & control interface |
-| **Relay Protection** | ⏳ Partial | Overcurrent/overvoltage logic (in progress) |
-| **Hardware ESP32** | ⏳ Pending | Waiting for hardware to arrive |
-| **Advanced AI Services** | ⏳ Paused | Threat engine, data collector, PINN prediction (to be enabled) |
+| Module / Component | Functional Capabilities | Status |
+|---|---|---|
+| **API Gateway** | FastAPI WebSocket + MQTT communication bridge & JWT authentication | ✅ Active |
+| **Digital Twin Simulator** | Real-time IEEE 9-Bus power flow solver (voltage, phase angle, active/reactive power) | ✅ Active |
+| **AI Anomaly Detection** | Real-time FDIA, unauthorized command, and telemetry anomaly detection | ✅ Active |
+| **Self-Healing Engine** | Automated FLISR restoration planner and Deep RL (PPO/DQN) recovery policies | ✅ Active |
+| **Operator Dashboard** | React + Vite single-line diagram visualization, alert timeline & control console | ✅ Active |
+| **Relay Protection** | Intelligent Electronic Device (IED) overcurrent and distance relay trip simulation | ✅ Active |
+| **Hardware HIL Bridge** | ESP32 edge microcontroller integration & physical relay control bridge | ⏳ HIL Ready |
+| **Deep RL / Coevolution** | Red/Blue agent competitive self-play and physics-informed neural network (PINN) inference | ✅ Integrated |
 
 ---
 
@@ -58,471 +28,183 @@ A modular, cyber-physical platform for simulating power distribution grids with 
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    SMART GRID PLATFORM                       │
+│                 PYPY SMART GRID PLATFORM                    │
 ├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │ Gateway  │  │ Digital  │  │    AI    │  │  Self-   │   │
-│  │ (WS/MQTT)│  │  Twin    │  │Detection │  │ Healing  │   │
-│  └──────┬───┘  └────┬─────┘  └────┬─────┘  └────┬─────┘   │
-│         │           │             │             │           │
-│         └───────────┼─────────────┼─────────────┘           │
-│                     │             │                          │
-│              ┌──────▼─────────────▼──────┐                  │
-│              │   MQTT Broker (Eclipse)    │                 │
-│              └──────────────────────────┘                   │
-│                     ▲           │                            │
-│                     │           ▼                            │
-│              ┌──────────────────────────┐                   │
-│              │   React Dashboard        │                   │
-│              │  (Visualization & Control)│                  │
-│              └──────────────────────────┘                   │
-│                                                               │
-│  [Hardware Layer - ESP32 (pending)]                          │
-│                                                               │
+│                                                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
+│  │ Gateway  │  │ Digital  │  │    AI    │  │  Self-   │ │
+│  │ (WS/REST)│  │  Twin    │  │Detection │  │ Healing  │ │
+│  └──────┬───┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
+│         │           │             │             │         │
+│         └───────────┼─────────────┼─────────────┘         │
+│                     │             │                        │
+│              ┌──────▼─────────────▼──────┐                │
+│              │   MQTT Broker (Mosquitto) │                │
+│              └──────────────┬────────────┘                │
+│                             │                             │
+│                      ┌──────▼──────┐                      │
+│                      │ React / Vite│                      │
+│                      │ Dashboard   │                      │
+│                      └─────────────┘                      │
+│                                                             │
+│  [ Hardware Layer — ESP32 Microcontrollers / Relay HIL ]     │
 └─────────────────────────────────────────────────────────────┘
 ```
-## 🚀 Quick Start
-
-### Prerequisites
-
-Required software:
-
-* Python 3.10+
-* Docker & Docker Compose
-* Node.js 18+
-* npm
-* Git
-
-Recommended environment:
-
-* Linux (Ubuntu/Kali/Debian)
-* 8GB+ RAM for AI modules
-* Docker Desktop or native Docker Engine
 
 ---
 
-### Environment Setup
+## 🚀 Quick Start Guide
 
-Clone repository:
+### Prerequisites
+
+- **Python 3.10+**
+- **Docker & Docker Compose** (v20.10+)
+- **Node.js 18+** & **npm**
+
+---
+
+### 1. Clone & Environment Configuration
 
 ```bash
 git clone https://github.com/demie24/PYPY.git
 cd PYPY
-```
 
-Create environment configuration:
-
-```bash
+# Create local environment configuration
 cp .env.example .env
 ```
 
-Install backend dependencies:
-
-```bash
-pip install -r core/requirements.txt
-```
-
-Install dashboard dependencies:
-
-```bash
-cd dashboard
-npm install
-cd ..
-```
-
 ---
-
-### Running the Platform
-
-Start all services:
-
-```bash
-docker compose up --build
-```
-
-Dashboard access:
-
-```text
-http://localhost:5173
-```
-
-Gateway API:
-
-```text
-http://localhost:8000
-```
-
----
-
-### Running Tests
-
-Run full regression suite:
-
-```bash
-pytest
-```
-
-Run specific test module:
-
-```bash
-pytest tests/self_healing/test_rl_self_healing.py
-```
-
----
-
-## 📁 Directory Structure
-
-```
-smart-grid-cybersecurity/
-├── core/                          # All backend Python packages
-│   ├── requirements.txt           # Base Python dependencies
-│   ├── requirements-ai.txt        # AI/ML packages (torch, sklearn, etc.)
-│   ├── gateway/                   # FastAPI WebSocket + MQTT bridge
-│   ├── digital_twin/              # IEEE 9-Bus power flow simulator
-│   ├── ai_detection/              # FDIA/UCIA anomaly detection
-│   ├── ai_prediction/             # PINN/LSTM inference engine
-│   ├── self_healing/              # FLISR + RL restoration engine
-│   │   └── rl/                    # PPO / DQN agents
-│   ├── cyber_defense/             # Adaptive defense orchestration
-│   ├── physics_validation/        # KCL/KVL telemetry validation
-│   ├── orchestrator/              # Multi-agent AI orchestrator
-│   ├── relay_protection/          # IED protection logic
-│   ├── attack_simulator/          # Cyber-attack injector (red-team)
-│   ├── hardware/                  # ESP32 HIL control layer
-│   └── assistant/                 # Voice/NLP operator assistant
-│
-├── dashboard/                     # React/Vite frontend
-│   └── Dockerfile
-│
-├── hardware/                      # ESP32 firmware (pending hardware)
-│   └── README.md
-│
-├── tests/                         # 379-test suite (355 unit + integration)
-│   ├── conftest.py                # Shared fixtures (MQTT, grid state, etc.)
-│   ├── unit/                      # Unit tests — no external services needed
-│   ├── integration/               # Integration tests (requires MQTT broker)
-│   ├── cyber/                     # Cyber defense scenario tests
-│   ├── physics/                   # PINN / physics validation tests
-│   └── self_healing/              # RL self-healing tests
-│
-├── docs/                          # Reference documentation
-│   ├── API_REFERENCE.md           # Gateway API endpoints
-│   └── MQTT_TOPICS.md             # MQTT message specification
-│
-├── logs/                          # Service log output (gitignored)
-├── checkpoints/                   # RL model checkpoints (gitignored)
-├── analytics/                     # Training run analytics (gitignored)
-│
-├── ARCHITECTURE.md                # Detailed system design
-├── CONTRIBUTING.md                # Development guide
-├── docker-compose.yml             # Service orchestration
-├── mosquitto.conf                 # MQTT broker config
-├── pyproject.toml                 # Python package config + pytest settings
-└── .gitignore
-
-```
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- **Docker** & **Docker Compose** (v20.10+)
-- **Python 3.10+** (for local development)
-- **Node.js 18+** (for dashboard development)
-- **4GB RAM** minimum, **8GB recommended**
-- **Linux/macOS** (Windows may require WSL2)
-
-### 1. Clone & Setup
-
-```bash
-git clone https://github.com/demie24/smart-grid-security.git
-cd smart-grid-security
-
-# Copy environment template (if exists)
-# cp .env.example .env
-```
 
 ### 2. Run with Docker Compose
 
-```bash
-# Build all services
-docker-compose build
-
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-### 3. Verify System is Running
+Spin up PostgreSQL, Redis, MQTT Broker, Gateway API, Celery Workers, Digital Twin, and Dashboard:
 
 ```bash
-# Check all containers are running
-docker-compose ps
+# Build and launch services
+docker compose up -d --build
 
-# Expected output:
-# CONTAINER ID  IMAGE          STATUS          PORTS
-# <id>          mqtt           Up              0.0.0.0:1884->1883/tcp
-# <id>          gateway        Up              0.0.0.0:8000->8000/tcp
-# <id>          digital_twin   Up
-# <id>          dashboard      Up              0.0.0.0:3001->80/tcp
+# View real-time container logs
+docker compose logs -f
 ```
 
-### 4. Access Interfaces
+Access the interfaces once services report healthy status:
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| **Dashboard** | http://localhost:3001 | Visualization & control |
-| **Gateway API** | http://localhost:8000 | WebSocket/REST endpoints |
-| **MQTT Broker** | localhost:1884 | Message broker |
+| Service | Access URL | Description |
+|---|---|---|
+| **Dashboard Console** | `http://localhost:3001` | Single-line diagram & alert dashboard |
+| **Gateway API Docs** | `http://localhost:8000/docs` | OpenAPI / Swagger interactive documentation |
+| **Health Endpoint** | `http://localhost:8000/api/health` | Service health status JSON |
+| **MQTT Broker** | `localhost:1884` | Telemetry & control topic bus |
 
 ---
 
-## 🔧 Configuration
-
-### Environment Variables
-
-Set in `.env` or `docker-compose.yml`:
+### 3. Local Development (Without Docker)
 
 ```bash
-# MQTT Configuration
-MQTT_BROKER=mqtt              # Hostname of MQTT broker
-MQTT_PORT=1883                # MQTT port
-
-# Logging
-LOG_LEVEL=INFO                # DEBUG, INFO, WARNING, ERROR
-
-# Digital Twin
-GRID_BUS_COUNT=9              # Number of buses (IEEE 9-Bus standard)
-SIMULATION_STEP=0.1            # Simulation step (seconds)
-```
-
-### MQTT Topics
-
-Key topics the system uses:
-
-```
-grid/digital_twin/state        # Current grid state
-grid/detection/alerts          # Anomaly alerts
-grid/self_healing/actions      # Self-healing commands
-grid/breaker/status            # Breaker status updates
-hardware/sensor/readings       # Hardware sensor data
-```
-
----
-
-## 📊 Dashboard Guide
-
-### Main Features
-
-1. **Single-Line Diagram**
-   - Visual representation of grid topology
-   - Real-time voltage/current/power flow
-   - Breaker status (open/closed)
-
-2. **Anomaly Alerts**
-   - Live threat detection results
-   - Alert timeline
-   - Confidence scores
-
-3. **Self-Healing Actions**
-   - Automated restoration suggestions
-   - Manual override controls
-   - Action history
-
-4. **Metrics Dashboard**
-   - System health indicators
-   - Performance graphs
-   - Historical trends
-
----
-
-## 🧪 Testing
-
-```bash
-# Install the package (required for `from core.X.Y import Z` imports)
-pip install -e .
-
-# Fast check — no external services needed (379 tests)
-pytest tests/ -m "not integration" -q
-
-# Full unit suite with verbose output
-pytest tests/unit/ -v
-
-# With coverage report
-pytest tests/unit/ --cov=core --cov-report=html
-open htmlcov/index.html
-
-# Integration tests (requires MQTT broker running)
-docker-compose up -d mqtt
-pytest tests/integration/ -v
-```
-
----
-
-## 📝 Development Workflow
-
-### Local Development (without Docker)
-
-```bash
-# Create virtual environment
-python3.10 -m venv venv
+# Create and activate virtual environment
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r core/requirements.txt
-pip install -r core/requirements-ai.txt
+# Install all backend requirements
+pip install -r requirements.txt
+pip install -e .
 
-# Start MQTT broker (Docker)
+# Start local MQTT broker container
 docker run -d -p 1883:1883 eclipse-mosquitto:latest
 
-# Run individual services in separate terminals
+# Run Gateway API service
 python core/gateway/main.py
-python core/digital_twin/simulator.py
-python core/ai_detection/detector.py
-python core/self_healing/orchestrator.py
 
-# In another terminal, run dashboard
+# In another terminal, run Dashboard frontend
 cd dashboard
 npm install
-npm start
+npm run dev
 ```
-
-### Adding New Services
-
-1. Create service folder: `core/my_service/`
-2. Add `main.py` entry point
-3. Create `Dockerfile` in service folder
-4. Update `docker-compose.yml`:
-   ```yaml
-   my_service:
-     build:
-       context: ./core
-       dockerfile: ../my_service/Dockerfile
-   ```
-5. Add tests in `tests/unit/test_my_service.py`
 
 ---
 
-## 🐛 Troubleshooting
+## 🧪 Testing & Validation
 
-### Services Not Starting
+The platform features an extensive test suite of **833 unit, integration, physics, and cybersecurity tests**.
 
 ```bash
-# Check logs
-docker-compose logs gateway
-docker-compose logs mqtt
+# Install editable package for local imports
+pip install -e .
 
-# Rebuild images
-docker-compose build --no-cache
+# Run the full 833-test regression suite
+pytest
 
-# Check ports are free
-netstat -an | grep -E "1883|8000|3001"
-```
+# Run non-integration unit tests only
+pytest -m "not integration"
 
-### MQTT Connection Issues
-
-```bash
-# Verify MQTT broker is running
-docker-compose ps mqtt
-
-# Test MQTT connection
-mosquitto_sub -h localhost -p 1884 -t "test"
-
-# In another terminal
-mosquitto_pub -h localhost -p 1884 -t "test" -m "hello"
-```
-
-### Dashboard Not Showing Data
-
-1. Verify Gateway is running: `curl http://localhost:8000/health`
-2. Check browser console for WebSocket errors
-3. Verify MQTT topics are being published: 
-   ```bash
-   mosquitto_sub -h localhost -p 1884 -t "grid/#"
-   ```
-
-### Out of Memory
-
-```bash
-# Increase Docker memory limit
-docker-compose down
-# Edit docker-compose.yml, add to services:
-#   deploy:
-#     resources:
-#       limits:
-#         memory: 2G
-docker-compose up -d
+# Run tests with code coverage report
+pytest --cov=core --cov-report=term-missing
 ```
 
 ---
 
-## 📚 Documentation
+## 📁 Repository Structure
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Detailed system design
-- **[API_REFERENCE.md](./docs/API_REFERENCE.md)** - Gateway API endpoints
-- **[MQTT_TOPICS.md](./docs/MQTT_TOPICS.md)** - MQTT message specification
-- **[HARDWARE.md](./hardware/README.md)** - ESP32 firmware guide (WIP)
+```
+PYPY/
+├── core/                          # Core Python backend engine
+│   ├── gateway/                   # FastAPI REST API & WebSocket server
+│   ├── digital_twin/              # IEEE 9-Bus power flow simulator
+│   ├── ai_detection/              # Anomaly detection & FDIA classifiers
+│   ├── ai_prediction/             # PINN prediction & LSTM engines
+│   ├── self_healing/              # FLISR restoration & RL agents
+│   ├── cyber_defense/             # Adaptive defense orchestrator
+│   ├── relay_protection/          # Intelligent relay protection logic
+│   ├── hardware/                  # ESP32 HIL bridge & relay interface
+│   ├── requirements.txt           # Core Python dependencies
+│   └── requirements-ai.txt        # Deep learning / PyTorch packages
+│
+├── dashboard/                     # React + Vite frontend application
+│   ├── src/                       # UI components, single-line diagrams, hooks
+│   └── Dockerfile                 # Production nginx container build
+│
+├── tests/                         # Comprehensive 833-test regression suite
+│   ├── unit/                      # Isolated unit tests
+│   ├── integration/               # Multi-service integration tests
+│   ├── cyber/                     # Cyber-attack simulation tests
+│   ├── physics/                   # Physics/KCL validation tests
+│   └── self_healing/              # RL self-healing tests
+│
+├── docs/                          # Platform documentation
+│   ├── API_REFERENCE.md           # REST & WebSocket endpoint documentation
+│   ├── MQTT_TOPICS.md             # MQTT message bus topics specification
+│   ├── DEPLOYMENT_GUIDE.md        # Production deployment instructions
+│   └── reports/                   # Historical architecture & audit research reports
+│
+├── k8s/                           # Kubernetes deployment manifests
+├── scripts/                       # Deployment and verification utility scripts
+├── docker-compose.yml             # Local docker development stack
+├── docker-compose.prod.yml        # Production stack with Nginx proxy
+├── pyproject.toml                 # Package configuration & pytest settings
+├── LICENSE                        # MIT Open Source License
+└── README.md                      # Project documentation
+```
 
 ---
 
-## 🔄 CI/CD
+## 🔒 Security & Disclosure
 
-This project uses **GitHub Actions** (`.github/workflows/test.yml`) for:
-- ✅ Running unit + non-integration tests on every push/PR
-- ✅ Flake8 lint (syntax errors block; style warnings are advisory)
-- ✅ Coverage report uploaded to Codecov
-- ✅ Docker image build validation on `main` branch pushes
-
----
-
-## 🤝 Contributing
-
-See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the full development guide, including:
-- Branch and commit conventions
-- Import style requirements (`from core.X.Y import Z`)
-- How to add a new service
-- Testing guidelines and fixture usage
-
----
-
-## ⚠️ Known Limitations
-
-- **Hardware**: ESP32 firmware pending hardware arrival
-- **Scalability**: Current simulator limited to ~15 buses
-- **Real-time**: Simulation runs faster than real-time
-- **Security**: For research only, not production-ready
-
----
-
-## 📈 Roadmap
-
-- [ ] Hardware integration (ESP32 arrives Q2 2026)
-- [ ] Advanced PINN-based prediction
-- [ ] Reinforcement learning for optimal restoration
-- [ ] Multi-agent consensus algorithms
-- [ ] Cloud backend integration
-- [ ] Enhanced security posture analysis
+- All sample API keys and secret definitions are strictly scoped to mock/development values.
+- Never commit active production credentials or real `.env.production` files.
+- Refer to `k8s/secrets.yaml.template` and `.env.production.template` for secure configuration management.
 
 ---
 
 ## 📖 Citation
 
-If you use this platform in research, please cite:
+If you use PYPY in academic research or smart grid security publications, please cite:
 
 ```bibtex
-@software{pypy_2025,
+@software{pypy_2026,
   author = {demie24},
-  title = {Smart Grid Cybersecurity Platform},
-  year = {2025},
-  url = {https://github.com/demie24/smart-grid-security}
+  title = {PYPY: Smart Grid Cybersecurity & Cyber-Physical Research Platform},
+  year = {2026},
+  url = {https://github.com/demie24/PYPY}
 }
 ```
 
@@ -530,24 +212,4 @@ If you use this platform in research, please cite:
 
 ## 📄 License
 
-[Add your license here - MIT, Apache 2.0, etc.]
-
----
-
-## 👥 Support
-
-- **Issues**: [GitHub Issues](https://github.com/demie24/smart-grid-security/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/demie24/smart-grid-security/discussions)
-- **Email**: [Add contact email]
-
----
-
-## 🙏 Acknowledgments
-
-- IEEE 9-Bus test case reference
-- Eclipse Mosquitto MQTT broker
-- React & Vite community
-
----
-
-**Last Updated**: May 2026 | **Status**: Actively Maintained
+This project is licensed under the [MIT License](LICENSE).

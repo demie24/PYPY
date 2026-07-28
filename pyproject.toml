@@ -4,9 +4,31 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "smart-grid-cybersecurity"
-version = "0.1.0"
+version = "11.9.0"
+description = "PYPY Smart Grid Cybersecurity SaaS & Cyber-Physical Research Platform"
+readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+license = {text = "MIT"}
+authors = [
+    {name = "demie24"}
+]
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.22.0",
+    "paho-mqtt>=1.6.1",
+    "numpy>=1.22.0,<1.24.0",
+    "websockets>=11.0",
+    "pydantic>=2.0",
+    "pandapower==2.14.1",
+    "pandas>=1.5.0,<2.1.0",
+    "scipy>=1.9.0,<1.11.0",
+    "sqlalchemy>=2.0.0",
+    "bcrypt>=4.0.0",
+    "celery>=5.3.0",
+    "redis>=5.0.0",
+    "psycopg2-binary>=2.9.0",
+    "psutil>=5.9.0"
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -14,11 +36,17 @@ include = ["core*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --tb=short"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra --strict-markers --disable-warnings"
 markers = [
-    "integration: marks tests requiring live external services (MQTT broker, etc.)",
-    "slow: marks tests that take a long time to run",
     "unit: marks fast, isolated unit tests",
+    "integration: marks tests requiring live external services (MQTT broker, etc.)",
+    "physics: physics validation tests",
+    "cyber: cybersecurity tests",
+    "self_healing: self-healing system tests",
+    "slow: marks tests that take a long time to run",
 ]
 
 [tool.coverage.run]

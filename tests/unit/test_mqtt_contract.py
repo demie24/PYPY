@@ -32,3 +32,5 @@ def test_verified_mqtt_contract_is_machine_readable_and_complete():
     assert schema["x-topic-map"]["grid/trust_scores"] == "#/$defs/trustScores"
     for component in ("fusion", "trust"):
         assert schema["x-topic-map"][f"grid/ai/status/{component}"] == "#/$defs/modelStatus"
+    assert schema["x-topic-map"]["grid/ai/recovery_policy"] == "#/$defs/recoveryPolicy"
+    assert schema["x-topic-map"]["grid/ai/status/recovery_policy"] == "#/$defs/modelStatus"

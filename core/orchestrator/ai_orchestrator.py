@@ -273,6 +273,7 @@ class AIOrchestrator:
         
         # Protection guard tracking
         self.last_breaker_operation_time = 0.0
+        self.recent_proposals = {}
 
     def update_state(self, topic, payload):
         """
@@ -447,7 +448,7 @@ class AIOrchestrator:
                     }
                     client.publish("grid/control", json.dumps(isolate_payload))
 
-    def evaluate_proposed_command(self, cmd: str, target: str, source: str) -> Tuple[bool, str]:
+    def evaluate_proposed_command(self, cmd: str, target: str, source: str, proposal: dict = None) -> Tuple[bool, str]:
         """
         Intercepts proposed commands and evaluates them using safety constraints, trust metrics,
         and simultaneous action protections.
@@ -521,10 +522,14 @@ class AIOrchestrator:
         stability = report.get("stability_score", 100.0)
         global_state = report.get("global_state", "NORMAL")
 
-        is_restoration = cmd in ["CLOSE", "CLOSED"] or source in ["FLISR", "AI_RL_PPO_CONTROL", "BLACKSTART_ENGINE"] or cmd in ["RECONNECT_LINE", "REROUTE_FLOW"]
+        is_restoration = cmd in ["CLOSE", "CLOSED"] or source in ["FLISR", "AI_RL_PPO_CONTROL", "AI_RL_PPO_DQN_CONSENSUS", "BLACKSTART_ENGINE"] or cmd in ["RECONNECT_LINE", "REROUTE_FLOW"]
 
         # 1. Topology Survival: Reject restoration if stability is poor
-        if is_restoration and stability < 70.0:
+        # A severe outage necessarily depresses the *current* stability score.
+        # PPO/DQN restoration is assessed against its isolated post-action AC
+        # sandbox result below; applying this pre-action threshold would make
+        # safe recovery from a blackout impossible by construction.
+        if is_restoration and stability < 70.0 and source != "AI_RL_PPO_DQN_CONSENSUS":
             return False, f"Blocked restoration under low stability: stability score {stability:.1f}% is below 70% threshold."
 
         # 2. Containment Checks: Reject restoration on locked down components
@@ -541,7 +546,6 @@ class AIOrchestrator:
             if now - self.last_breaker_operation_time < 3.0:
                 if is_restoration:
                     return False, "Unsafe simultaneous recovery: recovery command rejected due to 3-second guard delay."
-            self.last_breaker_operation_time = now
 
         # 4. Multi-Agent Agent Consensus voting
         # Build context for agent voting
@@ -613,6 +617,25 @@ class AIOrchestrator:
         )
         if source in ("L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL") and not validated_l6_recovery:
             return False, "Rejected L6 recovery: missing fresh threat, open target, physical outage, or stability evidence."
+        sandbox = (proposal or {}).get("sandbox") or {}
+        validated_rl_recovery = (
+            source == "AI_RL_PPO_DQN_CONSENSUS"
+            and cmd in ("CLOSE", "CLOSED")
+            and target_is_open
+            and sandbox.get("is_safe") is True
+            and not sandbox.get("violations")
+            and bool(threat)
+            and threat_is_fresh
+            and has_physical_outage
+        )
+        if source == "AI_RL_PPO_DQN_CONSENSUS" and not validated_rl_recovery:
+            checks = {
+                "sandbox_safe": sandbox.get("is_safe") is True and not sandbox.get("violations"),
+                "fresh_threat": bool(threat) and threat_is_fresh,
+                "target_open": target_is_open,
+                "physical_outage": has_physical_outage,
+            }
+            return False, f"Rejected PPO/DQN recovery: validation checks failed {checks}."
         
         # Update dynamic weights statefully based on context
         self.orchestrator_agent.update_dynamic_weights(context)
@@ -630,7 +653,7 @@ class AIOrchestrator:
 
         # Gated Consensus Threshold Rules for autonomous execution
         is_nominal = (context.get("active_attack") is None) and (stability >= 90.0)
-        if source != "SCADA_OPERATOR" and not is_nominal and not validated_l6_recovery:
+        if source != "SCADA_OPERATOR" and not is_nominal and not validated_l6_recovery and not validated_rl_recovery:
             if has_veto or consensus_score < 0.40 or stability < 30.0:
                 # Operator approval required
                 return False, f"Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score={consensus_score:.2f}, stability={stability:.1f}%, veto={has_veto})."
@@ -638,7 +661,7 @@ class AIOrchestrator:
                 # Semi-automatic (propose, but do not auto-execute)
                 return False, f"Blocked: Action is SEMI-AUTOMATIC and requires operator approval (consensus_score={consensus_score:.2f}, stability={stability:.1f}%)."
 
-        if not vote_res["approved"] and not (validated_l6_recovery and not has_veto):
+        if not vote_res["approved"] and not ((validated_l6_recovery or validated_rl_recovery) and not has_veto):
             veto_reason = ""
             if vote_res.get("has_veto"):
                 veto_reason = f" Vetoed by {', '.join(vote_res['vetoed_by'])}."
@@ -646,12 +669,18 @@ class AIOrchestrator:
 
         # Initialize rollback tracking on close command approval
         if cmd in ["CLOSE", "CLOSED"]:
+            # Consume the simultaneous-operation guard only after every safety,
+            # sandbox, freshness, and consensus check has passed. A rejected
+            # proposal must not block the next valid restoration action.
+            self.last_breaker_operation_time = time.time()
             self.monitoring_recovery_breaker = target
             self.monitoring_recovery_ticks = 0
             self.monitoring_recovery_start_stability = stability
 
         if validated_l6_recovery:
             return True, "Passed sandbox-backed cyber-physical L6 recovery validation and orchestrator safety checks."
+        if validated_rl_recovery:
+            return True, "Passed PPO/DQN actuator consensus, restoration sandbox, and orchestrator safety checks."
         return True, f"Passed all AI orchestrator and agent consensus checks (consensus score={consensus_score:.2f})."
 
     def run_cycle(self, client):
@@ -905,6 +934,7 @@ class AIOrchestrator:
         self.action_recommender = ActionRecommender()
         self.defense_mode = "ADVISORY"
         self.last_breaker_operation_time = 0.0
+        self.recent_proposals.clear()
         self.orchestrator_agent = OrchestratorAgent()
         logger.info("AI Orchestrator cache and engines reset.")
 
@@ -979,8 +1009,19 @@ def on_message(client, userdata, msg):
             target = payload.get("target")
             source = payload.get("source")
             
-            approved, reason = orchestrator.evaluate_proposed_command(cmd, target, source)
             timestamp_ms = int(time.time() * 1000)
+            breaker_state = (orchestrator.state_cache.get("telemetry") or {}).get("state", {}).get("breakers", {}).get(target)
+            proposal_key = (cmd, target, source, breaker_state)
+            last_seen = orchestrator.recent_proposals.get(proposal_key, 0.0)
+            if time.time() - last_seen < 30.0:
+                client.publish("grid/orchestrator/events", json.dumps({
+                    "timestamp": timestamp_ms, "event": "REJECTION", "command": cmd,
+                    "target": target, "source": source,
+                    "reason": "Duplicate proposal suppressed; breaker state has not changed."
+                }))
+                return
+            orchestrator.recent_proposals[proposal_key] = time.time()
+            approved, reason = orchestrator.evaluate_proposed_command(cmd, target, source, payload)
             
             if approved:
                 logger.info(f"[ORCHESTRATOR APPROVAL] Approved proposed action {cmd} on {target} from {source}. Reason: {reason}")

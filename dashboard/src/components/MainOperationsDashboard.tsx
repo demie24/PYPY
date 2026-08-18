@@ -137,6 +137,7 @@ export function MainOperationsDashboard(props: Props) {
     ["ai_pinn", "PINN", props.aiStatuses?.pinn?.ready ? "healthy" : "waiting"],
     ["ai_fusion", "AI Fusion", props.aiStatuses?.fusion?.ready ? "healthy" : "waiting"],
     ["physics_validation", "TRUST / Physics", props.aiStatuses?.trust?.ready ? "healthy" : "waiting"],
+    ["recovery_policy", "PPO + DQN Policy", props.aiStatuses?.recovery_policy?.ready ? "healthy" : "waiting"],
   ];
   const confirmedServices = services.filter(([, , state]) => ["online", "healthy"].includes(String(state).toLowerCase())).length;
 

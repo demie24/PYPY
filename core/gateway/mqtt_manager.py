@@ -83,6 +83,7 @@ class MQTTManager:
             client.subscribe("grid/ai_threat_forecast")
             client.subscribe("grid/ai/+")
             client.subscribe("grid/ai/status/+")
+            client.subscribe("grid/ai/recovery/+")
             client.subscribe("grid/pinn_forecast")
             client.subscribe("grid/physics_validation")
             client.subscribe("grid/trust_scores")

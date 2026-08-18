@@ -99,7 +99,8 @@ class RestorationSandbox:
                     # Try to parse P and Q, otherwise fallback to nominals
                     p_val = b_data.get("P_mw", self.topo.loads[b_idx]["P_nom"]) / 100.0
                     q_val = b_data.get("Q_mvar", self.topo.loads[b_idx]["Q_nom"]) / 100.0
-                    self.loads[b_idx] = {"P": p_val, "Q": q_val}
+                    if np.isfinite(p_val) and np.isfinite(q_val):
+                        self.loads[b_idx] = {"P": p_val, "Q": q_val}
                     
         # IEEE-39 telemetry exposes signed bus injections, not generator
         # setpoints.  Feeding those negative values back into the sandbox makes

@@ -51,7 +51,7 @@
       "properties": {
         "command": {"enum": ["OPEN", "CLOSE", "CLOSED"]},
         "target": {"type": "string"},
-        "source": {"enum": ["L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL"]}
+        "source": {"enum": ["L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL", "AI_RL_PPO_DQN_CONSENSUS"]}
       }
     },
     "orchestratorEvent": {
@@ -93,7 +93,7 @@
       "type": "object",
       "required": ["timestamp", "component", "ready", "model_loaded", "inference_count", "last_error"],
       "properties": {
-        "component": {"enum": ["lstm", "gnn", "stgnn", "pinn", "fusion", "trust"]},
+        "component": {"enum": ["lstm", "gnn", "stgnn", "pinn", "fusion", "trust", "recovery_policy"]},
         "ready": {"type": "boolean"},
         "model_loaded": {"type": "boolean"},
         "inference_count": {"type": "integer", "minimum": 0}
@@ -112,6 +112,14 @@
     "trustScores": {
       "type": "object",
       "required": ["bus_trust", "line_trust", "details"]
+    },
+    "recoveryPolicy": {
+      "type": "object",
+      "required": ["timestamp", "component", "grid_name", "coverage", "compatibility_adapter", "retrained_on_ieee39", "model_decisions", "consensus", "target"]
+    },
+    "recoveryModelDecision": {
+      "type": "object",
+      "required": ["model", "action_id", "action", "target", "score"]
     }
   },
   "x-topic-map": {
@@ -127,12 +135,16 @@
     "grid/ai/stgnn": "#/$defs/modelInference",
     "grid/ai/pinn": "#/$defs/modelInference",
     "grid/ai/fusion": "#/$defs/aiFusion",
+    "grid/ai/recovery_policy": "#/$defs/recoveryPolicy",
+    "grid/ai/recovery/ppo": "#/$defs/recoveryModelDecision",
+    "grid/ai/recovery/dqn": "#/$defs/recoveryModelDecision",
     "grid/trust_scores": "#/$defs/trustScores",
     "grid/ai/status/lstm": "#/$defs/modelStatus",
     "grid/ai/status/gnn": "#/$defs/modelStatus",
     "grid/ai/status/stgnn": "#/$defs/modelStatus",
     "grid/ai/status/pinn": "#/$defs/modelStatus",
     "grid/ai/status/fusion": "#/$defs/modelStatus",
-    "grid/ai/status/trust": "#/$defs/modelStatus"
+    "grid/ai/status/trust": "#/$defs/modelStatus",
+    "grid/ai/status/recovery_policy": "#/$defs/modelStatus"
   }
 }

@@ -1,0 +1,10 @@
+FROM python:3.10-slim
+WORKDIR /app
+COPY core/requirements.txt .
+COPY core/requirements-ai.txt .
+RUN pip install --no-cache-dir -r requirements.txt -r requirements-ai.txt
+COPY core ./core
+COPY checkpoints/ppo_self_healing.pt checkpoints/ppo_self_healing.pt
+COPY checkpoints/dqn_self_healing.pt checkpoints/dqn_self_healing.pt
+ENV PYTHONPATH=/app
+CMD ["python", "-m", "core.self_healing.recovery_policy_service"]

@@ -16,6 +16,15 @@ class GridACSolver:
             self.loader = loader
         self.net = self.loader.get_net()
 
+    def _has_usable_previous_result(self):
+        """Return whether pandapower has a finite converged state to warm-start."""
+        if not bool(getattr(self.net, "converged", False)):
+            return False
+        res_bus = getattr(self.net, "res_bus", None)
+        if res_bus is None or res_bus.empty:
+            return False
+        return bool(np.isfinite(res_bus[["vm_pu", "va_degree"]].to_numpy()).all())
+
     def solve_ac(self, breakers: dict, active_loads: dict, generator_P: dict, generator_Q: dict, generators_online: dict = None):
         """
         Executes AC Power Flow using pandapower with solver cascading.
@@ -68,9 +77,13 @@ class GridACSolver:
             "iterations": 0
         }
 
+        # A failed pandapower run can leave its result tables non-finite. Reusing
+        # those values makes a subsequently restored topology remain failed even
+        # though it is solvable, so only warm-start from a proven finite result.
+        nr_init = "results" if self._has_usable_previous_result() else "flat"
         try:
             # Step A: Newton-Raphson solver (Standard)
-            pp.runpp(self.net, algorithm="nr", init="results", numba=False)
+            pp.runpp(self.net, algorithm="nr", init=nr_init, numba=False)
             status["converged"] = True
             status["mode"] = "converged"
             status["iterations"] = self.net._ppc["iterations"]
@@ -78,7 +91,7 @@ class GridACSolver:
             logger.warning("Newton-Raphson AC solver failed. Attempting Decoupled NR fallback...")
             try:
                 # Step B: Fast Decoupled AC solver
-                pp.runpp(self.net, algorithm="fdpf", init="results")
+                pp.runpp(self.net, algorithm="fdpf", init="flat")
                 status["converged"] = True
                 status["mode"] = "fallback_decoupled"
                 status["iterations"] = self.net._ppc["iterations"]

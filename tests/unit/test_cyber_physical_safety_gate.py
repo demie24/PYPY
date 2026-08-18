@@ -81,3 +81,27 @@ def test_duplicate_breaker_actions_are_guarded():
     assert first
     assert not second
     assert "guard delay" in reason
+
+
+def test_rl_recovery_can_restore_low_current_stability_after_safe_ac_sandbox():
+    orchestrator = prepare(
+        {"timestamp": int(time.time() * 1000), "threat_score": 100}
+    )
+    approved, reason = orchestrator.evaluate_proposed_command(
+        "CLOSE", "L_line_1", "AI_RL_PPO_DQN_CONSENSUS",
+        {"sandbox": {"is_safe": True, "violations": [], "safety_score": 100.0}},
+    )
+    assert approved
+    assert "PPO/DQN" in reason
+
+
+def test_rl_recovery_never_bypasses_failed_sandbox():
+    orchestrator = prepare(
+        {"timestamp": int(time.time() * 1000), "threat_score": 100}
+    )
+    approved, reason = orchestrator.evaluate_proposed_command(
+        "CLOSE", "L_line_1", "AI_RL_PPO_DQN_CONSENSUS",
+        {"sandbox": {"is_safe": False, "violations": ["predicted overload"]}},
+    )
+    assert not approved
+    assert "sandbox_safe': False" in reason

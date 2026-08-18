@@ -344,6 +344,33 @@ services:
       retries: 5
       start_period: 30s
 
+  recovery_policy:
+    build:
+      context: .
+      dockerfile: ./core/self_healing/Dockerfile.recovery_policy
+    container_name: smart_grid_recovery_policy
+    environment:
+      - MODEL_COMPONENT=recovery_policy
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      ai_fusion:
+        condition: service_healthy
+      physics_validation:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "core/ai_runtime/healthcheck.py"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
   threat_scorer:
     build:
       context: ./core

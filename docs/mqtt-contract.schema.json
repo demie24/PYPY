@@ -6,14 +6,24 @@
   "$defs": {
     "telemetry": {
       "type": "object",
-      "required": ["timestamp", "grid_name", "state"],
+      "required": ["timestamp", "grid_name", "solver_status", "state"],
       "properties": {
         "timestamp": {"type": "number"},
         "grid_name": {"const": "ieee39"},
+        "solver_status": {"$ref": "#/$defs/solverStatus"},
         "state": {
           "type": "object",
           "required": ["buses", "lines", "breakers"]
         }
+      }
+    },
+    "solverStatus": {
+      "type": "object",
+      "required": ["converged", "mode", "iterations"],
+      "properties": {
+        "converged": {"type": "boolean"},
+        "mode": {"enum": ["converged", "fallback_decoupled", "failed"]},
+        "iterations": {"type": "integer", "minimum": 0}
       }
     },
     "alert": {

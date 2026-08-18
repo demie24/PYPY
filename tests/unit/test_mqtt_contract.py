@@ -20,3 +20,8 @@ def test_verified_mqtt_contract_is_machine_readable_and_complete():
         definition = reference.rsplit("/", 1)[-1]
         assert definition in schema["$defs"]
         assert schema["$defs"][definition]["required"]
+
+    telemetry = schema["$defs"]["telemetry"]
+    assert "solver_status" in telemetry["required"]
+    assert telemetry["properties"]["solver_status"]["$ref"] == "#/$defs/solverStatus"
+    assert schema["$defs"]["solverStatus"]["required"] == ["converged", "mode", "iterations"]

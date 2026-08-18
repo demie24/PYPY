@@ -941,6 +941,7 @@ class SmartGridDigitalTwin:
         telemetry = {
             "timestamp": int(time.time() * 1000),
             "grid_name": self.topo.grid_name if hasattr(self.topo, "grid_name") else "ieee39",
+            "solver_status": copy.deepcopy(self.physics.last_solver_status),
             "state": {
                 "buses": {},
                 "lines": {},

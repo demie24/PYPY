@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pypy.local/schemas/mqtt-contract.schema.json",
+  "title": "PYPY verified MQTT defense contract",
+  "type": "object",
+  "$defs": {
+    "telemetry": {
+      "type": "object",
+      "required": ["timestamp", "grid_name", "state"],
+      "properties": {
+        "timestamp": {"type": "number"},
+        "grid_name": {"const": "ieee39"},
+        "state": {
+          "type": "object",
+          "required": ["buses", "lines", "breakers"]
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "required": ["timestamp", "type", "severity", "suspect_node"],
+      "properties": {
+        "timestamp": {"type": "number"},
+        "type": {"type": "string"},
+        "severity": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+        "suspect_node": {"type": "string"}
+      }
+    },
+    "threat": {
+      "type": "object",
+      "required": ["timestamp", "threat_score", "severity"],
+      "properties": {
+        "timestamp": {"type": "number"},
+        "threat_score": {"type": "number", "minimum": 0, "maximum": 100},
+        "severity": {"type": "string"}
+      }
+    },
+    "controlProposal": {
+      "type": "object",
+      "required": ["command", "target", "source"],
+      "properties": {
+        "command": {"enum": ["OPEN", "CLOSE", "CLOSED"]},
+        "target": {"type": "string"},
+        "source": {"enum": ["L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL"]}
+      }
+    },
+    "orchestratorEvent": {
+      "type": "object",
+      "required": ["timestamp", "event", "command", "target", "reason"],
+      "properties": {
+        "event": {"enum": ["APPROVAL", "REJECTION"]},
+        "command": {"type": "string"},
+        "target": {"type": "string"},
+        "reason": {"type": "string"}
+      }
+    },
+    "control": {
+      "type": "object",
+      "required": ["command"],
+      "properties": {
+        "command": {"type": "string"},
+        "target": {"type": "string"},
+        "source": {"type": "string"}
+      }
+    },
+    "gridEvent": {
+      "type": "object",
+      "required": ["timestamp", "source", "event", "severity"]
+    }
+  },
+  "x-topic-map": {
+    "pypy/grid/telemetry": "#/$defs/telemetry",
+    "grid/alerts": "#/$defs/alert",
+    "grid/threat": "#/$defs/threat",
+    "grid/control/proposed": "#/$defs/controlProposal",
+    "grid/orchestrator/events": "#/$defs/orchestratorEvent",
+    "grid/control": "#/$defs/control",
+    "grid/events": "#/$defs/gridEvent"
+  }
+}

@@ -68,7 +68,8 @@ Inspect service logs with `docker compose logs --tail=200 SERVICE`.
 
 ## Verification
 
-The verified baseline is **835 passed, 0 failed, 0 errors**:
+The current hardening baseline is **841 passed, 0 failed, 0 errors**. The
+`verified-baseline-2026-08-18` tag preserves the preceding 835-test runtime baseline.
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q
@@ -82,6 +83,15 @@ Attack -> Detection -> Threat Assessment -> Cyber-Physical Validation
 ```
 
 Success means more than MQTT publication: the approved command was consumed by the Digital Twin and produced a measurable state change, followed by cleanup to a nominal grid state.
+
+Run the repository verifier after the Compose stack is healthy:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python scripts/verification/verify_closed_loop.py
+```
+
+The machine-readable payload contract for the verified topics is in
+[`docs/mqtt-contract.schema.json`](docs/mqtt-contract.schema.json).
 
 ## Repository Layout
 

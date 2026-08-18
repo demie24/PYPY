@@ -4,6 +4,10 @@ import json
 import logging
 import numpy as np
 import paho.mqtt.client as mqtt
+try:
+    from core.mqtt_compat import create_client
+except ModuleNotFoundError:
+    from mqtt_compat import create_client
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -147,7 +151,7 @@ class NumPyAutoencoderDetector:
 
 detector = NumPyAutoencoderDetector()
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
         client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/attack")
@@ -265,7 +269,7 @@ def on_message(client, userdata, msg):
         logger.error(f"Error handling telemetry in detector: {e}")
 
 if __name__ == "__main__":
-    client = mqtt.Client(client_id="ai_anomaly_detector")
+    client = create_client("ai_anomaly_detector")
     client.on_connect = on_connect
     client.on_message = on_message
     

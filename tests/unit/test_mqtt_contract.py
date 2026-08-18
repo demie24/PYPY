@@ -1,0 +1,22 @@
+import json
+from pathlib import Path
+
+
+def test_verified_mqtt_contract_is_machine_readable_and_complete():
+    schema_path = Path(__file__).parents[2] / "docs" / "mqtt-contract.schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+
+    expected_topics = {
+        "pypy/grid/telemetry",
+        "grid/alerts",
+        "grid/threat",
+        "grid/control/proposed",
+        "grid/orchestrator/events",
+        "grid/control",
+        "grid/events",
+    }
+    assert set(schema["x-topic-map"]) == expected_topics
+    for reference in schema["x-topic-map"].values():
+        definition = reference.rsplit("/", 1)[-1]
+        assert definition in schema["$defs"]
+        assert schema["$defs"][definition]["required"]

@@ -134,6 +134,7 @@ services:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
       - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
     depends_on:
       mqtt:
         condition: service_healthy
@@ -142,6 +143,12 @@ services:
       - grid-net
     volumes:
       - ./logs/digital_twin:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,sys,time; p='/tmp/pypy_telemetry_heartbeat'; sys.exit(0 if os.path.exists(p) and time.time()-os.path.getmtime(p)<10 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   ai_detection:
     build:
@@ -153,11 +160,12 @@ services:
       - MQTT_PORT=1883
       - TELEMETRY_TOPIC=pypy/grid/telemetry
       - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
     depends_on:
       mqtt:
         condition: service_healthy
       digital_twin:
-        condition: service_started
+        condition: service_healthy
     restart: always
     networks:
       - grid-net
@@ -178,6 +186,7 @@ services:
       - MQTT_PORT=1883
       - TELEMETRY_TOPIC=pypy/grid/telemetry
       - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
     depends_on:
       mqtt:
         condition: service_healthy

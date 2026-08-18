@@ -16,7 +16,7 @@ jobs:
         ports:
           - 1883:1883
         options: >-
-          --health-cmd="mosquitto_sub -h localhost -t test -C 1 -E"
+          --health-cmd="mosquitto_pub -h localhost -t healthcheck -m ready"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -44,7 +44,7 @@ jobs:
 
       - name: Run Pytest Test Suite
         run: |
-          pytest --tb=short --cov=core --cov-report=xml
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest -q
         env:
           MQTT_BROKER: localhost
           MQTT_PORT: 1883
@@ -82,8 +82,12 @@ jobs:
 
       - name: Validate Docker Compose Configuration
         run: |
-          docker compose config > /dev/null
-          echo "✅ docker-compose.yml is valid"
+          docker compose config --quiet
+          required='postgres redis mqtt gateway dashboard digital_twin celery_worker celery_beat ai_detection threat_scorer self_healing ai_orchestrator'
+          actual="$(docker compose config --services)"
+          for service in $required; do
+            echo "$actual" | grep -qx "$service"
+          done
 
       - name: Build Gateway Image
         run: |

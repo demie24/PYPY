@@ -3,6 +3,7 @@ import json
 import time
 import logging
 import paho.mqtt.client as mqtt
+from core.mqtt_compat import create_client
 from core.self_healing.relay import ProtectiveRelay
 from core.self_healing.flisr import FLISREngine
 
@@ -80,7 +81,7 @@ _post_trip_settle_frames = 3
 _alert_cooldown: dict = {}   # node -> last published timestamp (float)
 _alert_cooldown_seconds = 20.0
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
         client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/events")
@@ -530,7 +531,7 @@ def on_message(client, userdata, msg):
         logger.error(f"Error handling message on {msg.topic}: {e}")
 
 if __name__ == "__main__":
-    client = mqtt.Client(client_id="self_healing_subsystem")
+    client = create_client("self_healing_subsystem")
     client.on_connect = on_connect
     client.on_message = on_message
     

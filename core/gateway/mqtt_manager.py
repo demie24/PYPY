@@ -4,6 +4,10 @@ import logging
 import asyncio
 from typing import Dict, Any, Optional
 import paho.mqtt.client as mqtt
+try:
+    from core.mqtt_compat import create_client
+except ModuleNotFoundError:
+    from mqtt_compat import create_client
 from gateway.store import store
 from gateway.websocket_manager import ws_manager
 from gateway.translator import TelemetryTranslator
@@ -14,7 +18,7 @@ class MQTTManager:
     def __init__(self):
         self.broker = os.getenv("MQTT_BROKER", "localhost")
         self.port = int(os.getenv("MQTT_PORT", 1883))
-        self.client = mqtt.Client(client_id="fastapi_gateway_service")
+        self.client = create_client("fastapi_gateway_service")
         self.translator = TelemetryTranslator()
         
         # Callbacks registration
@@ -54,7 +58,7 @@ class MQTTManager:
         except Exception as e:
             logger.error(f"Error publishing message to {topic}: {e}")
 
-    def _on_connect(self, client, userdata, flags, rc):
+    def _on_connect(self, client, userdata, flags, rc, properties=None):
         if rc == 0:
             logger.info("Connected to MQTT Broker!")
             # Hierarchical AC subscriptions

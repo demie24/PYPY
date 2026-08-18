@@ -3,6 +3,10 @@ import time
 import json
 import logging
 import paho.mqtt.client as mqtt
+try:
+    from core.mqtt_compat import create_client
+except ModuleNotFoundError:
+    from mqtt_compat import create_client
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -361,7 +365,7 @@ class ThreatScoringEngine:
 
 threat_engine = ThreatScoringEngine()
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
         client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/alerts")
@@ -417,7 +421,7 @@ def on_message(client, userdata, msg):
         logger.error(f"Error processing message in Threat Scorer on {msg.topic}: {e}")
 
 if __name__ == "__main__":
-    client = mqtt.Client(client_id="threat_scoring_engine")
+    client = create_client("threat_scoring_engine")
     client.on_connect = on_connect
     client.on_message = on_message
 

@@ -145,17 +145,6 @@ class SimulatorRun(Base):
     scenario = relationship("Scenario", back_populates="simulator_runs")
     experiment_results = relationship("ExperimentResult", back_populates="run")
 
-class SimulationAuditLog(Base):
-    __tablename__ = 'simulation_audit_logs'
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    tenant_id = Column(UUID(as_uuid=True), nullable=False)
-    job_id = Column(UUID(as_uuid=True), nullable=False)
-    action = Column(String(50), nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-    actor = Column(String(100), default="system")
-    details = Column(String(500))
-
 class Experiment(Base):
     __tablename__ = 'experiments'
 

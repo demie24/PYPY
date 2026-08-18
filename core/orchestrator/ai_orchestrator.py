@@ -5,6 +5,7 @@ import logging
 import sys
 import math
 import paho.mqtt.client as mqtt
+from core.mqtt_compat import create_client
 from typing import Dict, Any, Tuple
 
 # Ensure current directory is in path
@@ -580,14 +581,22 @@ class AIOrchestrator:
             or float(bus.get("voltage_pu", 1.0)) < 0.20
             for bus in buses.values()
         )
+        threat = self.state_cache.get("threat") or {}
+        threat_timestamp = float(threat.get("timestamp", 0.0))
+        if threat_timestamp > 10_000_000_000:
+            threat_timestamp /= 1000.0
+        threat_is_fresh = 0.0 <= time.time() - threat_timestamp <= 30.0
         validated_l6_recovery = (
             source in ("L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL")
             and cmd in ("CLOSE", "CLOSED")
             and target_is_open
-            and bool(self.state_cache.get("threat"))
+            and bool(threat)
+            and threat_is_fresh
             and has_physical_outage
             and stability >= 70.0
         )
+        if source in ("L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL") and not validated_l6_recovery:
+            return False, "Rejected L6 recovery: missing fresh threat, open target, physical outage, or stability evidence."
         
         # Update dynamic weights statefully based on context
         self.orchestrator_agent.update_dynamic_weights(context)
@@ -872,7 +881,7 @@ class AIOrchestrator:
 
 orchestrator = AIOrchestrator()
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
         client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/ai_prediction")
@@ -1052,7 +1061,7 @@ def on_message(client, userdata, msg):
         logger.error(f"Error handling message on {msg.topic}: {e}", exc_info=True)
 
 if __name__ == "__main__":
-    client = mqtt.Client(client_id="ai_orchestration_service")
+    client = create_client("ai_orchestration_service")
     client.on_connect = on_connect
     client.on_message = on_message
 

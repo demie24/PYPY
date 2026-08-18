@@ -102,7 +102,7 @@ The verified default stack contains PostgreSQL, Redis, MQTT, Gateway, Dashboard,
 
 ## Verification Boundary
 
-The current regression baseline is 835 passed, 0 failed, and 0 errors. Runtime verification additionally demonstrates:
+The current hardening regression baseline is 841 passed, 0 failed, and 0 errors. Runtime verification additionally demonstrates:
 
 ```text
 Attack -> Detection -> Threat Assessment -> Cyber-Physical Validation

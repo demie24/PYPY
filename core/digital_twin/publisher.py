@@ -4,6 +4,10 @@ import time
 import logging
 from typing import Dict, Any, Callable
 import paho.mqtt.client as mqtt
+try:
+    from core.mqtt_compat import create_client
+except ModuleNotFoundError:
+    from mqtt_compat import create_client
 from telemetry import ACTelemetryPipeline
 
 logger = logging.getLogger("digital_twin.publisher")
@@ -18,7 +22,10 @@ class TelemetryPublisher:
         
         self.broker = broker
         self.port = port
-        self.client = mqtt.Client(client_id="digital_twin_publisher_node")
+        self.client = create_client("digital_twin_publisher_node")
+        self.heartbeat_path = os.getenv(
+            "TELEMETRY_HEARTBEAT_PATH", "/tmp/pypy_telemetry_heartbeat"
+        )
         self.ac_pipeline = ACTelemetryPipeline()
         
         # Command hooks
@@ -50,7 +57,10 @@ class TelemetryPublisher:
 
     def publish_telemetry(self, telemetry: Dict[str, Any]):
         try:
-            self.client.publish("pypy/grid/telemetry", json.dumps(telemetry))
+            result = self.client.publish("pypy/grid/telemetry", json.dumps(telemetry))
+            if result.rc == mqtt.MQTT_ERR_SUCCESS:
+                with open(self.heartbeat_path, "a", encoding="utf-8"):
+                    os.utime(self.heartbeat_path, None)
         except Exception as e:
             logger.error(f"Failed to publish telemetry to MQTT: {e}")
 
@@ -73,7 +83,7 @@ class TelemetryPublisher:
         except Exception as e:
             logger.error(f"Failed to publish event log: {e}")
 
-    def _on_connect(self, client, userdata, flags, rc):
+    def _on_connect(self, client, userdata, flags, rc, properties=None):
         if rc == 0:
             logger.info("Telemetry Publisher connected successfully!")
             client.subscribe("grid/control")

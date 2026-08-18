@@ -70,7 +70,7 @@ class GridACSolver:
 
         try:
             # Step A: Newton-Raphson solver (Standard)
-            pp.runpp(self.net, algorithm="nr", init="results", numba=True)
+            pp.runpp(self.net, algorithm="nr", init="results", numba=False)
             status["converged"] = True
             status["mode"] = "converged"
             status["iterations"] = self.net._ppc["iterations"]
@@ -83,18 +83,11 @@ class GridACSolver:
                 status["mode"] = "fallback_decoupled"
                 status["iterations"] = self.net._ppc["iterations"]
             except (pp.LoadflowNotConverged, Exception):
-                logger.error("AC Power flow non-convergence. Running State Estimation fallback...")
-                try:
-                    # Step C: Run State Estimation to approximate metrics
-                    pp.runse(self.net)
-                    status["converged"] = False
-                    status["mode"] = "fallback_se"
-                    status["iterations"] = 0
-                except Exception as se_err:
-                    logger.error(f"State Estimation fallback also failed: {se_err}")
-                    # Revert to flat-start zero values or default
-                    status["converged"] = False
-                    status["mode"] = "failed"
+                # State estimation requires measurement data and is not a valid
+                # fallback for this simulator. Publish an explicit failed state.
+                logger.warning("AC power flow did not converge; publishing failed-state telemetry.")
+                status["converged"] = False
+                status["mode"] = "failed"
 
         # 5. Extract calculated state variables
         num_buses = len(self.net.bus)

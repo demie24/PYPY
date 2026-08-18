@@ -101,15 +101,19 @@ class RestorationSandbox:
                     q_val = b_data.get("Q_mvar", self.topo.loads[b_idx]["Q_nom"]) / 100.0
                     self.loads[b_idx] = {"P": p_val, "Q": q_val}
                     
-        # Sync generator setpoints
-        for g_idx in self.topo.generators.keys():
-            bus_name = f"Bus_{g_idx + 1}"
-            if "buses" in state and bus_name in state["buses"]:
-                b_data = state["buses"][bus_name]
-                p_val = b_data.get("P_mw", self.topo.generators[g_idx]["P_nom"]) / 100.0
-                q_val = b_data.get("Q_mvar", self.topo.generators[g_idx]["Q_nom"]) / 100.0
-                self.gen_P[g_idx] = p_val
-                self.gen_Q[g_idx] = q_val
+        # IEEE-39 telemetry exposes signed bus injections, not generator
+        # setpoints.  Feeding those negative values back into the sandbox makes
+        # every valid restoration dry-run collapse.  Preserve topology nominal
+        # setpoints unless a dedicated generator capability contract exists.
+        if telemetry.get("grid_name") != "ieee39":
+            for g_idx in self.topo.generators.keys():
+                bus_name = f"Bus_{g_idx + 1}"
+                if "buses" in state and bus_name in state["buses"]:
+                    b_data = state["buses"][bus_name]
+                    p_val = b_data.get("P_mw", self.topo.generators[g_idx]["P_nom"]) / 100.0
+                    q_val = b_data.get("Q_mvar", self.topo.generators[g_idx]["Q_nom"]) / 100.0
+                    self.gen_P[g_idx] = p_val
+                    self.gen_Q[g_idx] = q_val
 
     def dry_run_action(self, action_name: str, target: str) -> Dict[str, Any]:
         """
@@ -147,7 +151,7 @@ class RestorationSandbox:
         # Build mock telemetry payload of the result to evaluate safety constraints
         hypothetical_telemetry = {
             "state": {
-                "buses": {f"Bus_{i+1}": {"voltage_pu": float(V[i]), "angle_rad": float(theta[i])} for i in range(9)},
+                "buses": {f"Bus_{i+1}": {"voltage_pu": float(V[i]), "angle_rad": float(theta[i])} for i in range(self.topo.num_buses)},
                 "lines": {lid: {"P_mw": float(f["P_flow"]*100.0), "Q_mvar": float(f["Q_flow"]*100.0), "current_pu": float(f["current"])} for lid, f in line_flows.items()},
                 "breakers": self.breakers.copy()
             }

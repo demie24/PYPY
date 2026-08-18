@@ -12,6 +12,7 @@ logger = logging.getLogger("self_healing.main")
 
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+TELEMETRY_TOPIC = os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry")
 
 # Instantiate modules
 relay = ProtectiveRelay()
@@ -81,13 +82,16 @@ _alert_cooldown_seconds = 20.0
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        logger.info("Self-Healing Subsystem connected to MQTT!")
-        client.subscribe("grid/telemetry")
+        client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/events")
         client.subscribe("grid/control")
         client.subscribe("grid/config")
         client.subscribe("grid/trust_scores")
         client.subscribe("grid/threat")
+        logger.info(
+            "Self-Healing ready | MQTT=%s:%s | subscriptions=%s,grid/events,grid/control,grid/config,grid/trust_scores,grid/threat",
+            MQTT_BROKER, MQTT_PORT, TELEMETRY_TOPIC,
+        )
     else:
         logger.error(f"MQTT Connection failed with code {rc}")
 
@@ -97,7 +101,7 @@ def on_message(client, userdata, msg):
         topic = msg.topic
         payload = json.loads(msg.payload.decode("utf-8"))
 
-        if topic == "grid/telemetry":
+        if topic in (TELEMETRY_TOPIC, "grid/telemetry"):
             _telemetry_frame_count += 1
 
             # Phase 5B: Rate limiting - skip odd frames for relay/FLISR evaluation
@@ -289,7 +293,20 @@ def on_message(client, userdata, msg):
 
             # 7. Run Layer 6 Autonomous Grid Survival Modules
             # 7.1. Blackstart Sequencing
-            blackstart_res = l6_blackstart.evaluate_blackstart(payload)
+            if payload.get("grid_name") == "ieee39":
+                # The current blackstart sequence encodes the legacy IEEE-9
+                # generator/line map.  Keep it passive on IEEE-39 rather than
+                # issuing invalid Bus_1/L1_4 commands during an island event.
+                l6_blackstart.reset()
+                blackstart_res = {
+                    "active_blackstart": False,
+                    "blackstart_state": "UNAVAILABLE_FOR_IEEE39",
+                    "step_description": "IEEE-39 blackstart sequence is not configured.",
+                    "recommended_command": None,
+                    "progress_percentage": 0.0,
+                }
+            else:
+                blackstart_res = l6_blackstart.evaluate_blackstart(payload)
             blackstart_payload = {
                 "timestamp": int(time.time() * 1000),
                 "active_blackstart": blackstart_res.get("active_blackstart", False),
@@ -460,12 +477,8 @@ def on_message(client, userdata, msg):
                 l6_self_preservation.active_policy = "NOMINAL"
                 _alert_cooldown.clear()  # Allow fresh alerts for next test run
                 
-                # Also command simulator to restore normally open L7_8 configuration
-                restore_payload = {
-                    "command": "OPEN",
-                    "target": "L7_8"
-                }
-                client.publish("grid/control", json.dumps(restore_payload))
+                # The Digital Twin handles topology reset for its active grid model.
+                # Do not emit the legacy IEEE-9 L7_8 breaker into an IEEE-39 runtime.
             elif cmd == "RESET_L6_RECOVERY":
                 logger.info("Operator triggered Layer 6 recovery reset.")
                 l6_fsm.reset()

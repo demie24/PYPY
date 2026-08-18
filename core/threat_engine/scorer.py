@@ -10,6 +10,7 @@ logger = logging.getLogger("threat_engine.scorer")
 
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+TELEMETRY_TOPIC = os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry")
 
 class ThreatScoringEngine:
     def __init__(self):
@@ -362,11 +363,14 @@ threat_engine = ThreatScoringEngine()
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        logger.info("Threat Scoring Engine connected to MQTT!")
-        client.subscribe("grid/telemetry")
+        client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/alerts")
         client.subscribe("grid/config")
         client.subscribe("grid/control")
+        logger.info(
+            "Threat Scoring Engine ready | MQTT=%s:%s | subscriptions=%s,grid/alerts,grid/config,grid/control",
+            MQTT_BROKER, MQTT_PORT, TELEMETRY_TOPIC,
+        )
     else:
         logger.error(f"Threat Engine connection failed: rc {rc}")
 
@@ -400,7 +404,7 @@ def on_message(client, userdata, msg):
                 }
                 client.publish("grid/events", json.dumps(event))
 
-        elif topic == "grid/telemetry":
+        elif topic in (TELEMETRY_TOPIC, "grid/telemetry"):
             threat_data = threat_engine.calculate_threat(payload)
             
             # Publish calculated threat telemetry
@@ -417,8 +421,19 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_message = on_message
 
+    connected = False
+    retry_delay = 1.0
+    while not connected:
+        try:
+            client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+            connected = True
+            logger.info("Threat Scoring Engine connected to MQTT successfully!")
+        except Exception as e:
+            logger.warning(f"Threat Engine MQTT connection failed: {e}. Retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
+            retry_delay = min(15.0, retry_delay * 1.5)
+
     try:
-        client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
         client.loop_forever()
     except KeyboardInterrupt:
         logger.info("Stopping Threat Scoring Engine...")

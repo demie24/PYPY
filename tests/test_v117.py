@@ -3,12 +3,13 @@ import os
 import sys
 import uuid
 import time
+import asyncio
 import pytest
+import httpx
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../core")))
 
 from services.auth.auth_service import create_jwt_token, decode_jwt_token
-from fastapi.testclient import TestClient
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from unittest.mock import MagicMock, AsyncMock, patch
@@ -75,24 +76,32 @@ def _build_rate_limit_app(max_requests, window_seconds, path="/api/test", respon
 
     mini = _FastAPI()
     if response_fn:
-        mini.get(path)(response_fn)
+        @mini.get(path)
+        async def _custom_route():
+            return response_fn()
     else:
         @mini.get(path)
-        def _route(): return {"ok": True}
+        async def _route(): return {"ok": True}
     mini.add_middleware(_RL)
     return mini
+
+
+async def _rate_limit_requests(app, path, request_count):
+    """Exercise an ASGI app without Starlette's blocking TestClient portal."""
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        return [await client.get(path) for _ in range(request_count)]
 
 
 def test_rate_limit_middleware_rejects_after_limit():
     """RateLimitMiddleware must reject requests after max_requests within window."""
     app = _build_rate_limit_app(max_requests=5, window_seconds=60)
-    client = TestClient(app, raise_server_exceptions=False)
+    responses = asyncio.run(_rate_limit_requests(app, "/api/test", 6))
 
-    for _ in range(5):
-        resp = client.get("/api/test")
+    for resp in responses[:5]:
         assert resp.status_code == 200
 
-    resp = client.get("/api/test")
+    resp = responses[5]
     assert resp.status_code == 429
     assert "Too many requests" in resp.json()["detail"]
 
@@ -101,10 +110,9 @@ def test_rate_limit_health_check_exempted():
     """Health check endpoints must bypass rate limiting."""
     app = _build_rate_limit_app(max_requests=2, window_seconds=60, path="/api/health",
                                 response_fn=lambda: {"status": "healthy"})
-    client = TestClient(app, raise_server_exceptions=False)
+    responses = asyncio.run(_rate_limit_requests(app, "/api/health", 10))
 
-    for _ in range(10):
-        resp = client.get("/api/health")
+    for resp in responses:
         assert resp.status_code == 200
 
 
@@ -127,10 +135,9 @@ def test_security_headers_are_present():
         return response
 
     @mini.get("/api/health")
-    def _health(): return {"status": "healthy"}
+    async def _health(): return {"status": "healthy"}
 
-    client = TestClient(mini, raise_server_exceptions=False)
-    resp = client.get("/api/health")
+    resp = asyncio.run(_rate_limit_requests(mini, "/api/health", 1))[0]
     assert resp.headers.get("X-Content-Type-Options") == "nosniff"
     assert resp.headers.get("X-Frame-Options") == "DENY"
     assert "Strict-Transport-Security" in resp.headers

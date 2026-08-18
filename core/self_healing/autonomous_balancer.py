@@ -35,6 +35,11 @@ class AutonomousBalancer:
         mismatches = {}
 
         for island in active_islands:
+            # The intact grid is a connected component, not an electrical
+            # island requiring local balancing. Runtime islanding analysis
+            # explicitly marks components created by topology separation.
+            if not island.get("is_islanded", True):
+                continue
             island_id = island["island_id"]
             if not island["has_generation"]:
                 # De-energized blackout island

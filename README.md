@@ -1,215 +1,105 @@
-# ⚡ PYPY: Smart Grid Cybersecurity & Cyber-Physical Research Platform
+# PYPY: Smart Grid Cybersecurity Research Platform
 
-[![CI Pipeline](https://github.com/demie24/PYPY/actions/workflows/ci.yml/badge.svg)](https://github.com/demie24/PYPY/actions/workflows/ci.yml)
-[![Tests Passing](https://img.shields.io/badge/tests-833%20passed-success)](https://github.com/demie24/PYPY)
-[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+PYPY is an event-driven cyber-physical research platform for smart-grid simulation, attack detection, threat assessment, and safety-gated recovery. The default Docker Compose runtime uses the IEEE 39-Bus model.
 
-**PYPY** is an enterprise-grade cyber-physical power grid research and SaaS platform. It combines real-time digital twin grid monitoring (IEEE 9-Bus standard), AI-driven anomaly and False Data Injection Attack (FDIA) detection, self-healing Fault Location, Isolation, and Service Restoration (FLISR) logic, and Hardware-in-the-Loop (HIL) relay controls.
+> Research software: do not connect this stack to live grid infrastructure without an independent security and safety assessment.
 
----
+## Current Runtime Architecture
 
-## 📋 System Capability Overview
+The verified runtime flow is:
 
-| Module / Component | Functional Capabilities | Status |
-|---|---|---|
-| **API Gateway** | FastAPI WebSocket + MQTT communication bridge & JWT authentication | ✅ Active |
-| **Digital Twin Simulator** | Real-time IEEE 9-Bus power flow solver (voltage, phase angle, active/reactive power) | ✅ Active |
-| **AI Anomaly Detection** | Real-time FDIA, unauthorized command, and telemetry anomaly detection | ✅ Active |
-| **Self-Healing Engine** | Automated FLISR restoration planner and Deep RL (PPO/DQN) recovery policies | ✅ Active |
-| **Operator Dashboard** | React + Vite single-line diagram visualization, alert timeline & control console | ✅ Active |
-| **Relay Protection** | Intelligent Electronic Device (IED) overcurrent and distance relay trip simulation | ✅ Active |
-| **Hardware HIL Bridge** | ESP32 edge microcontroller integration & physical relay control bridge | ⏳ HIL Ready |
-| **Deep RL / Coevolution** | Red/Blue agent competitive self-play and physics-informed neural network (PINN) inference | ✅ Integrated |
-
----
-
-## 🏗️ System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 PYPY SMART GRID PLATFORM                    │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
-│  │ Gateway  │  │ Digital  │  │    AI    │  │  Self-   │ │
-│  │ (WS/REST)│  │  Twin    │  │Detection │  │ Healing  │ │
-│  └──────┬───┘  └────┬─────┘  └────┬─────┘  └────┬─────┘ │
-│         │           │             │             │         │
-│         └───────────┼─────────────┼─────────────┘         │
-│                     │             │                        │
-│              ┌──────▼─────────────▼──────┐                │
-│              │   MQTT Broker (Mosquitto) │                │
-│              └──────────────┬────────────┘                │
-│                             │                             │
-│                      ┌──────▼──────┐                      │
-│                      │ React / Vite│                      │
-│                      │ Dashboard   │                      │
-│                      └─────────────┘                      │
-│                                                             │
-│  [ Hardware Layer — ESP32 Microcontrollers / Relay HIL ]     │
-└─────────────────────────────────────────────────────────────┘
+```text
+Digital Twin
+  -> AI Detection
+  -> Threat Scorer
+  -> Self-Healing
+  -> AI Orchestrator
+  -> Digital Twin
+  -> Gateway / WebSocket / Dashboard
 ```
 
----
+Services communicate through MQTT. The principal topic contract is:
 
-## 🚀 Quick Start Guide
+| Topic | Purpose |
+|---|---|
+| `pypy/grid/telemetry` | Full IEEE-39 telemetry published by the Digital Twin |
+| `grid/alerts` | Anomalies published by AI Detection |
+| `grid/threat` | Threat assessments published by the Threat Scorer |
+| `grid/l6_recovery` | Recovery state and evidence events |
+| `grid/control/proposed` | Safety-validated recovery proposals from Self-Healing |
+| `grid/orchestrator/events` | Orchestrator decisions and approval events |
+| `grid/control` | Approved commands consumed by the Digital Twin |
+| `grid/events` | Grid and control execution events exposed through the Gateway |
 
-### Prerequisites
+`grid/telemetry` remains a legacy/gateway-translated view. Defense services use `pypy/grid/telemetry` as their full-fidelity input.
 
-- **Python 3.10+**
-- **Docker & Docker Compose** (v20.10+)
-- **Node.js 18+** & **npm**
+## Grid Model
 
----
+The default runtime is the IEEE 39-Bus system:
 
-### 1. Clone & Environment Configuration
+- 39 buses
+- 46 lines
+- 10 generators
+- 21 loads
+
+## Cyber-Physical Safety
+
+An AI alert does not directly open a breaker. Automated recovery requires correlated threat context and physical outage evidence, acceptable stability measurements, restoration sandbox validation, and explicit safety constraints. Self-Healing publishes a proposed action only after those checks; the AI Orchestrator is the approval gate that publishes an executable `grid/control` command.
+
+## Quick Start
+
+Prerequisites are Docker with Compose support. Start the complete verified runtime with:
 
 ```bash
-git clone https://github.com/demie24/PYPY.git
-cd PYPY
-
-# Create local environment configuration
-cp .env.example .env
+docker compose up -d --build --remove-orphans
+docker compose ps
 ```
 
----
+Useful local endpoints:
 
-### 2. Run with Docker Compose
+| Service | Address |
+|---|---|
+| Dashboard | `http://localhost:3001` |
+| Gateway API | `http://localhost:8000` |
+| Gateway health | `http://localhost:8000/api/health` |
+| MQTT | `localhost:1884` |
 
-Spin up PostgreSQL, Redis, MQTT Broker, Gateway API, Celery Workers, Digital Twin, and Dashboard:
+Inspect service logs with `docker compose logs --tail=200 SERVICE`.
+
+## Verification
+
+The verified baseline is **835 passed, 0 failed, 0 errors**:
 
 ```bash
-# Build and launch services
-docker compose up -d --build
-
-# View real-time container logs
-docker compose logs -f
+PYTHONDONTWRITEBYTECODE=1 python -m pytest -q
 ```
 
-Access the interfaces once services report healthy status:
+The stateful runtime path has also been verified end to end:
 
-| Service | Access URL | Description |
-|---|---|---|
-| **Dashboard Console** | `http://localhost:3001` | Single-line diagram & alert dashboard |
-| **Gateway API Docs** | `http://localhost:8000/docs` | OpenAPI / Swagger interactive documentation |
-| **Health Endpoint** | `http://localhost:8000/api/health` | Service health status JSON |
-| **MQTT Broker** | `localhost:1884` | Telemetry & control topic bus |
-
----
-
-### 3. Local Development (Without Docker)
-
-```bash
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install all backend requirements
-pip install -r requirements.txt
-pip install -e .
-
-# Start local MQTT broker container
-docker run -d -p 1883:1883 eclipse-mosquitto:latest
-
-# Run Gateway API service
-python core/gateway/main.py
-
-# In another terminal, run Dashboard frontend
-cd dashboard
-npm install
-npm run dev
+```text
+Attack -> Detection -> Threat Assessment -> Cyber-Physical Validation
+       -> Recovery -> Grid Stabilization
 ```
 
----
+Success means more than MQTT publication: the approved command was consumed by the Digital Twin and produced a measurable state change, followed by cleanup to a nominal grid state.
 
-## 🧪 Testing & Validation
+## Repository Layout
 
-The platform features an extensive test suite of **833 unit, integration, physics, and cybersecurity tests**.
-
-```bash
-# Install editable package for local imports
-pip install -e .
-
-# Run the full 833-test regression suite
-pytest
-
-# Run non-integration unit tests only
-pytest -m "not integration"
-
-# Run tests with code coverage report
-pytest --cov=core --cov-report=term-missing
+```text
+core/digital_twin/   IEEE-39 simulator and MQTT control endpoint
+core/ai_detection/   telemetry anomaly and FDIA detection
+core/threat_engine/  alert correlation and threat scoring
+core/self_healing/   safety-gated recovery planning
+core/orchestrator/   recovery proposal approval gate
+core/gateway/        REST, WebSocket, and MQTT bridge
+dashboard/           React/Vite operator interface
+tests/               unit, integration, cyber, and physics regression tests
 ```
 
----
+## Security
 
-## 📁 Repository Structure
+The local stack uses development defaults, unencrypted MQTT, and simulated controls. Do not commit real credentials or `.env` files. Review deployment-specific authentication, encryption, secret management, and hardware interlocks before any environment beyond isolated research use.
 
-```
-PYPY/
-├── core/                          # Core Python backend engine
-│   ├── gateway/                   # FastAPI REST API & WebSocket server
-│   ├── digital_twin/              # IEEE 9-Bus power flow simulator
-│   ├── ai_detection/              # Anomaly detection & FDIA classifiers
-│   ├── ai_prediction/             # PINN prediction & LSTM engines
-│   ├── self_healing/              # FLISR restoration & RL agents
-│   ├── cyber_defense/             # Adaptive defense orchestrator
-│   ├── relay_protection/          # Intelligent relay protection logic
-│   ├── hardware/                  # ESP32 HIL bridge & relay interface
-│   ├── requirements.txt           # Core Python dependencies
-│   └── requirements-ai.txt        # Deep learning / PyTorch packages
-│
-├── dashboard/                     # React + Vite frontend application
-│   ├── src/                       # UI components, single-line diagrams, hooks
-│   └── Dockerfile                 # Production nginx container build
-│
-├── tests/                         # Comprehensive 833-test regression suite
-│   ├── unit/                      # Isolated unit tests
-│   ├── integration/               # Multi-service integration tests
-│   ├── cyber/                     # Cyber-attack simulation tests
-│   ├── physics/                   # Physics/KCL validation tests
-│   └── self_healing/              # RL self-healing tests
-│
-├── docs/                          # Platform documentation
-│   ├── API_REFERENCE.md           # REST & WebSocket endpoint documentation
-│   ├── MQTT_TOPICS.md             # MQTT message bus topics specification
-│   ├── DEPLOYMENT_GUIDE.md        # Production deployment instructions
-│   └── reports/                   # Historical architecture & audit research reports
-│
-├── k8s/                           # Kubernetes deployment manifests
-├── scripts/                       # Deployment and verification utility scripts
-├── docker-compose.yml             # Local docker development stack
-├── docker-compose.prod.yml        # Production stack with Nginx proxy
-├── pyproject.toml                 # Package configuration & pytest settings
-├── LICENSE                        # MIT Open Source License
-└── README.md                      # Project documentation
-```
-
----
-
-## 🔒 Security & Disclosure
-
-- All sample API keys and secret definitions are strictly scoped to mock/development values.
-- Never commit active production credentials or real `.env.production` files.
-- Refer to `k8s/secrets.yaml.template` and `.env.production.template` for secure configuration management.
-
----
-
-## 📖 Citation
-
-If you use PYPY in academic research or smart grid security publications, please cite:
-
-```bibtex
-@software{pypy_2026,
-  author = {demie24},
-  title = {PYPY: Smart Grid Cybersecurity & Cyber-Physical Research Platform},
-  year = {2026},
-  url = {https://github.com/demie24/PYPY}
-}
-```
-
----
-
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).

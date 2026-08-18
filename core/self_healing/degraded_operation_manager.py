@@ -45,11 +45,22 @@ class DegradedOperationManager:
         buses = state.get("buses", {})
         lines = state.get("lines", {})
         breakers = state.get("breakers", {})
+        grid_name = telemetry.get("grid_name", "legacy9")
 
-        # 1. Calculate active generation capacity
+        # 1. Calculate active generation capacity. IEEE-39 telemetry uses
+        # generator injection signs, so the legacy Bus 1-3 MW sum must not be
+        # interpreted as available generation capacity.
         gen_capacity = 0.0
         online_generators = []
-        for g_name, g_data in self.gen_buses.items():
+        generator_catalog = self.gen_buses
+        if grid_name == "ieee39":
+            generator_catalog = {
+                name: {"P_nom": 0.0}
+                for name, data in buses.items()
+                if data.get("is_gen", False)
+            }
+
+        for g_name, g_data in generator_catalog.items():
             b_val = buses.get(g_name, {})
             v = b_val.get("voltage_pu", 0.0)
             if v > 0.8:
@@ -85,7 +96,12 @@ class DegradedOperationManager:
 
         # Enforce degraded mode if capacity is deficient or lines are severely overloaded
         generation_deficit = total_demand - gen_capacity
-        if generation_deficit > 0.0 or len(severe_overloads) > 0 or len(online_generators) < len(self.gen_buses):
+        if grid_name == "ieee39":
+            # P_mw is a signed network injection in the AC telemetry contract;
+            # voltage/online status and thermal loading are the valid survival
+            # gates until a separate generator-capability field is published.
+            generation_deficit = 0.0
+        if generation_deficit > 0.0 or len(severe_overloads) > 0 or len(online_generators) < len(generator_catalog):
             active_degraded_mode = True
 
         # 4. Formulate Partial-Grid Survival microgrids and controlled load shedding

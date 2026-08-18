@@ -58,11 +58,13 @@ class RestorationValidator:
                 is_safe = False
                 violations.append(f"{bus_name} predicted overvoltage: {v:.3f} p.u. (Limit: <= 1.10)")
                 
-        # Apply strict Layer 6 conductor loading limits: <= 1.10 p.u. (110%)
+        # IEEE-39 uses 3.0 current_pu as 100% conductor capacity; the legacy
+        # sandbox uses 1.10 p.u. as its strict limit.
+        loading_limit = 3.0 if len(predicted_voltages) > 9 else 1.10
         for lid, loading in predicted_loadings.items():
-            if loading > 1.10:
+            if loading > loading_limit:
                 is_safe = False
-                violations.append(f"Line {lid} predicted overload: {loading*100:.1f}% (Limit: <= 110%)")
+                violations.append(f"Line {lid} predicted current {loading:.2f} p.u. exceeds {loading_limit:.2f} p.u. limit")
                 
         return {
             "is_safe": is_safe,

@@ -77,7 +77,8 @@ class TestAutonomousRestoration(unittest.TestCase):
         cmds = self.fsm.update(telemetry, self.client, faulted_breakers=["L8_9"])
         self.assertEqual(self.fsm.state, "RESTORE")
         self.assertEqual(len(cmds), 1)
-        self.assertEqual(cmds[0]["command"], "CLOSED")
+        # MQTT control contract uses imperative CLOSE; CLOSED is telemetry state.
+        self.assertEqual(cmds[0]["command"], "CLOSE")
         self.assertEqual(cmds[0]["target"], "L7_8")
         
         # Second update to transition from RESTORE to VERIFY

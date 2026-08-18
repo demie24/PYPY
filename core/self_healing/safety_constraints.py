@@ -51,13 +51,19 @@ class SafetyConstraintEngine:
                 violated_rules.append(f"Voltage violation at {b_name}: {v:.3f} p.u. outside [{self.V_MIN_HARD}, {self.V_MAX_HARD}]")
                 
         # 2. Line loading check (Current state check)
+        ieee39 = len(buses) > 9
+        line_limit = 3.0 if ieee39 else self.MAX_LINE_LOAD_PU
         for l_name, l_data in lines.items():
-            # load = sqrt(P^2 + Q^2) / V
-            p = l_data.get("P_mw", 0.0) / 100.0
-            q = l_data.get("Q_mvar", 0.0) / 100.0
-            load_pu = np.sqrt(p**2 + q**2)
-            if load_pu > self.MAX_LINE_LOAD_PU:
-                violated_rules.append(f"Line overload on {l_name}: {load_pu:.2f} p.u. exceeds {self.MAX_LINE_LOAD_PU}")
+            if ieee39:
+                # IEEE-39 Digital Twin defines capacity using current_pu / 3.0.
+                load_pu = l_data.get("current_pu", 0.0)
+            else:
+                # Legacy IEEE-9 contract derives loading from apparent power.
+                p = l_data.get("P_mw", 0.0) / 100.0
+                q = l_data.get("Q_mvar", 0.0) / 100.0
+                load_pu = np.sqrt(p**2 + q**2)
+            if load_pu > line_limit:
+                violated_rules.append(f"Line overload on {l_name}: {load_pu:.2f} p.u. exceeds {line_limit}")
                 
         # 3. Anti-Islanding Protection check (Predictive check based on action)
         if action_name in ["ISOLATE_LINE", "OPEN_BREAKER", "ISOLATE_BUS", "ENABLE_ISLANDING"]:

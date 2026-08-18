@@ -3,6 +3,7 @@ import sys
 import time
 import json
 import logging
+import math
 from typing import Dict, List, Any
 
 # Setup import paths
@@ -222,7 +223,7 @@ class RecoveryStateMachine:
                     elif not self._check_cooldown_and_allowed(cmd, target):
                         logger.warning(f"Cooldown active on breaker {target}. Delaying execution.")
                     else:
-                        control_cmd = "CLOSED" if cmd == "CLOSE" else "OPEN"
+                        control_cmd = "CLOSE" if cmd == "CLOSE" else "OPEN"
                         commands.append({
                             "command": control_cmd,
                             "target": target,
@@ -252,7 +253,7 @@ class RecoveryStateMachine:
                     elif not self._check_cooldown_and_allowed(cmd, target):
                         logger.warning(f"Cooldown active on breaker {target}. Delaying execution.")
                     else:
-                        control_cmd = "CLOSED" if cmd == "CLOSE" else "OPEN"
+                        control_cmd = "CLOSE" if cmd == "CLOSE" else "OPEN"
                         commands.append({
                             "command": control_cmd,
                             "target": target,
@@ -335,7 +336,11 @@ class RecoveryStateMachine:
             self.transition_to("NORMAL")
             
         # Compute recovery confidence meter (0-100)
-        total_voltages = [buses[f"Bus_{i+1}"].get("voltage_pu", 1.0) for i in range(9) if f"Bus_{i+1}" in buses]
+        total_voltages = [
+            float(bus.get("voltage_pu", 1.0))
+            for bus in buses.values()
+            if math.isfinite(float(bus.get("voltage_pu", 1.0)))
+        ]
         mean_voltage = sum(total_voltages)/len(total_voltages) if total_voltages else 1.0
         confidence = max(0, min(100, int((1.0 - abs(mean_voltage - 1.0) * 4) * 100)))
         if self.state == "ROLLBACK":

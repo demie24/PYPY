@@ -1,161 +1,112 @@
-# System Architecture — Smart Grid Cybersecurity Platform
+# PYPY Runtime Architecture
 
-This document describes the internal architecture of the PYPY platform: how services are structured, how they communicate, and how data flows through the system.
+This document describes the verified default Docker Compose runtime. PYPY is an event-driven research system: services exchange state and commands through the MQTT broker rather than invoking one another directly.
 
----
+## Verified Runtime Flow
 
-## Overview
-
-The platform is a **modular, event-driven cyber-physical system** built around an MQTT message bus. Each service is an independent Python process that publishes and subscribes to topics — no service calls another directly.
-
-```
-                     ┌──────────────────────────────────────────────┐
-                     │              SMART GRID PLATFORM              │
-                     └──────────────────────────────────────────────┘
-
-  [Hardware Layer]          [Simulation Layer]          [Intelligence Layer]
-  ┌─────────────┐           ┌──────────────┐           ┌──────────────────┐
-  │  ESP32 RTU  │           │ Digital Twin │           │  AI Detection    │
-  │ (pending)   │           │  Simulator   │           │  (FDIA / UCIA)   │
-  └──────┬──────┘           └──────┬───────┘           └────────┬─────────┘
-         │                         │                            │
-         └─────────────────────────┼────────────────────────────┘
-                                   │
-                         ┌─────────▼─────────┐
-                         │   MQTT Broker      │
-                         │  (Eclipse Mosquitto)│
-                         └─────────┬─────────┘
-                                   │
-              ┌────────────────────┼─────────────────────┐
-              │                    │                     │
-   ┌──────────▼──────┐   ┌─────────▼──────┐   ┌────────▼───────┐
-   │    Gateway      │   │  Cyber Defense │   │  Self-Healing  │
-   │  (WS / REST)    │   │  Orchestrator  │   │  (FLISR + RL)  │
-   └──────────┬──────┘   └────────────────┘   └────────┬───────┘
-              │                                         │
-   ┌──────────▼──────┐                        ┌────────▼───────┐
-   │    Dashboard    │                        │ Relay Protection│
-   │  (React / Vite) │                        └────────────────┘
-   └─────────────────┘
+```text
+Digital Twin --pypy/grid/telemetry--> AI Detection
+AI Detection --grid/alerts---------> Threat Scorer
+Threat Scorer --grid/threat--------> Self-Healing
+Self-Healing --grid/control/proposed--> AI Orchestrator
+AI Orchestrator --grid/control-----> Digital Twin
+Digital Twin --grid/events---------> Gateway -> WebSocket -> Dashboard
 ```
 
----
+The Digital Twin is the authoritative physics runtime. Its default model is IEEE 39-Bus with 39 buses, 46 lines, 10 generators, and 21 loads.
 
-## Service Descriptions
+## Telemetry Views
 
-### Gateway (`core/gateway/`)
-- **Role**: Central communication hub between the dashboard and all backend services
-- **Exposes**: WebSocket endpoint (`ws://localhost:8000/ws`), REST health endpoint
-- **MQTT**: Bridges WebSocket messages to/from the broker
-- **Tech**: FastAPI + uvicorn + paho-mqtt
+- `pypy/grid/telemetry` is the full IEEE-39 telemetry stream and the authoritative input for the defense chain.
+- `grid/telemetry` is a legacy/gateway-translated view retained for compatibility and presentation consumers. It is not the primary IEEE-39 defense input.
 
-### Digital Twin (`core/digital_twin/`)
-- **Role**: Physics-accurate simulation of an IEEE 9-Bus power distribution network
-- **Publishes**: `grid/digital_twin/state` — full grid snapshot every simulation step
-- **Tech**: Custom numpy/scipy power flow solver
+## Runtime Services
 
-### AI Detection (`core/ai_detection/`)
-- **Role**: Real-time anomaly detection for False Data Injection Attacks (FDIA) and Unauthorized Command Injection Attacks (UCIA)
-- **Subscribes**: `grid/digital_twin/state`
-- **Publishes**: `grid/detection/alerts`
-- **Tech**: LSTM / Physics-Informed Neural Network (PINN)
+### Digital Twin
 
-### Self-Healing (`core/self_healing/`)
-- **Role**: Automated Fault Location, Isolation, and Service Restoration (FLISR) with Reinforcement Learning-based optimization
-- **Subscribes**: `grid/digital_twin/state`, `grid/detection/alerts`
-- **Publishes**: `grid/self_healing/actions`
-- **Sub-modules**: `rl/` (PPO/DQN agents), `cyber_defense/` (integrated), `orchestrator/` (multi-agent)
-- **Tech**: PyTorch RL, multi-agent consensus
+The Digital Twin solves the IEEE-39 grid state, publishes `pypy/grid/telemetry` and relevant `grid/events`, and consumes approved commands from `grid/control`. A published command is not considered successful until the resulting Digital Twin state change is observed.
 
-### Cyber Defense (`core/cyber_defense/`)
-- **Role**: Adaptive defense coordination in response to detected attacks
-- **Integrated into**: `self_healing` service orchestrator
+### AI Detection
 
-### Physics Validation (`core/physics_validation/`)
-- **Role**: KCL/KVL validator — validates telemetry against physical laws before it reaches the AI
-- **Used by**: `ai_detection` (trust filter)
+- Input: `pypy/grid/telemetry` (plus attack/control context used for calibration and reset handling)
+- Output: `grid/alerts`
 
-### Relay Protection (`core/relay_protection/`)
-- **Role**: IED overcurrent/overvoltage protection logic (in progress)
+AI Detection establishes a nominal baseline and publishes anomaly evidence. Its output is context, not direct actuator authority.
 
-### Dashboard (`dashboard/`)
-- **Role**: React/Vite single-line diagram, real-time alerts, self-healing action viewer
-- **Connects to**: Gateway WebSocket
+### Threat Scorer
 
----
+- Input: `grid/alerts`
+- Output: `grid/threat`
 
-## Data Flow
+The scorer correlates alerts into a threat assessment consumed by downstream safety logic.
 
-```
-[Digital Twin] ──publishes──► grid/digital_twin/state
-                                      │
-                         ┌────────────┼────────────┐
-                         ▼            ▼            ▼
-               [AI Detection]  [Self-Healing]  [Gateway]
-                         │            │            │
-                         ▼            ▼            ▼
-               grid/detection  grid/self_healing  WebSocket
-                  /alerts        /actions          ──► [Dashboard]
-```
+### Self-Healing
 
----
+- Input: cyber-physical context including `pypy/grid/telemetry`, `grid/events`, `grid/control`, and `grid/threat`
+- Output: `grid/l6_recovery` and `grid/control/proposed`
 
-## `core/` Package Structure
+Self-Healing correlates threat context with actual physical outage/isolation evidence and grid stability. Candidate restoration actions pass topology simulation and safety constraints before they can become proposals.
 
-```
-core/
-├── __init__.py
-├── requirements.txt         # Base Python dependencies
-├── requirements-ai.txt      # ML/AI-specific dependencies (torch, sklearn, etc.)
-│
-├── gateway/                 # FastAPI WebSocket + MQTT bridge
-├── digital_twin/            # IEEE 9-Bus power flow simulator
-├── ai_detection/            # FDIA/UCIA anomaly detection
-├── ai_prediction/           # PINN inference (LSTM physics-informed model)
-├── self_healing/            # FLISR + RL restoration engine
-│   └── rl/                  # PPO / DQN agents
-├── cyber_defense/           # Adaptive defense orchestration
-├── physics_validation/      # KCL/KVL telemetry validation
-├── orchestrator/            # Multi-agent AI orchestration layer
-├── relay_protection/        # IED protection logic
-├── attack_simulator/        # Cyber-attack injection for red-team testing
-├── hardware/                # ESP32 HIL control layer
-├── assistant/               # Voice/NLP operator assistant
-├── data_collector/          # Training data collection daemon
-└── threat_engine/           # Threat scoring and prioritization
+### AI Orchestrator
+
+- Input: proposed recovery/control on `grid/control/proposed` plus the supporting telemetry, threat, and recovery context
+- Output: approved commands on `grid/control` and decisions on `grid/orchestrator/events`
+
+The orchestrator is the final software approval gate. It rejects proposals that do not carry the required L6 recovery provenance or do not satisfy current safety conditions.
+
+### Gateway and Dashboard
+
+The Gateway bridges MQTT events and telemetry to REST/WebSocket clients. The Dashboard consumes that live view; it is not in the actuator approval path.
+
+### Supporting Infrastructure
+
+- Mosquitto provides the MQTT event bus.
+- PostgreSQL and Redis support the Gateway and task services.
+- Celery worker and beat provide background task execution and scheduling.
+
+## Safety Approval Gate
+
+The supported autonomous path is deliberately not `AI alert -> breaker operation`.
+
+```text
+Threat context
+  + physical fault/outage/isolation evidence
+  + acceptable voltage/current/stability state
+  + restoration sandbox result
+  + topology and safety constraints
+  -> recovery proposal
+  -> orchestrator approval
+  -> executable grid/control command
 ```
 
----
+This separation preserves cyber-physical gating: detection informs recovery planning, while observed physical state and validation determine whether an action may proceed.
 
-## Test Architecture
+## Main MQTT Contract
 
+| Publisher | Topic | Principal consumers |
+|---|---|---|
+| Digital Twin | `pypy/grid/telemetry` | AI Detection, Self-Healing, AI Orchestrator, Gateway |
+| AI Detection | `grid/alerts` | Threat Scorer, Gateway |
+| Threat Scorer | `grid/threat` | Self-Healing, AI Orchestrator, Gateway |
+| Self-Healing | `grid/l6_recovery` | AI Orchestrator, Gateway |
+| Self-Healing | `grid/control/proposed` | AI Orchestrator |
+| AI Orchestrator | `grid/orchestrator/events` | Gateway/Dashboard and audit consumers |
+| AI Orchestrator | `grid/control` | Digital Twin, Gateway, defense context consumers |
+| Digital Twin | `grid/events` | Self-Healing, Gateway/Dashboard |
+
+Additional research and HIL compatibility topics exist, but they are not required to describe the verified default defense chain.
+
+## Default Compose Boundary
+
+The verified default stack contains PostgreSQL, Redis, MQTT, Gateway, Dashboard, Digital Twin, Celery worker, Celery beat, AI Detection, Threat Scorer, Self-Healing, and AI Orchestrator. Research modules that are not dependencies of this chain remain outside the default runtime.
+
+## Verification Boundary
+
+The current regression baseline is 835 passed, 0 failed, and 0 errors. Runtime verification additionally demonstrates:
+
+```text
+Attack -> Detection -> Threat Assessment -> Cyber-Physical Validation
+       -> Recovery -> Grid Stabilization
 ```
-tests/
-├── conftest.py              # Shared fixtures (MQTT mocks, grid state, telemetry)
-├── unit/                    # 355 unit tests — no external services required
-├── integration/             # Integration tests (requires MQTT broker)
-├── cyber/                   # Cyber defense scenario tests
-├── physics/                 # PINN / physics validation tests
-├── self_healing/            # RL self-healing tests
-├── relay/                   # Relay protection tests
-├── ai/                      # AI detection / prediction tests
-├── hardware/                # Hardware abstraction layer tests
-└── fixtures/                # Shared test data
-```
 
-Test command: `pytest tests/ -m "not integration" -q`
-
----
-
-## Security Considerations
-
-> ⚠️ **Research Platform** — Not production-ready. Do not deploy on live infrastructure.
-
-- All inter-service communication is unencrypted MQTT (no TLS)
-- No authentication on the gateway WebSocket
-- Attack simulator is for red-team research only
-- Hardware layer assumes trusted local network
-
----
-
-*Last updated: May 2026*
+PYPY remains research software and this verified baseline is not a production-readiness claim.

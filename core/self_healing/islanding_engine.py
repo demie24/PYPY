@@ -126,6 +126,7 @@ class IslandingEngine:
                 "generators": gen_labels,
                 "loads": load_labels,
                 "has_generation": has_gen,
+                "is_islanded": len(components) > 1,
                 "generation_mw": comp_generation,
                 "load_mw": comp_load,
                 "is_deficient": is_deficient,
@@ -144,8 +145,11 @@ class IslandingEngine:
                     bus_name = f"Bus_{b_idx + 1}"
                     v_pu = buses.get(bus_name, {}).get("voltage_pu", 1.0)
                     
-                    # If this node is compromised or collapsed
-                    if bus_name in compromised_nodes or (v_pu < 0.85 and v_pu > 0.05):
+                    # Cyber compromise is decision context, not sufficient
+                    # physical evidence for opening breakers.  Only a measured
+                    # voltage collapse may create automatic split commands;
+                    # overload evidence is handled by the line protection path.
+                    if bus_name not in compromised_nodes and 0.05 < v_pu < 0.85:
                         # Find all closed breakers connected to this node
                         for line in self.topo_engine.topo.lines:
                             if line["from"] == b_idx or line["to"] == b_idx:

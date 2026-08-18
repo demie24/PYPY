@@ -55,8 +55,9 @@ class SmartGridDigitalTwin:
         
         # Initialize dynamic breaker states from topology
         self.breakers = {line["id"]: "CLOSED" for line in self.topo.lines}
-        # L7_8 starts as normally open tie line
-        self.breakers["L7_8"] = "OPEN"
+        # L7_8 is a normally-open tie line only in the legacy 9-bus model.
+        if "L7_8" in self.breakers:
+            self.breakers["L7_8"] = "OPEN"
         
         # Initialize dynamic loads
         self.active_loads = {}
@@ -208,7 +209,8 @@ class SmartGridDigitalTwin:
             self.prev_telemetry = None
             self.physics.prev_currents = {}
             self.breakers = {line["id"]: "CLOSED" for line in self.topo.lines}
-            self.breakers["L7_8"] = "OPEN"
+            if "L7_8" in self.breakers:
+                self.breakers["L7_8"] = "OPEN"
             self.breaker_lockouts.clear()
             self.breaker_cooldowns.clear()
             self.last_commands.clear()

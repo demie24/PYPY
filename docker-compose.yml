@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -144,6 +142,108 @@ services:
       - grid-net
     volumes:
       - ./logs/digital_twin:/app/logs
+
+  ai_detection:
+    build:
+      context: ./core
+      dockerfile: ./ai_detection/Dockerfile
+    container_name: smart_grid_ai_detection
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_started
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import psutil,sys; sys.exit(0 if any('ai_detection/detector.py' in ' '.join(p.cmdline()) for p in psutil.process_iter()) else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  threat_scorer:
+    build:
+      context: ./core
+      dockerfile: ./threat_engine/Dockerfile
+    container_name: smart_grid_threat_scorer
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      ai_detection:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import psutil,sys; sys.exit(0 if any('threat_engine/scorer.py' in ' '.join(p.cmdline()) for p in psutil.process_iter()) else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  self_healing:
+    build:
+      context: ./core
+      dockerfile: ./self_healing/Dockerfile
+    container_name: smart_grid_self_healing
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      threat_scorer:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import psutil,sys; sys.exit(0 if any('core.self_healing.main' in ' '.join(p.cmdline()) for p in psutil.process_iter()) else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  ai_orchestrator:
+    build:
+      context: ./core
+      dockerfile: ./orchestrator/Dockerfile
+    container_name: smart_grid_ai_orchestrator
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      self_healing:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import psutil,sys; sys.exit(0 if any('core.orchestrator.ai_orchestrator' in ' '.join(p.cmdline()) for p in psutil.process_iter()) else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   dashboard:
     build:

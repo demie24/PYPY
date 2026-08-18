@@ -16,7 +16,7 @@ lock = threading.Lock()
 
 def on_connect(client, userdata, flags, rc):
     print(f"Connected to Mosquitto MQTT broker on host with result code {rc}")
-    client.subscribe("grid/telemetry")
+    client.subscribe("pypy/grid/telemetry")
     client.subscribe("grid/events")
     client.subscribe("grid/alerts")
     client.subscribe("grid/physics_validation")
@@ -29,7 +29,7 @@ def on_message(client, userdata, msg):
         payload = json.loads(msg.payload.decode("utf-8"))
         topic = msg.topic
         with lock:
-            if topic == "grid/telemetry":
+            if topic == "pypy/grid/telemetry":
                 telemetry_packets.append(payload)
                 if len(telemetry_packets) > 100:
                     telemetry_packets.pop(0)
@@ -101,9 +101,14 @@ def run_tests():
         print("==================================================")
         reset_system(client)
         
-        # Verify that manually trying to trip a critical line causing islanding (e.g. L8_9) is rejected
-        print("Attempting to open line L8_9 which would isolate load components...")
-        client.publish("grid/control", json.dumps({"command": "OPEN", "target": "L8_9"}))
+        # IEEE-39 is meshed, so no single nominal line outage creates a
+        # load-only island.  L_line_0 is a valid first contingency; opening
+        # L_line_1 afterwards would isolate load Bus 0 without generation.
+        print("Opening valid first contingency L_line_0...")
+        client.publish("grid/control", json.dumps({"command": "OPEN", "target": "L_line_0"}))
+        time.sleep(1)
+        print("Attempting to open L_line_1, which would isolate load Bus 0...")
+        client.publish("grid/control", json.dumps({"command": "OPEN", "target": "L_line_1"}))
         time.sleep(3)
         
         # Verify block event description
@@ -119,13 +124,14 @@ def run_tests():
         print("==================================================")
         reset_system(client)
         
-        # Inject BREAKER_MANIPULATION attack on L4_5
-        print("Injecting BREAKER_MANIPULATION attack targeting line L4_5...")
+        # Inject BREAKER_MANIPULATION attack on a real IEEE-39 breaker.
+        attack_breaker = "L_line_2"
+        print(f"Injecting BREAKER_MANIPULATION attack targeting line {attack_breaker}...")
         client.publish("grid/attack", json.dumps({
             "action": "START",
             "type": "BREAKER_MANIPULATION",
             "config": {
-                "target": "L4_5"
+                "target": attack_breaker
             }
         }))
         time.sleep(3)
@@ -133,13 +139,17 @@ def run_tests():
         # Verify breaker is OPEN
         with lock:
             assert telemetry_packets, "No telemetry received"
-            breaker_state = telemetry_packets[-1]["state"]["breakers"].get("L4_5")
-            assert breaker_state == "OPEN", f"Expected L4_5 breaker to be OPEN under attack, got {breaker_state}"
-            print("Line L4_5 breaker is OPEN under manipulation attack.")
-            
+            breaker_state = telemetry_packets[-1]["state"]["breakers"].get(attack_breaker)
+            assert breaker_state == "OPEN", f"Expected {attack_breaker} breaker to be OPEN under attack, got {breaker_state}"
+            print(f"Line {attack_breaker} breaker is OPEN under manipulation attack.")
+
+        # Respect the Digital Twin's 5-second motor-operator cooldown before
+        # issuing the counter-command; the attack trip itself starts it.
+        time.sleep(2.5)
+
         # Try to close it manually
-        print("Sending manual CLOSE command to line L4_5...")
-        client.publish("grid/control", json.dumps({"command": "CLOSE", "target": "L4_5"}))
+        print(f"Sending manual CLOSE command to line {attack_breaker}...")
+        client.publish("grid/control", json.dumps({"command": "CLOSE", "target": attack_breaker}))
         time.sleep(1.5) # Wait for CLOSE confirmation
         
         with lock:
@@ -154,8 +164,8 @@ def run_tests():
         with lock:
             retrip_events = [ev for ev in event_packets if "Attacker Persistence" in ev.get("event", "")]
             assert len(retrip_events) > 0, "Attacker did not re-trip the breaker!"
-            current_breaker_state = telemetry_packets[-1]["state"]["breakers"].get("L4_5")
-            assert current_breaker_state == "OPEN", f"Expected L4_5 to be re-tripped to OPEN, got {current_breaker_state}"
+            current_breaker_state = telemetry_packets[-1]["state"]["breakers"].get(attack_breaker)
+            assert current_breaker_state == "OPEN", f"Expected {attack_breaker} to be re-tripped to OPEN, got {current_breaker_state}"
             print(f" -> SUCCESS: Attacker persistence re-tripped line to OPEN. Event: {retrip_events[0]['event']}")
 
         # TEST 3: Telemetry Trust & Physics-Aware Reconstruction

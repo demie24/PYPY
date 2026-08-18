@@ -68,5 +68,26 @@ class TestDegradedOperation(unittest.TestCase):
         # Verify Bus_5 is NOT shed
         self.assertNotIn("Bus_5", res["load_shed_summary"])
 
+    def test_ieee39_nominal_signed_injections_do_not_trigger_shedding(self):
+        telemetry = {
+            "grid_name": "ieee39",
+            "state": {
+                "buses": {
+                    "Bus_5": {"voltage_pu": 1.0, "P_mw": 100.0, "is_load": True},
+                    "Bus_6": {"voltage_pu": 1.0, "P_mw": 90.0, "is_load": True},
+                    "Bus_8": {"voltage_pu": 1.0, "P_mw": 80.0, "is_load": True},
+                    "Bus_30": {"voltage_pu": 1.0, "P_mw": -250.0, "is_gen": True},
+                    "Bus_31": {"voltage_pu": 1.0, "P_mw": 9.0, "is_gen": True},
+                },
+                "lines": {"L_line_0": {"capacity_pct": 44.0}},
+                "breakers": {"L_line_0": "CLOSED"},
+            },
+        }
+
+        res = self.manager.evaluate_grid_survival(telemetry)
+
+        self.assertFalse(res["active_degraded_mode"])
+        self.assertEqual(res["survival_commands"], [])
+
 if __name__ == "__main__":
     unittest.main()

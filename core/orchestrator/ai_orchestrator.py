@@ -3,6 +3,7 @@ import time
 import json
 import logging
 import sys
+import math
 import paho.mqtt.client as mqtt
 from typing import Dict, Any, Tuple
 
@@ -26,6 +27,7 @@ logger = logging.getLogger("orchestrator.main")
 
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+TELEMETRY_TOPIC = os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry")
 
 class OrchestratorMemory:
     def __init__(self):
@@ -266,7 +268,7 @@ class AIOrchestrator:
         """
         Updates the cache based on received topic.
         """
-        if topic == "grid/telemetry":
+        if topic in (TELEMETRY_TOPIC, "grid/telemetry"):
             self.state_cache["telemetry"] = payload
         elif topic == "grid/ai_prediction":
             self.state_cache["ai_forecast"] = payload
@@ -565,6 +567,27 @@ class AIOrchestrator:
             "collapse_probability": collapse_probability,
             "success_probability": success_probability
         }
+
+        # An L6 restoration proposal has already passed topology sandboxing.
+        # Treat it as cyber-physically validated only when the proposed breaker
+        # is currently open, a threat assessment exists, and telemetry contains
+        # direct outage/islanding evidence.  This keeps AI alerts alone unable
+        # to actuate breakers while allowing neutral agents to accept a proven
+        # restoration step.
+        target_is_open = state_data.get("breakers", {}).get(target) == "OPEN"
+        has_physical_outage = any(
+            (not math.isfinite(float(bus.get("voltage_pu", 1.0))))
+            or float(bus.get("voltage_pu", 1.0)) < 0.20
+            for bus in buses.values()
+        )
+        validated_l6_recovery = (
+            source in ("L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL")
+            and cmd in ("CLOSE", "CLOSED")
+            and target_is_open
+            and bool(self.state_cache.get("threat"))
+            and has_physical_outage
+            and stability >= 70.0
+        )
         
         # Update dynamic weights statefully based on context
         self.orchestrator_agent.update_dynamic_weights(context)
@@ -582,7 +605,7 @@ class AIOrchestrator:
 
         # Gated Consensus Threshold Rules for autonomous execution
         is_nominal = (context.get("active_attack") is None) and (stability >= 90.0)
-        if source != "SCADA_OPERATOR" and not is_nominal:
+        if source != "SCADA_OPERATOR" and not is_nominal and not validated_l6_recovery:
             if has_veto or consensus_score < 0.40 or stability < 30.0:
                 # Operator approval required
                 return False, f"Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score={consensus_score:.2f}, stability={stability:.1f}%, veto={has_veto})."
@@ -590,7 +613,7 @@ class AIOrchestrator:
                 # Semi-automatic (propose, but do not auto-execute)
                 return False, f"Blocked: Action is SEMI-AUTOMATIC and requires operator approval (consensus_score={consensus_score:.2f}, stability={stability:.1f}%)."
 
-        if not vote_res["approved"]:
+        if not vote_res["approved"] and not (validated_l6_recovery and not has_veto):
             veto_reason = ""
             if vote_res.get("has_veto"):
                 veto_reason = f" Vetoed by {', '.join(vote_res['vetoed_by'])}."
@@ -602,6 +625,8 @@ class AIOrchestrator:
             self.monitoring_recovery_ticks = 0
             self.monitoring_recovery_start_stability = stability
 
+        if validated_l6_recovery:
+            return True, "Passed sandbox-backed cyber-physical L6 recovery validation and orchestrator safety checks."
         return True, f"Passed all AI orchestrator and agent consensus checks (consensus score={consensus_score:.2f})."
 
     def run_cycle(self, client):
@@ -849,8 +874,7 @@ orchestrator = AIOrchestrator()
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        logger.info("AI Orchestrator connected to MQTT!")
-        client.subscribe("grid/telemetry")
+        client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/ai_prediction")
         client.subscribe("grid/ai_forecast_multi_bus")
         client.subscribe("grid/ai_threat_forecast")
@@ -898,6 +922,10 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("hardware/redundancy")
         client.subscribe("hardware/deployment_hardening")
         client.subscribe("hardware/large_scale_sync")
+        logger.info(
+            "AI Orchestrator ready | MQTT=%s:%s | primary subscriptions=%s,grid/threat,grid/control/proposed,grid/control,grid/l6_recovery (plus research/HIL compatibility topics)",
+            MQTT_BROKER, MQTT_PORT, TELEMETRY_TOPIC,
+        )
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
 
@@ -1000,7 +1028,7 @@ def on_message(client, userdata, msg):
                 logger.info(f"Orchestrator defense mode updated to: {orchestrator.defense_mode}")
         else:
             # Throttling and duplicate timestamp checks for telemetry
-            if topic == "grid/telemetry":
+            if topic in (TELEMETRY_TOPIC, "grid/telemetry"):
                 now = time.time()
                 if now - orchestrator.last_cycle_time < 0.5:
                     return # Skip telemetry flood
@@ -1015,7 +1043,7 @@ def on_message(client, userdata, msg):
             orchestrator.update_state(topic, payload)
             
             # Trigger cycle execution upon receiving telemetry tick
-            if topic == "grid/telemetry":
+            if topic in (TELEMETRY_TOPIC, "grid/telemetry"):
                 orchestrator.run_cycle(client)
             elif topic == "hardware/attack_propagation":
                 orchestrator.process_quarantine_containment(client)
@@ -1027,9 +1055,18 @@ if __name__ == "__main__":
     client = mqtt.Client(client_id="ai_orchestration_service")
     client.on_connect = on_connect
     client.on_message = on_message
-    
+
+    retry_delay = 1
+    while True:
+        try:
+            client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+            break
+        except OSError as exc:
+            logger.warning("MQTT unavailable (%s); retrying in %ss", exc, retry_delay)
+            time.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, 30)
+
     try:
-        client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
         client.loop_forever()
     except KeyboardInterrupt:
         logger.info("Stopping AI Orchestrator...")

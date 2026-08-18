@@ -65,5 +65,26 @@ class TestIslandingEngine(unittest.TestCase):
         self.assertIn("L4_5", splitting_targets)
         self.assertIn("L5_6", splitting_targets)
 
+    def test_compromised_voltage_channel_does_not_directly_trip_breakers(self):
+        telemetry = {
+            "state": {
+                "buses": {
+                    f"Bus_{i+1}": {"voltage_pu": 0.5 if i == 4 else 1.0, "P_mw": 0.0}
+                    for i in range(9)
+                },
+                "lines": {},
+                "breakers": {
+                    line["id"]: ("OPEN" if line["id"] == "L7_8" else "CLOSED")
+                    for line in self.engine.topo_engine.topo.lines
+                },
+            }
+        }
+        attack_status = {"compromised_nodes": {"Bus_5": {"type": "FDIA"}}}
+
+        result = self.engine.analyze_islanding(telemetry, attack_status)
+
+        self.assertTrue(result["unstable_zones"])
+        self.assertEqual(result["splitting_commands"], [])
+
 if __name__ == "__main__":
     unittest.main()

@@ -11,6 +11,7 @@ logger = logging.getLogger("ai_detector")
 
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+TELEMETRY_TOPIC = os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry")
 
 class NumPyAutoencoderDetector:
     def __init__(self, input_dim=9, hidden_dim=4, lr=0.02):
@@ -29,6 +30,13 @@ class NumPyAutoencoderDetector:
         self.threshold = 0.003
         self.loss_history = []
         self.under_attack = False
+
+        # Calibrate the randomly initialized autoencoder before evaluating
+        # anomalies. Without this phase the initial ~1.0 reconstruction loss
+        # can never fall below the 0.003 training gate.
+        self.calibration_frames = 20
+        self.calibration_steps_per_frame = 10
+        self.frames_seen = 0
 
         # Alert throttling & sliding window variables
         # Window/confirm counts are relaxed during known attacks to reduce flood
@@ -86,6 +94,29 @@ class NumPyAutoencoderDetector:
                 x.append(val)
             
             x = np.array(x)
+
+            if self.frames_seen < self.calibration_frames:
+                final_loss = 0.0
+                for _ in range(self.calibration_steps_per_frame):
+                    final_loss = self.train_step(x)
+                self.frames_seen += 1
+                self.loss_history.append(final_loss)
+                if len(self.loss_history) > 100:
+                    self.loss_history.pop(0)
+                if self.frames_seen == self.calibration_frames:
+                    self.threshold = max(0.003, final_loss * 2.5)
+                    logger.info(
+                        f"AI Detector calibration complete after {self.frames_seen} frames "
+                        f"(baseline loss={final_loss:.6f}, threshold={self.threshold:.6f})."
+                    )
+                return {
+                    "loss": float(final_loss),
+                    "threshold": float(self.threshold),
+                    "is_anomaly": False,
+                    "is_calibrating": True,
+                    "voltages": x.tolist(),
+                    "reconstruction": self.forward(x)[1].tolist()
+                }
             
             # Forward pass to get reconstruction
             h, x_hat = self.forward(x)
@@ -106,6 +137,7 @@ class NumPyAutoencoderDetector:
                 "loss": float(loss),
                 "threshold": float(self.threshold),
                 "is_anomaly": bool(is_anomaly),
+                "is_calibrating": False,
                 "voltages": x.tolist(),
                 "reconstruction": x_hat.tolist()
             }
@@ -117,10 +149,13 @@ detector = NumPyAutoencoderDetector()
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        logger.info("AI Detector connected to MQTT!")
-        client.subscribe("grid/telemetry")
+        client.subscribe(TELEMETRY_TOPIC)
         client.subscribe("grid/attack")
         client.subscribe("grid/control")
+        logger.info(
+            "AI Detector ready | MQTT=%s:%s | subscriptions=%s,grid/attack,grid/control",
+            MQTT_BROKER, MQTT_PORT, TELEMETRY_TOPIC,
+        )
     else:
         logger.error(f"AI Detector connection failed: rc {rc}")
 
@@ -142,7 +177,7 @@ def on_message(client, userdata, msg):
                 detector.anomaly_window.clear()
                 logger.info("AI Detector alerts history and anomaly window reset.")
                 
-        elif msg.topic == "grid/telemetry":
+        elif msg.topic in (TELEMETRY_TOPIC, "grid/telemetry"):
             res = detector.process_telemetry(payload)
             if res:
                 # Phase 5B: Use attack-mode window parameters when under known active attack
@@ -160,6 +195,12 @@ def on_message(client, userdata, msg):
                 detector.anomaly_window.append(res["is_anomaly"])
                 if len(detector.anomaly_window) > w_size:
                     detector.anomaly_window.pop(0)
+
+                if res["is_anomaly"] and sum(detector.anomaly_window) == 1:
+                    logger.info(
+                        "Anomaly candidate observed (loss=%.6f, threshold=%.6f, confirmation=%d/%d).",
+                        res["loss"], res["threshold"], sum(detector.anomaly_window), w_confirm,
+                    )
                 
                 # 2. Confirm anomaly over window size
                 confirmed_anomaly = sum(1 for x in detector.anomaly_window if x) >= w_confirm

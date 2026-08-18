@@ -202,7 +202,10 @@ class AIOrchestrator:
         self.last_telemetry_timestamp = 0
         self.subsystem_last_update = {
             "LSTM": time.time(),
+            "GNN": time.time(),
+            "STGNN": time.time(),
             "PINN": time.time(),
+            "FUSION": time.time(),
             "TRUST": time.time()
         }
         
@@ -219,6 +222,12 @@ class AIOrchestrator:
             "threat_aware_forecast": None,
             "physics_validation": None,
             "trust_scores": None,
+            "ai_lstm": None,
+            "ai_gnn": None,
+            "ai_stgnn": None,
+            "ai_pinn": None,
+            "ai_fusion": None,
+            "ai_statuses": {},
             "threat": None,
             "flisr_state": "NORMAL",
             "flisr_auto": True,
@@ -286,6 +295,13 @@ class AIOrchestrator:
         elif topic == "grid/trust_scores":
             self.state_cache["trust_scores"] = payload
             self.subsystem_last_update["TRUST"] = time.time()
+        elif topic in ("grid/ai/lstm", "grid/ai/gnn", "grid/ai/stgnn", "grid/ai/pinn", "grid/ai/fusion"):
+            component = topic.rsplit("/", 1)[-1]
+            self.state_cache[f"ai_{component}"] = payload
+            self.subsystem_last_update[component.upper()] = time.time()
+        elif topic.startswith("grid/ai/status/"):
+            component = topic.rsplit("/", 1)[-1]
+            self.state_cache["ai_statuses"][component] = payload
         elif topic == "grid/threat":
             self.state_cache["threat"] = payload
         elif topic == "grid/defense":
@@ -703,11 +719,18 @@ class AIOrchestrator:
             
             # 3. Determine active AI modules
             active_modules = []
-            if self.state_cache["ai_forecast"] or self.state_cache["multi_bus_forecast"] or self.state_cache["threat_aware_forecast"]:
+            if self.state_cache["ai_lstm"] or self.state_cache["ai_forecast"] or self.state_cache["multi_bus_forecast"] or self.state_cache["threat_aware_forecast"]:
                 active_modules.append("LSTM")
-            if self.state_cache["physics_validation"]:
+            if self.state_cache["ai_gnn"]:
+                active_modules.append("GNN")
+            if self.state_cache["ai_stgnn"]:
+                active_modules.append("STGNN")
+            if self.state_cache["ai_pinn"]:
                 active_modules.append("PINN")
-            active_modules.append("PPO")
+            if self.state_cache["ai_fusion"]:
+                active_modules.append("FUSION")
+            if self.state_cache["physics_validation"] or self.state_cache["trust_scores"]:
+                active_modules.append("TRUST")
             if self.state_cache["flisr_state"] != "NORMAL":
                 active_modules.append("FLISR")
             if self.state_cache["threat"]:
@@ -848,6 +871,12 @@ class AIOrchestrator:
             "threat_aware_forecast": None,
             "physics_validation": None,
             "trust_scores": None,
+            "ai_lstm": None,
+            "ai_gnn": None,
+            "ai_stgnn": None,
+            "ai_pinn": None,
+            "ai_fusion": None,
+            "ai_statuses": {},
             "threat": None,
             "flisr_state": "NORMAL",
             "flisr_auto": True,
@@ -889,6 +918,8 @@ def on_connect(client, userdata, flags, rc, properties=None):
         client.subscribe("grid/ai_threat_forecast")
         client.subscribe("grid/physics_validation")
         client.subscribe("grid/trust_scores")
+        client.subscribe("grid/ai/+")
+        client.subscribe("grid/ai/status/+")
         client.subscribe("grid/threat")
         client.subscribe("grid/config")
         client.subscribe("grid/control")

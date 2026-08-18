@@ -63,9 +63,22 @@ class PhysicsFilter:
                 v_f = float(bus_f.get("voltage_pu", 1.0))
                 
                 if v_f > 0.1:
-                    calculated_i = np.sqrt(p_pu**2 + q_pu**2) / v_f
+                    if line.get("current_unit") == "ka":
+                        apparent_mva = np.sqrt(
+                            float(line_m.get("P_mw", 0.0)) ** 2
+                            + float(line_m.get("Q_mvar", 0.0)) ** 2
+                        )
+                        calculated_i = apparent_mva / (np.sqrt(3.0) * line["base_kv"] * v_f)
+                        # pandapower's res_line.i_ka is the maximum terminal
+                        # current, while telemetry exposes only the from-end
+                        # complex power. Allow charging/tap asymmetry here;
+                        # large corruption is still caught by calibrated KVL.
+                        tolerance = max(0.05, 0.50 * calculated_i)
+                    else:
+                        calculated_i = np.sqrt(p_pu**2 + q_pu**2) / v_f
+                        tolerance = 0.10
                     deviation = abs(measured_i - calculated_i)
-                    if deviation > 0.10: # threshold of 0.1 p.u.
+                    if deviation > tolerance:
                         impossible_violations.append(
                             f"Current Mismatch on {lid}: Measured={measured_i:.4f} p.u., Calculated={calculated_i:.4f} p.u. (dev={deviation:.4f})"
                         )

@@ -28,3 +28,7 @@ def test_verified_mqtt_contract_is_machine_readable_and_complete():
     for component in ("lstm", "gnn", "stgnn", "pinn"):
         assert schema["x-topic-map"][f"grid/ai/{component}"] == "#/$defs/modelInference"
         assert schema["x-topic-map"][f"grid/ai/status/{component}"] == "#/$defs/modelStatus"
+    assert schema["x-topic-map"]["grid/ai/fusion"] == "#/$defs/aiFusion"
+    assert schema["x-topic-map"]["grid/trust_scores"] == "#/$defs/trustScores"
+    for component in ("fusion", "trust"):
+        assert schema["x-topic-map"][f"grid/ai/status/{component}"] == "#/$defs/modelStatus"

@@ -1,7 +1,8 @@
 import numpy as np
+from collections import defaultdict, deque
 
 class KVLValidator:
-    def __init__(self):
+    def __init__(self, topology=None):
         # Transmission Lines parameters: (From, To, Reactance X)
         self.lines = [
             {"from": 0, "to": 3, "X": 0.0576, "id": "L1_4"},
@@ -14,10 +15,24 @@ class KVLValidator:
             {"from": 6, "to": 7, "X": 0.161,  "id": "L7_8"},
             {"from": 7, "to": 8, "X": 0.1008, "id": "L8_9"}
         ]
+        if topology is not None:
+            self.lines = [
+                {
+                    "from": line["from"], "to": line["to"],
+                    "X": max(float(line.get("X", 0.1)), 1e-6), "id": line["id"],
+                    **({
+                        "current_unit": "ka",
+                        "base_kv": float(topology.net.bus.at[line["from"], "vn_kv"]),
+                    } if hasattr(topology, "net") else {}),
+                }
+                for line in topology.lines
+            ]
         
         # Track reactance factors to align with physical transients in simulator
         self.prev_reactance_factors = {}
         self.cascade_alpha = 0.40
+        self.calibrated_residuals = topology is not None
+        self.residual_history = defaultdict(lambda: deque(maxlen=30))
 
     def validate(self, telemetry):
         """
@@ -78,6 +93,26 @@ class KVLValidator:
                 # KVL reactive mismatch: q_flow * X - (v_f - v_t)
                 q_mismatch = q_flow * x_val - (v_f - v_t)
                 
+                if self.calibrated_residuals:
+                    nominal = (
+                        not (telemetry.get("attack_status") or {}).get("active_attack")
+                        and (telemetry.get("solver_status") or {}).get("converged", True)
+                        and all(status == "CLOSED" for status in breakers.values())
+                    )
+                    history = self.residual_history[lid]
+                    if nominal:
+                        history.append((p_mismatch, q_mismatch))
+                    if len(history) < 15:
+                        p_mismatch, q_mismatch = 0.0, 0.0
+                    else:
+                        samples = np.asarray(history)
+                        baseline = np.median(samples, axis=0)
+                        mad = np.median(np.abs(samples - baseline), axis=0)
+                        residual = np.asarray((p_mismatch, q_mismatch)) - baseline
+                        tolerance = np.maximum(6.0 * 1.4826 * mad, 0.01)
+                        residual = np.sign(residual) * np.maximum(np.abs(residual) - tolerance, 0.0)
+                        p_mismatch, q_mismatch = map(float, residual)
+
                 mismatches[lid] = {
                     "P_mismatch_pu": round(p_mismatch, 4),
                     "Q_mismatch_pu": round(q_mismatch, 4)

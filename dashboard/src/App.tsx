@@ -33,6 +33,7 @@ import { ScenarioMarketplace } from "./components/ScenarioMarketplace.tsx";
 import { AiCopilot } from "./components/AiCopilot.tsx";
 import { SaaSAdmin } from "./components/SaaSAdmin.tsx";
 import OperationsCenter from "./components/OperationsCenter.tsx";
+import { MainOperationsDashboard } from "./components/MainOperationsDashboard.tsx";
 import { SimulationQueueMonitor } from "./components/SimulationQueueMonitor.tsx";
 import LandingPage from "./components/LandingPage.tsx";
 import AuthPages from "./components/AuthPages.tsx";
@@ -57,6 +58,7 @@ import {
   ArrowRight,
   Activity,
   ShieldAlert,
+  ShieldCheck,
   Award,
   CheckCircle2,
   FileText,
@@ -243,6 +245,9 @@ export default function App() {
   const [history, setHistory] = useState<any[]>([]);
   const [_events, setEvents] = useState<any[]>([]);
   const [_alerts, setAlerts] = useState<any[]>([]);
+  const [controlProposal, setControlProposal] = useState<any>(null);
+  const [orchestratorEvent, setOrchestratorEvent] = useState<any>(null);
+  const [lastControl, setLastControl] = useState<any>(null);
   const [threatData, setThreatData] = useState<any>(null);
   const [aiPrediction, setAiPrediction] = useState<any>(null);
   const [predictionHistory, setPredictionHistory] = useState<any[]>([]);
@@ -251,6 +256,8 @@ export default function App() {
   const [pinnForecast, setPinnForecast] = useState<any>(null);
   const [physicsValidation, setPhysicsValidation] = useState<any>(null);
   const [trustScores, setTrustScores] = useState<any>(null);
+  const [aiRuntimeStatuses, setAiRuntimeStatuses] = useState<Record<string, any>>({});
+  const [aiFusion, setAiFusion] = useState<any>(null);
   const [adaptiveFilter, setAdaptiveFilter] = useState<any>(null);
   const [aiOrchestrator, setAiOrchestrator] = useState<any>(null);
   const [recommendedActions, setRecommendedActions] = useState<any>(null);
@@ -1270,6 +1277,17 @@ export default function App() {
             }
           } else if (topic === "grid/threat") {
             setThreatData(payload);
+          } else if (topic === "grid/control/proposed") {
+            setControlProposal(payload);
+          } else if (topic === "grid/orchestrator/events") {
+            setOrchestratorEvent(payload);
+          } else if (topic === "grid/control") {
+            setLastControl(payload);
+          } else if (topic.startsWith("grid/ai/status/")) {
+            const component = topic.split("/").pop();
+            if (component) setAiRuntimeStatuses((previous) => ({ ...previous, [component]: payload }));
+          } else if (topic === "grid/ai/fusion") {
+            setAiFusion(payload);
           } else if (topic === "grid/ai_prediction") {
             if (payload && typeof payload === "object") {
               const isValid = 
@@ -2769,7 +2787,7 @@ export default function App() {
 
 
   return (
-    <div className={`h-screen w-screen flex bg-scada-bg text-scada-text relative select-none overflow-hidden transition-all duration-300 ${
+    <div className={`h-screen w-screen flex bg-scada-bg text-scada-text relative select-none overflow-hidden transition-all duration-300 ${currentPage === "overview" ? "operations-light" : ""} ${
       crtEnabled ? "scada-crt" : ""
     } ${activeAttack === "REPLAY" ? "replay-active-frame border-4" : ""}`}>
       
@@ -2786,29 +2804,39 @@ export default function App() {
           
           <nav className="flex flex-col gap-2">
             {[
-              { id: "landing", label: "Public Portal", icon: <MonitorPlay size={14} /> },
-              { id: "overview", label: "Dashboard", icon: <Cpu size={14} /> },
-              { id: "bcm_center", label: "BCM Center", icon: <Activity size={14} /> },
-              { id: "research_workspace", label: "Research Workspace", icon: <MonitorPlay size={14} /> },
-              { id: "scenario_marketplace", label: "Scenario Marketplace", icon: <MonitorPlay size={14} /> },
-              { id: "reports", label: "Reports", icon: <ShieldAlert size={14} /> },
-              { id: "ai_copilot", label: "AI Copilot", icon: <Cpu size={14} /> },
-              { id: "settings", label: "Settings", icon: <MonitorPlay size={14} /> },
-              { id: "cloud_ops", label: "Cloud Operations Center", icon: <Activity size={14} /> },
-              { id: "saas_admin", label: "Administration", icon: <ShieldAlert size={14} /> }
-            ].map((link) => (
-              <button
-                key={link.id}
-                onClick={() => setCurrentPage(link.id as any)}
-                className={`flex items-center gap-3 px-3 py-2 rounded transition-all text-[10px] font-semibold uppercase tracking-wider ${
-                  currentPage === link.id
-                    ? "bg-scada-nominal/15 border-l-2 border-scada-nominal text-scada-nominal font-bold"
-                    : "text-scada-dimText hover:text-white hover:bg-scada-border/10"
-                }`}
-              >
-                {link.icon}
-                {link.label}
-              </button>
+              { title: "Operations", links: [
+                { id: "overview", label: "Live Overview", icon: <Activity size={14} /> },
+                { id: "reports", label: "Alerts & Reports", icon: <ShieldAlert size={14} /> },
+                { id: "cloud_ops", label: "Services Health", icon: <Cpu size={14} /> },
+                { id: "bcm_center", label: "Continuity Center", icon: <ShieldCheck size={14} /> },
+              ]},
+              { title: "Advanced & Research", links: [
+                { id: "research_workspace", label: "Research Workspace", icon: <MonitorPlay size={14} /> },
+                { id: "scenario_marketplace", label: "Scenarios", icon: <PlayIcon size={14} /> },
+                { id: "ai_copilot", label: "AI Copilot", icon: <Cpu size={14} /> },
+                { id: "settings", label: "Settings", icon: <Sliders size={14} /> },
+                { id: "saas_admin", label: "Administration", icon: <ShieldAlert size={14} /> },
+                { id: "landing", label: "Public Portal", icon: <ArrowLeft size={14} /> },
+              ]},
+            ].map((group) => (
+              <div key={group.title} className="mb-2">
+                <p className="px-3 mb-1 text-[8px] font-bold uppercase tracking-[0.16em] text-scada-dimText/70">{group.title}</p>
+                <div className="flex flex-col gap-1">
+                  {group.links.map((link) => (
+                    <button
+                      key={link.id}
+                      onClick={() => setCurrentPage(link.id as any)}
+                      className={`flex items-center gap-3 px-3 py-2 rounded transition-all text-[10px] font-semibold uppercase tracking-wider ${
+                        currentPage === link.id
+                          ? "bg-scada-nominal/15 border-l-2 border-scada-nominal text-scada-nominal font-bold"
+                          : "text-scada-dimText hover:text-white hover:bg-scada-border/10"
+                      }`}
+                    >
+                      {link.icon}{link.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
         </div>
@@ -2926,6 +2954,39 @@ export default function App() {
 
         {/* Content Body */}
         {currentPage === "overview" && (
+          <MainOperationsDashboard
+            connected={connected}
+            telemetry={dispTelemetry}
+            threat={dispThreatData}
+            alerts={_alerts}
+            events={_events}
+            activeAttack={dispActiveAttack}
+            recovery={dispL6Recovery}
+            proposal={controlProposal}
+            orchestratorEvent={orchestratorEvent}
+            lastControl={lastControl}
+            lastUpdate={currentTime}
+            aiStatuses={aiRuntimeStatuses}
+            aiFusion={aiFusion}
+            physicsValidation={physicsValidation}
+            trustScores={trustScores}
+            topology={(
+              <GridDiagram
+                key={selectedGrid}
+                selectedGrid={selectedGrid}
+                telemetry={dispTelemetry}
+                onToggleBreaker={toggleBreaker}
+                attackStatus={dispTelemetry?.attack_status}
+                flisrState={dispFlisrState}
+                flisrIsolated={dispFlisrIsolated}
+                flisrReconfigured={dispFlisrReconfigured}
+                flisrTripped={dispFlisrTripped}
+              />
+            )}
+          />
+        )}
+
+        {false && currentPage === "overview" && (
           <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-1 scrollbar-thin">
             
             {/* Row 1: Grid Info & Threat Intelligence */}

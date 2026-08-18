@@ -31,6 +31,18 @@ class ThreatScoringEngine:
         
         # Auto-defense enablement switch (can be toggled via control messages)
         self.auto_defense_enabled = False
+        self.latest_ai_fusion = None
+        self.latest_ai_fusion_at = 0.0
+        self.latest_trust = None
+        self.latest_trust_at = 0.0
+
+    def update_ai_fusion(self, payload, timestamp=None):
+        self.latest_ai_fusion = payload
+        self.latest_ai_fusion_at = time.time() if timestamp is None else timestamp
+
+    def update_trust(self, payload, timestamp=None):
+        self.latest_trust = payload
+        self.latest_trust_at = time.time() if timestamp is None else timestamp
 
     def add_alert(self, alert):
         now = time.time()
@@ -104,6 +116,27 @@ class ThreatScoringEngine:
 
         # 3. Calculate Threat Score (0 - 100)
         score = 0
+        fusion_risk = 0.0
+        fusion_used = False
+        if (
+            self.latest_ai_fusion
+            and self.latest_ai_fusion.get("calibrated") is True
+            and now - self.latest_ai_fusion_at <= 10.0
+        ):
+            fusion_risk = max(0.0, min(1.0, float(self.latest_ai_fusion.get("fused_risk", 0.0))))
+            score += round(25.0 * fusion_risk)
+            fusion_used = True
+
+        trust_degradation = 0.0
+        trust_used = False
+        if self.latest_trust and now - self.latest_trust_at <= 10.0:
+            values = list((self.latest_trust.get("bus_trust") or {}).values())
+            values += list((self.latest_trust.get("line_trust") or {}).values())
+            if values:
+                mean_trust = sum(float(value) for value in values) / len(values)
+                trust_degradation = max(0.0, min(1.0, 1.0 - mean_trust / 100.0))
+                score += round(15.0 * trust_degradation)
+                trust_used = True
         
         # Cyber components
         if active_attack:
@@ -289,7 +322,13 @@ class ThreatScoringEngine:
             "affected_nodes": affected_nodes,
             "propagation_risk": propagation_risk,
             "recommendations": self.recommendations,
-            "auto_defense_active": self.auto_defense_enabled
+            "auto_defense_active": self.auto_defense_enabled,
+            "ai_evidence": {
+                "fusion_used": fusion_used,
+                "fused_risk": round(fusion_risk, 6),
+                "trust_used": trust_used,
+                "trust_degradation": round(trust_degradation, 6),
+            },
         }
 
     def execute_autonomous_defense(self, threat_data, client):
@@ -371,6 +410,8 @@ def on_connect(client, userdata, flags, rc, properties=None):
         client.subscribe("grid/alerts")
         client.subscribe("grid/config")
         client.subscribe("grid/control")
+        client.subscribe("grid/ai/fusion")
+        client.subscribe("grid/trust_scores")
         logger.info(
             "Threat Scoring Engine ready | MQTT=%s:%s | subscriptions=%s,grid/alerts,grid/config,grid/control",
             MQTT_BROKER, MQTT_PORT, TELEMETRY_TOPIC,
@@ -385,6 +426,12 @@ def on_message(client, userdata, msg):
 
         if topic == "grid/alerts":
             threat_engine.add_alert(payload)
+
+        elif topic == "grid/ai/fusion":
+            threat_engine.update_ai_fusion(payload)
+
+        elif topic == "grid/trust_scores":
+            threat_engine.update_trust(payload)
 
         elif topic == "grid/config":
             threat_engine.update_flisr_config(payload)

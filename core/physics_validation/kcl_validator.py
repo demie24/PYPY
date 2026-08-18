@@ -1,5 +1,9 @@
+from collections import defaultdict, deque
+import numpy as np
+
+
 class KCLValidator:
-    def __init__(self):
+    def __init__(self, topology=None):
         # 9-Bus topology index mapping (0-indexed)
         # Bus indices in telemetry are 1-indexed, so we map appropriately
         self.num_buses = 9
@@ -22,6 +26,17 @@ class KCLValidator:
             {"from": 6, "to": 7, "id": "L7_8"},
             {"from": 7, "to": 8, "id": "L8_9"}
         ]
+        self.calibrated_residuals = False
+        self.residual_history = defaultdict(lambda: deque(maxlen=30))
+        if topology is not None:
+            self.num_buses = topology.num_buses
+            self.generators = set(topology.generators)
+            self.loads = set(topology.loads)
+            self.lines = [
+                {"from": line["from"], "to": line["to"], "id": line["id"]}
+                for line in topology.lines
+            ]
+            self.calibrated_residuals = True
 
     def validate(self, telemetry):
         """
@@ -49,10 +64,9 @@ class KCLValidator:
             p_inject = 0.0
             q_inject = 0.0
             
-            if i in self.generators:
-                p_inject = float(bus_metrics.get("P_mw", 0.0))
-                q_inject = float(bus_metrics.get("Q_mvar", 0.0))
-            elif i in self.loads:
+            if self.calibrated_residuals or i in self.generators or i in self.loads:
+                # Digital Twin follows pandapower's consumption-positive bus
+                # convention, so electrical injection is the negative value.
                 p_inject = -float(bus_metrics.get("P_mw", 0.0))
                 q_inject = -float(bus_metrics.get("Q_mvar", 0.0))
                 
@@ -80,6 +94,26 @@ class KCLValidator:
             p_mismatch = p_inject - p_out
             q_mismatch = q_inject - q_out
             
+            if self.calibrated_residuals:
+                nominal = (
+                    not (telemetry.get("attack_status") or {}).get("active_attack")
+                    and (telemetry.get("solver_status") or {}).get("converged", True)
+                    and all(status == "CLOSED" for status in breakers.values())
+                )
+                history = self.residual_history[bus_name]
+                if nominal:
+                    history.append((p_mismatch, q_mismatch))
+                if len(history) < 15:
+                    p_mismatch, q_mismatch = 0.0, 0.0
+                else:
+                    samples = np.asarray(history)
+                    baseline = np.median(samples, axis=0)
+                    mad = np.median(np.abs(samples - baseline), axis=0)
+                    residual = np.asarray((p_mismatch, q_mismatch)) - baseline
+                    tolerance = np.maximum(6.0 * 1.4826 * mad, 2.0)
+                    residual = np.sign(residual) * np.maximum(np.abs(residual) - tolerance, 0.0)
+                    p_mismatch, q_mismatch = map(float, residual)
+
             mismatches[bus_name] = {
                 "P_mismatch_mw": round(p_mismatch, 2),
                 "Q_mismatch_mvar": round(q_mismatch, 2)

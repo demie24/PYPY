@@ -284,6 +284,66 @@ services:
       retries: 4
       start_period: 45s
 
+  ai_fusion:
+    build:
+      context: ./core
+      dockerfile: ./ai_runtime/Dockerfile
+    container_name: smart_grid_ai_fusion
+    command: python -m core.ai_runtime.fusion_service
+    environment:
+      - MODEL_COMPONENT=fusion
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - FUSION_CALIBRATION_SAMPLES=20
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      ai_lstm:
+        condition: service_healthy
+      ai_gnn:
+        condition: service_healthy
+      ai_stgnn:
+        condition: service_healthy
+      ai_pinn:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "core/ai_runtime/healthcheck.py"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+
+  physics_validation:
+    build:
+      context: ./core
+      dockerfile: ./physics_validation/Dockerfile
+    container_name: smart_grid_physics_validation
+    environment:
+      - MODEL_COMPONENT=trust
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "core/ai_runtime/healthcheck.py"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   threat_scorer:
     build:
       context: ./core
@@ -299,6 +359,10 @@ services:
       mqtt:
         condition: service_healthy
       ai_detection:
+        condition: service_healthy
+      ai_fusion:
+        condition: service_healthy
+      physics_validation:
         condition: service_healthy
     restart: always
     networks:

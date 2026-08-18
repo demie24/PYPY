@@ -4,7 +4,11 @@ import json
 import logging
 import numpy as np
 import paho.mqtt.client as mqtt
+from pathlib import Path
 
+from core.ai_runtime.readiness import ModelReadiness
+from core.digital_twin.grid_topology import GridTopology
+from core.mqtt_compat import create_client
 from core.physics_validation.kcl_validator import KCLValidator
 from core.physics_validation.kvl_validator import KVLValidator
 from core.physics_validation.physics_filter import PhysicsFilter
@@ -19,12 +23,14 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 
 class PhysicsValidationEngine:
     def __init__(self):
-        self.kcl_validator = KCLValidator()
-        self.kvl_validator = KVLValidator()
+        self.topology = GridTopology(use_legacy_9bus=False)
+        self.kcl_validator = KCLValidator(self.topology)
+        self.kvl_validator = KVLValidator(self.topology)
         self.physics_filter = PhysicsFilter(self.kcl_validator, self.kvl_validator)
         
-        self.trust_engine = TrustEngine()
-        self.adaptive_filter = AdaptiveTelemetryFilter()
+        self.trust_engine = TrustEngine(topology=self.topology)
+        self.adaptive_filter = AdaptiveTelemetryFilter(topology=self.topology)
+        self.readiness = ModelReadiness("trust", model_loaded=True, checkpoint="physics-rules-ieee39")
         
         # State caches
         self.latest_ai_threat_prob = 0.0
@@ -34,7 +40,11 @@ class PhysicsValidationEngine:
         self.impossible_buffer = []
         
     def process_telemetry(self, telemetry, client):
+        self.readiness.record_telemetry()
         try:
+            solver_status = telemetry.get("solver_status") or {}
+            if solver_status and not solver_status.get("converged", False):
+                raise ValueError(f"power_flow_non_convergence:{solver_status.get('mode', 'failed')}")
             # 1. Run raw physics filter checks
             raw_report = self.physics_filter.validate(telemetry)
             
@@ -50,12 +60,11 @@ class PhysicsValidationEngine:
             # 4. Check for physical deviations (voltage drops) in raw telemetry
             buses_data = telemetry["state"]["buses"]
             has_voltage_deviation = False
-            for bname, bdata in buses_data.items():
-                if bname in ["Bus_1", "Bus_3", "Bus_5", "Bus_7", "Bus_9"]:
-                    v = float(bdata.get("voltage_pu", 1.0))
-                    if v < 0.94 or v > 1.07:
-                        has_voltage_deviation = True
-                        break
+            for bdata in buses_data.values():
+                v = float(bdata.get("voltage_pu", 1.0))
+                if not np.isfinite(v) or v < 0.94 or v > 1.07:
+                    has_voltage_deviation = True
+                    break
                         
             # 5. Threat Fusion Logic to classify grid state
             impossible_state = raw_report["impossible_state"]
@@ -92,10 +101,14 @@ class PhysicsValidationEngine:
             
             # Trusted state flag and degraded observability indicators (downgraded threshold to 60.0)
             trusted_state = (global_grid_confidence >= 0.65) and (not impossible_state) and (ai_prob < 0.50)
-            degraded_observability = any(t < 60.0 for t in trust_scores.values())
+            degraded_observability = any(t < 0.60 for t in trust_scores.values())
             
             # 7. Compile outputs and publish
             timestamp_ms = int(time.time() * 1000)
+            self.readiness.record_inference()
+            status = self.readiness.snapshot(stale_after=15.0)
+            Path("/tmp/pypy_trust_heartbeat.json").write_text(json.dumps(status), encoding="utf-8")
+            client.publish("grid/ai/status/trust", json.dumps(status), retain=True)
             
             # A. Publish grid/physics_validation (for backward compatibility)
             payload_validation = {
@@ -133,22 +146,25 @@ class PhysicsValidationEngine:
                 "filtered_telemetry": filtered_telemetry
             }
             client.publish("grid/adaptive_filter", json.dumps(filter_payload))
-            
             logger.info(
                 f"Published Validation | State: {physics_state} | Confidence: {global_grid_confidence_pct:.1f}% | "
                 f"Trust Dev: {degraded_observability} | KCL: {raw_report['kcl_error']:.1f} MW"
             )
             
         except Exception as e:
+            self.readiness.record_error(e)
+            status = self.readiness.snapshot(stale_after=15.0)
+            Path("/tmp/pypy_trust_heartbeat.json").write_text(json.dumps(status), encoding="utf-8")
+            client.publish("grid/ai/status/trust", json.dumps(status), retain=True)
             logger.error(f"Failed to process telemetry: {e}")
 
 engine = PhysicsValidationEngine()
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
         logger.info("Physics Validation Engine connected to MQTT!")
-        client.subscribe("grid/telemetry")
-        client.subscribe("grid/ai_threat_forecast")
+        client.subscribe(os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry"))
+        client.subscribe("grid/ai/fusion")
         client.subscribe("grid/control")
     else:
         logger.error(f"MQTT Connection failed: rc {rc}")
@@ -158,15 +174,15 @@ def on_message(client, userdata, msg):
         topic = msg.topic
         payload = json.loads(msg.payload.decode("utf-8"))
         
-        if topic == "grid/ai_threat_forecast":
-            engine.latest_ai_threat_prob = float(payload.get("cyber_instability_probability", 0.0))
+        if topic in ("grid/ai_threat_forecast", "grid/ai/fusion"):
+            engine.latest_ai_threat_prob = float(payload.get("fused_risk", payload.get("cyber_instability_probability", 0.0)))
             
         elif topic == "grid/control":
             cmd = payload.get("command")
             if cmd == "RESET_ALARMS":
                 engine.latest_ai_threat_prob = 0.0
-                engine.trust_engine = TrustEngine()
-                engine.adaptive_filter = AdaptiveTelemetryFilter()
+                engine.trust_engine = TrustEngine(topology=engine.topology)
+                engine.adaptive_filter = AdaptiveTelemetryFilter(topology=engine.topology)
                 engine.anomaly_buffer.clear()
                 engine.impossible_buffer.clear()
                 logger.info("Physics Validation, Trust engine, and validation buffers reset.")
@@ -176,14 +192,14 @@ def on_message(client, userdata, msg):
                     engine.trust_engine.reject_node(tgt)
                     logger.info(f"Operator rejected telemetry for {tgt}. Trust score forced to 0.0.")
                 
-        elif topic == "grid/telemetry":
+        elif topic in (os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry"), "grid/telemetry"):
             engine.process_telemetry(payload, client)
             
     except Exception as e:
         logger.error(f"Error handling message on {msg.topic}: {e}")
 
 if __name__ == "__main__":
-    client = mqtt.Client(client_id="ai_physics_validation_engine")
+    client = create_client("ai_physics_validation_engine")
     client.on_connect = on_connect
     client.on_message = on_message
     

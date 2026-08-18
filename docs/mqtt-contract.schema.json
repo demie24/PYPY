@@ -93,11 +93,25 @@
       "type": "object",
       "required": ["timestamp", "component", "ready", "model_loaded", "inference_count", "last_error"],
       "properties": {
-        "component": {"enum": ["lstm", "gnn", "stgnn", "pinn"]},
+        "component": {"enum": ["lstm", "gnn", "stgnn", "pinn", "fusion", "trust"]},
         "ready": {"type": "boolean"},
         "model_loaded": {"type": "boolean"},
         "inference_count": {"type": "integer", "minimum": 0}
       }
+    },
+    "aiFusion": {
+      "type": "object",
+      "required": ["timestamp", "component", "calibrated", "fused_risk", "confidence", "component_evidence", "baselines"],
+      "properties": {
+        "component": {"const": "fusion"},
+        "calibrated": {"const": true},
+        "fused_risk": {"type": "number", "minimum": 0, "maximum": 1},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "trustScores": {
+      "type": "object",
+      "required": ["bus_trust", "line_trust", "details"]
     }
   },
   "x-topic-map": {
@@ -112,9 +126,13 @@
     "grid/ai/gnn": "#/$defs/modelInference",
     "grid/ai/stgnn": "#/$defs/modelInference",
     "grid/ai/pinn": "#/$defs/modelInference",
+    "grid/ai/fusion": "#/$defs/aiFusion",
+    "grid/trust_scores": "#/$defs/trustScores",
     "grid/ai/status/lstm": "#/$defs/modelStatus",
     "grid/ai/status/gnn": "#/$defs/modelStatus",
     "grid/ai/status/stgnn": "#/$defs/modelStatus",
-    "grid/ai/status/pinn": "#/$defs/modelStatus"
+    "grid/ai/status/pinn": "#/$defs/modelStatus",
+    "grid/ai/status/fusion": "#/$defs/modelStatus",
+    "grid/ai/status/trust": "#/$defs/modelStatus"
   }
 }

@@ -4,12 +4,15 @@ import logging
 logger = logging.getLogger("physics_validation.trust_engine")
 
 class TrustEngine:
-    def __init__(self, window_size=15):
+    def __init__(self, window_size=15, topology=None):
         self.window_size = window_size
         
         # Grid layout names
         self.buses = [f"Bus_{i}" for i in range(1, 10)]
         self.lines = ["L1_4", "L2_7", "L3_9", "L4_5", "L4_9", "L5_6", "L6_7", "L7_8", "L8_9"]
+        if topology is not None:
+            self.buses = [f"Bus_{i}" for i in range(1, topology.num_buses + 1)]
+            self.lines = [line["id"] for line in topology.lines]
         
         # Stateful buffers for signal analysis (voltages for buses, currents/flows for lines)
         self.bus_voltage_history = {b: [] for b in self.buses}

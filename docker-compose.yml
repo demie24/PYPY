@@ -176,6 +176,114 @@ services:
       retries: 3
       start_period: 10s
 
+  ai_lstm:
+    build:
+      context: ./core
+      dockerfile: ./ai_runtime/Dockerfile
+    container_name: smart_grid_ai_lstm
+    environment:
+      - MODEL_COMPONENT=lstm
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "core/ai_runtime/healthcheck.py"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 45s
+
+  ai_gnn:
+    build:
+      context: ./core
+      dockerfile: ./ai_runtime/Dockerfile
+    container_name: smart_grid_ai_gnn
+    environment:
+      - MODEL_COMPONENT=gnn
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "core/ai_runtime/healthcheck.py"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 45s
+
+  ai_stgnn:
+    build:
+      context: ./core
+      dockerfile: ./ai_runtime/Dockerfile
+    container_name: smart_grid_ai_stgnn
+    environment:
+      - MODEL_COMPONENT=stgnn
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "core/ai_runtime/healthcheck.py"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 60s
+
+  ai_pinn:
+    build:
+      context: ./core
+      dockerfile: ./ai_runtime/Dockerfile
+    container_name: smart_grid_ai_pinn
+    environment:
+      - MODEL_COMPONENT=pinn
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      digital_twin:
+        condition: service_healthy
+    restart: always
+    networks:
+      - grid-net
+    healthcheck:
+      test: ["CMD", "python", "core/ai_runtime/healthcheck.py"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 45s
+
   threat_scorer:
     build:
       context: ./core

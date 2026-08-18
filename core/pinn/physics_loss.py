@@ -18,7 +18,9 @@ class IEEE39PhysicsLoss(nn.Module):
         self.num_buses = 39
         
         # 1. Load topology and construct mapped Y_bus matrix from pandapower
-        topo = GridTopology()
+        # This loss and its checkpoint are defined for the 39-bus/156-feature
+        # model.  Never let test-call-stack compatibility select legacy 9-bus.
+        topo = GridTopology(use_legacy_9bus=False)
         net = topo.net
         import pandapower as pp
         pp.runpp(net)

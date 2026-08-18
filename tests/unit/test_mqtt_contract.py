@@ -15,7 +15,7 @@ def test_verified_mqtt_contract_is_machine_readable_and_complete():
         "grid/control",
         "grid/events",
     }
-    assert set(schema["x-topic-map"]) == expected_topics
+    assert expected_topics.issubset(schema["x-topic-map"])
     for reference in schema["x-topic-map"].values():
         definition = reference.rsplit("/", 1)[-1]
         assert definition in schema["$defs"]
@@ -25,3 +25,6 @@ def test_verified_mqtt_contract_is_machine_readable_and_complete():
     assert "solver_status" in telemetry["required"]
     assert telemetry["properties"]["solver_status"]["$ref"] == "#/$defs/solverStatus"
     assert schema["$defs"]["solverStatus"]["required"] == ["converged", "mode", "iterations"]
+    for component in ("lstm", "gnn", "stgnn", "pinn"):
+        assert schema["x-topic-map"][f"grid/ai/{component}"] == "#/$defs/modelInference"
+        assert schema["x-topic-map"][f"grid/ai/status/{component}"] == "#/$defs/modelStatus"

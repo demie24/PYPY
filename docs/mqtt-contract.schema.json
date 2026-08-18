@@ -76,6 +76,28 @@
     "gridEvent": {
       "type": "object",
       "required": ["timestamp", "source", "event", "severity"]
+    },
+    "modelInference": {
+      "type": "object",
+      "required": ["timestamp", "source_telemetry_timestamp", "component", "model_loaded", "checkpoint", "inference_latency_ms"],
+      "properties": {
+        "timestamp": {"type": "number"},
+        "source_telemetry_timestamp": {"type": "number"},
+        "component": {"enum": ["lstm", "gnn", "stgnn", "pinn"]},
+        "model_loaded": {"const": true},
+        "checkpoint": {"type": "string"},
+        "inference_latency_ms": {"type": "number", "minimum": 0}
+      }
+    },
+    "modelStatus": {
+      "type": "object",
+      "required": ["timestamp", "component", "ready", "model_loaded", "inference_count", "last_error"],
+      "properties": {
+        "component": {"enum": ["lstm", "gnn", "stgnn", "pinn"]},
+        "ready": {"type": "boolean"},
+        "model_loaded": {"type": "boolean"},
+        "inference_count": {"type": "integer", "minimum": 0}
+      }
     }
   },
   "x-topic-map": {
@@ -85,6 +107,14 @@
     "grid/control/proposed": "#/$defs/controlProposal",
     "grid/orchestrator/events": "#/$defs/orchestratorEvent",
     "grid/control": "#/$defs/control",
-    "grid/events": "#/$defs/gridEvent"
+    "grid/events": "#/$defs/gridEvent",
+    "grid/ai/lstm": "#/$defs/modelInference",
+    "grid/ai/gnn": "#/$defs/modelInference",
+    "grid/ai/stgnn": "#/$defs/modelInference",
+    "grid/ai/pinn": "#/$defs/modelInference",
+    "grid/ai/status/lstm": "#/$defs/modelStatus",
+    "grid/ai/status/gnn": "#/$defs/modelStatus",
+    "grid/ai/status/stgnn": "#/$defs/modelStatus",
+    "grid/ai/status/pinn": "#/$defs/modelStatus"
   }
 }

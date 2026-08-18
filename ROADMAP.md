@@ -41,9 +41,9 @@ Completed:
 
 ---
 
-# Phase 3 — AI Prediction & Physics Validation 🔄
+# Phase 3 — AI Prediction & Physics Validation ✅
 
-Partially Active:
+Runtime Active:
 
 * PINN validation engine
 * physics-constrained loss evaluation
@@ -51,25 +51,27 @@ Partially Active:
 * multi-bus prediction research
 * threat-aware prediction staging
 
-Some experimental modules remain staged for future expansion and validation.
+LSTM, GNN, ST-GNN, PINN, fusion, and IEEE-39 TRUST/physics validation are active Compose services with readiness heartbeats.
 
 ---
 
-# Phase 4 — Self-Healing & Reinforcement Learning 🔄
+# Phase 4 — Self-Healing & Reinforcement Learning ✅
 
-Active Research:
+Integrated Research Runtime:
 
 * PPO self-healing agents
 * DQN restoration agents
 * safety-gated restoration logic
 * rollback penalty mechanisms
 * constrained restoration validation
+* PPO/DQN actuator consensus and orchestrator approval
+* verified Digital Twin breaker actuation
 
 ---
 
-# Phase 5 — Cyber Defense Orchestration 🔄
+# Phase 5 — Cyber Defense Orchestration ✅
 
-In Development:
+Runtime Active:
 
 * CyberDefenseAgent voting systems
 * AI orchestration layers
@@ -97,9 +99,9 @@ Hardware deployment is intentionally deferred until simulation stability is full
 
 Planned:
 
-* advanced multi-bus topologies
+* larger and alternative topologies beyond IEEE-39
 * adaptive trust-aware AI
-* autonomous orchestration
+* direct IEEE-39 retraining of legacy 72-feature recovery checkpoints
 * advanced threat intelligence
 * distributed grid resilience studies
 

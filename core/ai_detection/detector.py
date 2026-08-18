@@ -2,12 +2,17 @@ import os
 import time
 import json
 import logging
+from pathlib import Path
 import numpy as np
 import paho.mqtt.client as mqtt
 try:
     from core.mqtt_compat import create_client
 except ModuleNotFoundError:
     from mqtt_compat import create_client
+try:
+    from core.ai_runtime.readiness import ModelReadiness
+except ModuleNotFoundError:
+    from ai_runtime.readiness import ModelReadiness
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -18,7 +23,7 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 TELEMETRY_TOPIC = os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry")
 
 class NumPyAutoencoderDetector:
-    def __init__(self, input_dim=9, hidden_dim=4, lr=0.02):
+    def __init__(self, input_dim=39, hidden_dim=16, lr=0.02):
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.lr = lr
@@ -89,20 +94,31 @@ class NumPyAutoencoderDetector:
         return loss
 
     def process_telemetry(self, telemetry_data):
-        # Extract voltage magnitudes from Buses 1 to 9
+        # Extract the complete configured bus vector (39 buses at runtime).
         try:
             x = []
-            for i in range(1, 10):
+            for i in range(1, self.input_dim + 1):
                 bus_key = f"Bus_{i}"
                 val = telemetry_data["state"]["buses"][bus_key]["voltage_pu"]
                 x.append(val)
             
-            x = np.array(x)
+            x = np.asarray(x, dtype=np.float64)
+            if not np.isfinite(x).all():
+                return {
+                    "loss": 0.0, "threshold": float(self.threshold),
+                    "is_anomaly": False, "is_calibrating": False,
+                    "non_converged": True,
+                    "voltages": np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0).tolist(),
+                    "reconstruction": [0.0] * self.input_dim,
+                }
 
             if self.frames_seen < self.calibration_frames:
                 final_loss = 0.0
                 for _ in range(self.calibration_steps_per_frame):
-                    final_loss = self.train_step(x)
+                    self.train_step(x)
+                # Use worst-bus reconstruction error so a targeted FDIA is not
+                # diluted by averaging it with 38 nominal IEEE-39 buses.
+                final_loss = float(np.max((x - self.forward(x)[1]) ** 2))
                 self.frames_seen += 1
                 self.loss_history.append(final_loss)
                 if len(self.loss_history) > 100:
@@ -124,7 +140,7 @@ class NumPyAutoencoderDetector:
             
             # Forward pass to get reconstruction
             h, x_hat = self.forward(x)
-            loss = np.mean((x - x_hat) ** 2)
+            loss = float(np.max((x - x_hat) ** 2))
             
             is_anomaly = loss > self.threshold
             
@@ -149,7 +165,8 @@ class NumPyAutoencoderDetector:
             logger.error(f"Missing expected bus keys in telemetry payload: {e}")
             return None
 
-detector = NumPyAutoencoderDetector()
+detector = NumPyAutoencoderDetector(input_dim=int(os.getenv("GRID_BUS_COUNT", "39")))
+readiness = ModelReadiness("ai_detection", model_loaded=True, checkpoint="numpy-autoencoder-ieee39")
 
 def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
@@ -182,8 +199,10 @@ def on_message(client, userdata, msg):
                 logger.info("AI Detector alerts history and anomaly window reset.")
                 
         elif msg.topic in (TELEMETRY_TOPIC, "grid/telemetry"):
+            readiness.record_telemetry()
             res = detector.process_telemetry(payload)
             if res:
+                readiness.record_inference()
                 # Phase 5B: Use attack-mode window parameters when under known active attack
                 # to avoid flooding on expected grid deviations
                 if detector.under_attack:
@@ -266,7 +285,12 @@ def on_message(client, userdata, msg):
                         client.publish("grid/alerts", json.dumps(alert))
                         logger.warning(f"AI Anomaly Alert [{anomaly_class}]! Node: {suspect_bus}, Severity: {severity}, Loss: {res['loss']:.5f}")
     except Exception as e:
+        readiness.record_error(e)
         logger.error(f"Error handling telemetry in detector: {e}")
+    finally:
+        status = readiness.snapshot(stale_after=15.0)
+        Path("/tmp/pypy_ai_detection_heartbeat.json").write_text(json.dumps(status), encoding="utf-8")
+        client.publish("grid/ai/status/ai_detection", json.dumps(status), retain=True)
 
 if __name__ == "__main__":
     client = create_client("ai_anomaly_detector")

@@ -159,6 +159,7 @@ services:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
       - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - GRID_BUS_COUNT=39
       - LOG_LEVEL=INFO
       - PYTHONPATH=/app
     depends_on:
@@ -170,7 +171,7 @@ services:
     networks:
       - grid-net
     healthcheck:
-      test: ["CMD", "python", "-c", "import psutil,sys; sys.exit(0 if any('ai_detection/detector.py' in ' '.join(p.cmdline()) for p in psutil.process_iter()) else 1)"]
+      test: ["CMD", "python", "-c", "import json,sys,time; p=json.load(open('/tmp/pypy_ai_detection_heartbeat.json')); sys.exit(0 if p.get('ready') and time.time()*1000-p['timestamp']<20000 else 1)"]
       interval: 15s
       timeout: 5s
       retries: 3

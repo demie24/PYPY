@@ -5,12 +5,17 @@ This document describes the verified default Docker Compose runtime. PYPY is an 
 ## Verified Runtime Flow
 
 ```text
-Digital Twin --pypy/grid/telemetry--> AI Detection
-AI Detection --grid/alerts---------> Threat Scorer
-Threat Scorer --grid/threat--------> Self-Healing
-Self-Healing --grid/control/proposed--> AI Orchestrator
-AI Orchestrator --grid/control-----> Digital Twin
-Digital Twin --grid/events---------> Gateway -> WebSocket -> Dashboard
+IEEE-39 Digital Twin --pypy/grid/telemetry--> shared feature adapters
+  +--> LSTM temporal detector ---------+
+  +--> GNN topology detector ----------+--> AI Fusion --+
+  +--> ST-GNN propagation detector ----+              |
+  +--> PINN + physics validation ------+              +--> TRUST / Threat Scorer
+                                                        --> PPO + DQN proposals
+                                                        --> AC restoration sandbox
+                                                        --> Orchestrator approval/veto
+                                                        --> grid/control
+                                                        --> ordered Digital Twin state proof
+                                                        --> Gateway / Dashboard / JSON reports
 ```
 
 The Digital Twin is the authoritative physics runtime. Its default model is IEEE 39-Bus with 39 buses, 46 lines, 10 generators, and 21 loads.
@@ -26,12 +31,16 @@ The Digital Twin is the authoritative physics runtime. Its default model is IEEE
 
 The Digital Twin solves the IEEE-39 grid state, publishes `pypy/grid/telemetry` and relevant `grid/events`, and consumes approved commands from `grid/control`. A published command is not considered successful until the resulting Digital Twin state change is observed.
 
-### AI Detection
+### AI Detection and parallel model services
 
 - Input: `pypy/grid/telemetry` (plus attack/control context used for calibration and reset handling)
 - Output: `grid/alerts`
 
-AI Detection establishes a nominal baseline and publishes anomaly evidence. Its output is context, not direct actuator authority.
+The NumPy detector uses all 39 bus voltages, worst-bus reconstruction error for targeted FDIA, and an inference heartbeat. LSTM, GNN, ST-GNN, and PINN services independently consume the same full IEEE-39 frame and publish model evidence plus readiness status. Non-finite solver frames are represented explicitly and never emitted as NaN detection loss. Detection output is context, not direct actuator authority.
+
+### Fusion, Physics, and TRUST
+
+`ai_fusion` combines fresh LSTM, GNN, ST-GNN, and PINN outputs on explicit subscriptions. `physics_validation` evaluates IEEE-39 KCL/KVL/solver evidence and publishes dynamic trust for 39 buses and 46 branches. Threat scoring consumes alert, fusion, physics, and trust evidence; status and decisions are exposed to the Gateway and Dashboard.
 
 ### Threat Scorer
 
@@ -40,19 +49,19 @@ AI Detection establishes a nominal baseline and publishes anomaly evidence. Its 
 
 The scorer correlates alerts into a threat assessment consumed by downstream safety logic.
 
-### Self-Healing
+### Recovery Policy and Self-Healing
 
 - Input: cyber-physical context including `pypy/grid/telemetry`, `grid/events`, `grid/control`, and `grid/threat`
 - Output: `grid/l6_recovery` and `grid/control/proposed`
 
-Self-Healing correlates threat context with actual physical outage/isolation evidence and grid stability. Candidate restoration actions pass topology simulation and safety constraints before they can become proposals.
+The `recovery_policy` service loads both PPO and DQN checkpoints, encodes all 39 buses/46 branches into their retained 72-dimensional input, and publishes each decision. Only actuator-intent consensus proceeds to the IEEE-39 AC restoration sandbox. Safe proposals wait for the five-second breaker cooldown and are deduplicated by target and topology. Self-Healing/FLISR remains an independent recovery layer.
 
 ### AI Orchestrator
 
 - Input: proposed recovery/control on `grid/control/proposed` plus the supporting telemetry, threat, and recovery context
 - Output: approved commands on `grid/control` and decisions on `grid/orchestrator/events`
 
-The orchestrator is the final software approval gate. It rejects proposals that do not carry the required L6 recovery provenance or do not satisfy current safety conditions.
+The orchestrator is the final software approval gate. PPO/DQN recovery must carry a passing sandbox result, fresh threat evidence, an open target, and physical outage evidence. Hardware quarantine, emergency stop, active veto, cooldown, and sandbox violations remain rejection conditions. Approval is not counted as successful until newer Digital Twin telemetry shows the requested breaker state.
 
 ### Gateway and Dashboard
 
@@ -86,10 +95,12 @@ This separation preserves cyber-physical gating: detection informs recovery plan
 | Publisher | Topic | Principal consumers |
 |---|---|---|
 | Digital Twin | `pypy/grid/telemetry` | AI Detection, Self-Healing, AI Orchestrator, Gateway |
-| AI Detection | `grid/alerts` | Threat Scorer, Gateway |
+| AI Detection | `grid/alerts`, `grid/ai/status/ai_detection` | Threat Scorer, Gateway |
+| LSTM/GNN/ST-GNN/PINN | `grid/ai/*`, `grid/ai/status/*` | Fusion, Orchestrator, Gateway |
+| Fusion / Physics / TRUST | `grid/ai/fusion`, `grid/physics_validation`, `grid/trust_scores` | Threat Scorer, Recovery, Gateway |
 | Threat Scorer | `grid/threat` | Self-Healing, AI Orchestrator, Gateway |
 | Self-Healing | `grid/l6_recovery` | AI Orchestrator, Gateway |
-| Self-Healing | `grid/control/proposed` | AI Orchestrator |
+| PPO/DQN Recovery | `grid/ai/recovery/*`, `grid/ai/recovery_policy`, `grid/control/proposed` | AI Orchestrator, Gateway |
 | AI Orchestrator | `grid/orchestrator/events` | Gateway/Dashboard and audit consumers |
 | AI Orchestrator | `grid/control` | Digital Twin, Gateway, defense context consumers |
 | Digital Twin | `grid/events` | Self-Healing, Gateway/Dashboard |
@@ -98,15 +109,15 @@ Additional research and HIL compatibility topics exist, but they are not require
 
 ## Default Compose Boundary
 
-The verified default stack contains PostgreSQL, Redis, MQTT, Gateway, Dashboard, Digital Twin, Celery worker, Celery beat, AI Detection, Threat Scorer, Self-Healing, and AI Orchestrator. Research modules that are not dependencies of this chain remain outside the default runtime.
+The verified default stack contains 19 healthy services: PostgreSQL, Redis, MQTT, Gateway, Dashboard, Digital Twin, Celery worker/beat, AI Detection, LSTM, GNN, ST-GNN, PINN, AI Fusion, Physics Validation/TRUST, Threat Scorer, PPO/DQN Recovery Policy, Self-Healing, and AI Orchestrator. Pathogen–immune co-evolution has a justified offline training/evaluation role and produces versioned CSV/JSON artefacts rather than running continuously against the control bus.
 
 ## Verification Boundary
 
-The current hardening regression baseline is 841 passed, 0 failed, and 0 errors. Runtime verification additionally demonstrates:
+The current integration regression baseline is 868 passed, 0 failed, and 0 errors. Runtime verification additionally demonstrates:
 
 ```text
 Attack -> Detection -> Threat Assessment -> Cyber-Physical Validation
        -> Recovery -> Grid Stabilization
 ```
 
-PYPY remains research software and this verified baseline is not a production-readiness claim.
+`evaluation/end_to_end/verified_report.json` records ordered detection, threat, physical isolation, PPO/DQN proposal, sandbox/orchestrator approval, newer breaker-state telemetry, and post-experiment finite AC recovery. `evaluation/coevolution/verified/` records the separate three-seed pathogen–immune evaluation. PYPY remains research software and this verified baseline is not a production-readiness claim.

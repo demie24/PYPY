@@ -1,0 +1,105 @@
+{
+  "schema_version": "pypy.end-to-end-verification.v1",
+  "result": "PASS",
+  "grid": "ieee39",
+  "recovered_breaker": "L_line_0",
+  "bus_1_voltage_before": 1.0386,
+  "bus_1_voltage_after": 1.0385,
+  "proposal_source": "AI_RL_PPO_DQN_CONSENSUS",
+  "orchestrator_reason": "Passed PPO/DQN actuator consensus, restoration sandbox, and orchestrator safety checks.",
+  "approval_timestamp": 1787070787346,
+  "verified_state_timestamp": 1787070788306,
+  "converged_state_timestamp": 1787070789293,
+  "convergence_evidence": "controlled experiment reset after verified autonomous breaker actuation",
+  "strict_event_order": true,
+  "checkpoints": [
+    {
+      "checkpoint": "nominal_before",
+      "topic": "pypy/grid/telemetry",
+      "evidence": {
+        "timestamp": 1787070764271,
+        "grid_name": "ieee39",
+        "active_attack": null,
+        "L_line_0": "CLOSED",
+        "L_line_1": "CLOSED",
+        "Bus_1_voltage": 1.0386
+      }
+    },
+    {
+      "checkpoint": "ai_detection",
+      "topic": "grid/alerts",
+      "evidence": {
+        "timestamp": 1787070769288,
+        "type": "TARGETED_FDIA",
+        "severity": "CRITICAL",
+        "suspect_node": "Bus_5"
+      }
+    },
+    {
+      "checkpoint": "threat_assessment",
+      "topic": "grid/threat",
+      "evidence": {
+        "timestamp": 1787070769285,
+        "severity": "CRITICAL",
+        "threat_score": 100
+      }
+    },
+    {
+      "checkpoint": "physical_isolation",
+      "topic": "pypy/grid/telemetry",
+      "evidence": {
+        "timestamp": 1787070782305,
+        "grid_name": "ieee39",
+        "active_attack": "BREAKER_MANIPULATION",
+        "L_line_0": "OPEN",
+        "L_line_1": "OPEN",
+        "Bus_1_voltage": null
+      }
+    },
+    {
+      "checkpoint": "recovery_proposal",
+      "topic": "grid/control/proposed",
+      "evidence": {
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "AI_RL_PPO_DQN_CONSENSUS"
+      }
+    },
+    {
+      "checkpoint": "orchestrator_decision",
+      "topic": "grid/orchestrator/events",
+      "evidence": {
+        "timestamp": 1787070787346,
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "AI_RL_PPO_DQN_CONSENSUS",
+        "event": "APPROVAL",
+        "reason": "Passed PPO/DQN actuator consensus, restoration sandbox, and orchestrator safety checks."
+      }
+    },
+    {
+      "checkpoint": "digital_twin_state_change",
+      "topic": "pypy/grid/telemetry",
+      "evidence": {
+        "timestamp": 1787070788306,
+        "grid_name": "ieee39",
+        "active_attack": null,
+        "L_line_0": "CLOSED",
+        "L_line_1": "OPEN",
+        "Bus_1_voltage": null
+      }
+    },
+    {
+      "checkpoint": "post_experiment_power_flow_recovery",
+      "topic": "pypy/grid/telemetry",
+      "evidence": {
+        "timestamp": 1787070789293,
+        "grid_name": "ieee39",
+        "active_attack": null,
+        "L_line_0": "CLOSED",
+        "L_line_1": "CLOSED",
+        "Bus_1_voltage": 1.0385
+      }
+    }
+  ]
+}

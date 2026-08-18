@@ -158,12 +158,18 @@ class MQTTRecoveryPolicyService:
 
     def on_connect(self, client, userdata, flags, reason_code, properties=None):
         if reason_code == 0:
-            for topic in (TELEMETRY_TOPIC, "grid/threat", "grid/trust_scores", "grid/ai/fusion", "grid/physics_validation"):
+            for topic in (TELEMETRY_TOPIC, "grid/threat", "grid/trust_scores", "grid/ai/fusion", "grid/physics_validation", "grid/control"):
                 client.subscribe(topic)
 
     def on_message(self, client, userdata, message):
         try:
             payload = json.loads(message.payload.decode("utf-8"))
+            if message.topic == "grid/control":
+                if payload.get("command") == "RESET_ALARMS":
+                    self.last_proposal_signature = None
+                    self.observed_topology = None
+                    self.topology_changed_at = 0.0
+                return
             if message.topic != TELEMETRY_TOPIC:
                 key = {"grid/threat": "threat", "grid/trust_scores": "trust", "grid/ai/fusion": "fusion", "grid/physics_validation": "physics"}[message.topic]
                 self.cache[key] = payload
@@ -171,6 +177,8 @@ class MQTTRecoveryPolicyService:
             self.readiness.record_telemetry()
             decision = self.runtime.infer(payload, **self.cache)
             topology = tuple(sorted(payload["state"]["breakers"].items()))
+            if all(state == "CLOSED" for _, state in topology):
+                self.last_proposal_signature = None
             if topology != self.observed_topology:
                 self.observed_topology = topology
                 self.topology_changed_at = time.monotonic()

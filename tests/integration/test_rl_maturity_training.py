@@ -3,6 +3,7 @@ import sys
 import unittest
 import csv
 import numpy as np
+import tempfile
 
 # Setup paths to import core files
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,8 +12,9 @@ from core.self_healing.rl.rl_trainer import run_training
 
 class TestRLMaturityTraining(unittest.TestCase):
     def setUp(self):
-        # Resolve actual project root (two levels up from tests/integration/)
-        self.project_root = os.path.abspath(os.path.join(CURRENT_DIR, "..", ".."))
+        self._temporary_output = tempfile.TemporaryDirectory()
+        self.addCleanup(self._temporary_output.cleanup)
+        self.project_root = self._temporary_output.name
         self.checkpoints_dir = os.path.join(self.project_root, "checkpoints")
         self.logs_dir = os.path.join(self.project_root, "training_logs")
         self.analytics_dir = os.path.join(self.project_root, "analytics")
@@ -23,7 +25,7 @@ class TestRLMaturityTraining(unittest.TestCase):
         stabilization protections, analytics CSV logging, and checkpoint saving.
         """
         # Run 5 episodes of PPO training
-        run_training(agent_type="PPO", num_episodes=5, max_steps=5, checkpoint_interval=2)
+        run_training(agent_type="PPO", num_episodes=5, max_steps=5, checkpoint_interval=2, output_root=self.project_root)
         
         # 1. Verify directories were created
         self.assertTrue(os.path.exists(self.checkpoints_dir))
@@ -70,7 +72,7 @@ class TestRLMaturityTraining(unittest.TestCase):
         """
         Runs DQN training for 5 episodes to verify Double-DQN capability.
         """
-        run_training(agent_type="DQN", num_episodes=5, max_steps=5, checkpoint_interval=2)
+        run_training(agent_type="DQN", num_episodes=5, max_steps=5, checkpoint_interval=2, output_root=self.project_root)
         
         # Verify DQN final checkpoint exists
         final_checkpoint = os.path.join(self.checkpoints_dir, "dqn_self_healing.pt")

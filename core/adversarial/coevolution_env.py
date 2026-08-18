@@ -228,6 +228,10 @@ class CoevolutionEnv(PathogenEnv):
                 self.breakers, self.loads, self.gen_P, self.gen_Q
             )
             solver_failed = self.physics.last_solver_status.get("mode") == "failed"
+            nonfinite_physics = not all(np.isfinite(values).all() for values in (V, theta, P, Q)) or any(
+                not all(np.isfinite(float(flow.get(key, 0.0))) for key in ("P_flow", "Q_flow", "current"))
+                for flow in line_flows.values()
+            )
             voltage_collapse = np.sum(V < 0.70) > (0.30 * self.topo.num_buses)
             
             actual_load_served = 0.0
@@ -238,7 +242,7 @@ class CoevolutionEnv(PathogenEnv):
             
             load_shedding_blackout = (actual_load_served < 0.60 * self.nominal_demand)
             
-            if solver_failed or voltage_collapse or load_shedding_blackout:
+            if solver_failed or nonfinite_physics or voltage_collapse or load_shedding_blackout:
                 blackout = True
         except Exception:
             blackout = True

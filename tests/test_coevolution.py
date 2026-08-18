@@ -81,6 +81,27 @@ def test_coevolution_env_bus_isolation():
                 adjacent_tripped = True
     assert adjacent_tripped
 
+
+def test_coevolution_nonfinite_physics_is_explicit_blackout(monkeypatch):
+    env = CoevolutionEnv()
+    env.enable_confidence_filter = False
+    env.reset(seed=42)
+    original_solve = env.physics.solve
+
+    def nonfinite_solve(*args, **kwargs):
+        voltage, theta, active, reactive, flows = original_solve(*args, **kwargs)
+        voltage[0] = np.nan
+        return voltage, theta, active, reactive, flows
+
+    monkeypatch.setattr(env.physics, "solve", nonfinite_solve)
+    _, _, terminated, _, info = env.step({
+        "red": {"type": 0, "target": 0, "magnitude": np.array([0.0], dtype=np.float32)},
+        "blue": {"type": 0, "target": 0},
+    })
+    assert terminated
+    assert info["blackout"] is True
+    assert np.isfinite(info["disruption"])
+
 def test_immune_agent_policy():
     agent = ImmuneAgent(state_dim=299)
     state = np.random.randn(299).astype(np.float32)

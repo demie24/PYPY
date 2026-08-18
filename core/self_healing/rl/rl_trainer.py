@@ -101,7 +101,18 @@ def get_target_for_action(action_id: int, state: np.ndarray, env: GridRLEnvironm
             
     return "SYSTEM"
 
-def run_training(agent_type: str = "PPO", num_episodes: int = 1000, max_steps: int = 15, checkpoint_interval: int = 50):
+def run_training(agent_type: str = "PPO", num_episodes: int = 1000, max_steps: int = 15, checkpoint_interval: int = 50, output_root: str = None):
+    checkpoints_dir = os.path.join(output_root, "checkpoints") if output_root else CHECKPOINTS_DIR
+    logs_dir = os.path.join(output_root, "training_logs") if output_root else LOGS_DIR
+    analytics_dir = os.path.join(output_root, "analytics") if output_root else ANALYTICS_DIR
+    for directory in (checkpoints_dir, logs_dir, analytics_dir):
+        os.makedirs(directory, exist_ok=True)
+    if output_root:
+        isolated_log = os.path.abspath(os.path.join(logs_dir, "rl_training_run.log"))
+        if not any(isinstance(h, logging.FileHandler) and h.baseFilename == isolated_log for h in root_logger.handlers):
+            isolated_handler = logging.FileHandler(isolated_log)
+            isolated_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+            root_logger.addHandler(isolated_handler)
     logger.info(f"Starting {agent_type} training loop for {num_episodes} episodes...")
     
     # Setup MQTT publisher
@@ -118,7 +129,7 @@ def run_training(agent_type: str = "PPO", num_episodes: int = 1000, max_steps: i
         mqtt_client = None
 
     # Initialize analytics CSV with expanded metrics
-    csv_path = os.path.join(ANALYTICS_DIR, "rl_training_analytics.csv")
+    csv_path = os.path.join(analytics_dir, "rl_training_analytics.csv")
     if not os.path.exists(csv_path):
         with open(csv_path, "w") as f:
             f.write("episode,curriculum_level,scenario,steps,reward,rolling_avg_reward,loss,success_rate,"
@@ -594,13 +605,13 @@ def run_training(agent_type: str = "PPO", num_episodes: int = 1000, max_steps: i
         # Save checkpoints periodically
         if episode % checkpoint_interval == 0:
             checkpoint_file = f"ppo_self_healing_ep_{episode}.pt" if agent_type == "PPO" else f"dqn_self_healing_ep_{episode}.pt"
-            agent.save_checkpoint(CHECKPOINTS_DIR, checkpoint_file)
+            agent.save_checkpoint(checkpoints_dir, checkpoint_file)
             logger.info(f"Periodic checkpoint saved: {checkpoint_file}")
             
     # Save final checkpoint
     final_checkpoint_name = "ppo_self_healing.pt" if agent_type == "PPO" else "dqn_self_healing.pt"
-    agent.save_checkpoint(CHECKPOINTS_DIR, final_checkpoint_name)
-    logger.info(f"Training completed. Final checkpoint saved to {os.path.join(CHECKPOINTS_DIR, final_checkpoint_name)}")
+    agent.save_checkpoint(checkpoints_dir, final_checkpoint_name)
+    logger.info(f"Training completed. Final checkpoint saved to {os.path.join(checkpoints_dir, final_checkpoint_name)}")
     
     if mqtt_client:
         mqtt_client.loop_stop()

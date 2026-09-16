@@ -44,7 +44,10 @@ from core.transfer.maml_meta_learner      import MAMLMetaLearner, PolicySnapshot
 from core.adversarial.transfer_pathogen_agent import PolicyNetwork, MAX_ACTION_DIM
 from core.analytics.eb_cascading_failure_simulator import CascadingFailureSimulator
 
-ARTIFACTS_DIR = "/home/demie/.gemini/antigravity/brain/090de89a-ed7f-40e9-8c0b-5f9f6cd92d24"
+ARTIFACTS_ROOT = os.environ.get(
+    "PYPY_ARTIFACTS_DIR", os.path.join(project_root, "analytics", "artifacts")
+)
+ARTIFACTS_DIR = os.path.abspath(os.path.join(ARTIFACTS_ROOT, "v1062"))
 FIGURES_DIR   = os.path.join(current_dir, "figures_v1062")
 os.makedirs(FIGURES_DIR,   exist_ok=True)
 os.makedirs(ARTIFACTS_DIR, exist_ok=True)

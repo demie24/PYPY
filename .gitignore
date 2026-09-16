@@ -58,7 +58,8 @@ Thumbs.db
 
 scratch/
 training_logs/
-analytics/
+/analytics/
+/core/analytics/figures*/
 checkpoints/
 !/checkpoints/
 /checkpoints/*

@@ -155,6 +155,7 @@ test-results/
 !/core/gnn/trained_gnn_model.pt
 !/core/gnn/trained_stgnn_model.pt
 !/core/pinn/trained_pinn_model.pt
+!/core/ai_prediction/models/lstm_pinn_cyber_physical_predictor.pt
 !/checkpoints/ppo_self_healing.pt
 !/checkpoints/dqn_self_healing.pt
 !/checkpoints/ppo_pathogen_coevolved.pt

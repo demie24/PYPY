@@ -334,7 +334,7 @@ class TestFileIntegrity:
         "docs/ADMIN_GUIDE.md",
         "docs/DEPLOYMENT_CHECKLIST.md",
         "docs/COMMERCIAL_READINESS.md",
-        ".env.production",
+        ".env.production.template",
         ".env.example",
         "nginx/pypy_grid_production.conf",
     ]

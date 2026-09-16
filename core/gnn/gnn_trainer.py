@@ -74,10 +74,20 @@ def extract_network_parameters(topo: GridTopology):
         b_arr[k] = b_data[4]
         
         tap = b_data[8]
+        if np.iscomplexobj(tap):
+            if not np.isclose(np.imag(tap), 0.0):
+                raise ValueError(f"Transformer tap has non-real value: {tap!r}")
+            tap = np.real(tap)
+        tap = float(tap)
         if tap == 0.0:
             tap = 1.0
         tap_arr[k] = tap
-        shift_arr[k] = np.radians(b_data[9])
+        shift = b_data[9]
+        if np.iscomplexobj(shift):
+            if not np.isclose(np.imag(shift), 0.0):
+                raise ValueError(f"Transformer phase shift has non-real value: {shift!r}")
+            shift = np.real(shift)
+        shift_arr[k] = np.radians(float(shift))
         
         f_bus_ext[k] = ext_f
         t_bus_ext[k] = ext_t

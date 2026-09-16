@@ -179,9 +179,9 @@ def test_blue_agent_virtualization():
     
     clean_obs = virtualize_blue_observation(obs, reconstructed, missing_mask)
     
-    assert clean_obs[5] == 1.05
-    assert clean_obs[39 + 10] == 0.25
-    assert clean_obs[78 + 3] == 0.45
+    assert clean_obs[5] == pytest.approx(1.05)
+    assert clean_obs[39 + 10] == pytest.approx(0.25)
+    assert clean_obs[78 + 3] == pytest.approx(0.45)
     
     # Other components should remain unchanged
     assert clean_obs[0] == 1.0

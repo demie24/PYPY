@@ -12,6 +12,7 @@ from core.digital_twin.grid_topology import GridTopology
 from core.analytics.ptdf_engine import PtdfEngine, build_b_matrix, get_connected_components
 from core.analytics.extended_betweenness_engine import ExtendedBetweennessEngine
 from core.analytics.eb_cascading_failure_simulator import CascadingFailureSimulator
+from core.gnn.gnn_trainer import extract_network_parameters
 
 def test_b_matrix_and_islands():
     topo = GridTopology()
@@ -59,6 +60,12 @@ def test_ptdf_engine():
             
     disconnected_ptdf = engine.calculate_transaction_ptdf(source_bus=30, sink_bus=25, breakers=breakers)
     assert np.all(disconnected_ptdf == 0.0)
+
+def test_gnn_network_parameter_extraction_handles_pandapower_branch_values():
+    edge_index, params = extract_network_parameters(GridTopology())
+    assert len(edge_index) == 46
+    assert np.isfinite(params["tap"]).all()
+    assert np.isfinite(params["shift"]).all()
 
 def test_betweenness_metrics():
     topo = GridTopology()

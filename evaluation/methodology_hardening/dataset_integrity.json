@@ -1,0 +1,26 @@
+{
+  "class_balanced": true,
+  "class_counts": {
+    "DOS": 1300,
+    "FDIA": 1300,
+    "N1_GENERATOR": 1300,
+    "N1_LINE": 1300,
+    "N2": 1300,
+    "NORMAL": 1300,
+    "REPLAY": 1300,
+    "VOLTAGE_INSTABILITY": 1300
+  },
+  "full_row_duplicates": 0,
+  "known_threats": [
+    "LSTM/ST-GNN legacy windows overlapped across partitions.",
+    "REPLAY rows can duplicate NORMAL feature states by design.",
+    "GNN legacy evaluator changed NORMAL/REPLAY predictions using a seeded heuristic."
+  ],
+  "label_columns_in_features": false,
+  "nonfinite_feature_values": 0,
+  "scalers_fit_after_split": true,
+  "scenario_id_in_model_features": false,
+  "schema_version": "pypy.dataset-integrity.v1",
+  "timestamp_in_model_features": false,
+  "valid_feature_duplicates": 2600
+}

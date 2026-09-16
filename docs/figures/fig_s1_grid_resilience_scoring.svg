@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 850" width="1150" height="850">
+  <defs>
+    <style>
+      .title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 17px; font-weight: bold; fill: #003366; text-anchor: middle; letter-spacing: 0.5px; }
+      .caption { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 13.5px; font-weight: bold; fill: #1A252C; text-anchor: middle; }
+      .layer-title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 12px; font-weight: bold; fill: #003366; letter-spacing: 0.5px; }
+      .box-title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 12px; font-weight: bold; fill: #003366; text-anchor: middle; }
+      .box-desc { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 10.5px; fill: #1A252C; text-anchor: middle; }
+      .box-muted { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 9.5px; fill: #566573; text-anchor: middle; }
+      .line-label { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 10px; font-weight: bold; fill: #1A5276; text-anchor: middle; }
+      .layer-rect { fill: #F8FAFC; stroke: #CBD5E1; stroke-width: 1.5px; stroke-dasharray: 4,4; rx: 6px; }
+      .node-rect { fill: #FFFFFF; stroke: #003366; stroke-width: 1.75px; rx: 5px; }
+      .node-fill { fill: #F1F5F9; stroke: #003366; stroke-width: 1.75px; rx: 5px; }
+      .node-rhombus { fill: #EBF5FB; stroke: #003366; stroke-width: 1.75px; }
+      .arrow-line { stroke: #2C3E50; stroke-width: 1.75px; fill: none; marker-end: url(#arrow); }
+      .dashed-line { stroke: #1A5276; stroke-width: 1.5px; stroke-dasharray: 4,4; fill: none; marker-end: url(#arrow-blue); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2C3E50" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1A5276" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1150" height="850" fill="#FFFFFF" />
+  <rect x="15" y="15" width="1120" height="820" fill="none" stroke="#E2E8F0" stroke-width="1.5" />
+
+  <!-- Header Title -->
+  <text x="575.0" y="45" class="title">GRID RESILIENCE SCORING PIPELINE</text>
+  <line x1="395.0" y1="54" x2="755.0" y2="54" stroke="#003366" stroke-width="1.5" />
+
+  <!-- Content -->
+
+    <!-- Sequential Top Pipeline -->
+    <rect x="80" y="100" width="200" height="65" class="node-rect" />
+    <text x="180" y="138" class="box-title">Cyberattack Event</text>
+
+    <rect x="330" y="100" width="200" height="65" class="node-rect-fill" />
+    <text x="430" y="138" class="box-title">Detection</text>
+
+    <rect x="580" y="100" width="200" height="65" class="node-rect" />
+    <text x="680" y="138" class="box-title">Isolation</text>
+
+    <rect x="830" y="100" width="200" height="65" class="node-rect-fill" />
+    <text x="930" y="138" class="box-title">System Restoration</text>
+
+    <path d="M 280 132.5 L 330 132.5" class="arrow-line" />
+    <path d="M 530 132.5 L 580 132.5" class="arrow-line" />
+    <path d="M 780 132.5 L 830 132.5" class="arrow-line" />
+
+    <!-- Connector down to Parallel Assessment Container -->
+    <path d="M 930 165 L 930 220 L 575 220 L 575 270" class="arrow-line" />
+
+    <!-- Parallel Assessment Container -->
+    <rect x="60" y="270" width="1030" height="230" class="layer-rect" />
+    <text x="80" y="295" class="layer-title">MULTI-METRIC EVALUATION MODULE</text>
+
+    <rect x="90" y="330" width="220" height="130" class="node-rect" />
+    <text x="200" y="375" class="box-title">Voltage Recovery</text>
+    <text x="200" y="393" class="box-title">Assessment</text>
+    <text x="200" y="415" class="box-desc">R_V Score Component</text>
+    <text x="200" y="433" class="box-muted">Bus Voltage Dip &amp; Stability</text>
+
+    <rect x="340" y="330" width="220" height="130" class="node-rect" />
+    <text x="450" y="375" class="box-title">Thermal Loading</text>
+    <text x="450" y="393" class="box-title">Assessment</text>
+    <text x="450" y="415" class="box-desc">R_I Score Component</text>
+    <text x="450" y="433" class="box-muted">Branch Overload Penalty</text>
+
+    <rect x="590" y="330" width="220" height="130" class="node-rect" />
+    <text x="700" y="375" class="box-title">Switching Operation</text>
+    <text x="700" y="393" class="box-title">Assessment</text>
+    <text x="700" y="415" class="box-desc">R_S Score Component</text>
+    <text x="700" y="433" class="box-muted">Breaker Wear &amp; Reconfigs</text>
+
+    <rect x="840" y="330" width="220" height="130" class="node-rect" />
+    <text x="950" y="375" class="box-title">Restoration Time</text>
+    <text x="950" y="393" class="box-title">Assessment</text>
+    <text x="950" y="415" class="box-desc">R_T Score Component</text>
+    <text x="950" y="433" class="box-muted">Recovery Latency (sec)</text>
+
+    <!-- Aggregator Output Node -->
+    <rect x="420" y="580" width="310" height="80" class="node-rect-fill" />
+    <text x="575" y="615" class="box-title" style="font-size:14px;">Grid Resilience Score</text>
+    <text x="575" y="638" class="box-desc">Composite Metric R = w1·R_V + w2·R_I + w3·R_S + w4·R_T</text>
+
+    <path d="M 200 460 L 200 580 L 420 580" class="arrow-line" />
+    <path d="M 450 460 L 450 580" class="arrow-line" />
+    <path d="M 700 460 L 700 580" class="arrow-line" />
+    <path d="M 950 460 L 950 580 L 730 580" class="arrow-line" />
+
+
+  <!-- Caption -->
+  <text x="575.0" y="825" class="caption">Figure S.1 Grid resilience scoring workflow.</text>
+</svg>

@@ -1,0 +1,9 @@
+graph TD
+    GridState["Grid State (s_t)"] --> Obs["Observation"]
+    Obs --> Policy["Policy Network (π_θ)"]
+    Policy --> Action["Action Selection (a_t)"]
+    Action --> Breaker["Breaker Control"]
+    Breaker --> Response["Grid Response"]
+    Response --> Reward["Reward Calculation"]
+    Reward --> Update["Policy Update"]
+    Update -->|Repeat Loop| GridState

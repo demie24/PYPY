@@ -1,0 +1,423 @@
+{
+  "baseline": {
+    "frames": 3,
+    "bus5_voltage": [
+      1.0015,
+      1.0017,
+      1.0016
+    ],
+    "threat_scores": [
+      31,
+      30,
+      32
+    ],
+    "alerts": [],
+    "decisions": [],
+    "controls": [],
+    "final_open": []
+  },
+  "fdia": {
+    "frames": 23,
+    "bus5_voltage": [
+      1.0016,
+      1.0316,
+      1.0616,
+      1.0917,
+      1.1214,
+      1.1514,
+      1.1515,
+      1.1515,
+      1.1514,
+      1.1515,
+      1.1513,
+      1.1514,
+      1.1515,
+      1.1513,
+      1.1515,
+      1.1515,
+      1.1515,
+      1.1516,
+      1.1515,
+      1.1516,
+      1.1514,
+      1.1516,
+      1.1516
+    ],
+    "threat_scores": [
+      33,
+      82,
+      81,
+      90,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "alerts": [
+      {
+        "timestamp": 1788970163659,
+        "type": "GRID_DEVIATION",
+        "severity": "CRITICAL",
+        "loss": 0.02236,
+        "threshold": 0.001,
+        "suspect_node": "Bus_5",
+        "source_telemetry_timestamp": 1788970163649,
+        "source_telemetry_id": "runtime:1788970163649",
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": "runtime:1788970163649",
+        "msg": "[GRID_DEVIATION] Anomalous grid state on Bus_5 (reconstruction \u0394=0.02236, ratio=22.4x threshold)."
+      }
+    ],
+    "decisions": [
+      {
+        "timestamp": 1788970158691,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score=0.00, stability=97.0%, veto=False).",
+        "source_telemetry_id": null,
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": null
+      },
+      {
+        "timestamp": 1788970158703,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score=0.00, stability=97.0%, veto=False).",
+        "source_telemetry_id": null,
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": null
+      },
+      {
+        "timestamp": 1788970158704,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score=0.00, stability=97.0%, veto=False).",
+        "source_telemetry_id": null,
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": null
+      },
+      {
+        "timestamp": 1788970160659,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970160659,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970160659,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970162666,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970162666,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970162666,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970164664,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970164664,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970164664,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970166666,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970166666,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970166666,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970168669,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970168669,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970168669,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970170670,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970170671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970170671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970172665,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970172665,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970172665,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970174671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970174671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970174671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970176673,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970176673,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970176673,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970178671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970178671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      {
+        "timestamp": 1788970178671,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      }
+    ],
+    "controls": [],
+    "final_open": []
+  },
+  "after_stop": {
+    "frames": 15,
+    "bus5_voltage": [
+      1.0012,
+      1.0014,
+      1.0015,
+      1.0015,
+      1.0015,
+      1.0016,
+      1.0015,
+      1.0016,
+      1.0015,
+      1.0015,
+      1.0013,
+      1.0013,
+      1.0013,
+      1.0013,
+      1.0016
+    ],
+    "threat_scores": [
+      49,
+      48,
+      48,
+      45,
+      46,
+      47,
+      47,
+      47,
+      47,
+      46,
+      46,
+      47,
+      46,
+      37
+    ],
+    "alerts": [
+      {
+        "timestamp": 1788970180668,
+        "type": "GRID_DEVIATION",
+        "severity": "WARNING",
+        "loss": 0.0,
+        "threshold": 0.001,
+        "suspect_node": "Bus_10",
+        "source_telemetry_timestamp": 1788970180666,
+        "source_telemetry_id": "runtime:1788970180666",
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": "runtime:1788970180666",
+        "msg": "[GRID_DEVIATION] Anomalous grid state on Bus_10 (reconstruction \u0394=0.0, ratio=0.0x threshold)."
+      }
+    ],
+    "decisions": [],
+    "controls": [],
+    "final_open": []
+  }
+}

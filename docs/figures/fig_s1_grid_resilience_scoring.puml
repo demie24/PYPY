@@ -1,0 +1,29 @@
+@startuml
+skinparam backgroundcolor #FFFFFF
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #003366
+skinparam ActivityFontColor #003366
+skinparam ActivityFontStyle bold
+
+start
+:Cyberattack Event;
+:Detection;
+:Isolation;
+:System Restoration;
+partition "Multi-Metric Evaluation Module" {
+  fork
+    :Voltage Recovery Assessment;
+  fork again
+    :Thermal Loading Assessment;
+  fork again
+    :Switching Operation Assessment;
+  fork again
+    :Restoration Time Assessment;
+  end fork
+}
+:Grid Resilience Score;
+stop
+
+caption Figure S.1 Grid resilience scoring workflow.
+@enduml

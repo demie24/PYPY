@@ -1,0 +1,104 @@
+{
+  "schema_version": "pypy.blind-detection.v1",
+  "mode_definition": {
+    "blind": "defence ignores ground-truth attack-control metadata",
+    "experiment_aware": "legacy diagnostic mode uses attack metadata for suppression/scoring"
+  },
+  "results": {
+    "FDIA": {
+      "blind_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.028204449723567462,
+        "final_threshold": 0.07056415070727043
+      },
+      "experiment_aware_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.028204449723567462,
+        "final_threshold": 0.07056415070727043
+      },
+      "blind_threat_score_max": 37,
+      "experiment_aware_threat_score_max": 87,
+      "deep_model_input_difference": false,
+      "qualification": "Threat comparison excludes separately arriving AI alerts/fusion so it isolates ground-truth metadata contribution."
+    },
+    "REPLAY": {
+      "blind_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.028237722656468095,
+        "final_threshold": 0.07059436855703037
+      },
+      "experiment_aware_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.028237722656468095,
+        "final_threshold": 0.07059436855703037
+      },
+      "blind_threat_score_max": 12,
+      "experiment_aware_threat_score_max": 62,
+      "deep_model_input_difference": false,
+      "qualification": "Threat comparison excludes separately arriving AI alerts/fusion so it isolates ground-truth metadata contribution."
+    },
+    "DOS": {
+      "blind_autoencoder": {
+        "detected": true,
+        "first_confirmed_sweep": 4,
+        "max_loss": 0.8681179207110106,
+        "final_threshold": 0.0705104916244158
+      },
+      "experiment_aware_autoencoder": {
+        "detected": true,
+        "first_confirmed_sweep": 7,
+        "max_loss": 0.8681179207110106,
+        "final_threshold": 0.0705104916244158
+      },
+      "blind_threat_score_max": 52,
+      "experiment_aware_threat_score_max": 100,
+      "deep_model_input_difference": false,
+      "qualification": "Threat comparison excludes separately arriving AI alerts/fusion so it isolates ground-truth metadata contribution."
+    },
+    "SENSOR_SPOOFING": {
+      "blind_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.028262591612824708,
+        "final_threshold": 0.07054642076197785
+      },
+      "experiment_aware_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.028262591612824708,
+        "final_threshold": 0.07054642076197785
+      },
+      "blind_threat_score_max": 22,
+      "experiment_aware_threat_score_max": 72,
+      "deep_model_input_difference": false,
+      "qualification": "Threat comparison excludes separately arriving AI alerts/fusion so it isolates ground-truth metadata contribution."
+    },
+    "BREAKER_MANIPULATION": {
+      "blind_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.02792255542913423,
+        "final_threshold": 0.07052725703792934
+      },
+      "experiment_aware_autoencoder": {
+        "detected": false,
+        "first_confirmed_sweep": null,
+        "max_loss": 0.02792255542913423,
+        "final_threshold": 0.07052725703792934
+      },
+      "blind_threat_score_max": 22,
+      "experiment_aware_threat_score_max": 72,
+      "deep_model_input_difference": false,
+      "qualification": "Threat comparison excludes separately arriving AI alerts/fusion so it isolates ground-truth metadata contribution."
+    }
+  },
+  "limitations": [
+    "Offline controlled Digital Twin comparison",
+    "No claim that all deep models classify each attack",
+    "Eight post-injection sweeps per case"
+  ]
+}

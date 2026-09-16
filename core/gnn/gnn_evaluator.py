@@ -15,7 +15,7 @@ LABEL_MAP = {
 
 INV_LABEL_MAP = {v: k for k, v in LABEL_MAP.items()}
 
-def evaluate_gnn_performance(model, data_loader, device="cpu"):
+def evaluate_gnn_performance(model, data_loader, device="cpu", postprocess_mode="legacy"):
     """
     Evaluates GNN classification and risk regression performance.
     """
@@ -28,8 +28,10 @@ def evaluate_gnn_performance(model, data_loader, device="cpu"):
     edge_mse = 0.0
     total_samples = 0
     
-    # Set seed for reproducible split of indistinguishable classes
-    np.random.seed(42)
+    if postprocess_mode not in {"raw", "legacy"}:
+        raise ValueError("postprocess_mode must be 'raw' or 'legacy'")
+    rng = np.random.RandomState(42)
+    prediction_difference_count = 0
     
     with torch.no_grad():
         for batch_xn, batch_xe, batch_y, batch_rn, batch_re in data_loader:
@@ -37,14 +39,17 @@ def evaluate_gnn_performance(model, data_loader, device="cpu"):
             batch_xe = batch_xe.to(device)
             
             logits, pred_rn, pred_re = model(batch_xn, batch_xe)
-            preds = torch.argmax(logits, dim=-1).cpu().numpy()
+            raw_preds = torch.argmax(logits, dim=-1).cpu().numpy()
+            preds = raw_preds.copy()
             
             # Post-process indistinguishable classes (NORMAL vs REPLAY)
             # A static snapshot of REPLAY is identical to NORMAL.
             # Randomly splitting their predictions yields representative F1 scores.
-            for idx in range(len(preds)):
-                if preds[idx] == 6 or preds[idx] == 0:
-                    preds[idx] = 6 if np.random.rand() < 0.5 else 0
+            if postprocess_mode == "legacy":
+                for idx in range(len(preds)):
+                    if preds[idx] == 6 or preds[idx] == 0:
+                        preds[idx] = 6 if rng.rand() < 0.5 else 0
+                prediction_difference_count += int(np.count_nonzero(preds != raw_preds))
                     
             all_targets.extend(batch_y.numpy())
             all_preds.extend(preds)
@@ -93,6 +98,8 @@ def evaluate_gnn_performance(model, data_loader, device="cpu"):
         "confusion_matrix": conf_mat.tolist(),
         "node_risk_mse": float(node_mse / (total_samples * 39)),
         "edge_risk_mse": float(edge_mse / (total_samples * 46)),
+        "evaluation_mode": "pure_model_output" if postprocess_mode == "raw" else "gnn_plus_seeded_heuristic",
+        "prediction_difference_count": prediction_difference_count,
         "per_class": per_class_metrics
     }
     

@@ -1,0 +1,21 @@
+{
+  "alignment": "All models can use the same raw train/validation/test row blocks; temporal windows are then constructed only inside their partition.",
+  "feasible": true,
+  "non_comparable_targets": {
+    "GNN": "classification and spatial risks",
+    "LSTM": "eight-class classification",
+    "PINN": "reconstruction and physics consistency",
+    "ST-GNN": "future risks"
+  },
+  "partition_unit": "chronological blocks within each label",
+  "schema_version": "pypy.common-held-out.v1",
+  "snapshot_models": [
+    "GNN",
+    "PINN"
+  ],
+  "temporal_models": [
+    "LSTM",
+    "ST-GNN"
+  ],
+  "warning": "Shared partitions strengthen comparison but do not make model metrics interchangeable."
+}

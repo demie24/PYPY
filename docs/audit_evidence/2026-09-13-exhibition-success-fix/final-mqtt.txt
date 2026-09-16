@@ -1,0 +1,2 @@
+{'timestamp': 1789277722226, 'age_s': 0.0, 'buses': 39, 'branches': 46, 'solver': {'converged': True, 'mode': 'converged', 'iterations': 2}, 'attack': None, 'open': []}
+{'timestamp': 1789277723224, 'age_s': 0.0, 'buses': 39, 'branches': 46, 'solver': {'converged': True, 'mode': 'converged', 'iterations': 2}, 'attack': None, 'open': []}

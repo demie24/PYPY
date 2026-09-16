@@ -1,0 +1,34 @@
+graph TD
+    subgraph Presentation_Layer ["Presentation Layer"]
+        User["User / Operator"] -->|HTTP / WS| Dashboard["React Dashboard"]
+    end
+
+    subgraph Application_Layer ["Application Layer"]
+        Gateway["FastAPI Gateway"] <-->|IPC / Events| MQTT["MQTT Broker (Mosquitto)"]
+    end
+
+    Dashboard -->|REST API| Gateway
+    Dashboard -->|WS Stream| MQTT
+
+    subgraph Intelligence_Layer ["Intelligence Layer"]
+        DigitalTwin["Digital Twin Engine (Pandapower)"]
+        subgraph AI_Layer ["AI Subsystem Layer"]
+            PINN["Physics-Informed Neural Network (PINN)"]
+            STGNN["Spatial-Temporal Graph Neural Net (ST-GNN)"]
+            PPO["PPO Reinforcement Learning Agent"]
+        end
+    end
+
+    MQTT -->|Telemetry| DigitalTwin
+    MQTT -->|Grid Events| AI_Layer
+    DigitalTwin -->|State Features| AI_Layer
+
+    subgraph Infrastructure_Layer ["Infrastructure Layer"]
+        Postgres[(PostgreSQL Database)]
+        Redis[(Redis Cache & Broker)]
+        Docker[Docker Containers]
+    end
+
+    Gateway --> Postgres
+    AI_Layer --> Redis
+    DigitalTwin --> Docker

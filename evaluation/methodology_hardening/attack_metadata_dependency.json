@@ -1,0 +1,51 @@
+{
+  "components": {
+    "autoencoder": {
+      "blind_mode": "ignores metadata",
+      "effect": "confirmation window/cooldown",
+      "metadata": "grid/attack control"
+    },
+    "fusion": {
+      "effect": "nominal calibration exclusion only",
+      "metadata": "attack_status"
+    },
+    "gnn": {
+      "inputs": "telemetry only",
+      "metadata": null
+    },
+    "lstm": {
+      "inputs": "telemetry only",
+      "metadata": null
+    },
+    "physics": {
+      "effect": "residual calibration exclusion only",
+      "metadata": "attack_status"
+    },
+    "pinn": {
+      "inputs": "telemetry only",
+      "metadata": null
+    },
+    "recovery": {
+      "inputs": "telemetry/fusion/trust/threat/physics",
+      "metadata": null
+    },
+    "stgnn": {
+      "inputs": "telemetry only",
+      "metadata": null
+    },
+    "threat": {
+      "blind_mode": "metadata removed",
+      "effect": "direct score/confidence/affected-node contribution",
+      "metadata": "attack_status/compromised_nodes"
+    },
+    "trust": {
+      "inputs": "physics and AI evidence",
+      "metadata": null
+    }
+  },
+  "modes": {
+    "blind": "DEFENCE_EVALUATION_MODE=blind",
+    "experiment_aware": "DEFENCE_EVALUATION_MODE=experiment_aware"
+  },
+  "schema_version": "pypy.attack-metadata.v1"
+}

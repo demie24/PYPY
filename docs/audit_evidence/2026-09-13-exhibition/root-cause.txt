@@ -1,0 +1,16 @@
+/smart_grid_mqtt started=2026-09-12T19:08:08.937305456Z previous_exit=2026-09-11T03:49:01.00266849Z restarts=0
+/smart_grid_redis started=2026-09-12T19:08:08.938980876Z previous_exit=2026-09-11T03:49:01.028292365Z restarts=0
+/smart_grid_postgres started=2026-09-12T19:08:08.938604309Z previous_exit=2026-09-11T03:49:01.013354619Z restarts=0
+
+Exact excerpts observed during the initial runtime inspection (the later bounded log query no longer returned these older entries):
+
+digital_twin:
+2026-09-12 19:08:11,616 [WARNING] Publisher MQTT connection failed: [Errno -3] Temporary failure in name resolution. Retrying in 15.0s...
+2026-09-12 19:08:26,630 [INFO] Publisher MQTT connected successfully to mqtt:1883
+2026-09-12 19:08:26,631 [INFO] Grid Digital Twin Simulator started. Running main sweep loops...
+2026-09-12 19:08:26,637 [INFO] Telemetry Publisher connected successfully!
+
+gateway:
+2026-09-12 19:08:02,238 [WARNING] MQTT client connection failed: [Errno -3] Temporary failure in name resolution. Retrying in 15.0s...
+2026-09-12 19:08:17,250 [INFO] MQTT client connected successfully to mqtt:1883
+2026-09-12 19:08:17,251 [INFO] Connected to MQTT Broker!

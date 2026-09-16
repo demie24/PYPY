@@ -1,0 +1,154 @@
+{
+  "dataset_sha256": "3945a80389e26a14d0542945925cf28ee69c7a57dbc70045ab83066c57b27220",
+  "models": {
+    "lstm": {
+      "corrected_chronological_label_block_split": {
+        "pairwise_overlap": {
+          "train_test": {
+            "left_percentage": 0.0,
+            "left_sequences_affected": 0,
+            "overlapping_raw_observations": 0,
+            "right_percentage": 0.0,
+            "right_sequences_affected": 0
+          },
+          "train_validation": {
+            "left_percentage": 0.0,
+            "left_sequences_affected": 0,
+            "overlapping_raw_observations": 0,
+            "right_percentage": 0.0,
+            "right_sequences_affected": 0
+          },
+          "validation_test": {
+            "left_percentage": 0.0,
+            "left_sequences_affected": 0,
+            "overlapping_raw_observations": 0,
+            "right_percentage": 0.0,
+            "right_sequences_affected": 0
+          }
+        },
+        "raw_observations_by_partition": {
+          "test": 1568,
+          "train": 7272,
+          "validation": 1560
+        },
+        "sequences_by_partition": {
+          "test": 1416,
+          "train": 7120,
+          "validation": 1408
+        }
+      },
+      "correction": "split each contiguous label block chronologically before constructing windows",
+      "original_random_window_split": {
+        "pairwise_overlap": {
+          "train_test": {
+            "left_percentage": 99.46325350949628,
+            "left_sequences_affected": 7227,
+            "overlapping_raw_observations": 9945,
+            "right_percentage": 100.0,
+            "right_sequences_affected": 1558
+          },
+          "train_validation": {
+            "left_percentage": 99.75227085053675,
+            "left_sequences_affected": 7248,
+            "overlapping_raw_observations": 10019,
+            "right_percentage": 100.0,
+            "right_sequences_affected": 1557
+          },
+          "validation_test": {
+            "left_percentage": 99.22928709055877,
+            "left_sequences_affected": 1545,
+            "overlapping_raw_observations": 9589,
+            "right_percentage": 99.87163029525033,
+            "right_sequences_affected": 1556
+          }
+        },
+        "raw_observations_by_partition": {
+          "test": 9945,
+          "train": 10400,
+          "validation": 10019
+        },
+        "sequences_by_partition": {
+          "test": 1558,
+          "train": 7266,
+          "validation": 1557
+        }
+      },
+      "scenario_id_grouping_rejected": "scenario_id is unique per row and cannot identify simulation runs"
+    },
+    "stgnn": {
+      "corrected_chronological_label_block_split": {
+        "pairwise_overlap": {
+          "train_test": {
+            "left_percentage": 0.0,
+            "left_sequences_affected": 0,
+            "overlapping_raw_observations": 0,
+            "right_percentage": 0.0,
+            "right_sequences_affected": 0
+          },
+          "train_validation": {
+            "left_percentage": 0.0,
+            "left_sequences_affected": 0,
+            "overlapping_raw_observations": 0,
+            "right_percentage": 0.0,
+            "right_sequences_affected": 0
+          },
+          "validation_test": {
+            "left_percentage": 0.0,
+            "left_sequences_affected": 0,
+            "overlapping_raw_observations": 0,
+            "right_percentage": 0.0,
+            "right_sequences_affected": 0
+          }
+        },
+        "raw_observations_by_partition": {
+          "test": 1568,
+          "train": 7272,
+          "validation": 1560
+        },
+        "sequences_by_partition": {
+          "test": 1376,
+          "train": 7080,
+          "validation": 1368
+        }
+      },
+      "correction": "split each contiguous label block chronologically before constructing windows",
+      "original_random_window_split": {
+        "pairwise_overlap": {
+          "train_test": {
+            "left_percentage": 99.94492633897838,
+            "left_sequences_affected": 7259,
+            "overlapping_raw_observations": 10151,
+            "right_percentage": 100.0,
+            "right_sequences_affected": 1557
+          },
+          "train_validation": {
+            "left_percentage": 100.0,
+            "left_sequences_affected": 7263,
+            "overlapping_raw_observations": 10210,
+            "right_percentage": 100.0,
+            "right_sequences_affected": 1556
+          },
+          "validation_test": {
+            "left_percentage": 99.74293059125964,
+            "left_sequences_affected": 1552,
+            "overlapping_raw_observations": 9972,
+            "right_percentage": 100.0,
+            "right_sequences_affected": 1557
+          }
+        },
+        "raw_observations_by_partition": {
+          "test": 10151,
+          "train": 10400,
+          "validation": 10210
+        },
+        "sequences_by_partition": {
+          "test": 1557,
+          "train": 7263,
+          "validation": 1556
+        }
+      },
+      "scenario_id_grouping_rejected": "scenario_id is unique per row and cannot identify simulation runs"
+    }
+  },
+  "schema_version": "pypy.temporal-overlap.v1"
+}

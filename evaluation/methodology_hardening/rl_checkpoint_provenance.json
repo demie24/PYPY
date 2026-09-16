@@ -1,0 +1,34 @@
+{
+  "checkpoints": [
+    {
+      "action_dimension": 10,
+      "environment": "core/self_healing/rl_environment.py (legacy/self-healing environment)",
+      "git_history": [],
+      "native_ieee39_training": false,
+      "path": "checkpoints/ppo_self_healing.pt",
+      "policy": "PPO",
+      "seed": "NOT_VERIFIED",
+      "sha256": "d286c9e4c0788b03b2d44b557825267665a39b53e91870f17cbf2da3d2377711",
+      "size_bytes": 235321,
+      "state_dimension": 72,
+      "training_episode_count": "NOT_VERIFIED",
+      "training_script": "core/self_healing/rl/rl_trainer.py"
+    },
+    {
+      "action_dimension": 10,
+      "environment": "core/self_healing/rl_environment.py (legacy/self-healing environment)",
+      "git_history": [],
+      "native_ieee39_training": false,
+      "path": "checkpoints/dqn_self_healing.pt",
+      "policy": "DQN",
+      "seed": "NOT_VERIFIED",
+      "sha256": "0eaa89f67e3151f729542fce96b88dcde1450cb76777b9741a1c390f063ca21c",
+      "size_bytes": 80993,
+      "state_dimension": 72,
+      "training_episode_count": "NOT_VERIFIED",
+      "training_script": "core/self_healing/rl/rl_trainer.py"
+    }
+  ],
+  "schema_version": "pypy.rl-provenance.v1",
+  "thesis_wording": "Existing PPO and DQN policies were integrated as recovery proposal mechanisms through a deterministic 72-element compatibility encoder."
+}

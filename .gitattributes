@@ -1,0 +1,3 @@
+
+# CSV writers legitimately emit CRLF; retain recorded artifact bytes.
+*.csv whitespace=cr-at-eol

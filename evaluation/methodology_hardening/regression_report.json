@@ -1,0 +1,40 @@
+{
+  "schema_version": "pypy.regression-report.v1",
+  "timestamp": 1787089188117,
+  "unit_tests": {
+    "total": 609,
+    "passed": 609,
+    "failed": 0,
+    "status": "PASSED"
+  },
+  "methodology_scripts": {
+    "run_audits.py": "PASS",
+    "evaluate_sandbox_safety.py": "PASS",
+    "evaluate_gnn_modes.py": "PASS",
+    "evaluate_blind_detection.py": "PASS",
+    "verify_separated_e2e.py": "PASS"
+  },
+  "regression_checks": [
+    {
+      "check": "No temporal data leakage across partitions",
+      "result": "PASS"
+    },
+    {
+      "check": "No ground truth telemetry leakage in blind detection mode",
+      "result": "PASS"
+    },
+    {
+      "check": "No unvalidated AI recovery proposals authorized",
+      "result": "PASS"
+    },
+    {
+      "check": "No mixed causal claims between FDIA and Breaker experiments",
+      "result": "PASS"
+    },
+    {
+      "check": "Context preservation across digital twin MQTT sweeps",
+      "result": "PASS"
+    }
+  ],
+  "overall_regression_status": "PASS"
+}

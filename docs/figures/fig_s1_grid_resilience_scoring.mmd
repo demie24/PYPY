@@ -1,0 +1,14 @@
+graph TD
+    Attack["Cyberattack Event"] --> Detect["Detection"]
+    Detect --> Isolate["Isolation"]
+    Isolate --> Restore["System Restoration"]
+
+    subgraph MultiMetric ["Multi-Metric Evaluation Module"]
+        V_Assess["Voltage Recovery Assessment (R_V)"]
+        I_Assess["Thermal Loading Assessment (R_I)"]
+        S_Assess["Switching Operation Assessment (R_S)"]
+        T_Assess["Restoration Time Assessment (R_T)"]
+    end
+
+    Restore --> MultiMetric
+    MultiMetric --> ResilienceScore["Grid Resilience Score Aggregator"]

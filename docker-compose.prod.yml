@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: pypy_saas
       POSTGRES_USER: pypy_admin
-      POSTGRES_PASSWORD: pypy_db_secure_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
     healthcheck:
@@ -45,7 +45,7 @@ services:
       dockerfile: ./gateway/Dockerfile
     container_name: smart_grid_gateway_prod
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
@@ -75,7 +75,7 @@ services:
     container_name: smart_grid_celery_worker_prod
     command: celery -A workers.simulation.tasks worker --loglevel=info
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
@@ -100,7 +100,7 @@ services:
     container_name: smart_grid_celery_beat_prod
     command: celery -A workers.billing.tasks beat --loglevel=info
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       redis:

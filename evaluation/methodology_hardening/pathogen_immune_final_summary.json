@@ -1,0 +1,40 @@
+{
+  "generated_at_utc": "2026-08-19T07:46:00Z",
+  "preliminary_verification_run": {
+    "source_artifact": "evaluation/coevolution/verified/report.json",
+    "seeds": [
+      42,
+      123,
+      999
+    ],
+    "episodes_per_seed": 5,
+    "total_episodes": 15,
+    "mean_red_reward": 436.655494701879,
+    "mean_blue_reward": 4702.43411398353,
+    "blackout_rate": 0.13333333333333333,
+    "mean_final_load_served_pct": 0.8659330600346443
+  },
+  "expanded_benchmark_run": {
+    "source_artifact": "evaluation/methodology_hardening/pathogen_immune_expanded/report.json",
+    "seeds": [
+      42,
+      123,
+      999,
+      2026,
+      2027,
+      31415,
+      27182,
+      16180,
+      57721,
+      14142
+    ],
+    "episodes_per_seed": 10,
+    "total_episodes": 100,
+    "mean_red_reward": 387.79696676879615,
+    "mean_blue_reward": 4332.2475225185735,
+    "blackout_rate": 0.22000000000000003,
+    "mean_final_load_served_pct": 0.779837696065267
+  },
+  "caveat": "This benchmark evaluates checkpoint behaviour under adversarial interaction and does not represent new online co-evolutionary training.",
+  "wording_guardrail": "Do not claim broad statistical generalisation beyond the evaluated 10 random seeds."
+}

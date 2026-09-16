@@ -1,0 +1,22 @@
+@startuml
+skinparam backgroundcolor #FFFFFF
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #003366
+skinparam ActivityFontColor #003366
+skinparam ActivityFontStyle bold
+
+start
+:Initialize IEEE Network;
+:Update Breaker Status;
+:Update Load Demand;
+:Construct Admittance Matrix;
+repeat
+  :Newton-Raphson Iteration;
+repeat while (Converged?) is (NO)
+->YES;
+:Generate Telemetry;
+stop
+
+caption Figure P.1 Newton-Raphson AC Power Flow Solver workflow.
+@enduml

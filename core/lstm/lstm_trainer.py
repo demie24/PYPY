@@ -15,6 +15,7 @@ sys.path.append(parent_dir)
 
 from lstm_model import IEEE39LSTMClassifier
 from lstm_evaluator import evaluate_lstm_performance, LABEL_MAP
+from core.ai_training.temporal_split import chronological_label_partitions, window_spans
 
 def create_sequences(features, labels, seq_len):
     """
@@ -28,6 +29,20 @@ def create_sequences(features, labels, seq_len):
         y.append(labels[i + seq_len - 1])
     return np.array(X, dtype=np.float32), np.array(y, dtype=np.int64)
 
+def _partition_sequences(df_valid, feature_cols, seq_len):
+    features = df_valid[feature_cols].values.astype(np.float32)
+    labels = df_valid["label"].map(LABEL_MAP).values.astype(np.int64)
+    partitions = chronological_label_partitions(df_valid)
+    result = {}
+    for name, partition in partitions.items():
+        spans = window_spans(partition.raw_indices, seq_len)
+        result[name] = (
+            np.asarray([features[span] for span in spans], dtype=np.float32),
+            np.asarray([labels[span[-1]] for span in spans], dtype=np.int64),
+        )
+    return result
+
+
 def train_model_for_window(df_valid, feature_cols, seq_len, epochs=15, batch_size=128, lr=0.002, device="cpu"):
     """
     Trains an LSTM model for a specific window size.
@@ -35,28 +50,11 @@ def train_model_for_window(df_valid, feature_cols, seq_len, epochs=15, batch_siz
     """
     print(f"\n--- Training for Window Size: {seq_len} ---")
     
-    # Extract raw features and labels
-    features = df_valid[feature_cols].values.astype(np.float32)
-    labels = df_valid["label"].map(LABEL_MAP).values.astype(np.int64)
-    
-    # Create sequences
-    X_all, y_all = create_sequences(features, labels, seq_len)
-    
-    # Split indices (70% Train, 15% Val, 15% Test) using fixed random state
-    np.random.seed(42)
-    n_samples = len(X_all)
-    indices = np.random.permutation(n_samples)
-    
-    train_end = int(0.70 * n_samples)
-    val_end = train_end + int(0.15 * n_samples)
-    
-    train_idx = indices[:train_end]
-    val_idx = indices[train_end:val_end]
-    test_idx = indices[val_end:]
-    
-    X_train, y_train = X_all[train_idx], y_all[train_idx]
-    X_val, y_val = X_all[val_idx], y_all[val_idx]
-    X_test, y_test = X_all[test_idx], y_all[test_idx]
+    split = _partition_sequences(df_valid, feature_cols, seq_len)
+    X_train, y_train = split["train"]
+    X_val, y_val = split["validation"]
+    X_test, y_test = split["test"]
+    n_samples = sum(len(values[0]) for values in split.values())
     
     # Fit scaler parameters from training sequences
     train_mean = X_train.mean(axis=(0, 1))
@@ -81,7 +79,8 @@ def train_model_for_window(df_valid, feature_cols, seq_len, epochs=15, batch_siz
     val_dataset = TensorDataset(torch.tensor(X_val), torch.tensor(y_val))
     test_dataset = TensorDataset(torch.tensor(X_test), torch.tensor(y_test))
     
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    generator = torch.Generator().manual_seed(42)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, generator=generator)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
@@ -150,9 +149,11 @@ def train_model_for_window(df_valid, feature_cols, seq_len, epochs=15, batch_siz
         if epoch % 5 == 0 or epoch == 1:
             print(f"  Epoch {epoch:02d}/{epochs:02d} | Train Loss: {epoch_loss:.4f} Acc: {epoch_acc*100:.2f}% | Val Loss: {val_loss:.4f} Acc: {val_acc*100:.2f}%")
             
-    return model, history, val_acc, test_loader, len(X_all)
+    return model, history, val_acc, test_loader, n_samples
 
-def run_lstm_pipeline(dataset_path: str, device: str = "cpu"):
+def run_lstm_pipeline(dataset_path: str, device: str = "cpu", output_dir: str = None):
+    torch.manual_seed(42)
+    np.random.seed(42)
     print("=========================================")
     print("STARTING TEMPORAL LSTM TRAINING PIPELINE")
     print("=========================================")
@@ -163,7 +164,7 @@ def run_lstm_pipeline(dataset_path: str, device: str = "cpu"):
         
     df = pd.read_csv(dataset_path)
     exclude_labels = ["NON_CONVERGED", "BLACKOUT", "INVALID_STATE"]
-    df_valid = df[~df["label"].isin(exclude_labels)].copy()
+    df_valid = df[~df["label"].isin(exclude_labels)].copy().reset_index(drop=True)
     print(f"Loaded valid samples: {len(df_valid)}")
     
     # Extract feature columns list
@@ -200,12 +201,14 @@ def run_lstm_pipeline(dataset_path: str, device: str = "cpu"):
     print("=========================================")
     
     # 3. Model Serialization
-    model_save_path = os.path.join(current_dir, "trained_lstm_model.pt")
+    output_dir = output_dir or current_dir
+    os.makedirs(output_dir, exist_ok=True)
+    model_save_path = os.path.join(output_dir, "trained_lstm_model.pt")
     torch.save(best_model.state_dict(), model_save_path)
     print(f"Model saved to: {model_save_path}")
     
     # 4. Save best training history metrics
-    metrics_save_path = os.path.join(current_dir, "training_metrics.json")
+    metrics_save_path = os.path.join(output_dir, "training_metrics.json")
     with open(metrics_save_path, "w") as f:
         json.dump(best_history, f, indent=4)
     print(f"Training metrics saved to: {metrics_save_path}")
@@ -215,7 +218,7 @@ def run_lstm_pipeline(dataset_path: str, device: str = "cpu"):
     eval_results = evaluate_lstm_performance(best_model, best_test_loader, device=device)
     
     # Save evaluation results to file
-    eval_save_path = os.path.join(current_dir, "evaluation_results.json")
+    eval_save_path = os.path.join(output_dir, "evaluation_results.json")
     with open(eval_save_path, "w") as f:
         json.dump(eval_results, f, indent=4)
     print(f"Evaluation results saved to: {eval_save_path}")

@@ -1,0 +1,6 @@
+{
+  "classification": "NOT_VERIFIED",
+  "reason": "MQTT timestamp instrumentation was not available during this run.",
+  "deployment_dependent": true,
+  "notes": "Transport latency depends on host network stack, MQTT broker configuration, operating system scheduling, and timestamp instrumentation."
+}

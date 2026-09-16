@@ -1,0 +1,20 @@
+{
+  "gateway_stop": "CONNECTION LOST; launch disabled",
+  "gateway_restart": "WebSocket reconnected; fresh telemetry; launch enabled",
+  "unconfirmed_attack": "Real command forwarded while twin paused; 15-second unconfirmed-outcome notice",
+  "frozen_telemetry": "TELEMETRY UNAVAILABLE after source freshness expiry; no false success",
+  "twin_resumed": "Canonical telemetry resumed; no active attack",
+  "fullscreen": "passed",
+  "refresh": "passed",
+  "final": {
+    "timestamp": 1789275702637,
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "active_attack": null,
+    "all_breakers_closed": true
+  },
+  "page_errors": []
+}

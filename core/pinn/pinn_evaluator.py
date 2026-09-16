@@ -31,6 +31,7 @@ def evaluate_pinn(model: torch.nn.Module, test_loader: torch.utils.data.DataLoad
     all_pred = []
     
     total_violations = 0
+    violation_counts = {"voltage": 0, "angle": 0, "active_power_balance": 0, "reactive_power_balance": 0}
     total_samples = 0
     
     physics_losses = []
@@ -74,11 +75,13 @@ def evaluate_pinn(model: torch.nn.Module, test_loader: torch.utils.data.DataLoad
                 v_sample = np_pred_V[i]
                 if np.any(v_sample < 0.85) or np.any(v_sample > 1.15):
                     violated = True
+                    violation_counts["voltage"] += 1
                     
                 # Check theta bounds: [-pi, pi]
                 theta_sample = np_pred_theta[i]
                 if np.any(theta_sample < -np.pi) or np.any(theta_sample > np.pi):
                     violated = True
+                    violation_counts["angle"] += 1
                     
                 # Check power balance mismatch
                 # S = V I*
@@ -95,7 +98,11 @@ def evaluate_pinn(model: torch.nn.Module, test_loader: torch.utils.data.DataLoad
                 # Threshold of 0.05 pu (5 MW / 5 Mvar) average nodal mismatch
                 mae_P = np.mean(np.abs(P_pred_pu + P_calc))
                 mae_Q = np.mean(np.abs(Q_pred_pu + Q_calc))
-                if mae_P > 0.05 or mae_Q > 0.05:
+                if mae_P > 0.05:
+                    violation_counts["active_power_balance"] += 1
+                    violated = True
+                if mae_Q > 0.05:
+                    violation_counts["reactive_power_balance"] += 1
                     violated = True
                     
                 if violated:
@@ -137,6 +144,15 @@ def evaluate_pinn(model: torch.nn.Module, test_loader: torch.utils.data.DataLoad
         "metrics": metrics,
         "physics_metrics": {
             "violation_rate": round(violation_rate, 5),
+            "violation_thresholds": {
+                "voltage_pu": [0.85, 1.15], "angle_rad": [-float(np.pi), float(np.pi)],
+                "mean_active_power_mismatch_pu": 0.05,
+                "mean_reactive_power_mismatch_pu": 0.05,
+            },
+            "component_violation_counts": violation_counts,
+            "component_violation_rates": {
+                key: round(value / total_samples, 5) for key, value in violation_counts.items()
+            },
             "mean_physics_loss": round(float(np.mean(physics_losses)), 6)
         }
     }

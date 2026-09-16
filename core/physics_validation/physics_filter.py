@@ -28,12 +28,12 @@ class PhysicsFilter:
         for lid, status in breakers.items():
             if status == "OPEN":
                 line_m = lines_data.get(lid, {})
-                i_pu = float(line_m.get("current_pu", 0.0))
+                current_ka = float(line_m.get("current_ka", line_m.get("current_pu", 0.0)))
                 p_mw = float(line_m.get("P_mw", 0.0))
                 
-                if i_pu > 0.02 or abs(p_mw) > 2.0:
+                if current_ka > 0.02 or abs(p_mw) > 2.0:
                     impossible_violations.append(
-                        f"Inconsistent Breaker: Line {lid} is OPEN but has active current ({i_pu:.3f} p.u.) or flow ({p_mw:.1f} MW)"
+                        f"Inconsistent Breaker: Line {lid} is OPEN but has active current ({current_ka:.3f} kA) or flow ({p_mw:.1f} MW)"
                     )
                     impossible_state_flag = True
 
@@ -54,7 +54,7 @@ class PhysicsFilter:
             
             if breaker_status == "CLOSED":
                 line_m = lines_data.get(lid, {})
-                measured_i = float(line_m.get("current_pu", 0.0))
+                measured_i = float(line_m.get("current_ka", line_m.get("current_pu", 0.0)))
                 p_pu = float(line_m.get("P_mw", 0.0)) / 100.0
                 q_pu = float(line_m.get("Q_mvar", 0.0)) / 100.0
                 
@@ -80,7 +80,7 @@ class PhysicsFilter:
                     deviation = abs(measured_i - calculated_i)
                     if deviation > tolerance:
                         impossible_violations.append(
-                            f"Current Mismatch on {lid}: Measured={measured_i:.4f} p.u., Calculated={calculated_i:.4f} p.u. (dev={deviation:.4f})"
+                            f"Current Mismatch on {lid}: Measured={measured_i:.4f} kA, Calculated={calculated_i:.4f} kA (dev={deviation:.4f})"
                         )
                         impossible_state_flag = True
 

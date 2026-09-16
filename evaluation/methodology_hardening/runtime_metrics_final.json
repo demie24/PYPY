@@ -1,0 +1,92 @@
+{
+  "generated_at_utc": "2026-08-19T07:45:00Z",
+  "benchmark_method": "time.perf_counter",
+  "metrics": {
+    "lstm_inference": {
+      "classification": "MEASURED",
+      "iterations": 50,
+      "mean_ms": 0.4342,
+      "median_ms": 0.4128,
+      "min_ms": 0.3139,
+      "max_ms": 0.6339,
+      "std_ms": 0.0946,
+      "gpu_used": false,
+      "source": "core/lstm/lstm_model.py::IEEE39LSTMClassifier",
+      "notes": "Batch-1 sequence window W=20 x 156 CPU forward pass"
+    },
+    "gnn_inference": {
+      "classification": "MEASURED",
+      "iterations": 50,
+      "mean_ms": 5.3218,
+      "median_ms": 5.1611,
+      "min_ms": 4.6606,
+      "max_ms": 7.3019,
+      "std_ms": 0.5279,
+      "gpu_used": false,
+      "source": "core/gnn/gnn_model.py::IEEE39GNN",
+      "notes": "IEEE 39-bus graph message-passing CPU forward pass"
+    },
+    "stgnn_inference": {
+      "classification": "MEASURED",
+      "iterations": 50,
+      "mean_ms": 9.2445,
+      "median_ms": 6.7425,
+      "min_ms": 5.9184,
+      "max_ms": 81.5459,
+      "std_ms": 10.8693,
+      "gpu_used": false,
+      "source": "core/gnn/stgnn_model.py::IEEE39STGNN",
+      "notes": "Spatio-temporal sequence graph message-passing CPU forward pass"
+    },
+    "pinn_residual_evaluation": {
+      "classification": "MEASURED",
+      "iterations": 50,
+      "mean_ms": 0.133,
+      "median_ms": 0.1154,
+      "min_ms": 0.1095,
+      "max_ms": 0.2909,
+      "std_ms": 0.0412,
+      "gpu_used": false,
+      "source": "core/pinn/pinn_model.py::IEEE39PINNAutoencoder",
+      "notes": "Physics-informed autoencoder CPU forward pass"
+    },
+    "threat_scoring": {
+      "classification": "MEASURED",
+      "iterations": 50,
+      "mean_ms": 0.0034,
+      "median_ms": 0.0033,
+      "min_ms": 0.003,
+      "max_ms": 0.0044,
+      "std_ms": 0.0003,
+      "gpu_used": false,
+      "source": "core/threat_engine/scorer.py::ThreatScoringEngine",
+      "notes": "Multi-layer fusion and trust degradation scoring"
+    },
+    "orchestrator_decision": {
+      "classification": "MEASURED",
+      "iterations": 50,
+      "mean_ms": 0.0035,
+      "median_ms": 0.0034,
+      "min_ms": 0.0032,
+      "max_ms": 0.0045,
+      "std_ms": 0.0003,
+      "gpu_used": false,
+      "source": "core/orchestrator/ai_orchestrator.py::AIOrchestrator",
+      "notes": "Multi-agent consensus and cooldown safety gate evaluation"
+    },
+    "restoration_sandbox_dry_run": {
+      "classification": "MEASURED",
+      "iterations": 20,
+      "mean_ms": 13.466,
+      "median_ms": 13.485,
+      "min_ms": 12.6155,
+      "max_ms": 15.0121,
+      "std_ms": 0.5944,
+      "gpu_used": false,
+      "source": "core/self_healing/restoration_sandbox.py::RestorationSandbox",
+      "notes": "Newton-Raphson AC powerflow dry-run rehearsal"
+    }
+  },
+  "not_measured": [],
+  "warnings": []
+}

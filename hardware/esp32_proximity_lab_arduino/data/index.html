@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Dual-Interface Proximity Monitoring System</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-red: #ef4444;
+            --shadow-glow: 0 0 25px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        header {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .dashboard-grid {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-glow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Distance Meter Display */
+        .distance-val {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            font-variant-numeric: tabular-nums;
+            transition: color 0.3s ease;
+        }
+
+        .distance-unit {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-left: 0.25rem;
+            font-weight: 400;
+        }
+
+        .gauge-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* LED Lamp Indicators */
+        .led-group {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .led-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .led-lamp {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
+        }
+
+        .led-lamp.green.active {
+            background: var(--accent-green);
+            box-shadow: 0 0 20px var(--accent-green), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            border-color: #86efac;
+        }
+
+        .led-lamp.yellow.active {
+            background: var(--accent-yellow);
+            box-shadow: 0 0 20px var(--accent-yellow), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            border-color: #fde047;
+        }
+
+        .led-lamp.red.active {
+            background: var(--accent-red);
+            box-shadow: 0 0 20px var(--accent-red), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            border-color: #fca5a5;
+        }
+
+        .led-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Network & System Info */
+        .info-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-label {
+            color: var(--text-muted);
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .badge {
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 1rem;
+        }
+
+        .badge-green { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .badge-yellow { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4); }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-gray { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.4); }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Proximity Monitoring System</h1>
+        <p>Dual-Interface Proximity Telemetry • Mobile (STA) & Laptop (Soft AP)</p>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- Live Distance Measurement Card -->
+        <article class="card">
+            <div class="card-title">Live Distance Reading</div>
+            <div class="distance-val" id="distDisplay">--<span class="distance-unit">cm</span></div>
+            <div class="gauge-container">
+                <div class="gauge-fill" id="gaugeFill"></div>
+            </div>
+            <div class="badge badge-gray" id="statusBadge">INITIALIZING</div>
+        </article>
+
+        <!-- Hardware LED Status Card -->
+        <article class="card">
+            <div class="card-title">Physical LED Indicators</div>
+            <div class="led-group">
+                <div class="led-box">
+                    <div class="led-lamp green" id="ledGreen"></div>
+                    <span class="led-label">&lt; 20 cm</span>
+                    <span class="led-label" style="color: #4ade80;">GREEN</span>
+                </div>
+                <div class="led-box">
+                    <div class="led-lamp yellow" id="ledYellow"></div>
+                    <span class="led-label">20 - 35 cm</span>
+                    <span class="led-label" style="color: #facc15;">YELLOW</span>
+                </div>
+                <div class="led-box">
+                    <div class="led-lamp red" id="ledRed"></div>
+                    <span class="led-label">&gt; 35 cm</span>
+                    <span class="led-label" style="color: #f87171;">RED</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- Network Dual-Interface Card -->
+        <article class="card" style="grid-column: 1 / -1;">
+            <div class="card-title">Network Interface Configuration (WIFI_AP_STA)</div>
+            <div class="info-list">
+                <div class="info-item">
+                    <span class="info-label">Soft Access Point (AP Mode - Laptop Access):</span>
+                    <span class="info-value" id="apSSID">Proximity_Plant_AP</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Access Point IP Address:</span>
+                    <span class="info-value" id="apIP">192.168.4.1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Station Network IP (STA Mode - Mobile Access):</span>
+                    <span class="info-value" id="staIP">Connecting...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">System Refresh Rate:</span>
+                    <span class="info-value">150 ms polling</span>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        ESP32 WROOM DA 38-Pin Firmware • LittleFS File System Dashboard
+    </footer>
+
+    <script>
+        async function fetchTelemetry() {
+            try {
+                const response = await fetch('/api/data');
+                if (!response.ok) throw new Error('API Request Failed');
+                const data = await response.json();
+
+                // Update Distance Display
+                const distEl = document.getElementById('distDisplay');
+                const gaugeEl = document.getElementById('gaugeFill');
+                const badgeEl = document.getElementById('statusBadge');
+
+                if (data.distance < 0) {
+                    distEl.innerHTML = `OUT<span class="distance-unit">RANGE</span>`;
+                    distEl.style.color = '#94a3b8';
+                    gaugeEl.style.width = '0%';
+                    badgeEl.className = 'badge badge-gray';
+                    badgeEl.textContent = 'SENSOR TIMEOUT';
+                } else {
+                    distEl.innerHTML = `${data.distance.toFixed(1)}<span class="distance-unit">cm</span>`;
+
+                    // Cap gauge at 60cm for visual feedback
+                    let fillPct = Math.min(100, Math.max(0, (data.distance / 60) * 100));
+                    gaugeEl.style.width = fillPct + '%';
+
+                    if (data.active_led === 'GREEN') {
+                        distEl.style.color = '#22c55e';
+                        gaugeEl.style.backgroundColor = '#22c55e';
+                        badgeEl.className = 'badge badge-green';
+                        badgeEl.textContent = 'SAFE RANGE (< 20cm)';
+                    } else if (data.active_led === 'YELLOW') {
+                        distEl.style.color = '#eab308';
+                        gaugeEl.style.backgroundColor = '#eab308';
+                        badgeEl.className = 'badge badge-yellow';
+                        badgeEl.textContent = 'WARNING RANGE (20-35cm)';
+                    } else if (data.active_led === 'RED') {
+                        distEl.style.color = '#ef4444';
+                        gaugeEl.style.backgroundColor = '#ef4444';
+                        badgeEl.className = 'badge badge-red';
+                        badgeEl.textContent = 'CRITICAL RANGE (> 35cm)';
+                    }
+                }
+
+                // Update Physical LED Lamp Displays
+                document.getElementById('ledGreen').classList.toggle('active', data.active_led === 'GREEN');
+                document.getElementById('ledYellow').classList.toggle('active', data.active_led === 'YELLOW');
+                document.getElementById('ledRed').classList.toggle('active', data.active_led === 'RED');
+
+                // Update Network Info
+                document.getElementById('apSSID').textContent = data.ap_ssid || 'Proximity_Plant_AP';
+                document.getElementById('apIP').textContent = data.ap_ip || '192.168.4.1';
+                document.getElementById('staIP').textContent = data.sta_ip || 'Connecting...';
+
+            } catch (err) {
+                console.error('Error fetching telemetry:', err);
+            }
+        }
+
+        // Poll API every 250 ms for live response
+        setInterval(fetchTelemetry, 250);
+        fetchTelemetry();
+    </script>
+</body>
+</html>

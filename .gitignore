@@ -60,6 +60,8 @@ scratch/
 training_logs/
 analytics/
 checkpoints/
+!/checkpoints/
+/checkpoints/*
 logs/
 
 # Logs
@@ -120,3 +122,39 @@ core/cyber_defense/incident_audit.json
 *.db
 *.sqlite
 *.sqlite3
+
+# Final release: private environments and runtime/generated artifacts
+.env.*
+!.env.example
+!.env.*.template
+.pio/
+*.tsbuildinfo
+*.tmp
+*.bak
+coverage/
+playwright-report/
+test-results/
+/bin/arduino-cli
+
+# Personal academic working material (kept locally)
+/CHAPTER*.md
+/PYPY_Chapter_*
+/PYPY_FULL_THESIS_*
+/PYPY_Full_Thesis_*
+/NEXT_TASK.md
+/thesis_assets/
+/docs/thesis*.docx
+/docs/reports/PYPY_FINAL_THESIS_*
+/docs/figures/appendix-final/
+/scripts/assemble_unimap_thesis.py
+/evaluation/methodology_hardening/FINAL_CHAPTER3_VERIFICATION.md
+
+# Small, required inference and reference-evaluation artifacts
+!/core/lstm/trained_lstm_model.pt
+!/core/gnn/trained_gnn_model.pt
+!/core/gnn/trained_stgnn_model.pt
+!/core/pinn/trained_pinn_model.pt
+!/checkpoints/ppo_self_healing.pt
+!/checkpoints/dqn_self_healing.pt
+!/checkpoints/ppo_pathogen_coevolved.pt
+!/checkpoints/ppo_immune.pt

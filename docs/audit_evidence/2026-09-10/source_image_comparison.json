@@ -1,0 +1,8 @@
+{
+  "scope": "Three selected paths only; local/container SHA-256 matched",
+  "files": {
+    "core/ai_runtime/model_service.py": "13731437a44c216daa6e17a8a4e903c660317e78edce78f57bffd5ab18ab2493",
+    "core/ai_runtime/features.py": "90289f7e11631459cff4562aafcb6d1ba68554cefc298a4efaa1ac332247036c",
+    "core/digital_twin/main.py": "f90c4f82f18d081ed517cb2fbcef7f63ca809e2acbe16ebf047701505daf4653"
+  }
+}

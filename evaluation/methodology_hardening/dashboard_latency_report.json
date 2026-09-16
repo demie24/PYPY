@@ -1,0 +1,6 @@
+{
+  "classification": "NOT_VERIFIED",
+  "reason": "Dashboard rendering timing was not captured.",
+  "deployment_dependent": true,
+  "notes": "Rendering frame rate depends on browser rendering engine, client hardware GPU/CPU allocation, and display environment."
+}

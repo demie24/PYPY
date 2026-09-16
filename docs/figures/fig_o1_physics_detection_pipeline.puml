@@ -1,0 +1,26 @@
+@startuml
+skinparam backgroundcolor #FFFFFF
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #003366
+skinparam ActivityFontColor #003366
+skinparam ActivityFontStyle bold
+
+start
+:Telemetry Data;
+:Data Validation;
+:Kirchhoff Current Law (KCL);
+:Kirchhoff Voltage Law (KVL);
+:Power Balance Verification;
+:Trust Score Calculation;
+
+if (Trust Score >= Threshold?) then (Yes)
+  :Normal Grid State;
+else (No)
+  :Suspicious / Anomaly Detected;
+  :AI Analysis;
+endif
+stop
+
+caption Figure O.1 Physics-based anomaly detection workflow.
+@enduml

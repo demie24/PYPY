@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="fig_s1" name="Grid Resilience Scoring Pipeline">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+      <mxCell id="node_attack" value="Cyberattack Event" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#003366;strokeWidth=2;fontColor=#003366;fontStyle=1;" vertex="1" parent="1">
+        <mxGeometry x="80" y="100" width="200" height="65" as="geometry" />
+      </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

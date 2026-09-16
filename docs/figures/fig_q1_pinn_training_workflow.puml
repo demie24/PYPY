@@ -1,0 +1,30 @@
+@startuml
+skinparam backgroundcolor #FFFFFF
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #003366
+skinparam ActivityFontColor #003366
+skinparam ActivityFontStyle bold
+
+start
+:Input Telemetry;
+:Encoder;
+:Latent Representation;
+:Decoder;
+:Prediction;
+partition "Loss Function Engine" {
+  fork
+    :Supervised Loss;
+  fork again
+    :KCL Constraint;
+  fork again
+    :KVL Constraint;
+  end fork
+}
+:Dynamic Weight Balancing;
+:Backpropagation;
+:Updated Model;
+stop
+
+caption Figure Q.1 Physics-Informed Neural Network training workflow.
+@enduml

@@ -23,6 +23,8 @@ class MemoryStore:
         self.latest_recommended_actions: Optional[Dict[str, Any]] = None
         self.latest_pre_rl: Optional[Dict[str, Any]] = None
         self.latest_defense: Optional[Dict[str, Any]] = None
+        # Ordered cross-topic evidence retained for reconnecting supervisor UIs.
+        self.recovery_evidence: List[Dict[str, Any]] = []
         self.latest_l6_recovery: Optional[Dict[str, Any]] = None
         self.latest_l6_adaptive_recovery: Optional[Dict[str, Any]] = None
         self.latest_l6_containment: Optional[Dict[str, Any]] = None
@@ -211,6 +213,17 @@ class MemoryStore:
 
     def update_defense(self, defense: Dict[str, Any]):
         self.latest_defense = defense
+
+    def add_recovery_evidence(self, topic: str, payload: Dict[str, Any]):
+        # One latest telemetry frame is sufficient for reconnect verification;
+        # retaining every frame would evict low-frequency approval evidence.
+        if topic in ("pypy/grid/telemetry", "grid/telemetry"):
+            self.recovery_evidence = [item for item in self.recovery_evidence if item["topic"] != topic]
+        evidence_payload = dict(payload)
+        evidence_payload.setdefault("_evidence_timestamp", int(time.time() * 1000))
+        self.recovery_evidence.append({"topic": topic, "payload": evidence_payload})
+        if len(self.recovery_evidence) > self.max_history:
+            self.recovery_evidence.pop(0)
 
     def update_l6_recovery(self, l6_recovery: Dict[str, Any]):
         self.latest_l6_recovery = l6_recovery
@@ -617,6 +630,7 @@ class MemoryStore:
             "recommended_actions": self.latest_recommended_actions,
             "pre_rl": self.latest_pre_rl,
             "defense": self.latest_defense,
+            "recovery_evidence": self.recovery_evidence,
             "l6_recovery": self.latest_l6_recovery,
             "l6_adaptive_recovery": self.latest_l6_adaptive_recovery,
             "l6_containment": self.latest_l6_containment,

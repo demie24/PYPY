@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: pypy_saas
       POSTGRES_USER: pypy_admin
-      POSTGRES_PASSWORD: pypy_db_secure_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
     ports:
       - "5432:5432"
     volumes:
@@ -57,7 +57,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
@@ -84,7 +84,7 @@ services:
     container_name: smart_grid_celery_worker
     command: celery -A workers.simulation.tasks worker --loglevel=info
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
@@ -109,7 +109,7 @@ services:
     container_name: smart_grid_celery_beat
     command: celery -A workers.billing.tasks beat --loglevel=info
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       redis:
@@ -160,6 +160,7 @@ services:
       - MQTT_PORT=1883
       - TELEMETRY_TOPIC=pypy/grid/telemetry
       - GRID_BUS_COUNT=39
+      - DEFENCE_EVALUATION_MODE=${DEFENCE_EVALUATION_MODE:-experiment_aware}
       - LOG_LEVEL=INFO
       - PYTHONPATH=/app
     depends_on:
@@ -381,6 +382,7 @@ services:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
       - TELEMETRY_TOPIC=pypy/grid/telemetry
+      - DEFENCE_EVALUATION_MODE=${DEFENCE_EVALUATION_MODE:-experiment_aware}
       - LOG_LEVEL=INFO
       - PYTHONPATH=/app
     depends_on:

@@ -1,0 +1,221 @@
+{
+  "mode": "resume",
+  "started_at": 1789241279687,
+  "baseline": {
+    "first_timestamp": 1789241280780,
+    "last_timestamp": 1789241285794,
+    "buses": 39,
+    "branches": 46,
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "attack": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "open": [
+      [
+        "L_line_0",
+        "OPEN"
+      ]
+    ],
+    "voltage_min": 0.982,
+    "voltage_max": 1.0636,
+    "headline": "GRID REQUIRES ATTENTION"
+  },
+  "closed_after_runtime_restart": true,
+  "final": {
+    "timestamp": 1789241322830,
+    "attack": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "breaker": "CLOSED",
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "headline": "VERIFYING GRID RESPONSE"
+  },
+  "topics": {
+    "grid/threat": 43,
+    "grid/ai/fusion": 86,
+    "grid/physics_validation": 43,
+    "grid/trust_scores": 43,
+    "grid/ai/recovery_policy": 39,
+    "grid/control/proposed": 1,
+    "grid/control": 1,
+    "grid/events": 2,
+    "grid/orchestrator/events": 1
+  },
+  "alerts": [],
+  "decisions": [
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789241317850,
+        "event": "APPROVAL",
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "AI_RL_PPO_DQN_CONSENSUS",
+        "reason": "Passed PPO/DQN actuator consensus, restoration sandbox, and orchestrator safety checks.",
+        "source_telemetry_id": "ui-1789241121164:1789241317816",
+        "experiment_id": "ui-1789241121164",
+        "scenario_id": null,
+        "correlation_id": "ui-1789241121164:L_line_0"
+      },
+      "received_at": 1789241318056
+    }
+  ],
+  "controls": [
+    {
+      "topic": "grid/control",
+      "payload": {
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "ORCHESTRATOR_APPROVED",
+        "original_source": "AI_RL_PPO_DQN_CONSENSUS",
+        "source_telemetry_id": "ui-1789241121164:1789241317816",
+        "experiment_id": "ui-1789241121164",
+        "scenario_id": null,
+        "correlation_id": "ui-1789241121164:L_line_0"
+      },
+      "received_at": 1789241318056
+    }
+  ],
+  "proposals": [
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "AI_RL_PPO_DQN_CONSENSUS",
+        "sandbox": {
+          "is_safe": true,
+          "solver_converged": true,
+          "finite_state": true,
+          "voltage_safe": true,
+          "thermal_safe": true,
+          "cascade_safe": true,
+          "topology_valid": true,
+          "overall_safe": true,
+          "rejection_reason": null,
+          "solver_method": "converged",
+          "timestamp": 1789241317848,
+          "violations": [],
+          "safety_score": 1,
+          "cascade_risk": 0.134974563329154,
+          "confidence": 0.5475121839758968,
+          "predicted_voltages": [
+            1.0386737271990254,
+            1.0467382773258933,
+            1.0268758434474896,
+            0.9999131612634128,
+            1.0014705231116277,
+            1.0039482948420337,
+            0.9932179600751965,
+            0.9922664096913971,
+            1.0264091911936761,
+            1.0143015551313668,
+            1.0095732537197548,
+            0.9967398805487309,
+            1.0109940874242591,
+            1.0075240883173262,
+            1.0091768501885472,
+            1.0246394218500023,
+            1.02811958952698,
+            1.026333514754934,
+            1.0472147489601658,
+            0.9894397099657375,
+            1.026415568439089,
+            1.0465406174547762,
+            1.0408568420731314,
+            1.026116796854658,
+            1.056059305268423,
+            1.0495817382473156,
+            1.033852979170212,
+            1.0487808244608319,
+            1.0489918950529666,
+            1.0499,
+            0.982,
+            0.9841,
+            0.9971999999999999,
+            1.0122999999999998,
+            1.0494,
+            1.0636,
+            1.0275,
+            1.0265,
+            1.03
+          ],
+          "predicted_loadings": {
+            "L_line_0": 0.2862204412216566,
+            "L_line_1": 0.1699267307648932,
+            "L_line_2": 0.5501962015207267,
+            "L_line_3": 0.4186566492515616,
+            "L_line_4": 0.23472357574545094,
+            "L_line_5": 0.0722804657317546,
+            "L_line_6": 0.332464036357858,
+            "L_line_7": 0.45017743413242356,
+            "L_line_8": 0.9035157124860207,
+            "L_line_9": 0.578935961874177,
+            "L_line_10": 0.7754480466583116,
+            "L_line_11": 0.5404543069990884,
+            "L_line_12": 0.3693952663097608,
+            "L_line_13": 0.20091741001486269,
+            "L_line_14": 0.1367476652164101,
+            "L_line_15": 0.5584584905377175,
+            "L_line_16": 0.5399105834519626,
+            "L_line_17": 0.5258322699357887,
+            "L_line_18": 0.09792540669800674,
+            "L_line_19": 0.5060456753224665,
+            "L_line_20": 0.3795030175186649,
+            "L_line_21": 0.7457568076529952,
+            "L_line_22": 0.54016221157717,
+            "L_line_23": 0.0817127929223087,
+            "L_line_24": 0.3218411519742828,
+            "L_line_25": 0.09611279395971552,
+            "L_line_26": 1.000385193194249,
+            "L_line_27": 0.12998085712727242,
+            "L_line_28": 0.572364361509659,
+            "L_line_29": 0.9001508959497205,
+            "L_line_30": 0.12463267337389268,
+            "L_line_31": 0.44212388639152905,
+            "L_line_32": 0.24005125986348874,
+            "L_line_33": 0.3224678003567267,
+            "L_line_34": 0.5610711773982495,
+            "L_trafo_0": 0.47163157599803845,
+            "L_trafo_1": 1.1323948383587419,
+            "L_trafo_2": 1.092340300608408,
+            "L_trafo_3": 0.07196145870283409,
+            "L_trafo_4": 0.07739692662020663,
+            "L_trafo_5": 0.28316386196328175,
+            "L_trafo_6": 1.0111204886496683,
+            "L_trafo_7": 0.8805437985553485,
+            "L_trafo_8": 1.07615756849655,
+            "L_trafo_9": 0.8580889445866469,
+            "L_trafo_10": 1.3209293537645854
+          }
+        },
+        "source_telemetry_id": "ui-1789241121164:1789241317816",
+        "experiment_id": "ui-1789241121164",
+        "scenario_id": null,
+        "correlation_id": "ui-1789241121164:L_line_0"
+      },
+      "received_at": 1789241318055
+    }
+  ],
+  "commands": [],
+  "page_errors": [],
+  "request_failures": [],
+  "websocket_closes": 0,
+  "completed_at": 1789241323166
+}

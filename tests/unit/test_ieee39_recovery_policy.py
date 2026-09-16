@@ -47,6 +47,9 @@ def test_ppo_and_dqn_emit_sandbox_gated_ieee39_recovery_intent():
     runtime = RecoveryPolicyRuntime("checkpoints/ppo_self_healing.pt", "checkpoints/dqn_self_healing.pt")
     runtime.validator.validate_action = lambda *args: {
         "is_safe": True, "violations": [], "safety_score": 1.0,
+        "solver_converged": True, "finite_state": True,
+        "voltage_safe": True, "thermal_safe": True, "cascade_safe": True,
+        "topology_valid": True, "overall_safe": True,
         "cascade_risk": 0.0, "confidence": 1.0,
         "predicted_voltages": [1.0] * 39, "predicted_loadings": {},
     }

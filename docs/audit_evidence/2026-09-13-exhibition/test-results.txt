@@ -1,0 +1,42 @@
+Runtime verification, 13 September 2026
+
+PYTHONDONTWRITEBYTECODE=1 python -m pytest -q
+876 passed, 97 warnings in 92.74s (0:01:32)
+
+dashboard: npm test
+tests/exhibitionState.test.ts: PASS
+tests/recoveryEvidence.test.ts: PASS
+2 test files, 0 failures
+
+dashboard: npm run build
+TypeScript: PASS
+Vite: 2201 modules transformed; build PASS
+dist/assets/index-CyrdZK6X.js 352.17 kB / 102.68 kB gzip
+dist/assets/index-u53EYPoq.css 142.05 kB / 27.65 kB gzip
+
+docker compose up -d --build --no-deps dashboard
+Existing Dockerfile build: PASS
+Existing dashboard container recreated and started: PASS
+Deployed JavaScript checksum matches local production build.
+
+Existing isolated Playwright suite, EXHIBITION_URL=http://localhost:3001:
+PASS: routes, refresh, sizes, attacks, STOP, rejection, recovery, stale/offline,
+command timeout, audio, fullscreen, dialog focus, attract and reduced motion.
+Desktop 1920x1080, laptop 1366x768 / 1440x900, mobile 390x844.
+No horizontal overflow; desktop/laptop no vertical document overflow.
+
+Real FDIA: START confirmed, critical GRID_DEVIATION Bus_5, trust/decision
+evidence, STOP confirmed, untampered voltage returned. No healing claim.
+Real clean breaker: OPEN, STOP, safe proposal, APPROVAL, orchestrator CLOSE,
+later canonical CLOSED/converged. No manual CLOSE or service restart.
+Long breaker scenario: re-trip and duplicate suppression observed; recovery
+initially incomplete. Existing recovery_policy restart enabled approved retry.
+This retry is operator-assisted, not uninterrupted autonomous recovery.
+
+Final real failure suite failures-1789275667742: PASS
+Gateway stop/reconnect, twin freeze/unfreeze, unconfirmed real command,
+freshness expiry, no false success, fullscreen, refresh, cleanup.
+Final state: no attack, all breakers closed, converged; zero page errors.
+
+git diff --check: PASS
+Protected source/config checksum audit: 822 files, zero changed/missing.

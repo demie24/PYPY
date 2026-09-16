@@ -1,0 +1,53 @@
+{
+  "backward_compatibility": "current_pu retained; new consumers must prefer current_ka/current_loading_pu",
+  "conversion": "current_loading_pu = current_ka / 3.0 legacy engineering capacity",
+  "finding": "current_pu is a legacy misnomer containing pandapower kA in the IEEE-39 runtime",
+  "schema_version": "pypy.current-unit-audit.v1",
+  "stages": [
+    {
+      "stage": "pandapower",
+      "unit": "kA",
+      "variable": "res_line.i_ka/res_trafo.i_hv_ka"
+    },
+    {
+      "stage": "GridACSolver",
+      "unit": "kA",
+      "variable": "line_flows.current"
+    },
+    {
+      "stage": "Digital Twin",
+      "status": "canonical",
+      "unit": "kA",
+      "variable": "current_ka"
+    },
+    {
+      "stage": "MQTT compatibility",
+      "status": "deprecated alias",
+      "unit": "kA",
+      "variable": "current_pu"
+    },
+    {
+      "stage": "MQTT normalised",
+      "unit": "per-unit of 3.0 kA legacy capacity",
+      "variable": "current_loading_pu"
+    },
+    {
+      "stage": "physics/TRUST",
+      "unit": "kA",
+      "used_as": "measurement/stability",
+      "variable": "current_ka with current_pu fallback"
+    },
+    {
+      "stage": "recovery",
+      "unit": "percent/kA",
+      "used_as": "thermal gate",
+      "variable": "capacity_pct/current_ka"
+    },
+    {
+      "stage": "training CSV",
+      "unit": "not applicable",
+      "used_as": "models derive graph flows from P/Q/V/angle",
+      "variable": "none"
+    }
+  ]
+}

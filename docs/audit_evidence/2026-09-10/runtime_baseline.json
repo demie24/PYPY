@@ -1,0 +1,3983 @@
+{
+  "grid/ai/status/ai_detection": {
+    "component": "ai_detection",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "numpy-autoencoder-ieee39",
+    "telemetry_age_seconds": 0.00035834312438964844,
+    "inference_age_seconds": 7.152557373046875e-06,
+    "inference_count": 275,
+    "last_error": null,
+    "timestamp": 1788970039540
+  },
+  "grid/ai/status/recovery_policy": {
+    "component": "recovery_policy",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "ppo+dqn-ieee39-adapter",
+    "telemetry_age_seconds": 0.03380250930786133,
+    "inference_age_seconds": 0.03194475173950195,
+    "inference_count": 275,
+    "last_error": null,
+    "timestamp": 1788970039574
+  },
+  "grid/ai/status/lstm": {
+    "component": "lstm",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "/app/core/lstm/trained_lstm_model.pt",
+    "telemetry_age_seconds": 0.0017843246459960938,
+    "inference_age_seconds": 9.059906005859375e-05,
+    "inference_count": 244,
+    "last_error": null,
+    "timestamp": 1788970039542
+  },
+  "grid/ai/status/fusion": {
+    "component": "fusion",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "calibrated-evidence-fusion-v1",
+    "telemetry_age_seconds": 0.03086566925048828,
+    "inference_age_seconds": 4.291534423828125e-06,
+    "inference_count": 419,
+    "last_error": null,
+    "timestamp": 1788970039573,
+    "calibrated": true,
+    "calibration_counts": {
+      "lstm": 200,
+      "gnn": 200,
+      "stgnn": 200,
+      "pinn": 200
+    }
+  },
+  "grid/ai/status/stgnn": {
+    "component": "stgnn",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "/app/core/gnn/trained_stgnn_model.pt",
+    "telemetry_age_seconds": 0.012817144393920898,
+    "inference_age_seconds": 9.560585021972656e-05,
+    "inference_count": 229,
+    "last_error": null,
+    "timestamp": 1788970039556
+  },
+  "grid/ai/status/gnn": {
+    "component": "gnn",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "/app/core/gnn/trained_gnn_model.pt",
+    "telemetry_age_seconds": 0.028357982635498047,
+    "inference_age_seconds": 0.00010538101196289062,
+    "inference_count": 248,
+    "last_error": null,
+    "timestamp": 1788970039572
+  },
+  "grid/ai/status/pinn": {
+    "component": "pinn",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "/app/core/pinn/trained_pinn_model.pt",
+    "telemetry_age_seconds": 0.001489400863647461,
+    "inference_age_seconds": 9.799003601074219e-05,
+    "inference_count": 248,
+    "last_error": null,
+    "timestamp": 1788970039549
+  },
+  "grid/ai/status/trust": {
+    "component": "trust",
+    "ready": true,
+    "model_loaded": true,
+    "checkpoint": "physics-rules-ieee39",
+    "telemetry_age_seconds": 0.022324323654174805,
+    "inference_age_seconds": 4.0531158447265625e-06,
+    "inference_count": 233,
+    "last_error": null,
+    "timestamp": 1788970039568
+  },
+  "pypy/grid/telemetry": {
+    "timestamp": 1788970039538,
+    "grid_name": "ieee39",
+    "solver_status": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "state": {
+      "buses": {
+        "Bus_1": {
+          "voltage_pu": 1.0386,
+          "angle_rad": -0.2384,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 98.6,
+          "Q_mvar": 44.6
+        },
+        "Bus_2": {
+          "voltage_pu": 1.0466,
+          "angle_rad": -0.1725,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_3": {
+          "voltage_pu": 1.0267,
+          "angle_rad": -0.216,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 323.42,
+          "Q_mvar": 2.87
+        },
+        "Bus_4": {
+          "voltage_pu": 0.9999,
+          "angle_rad": -0.2219,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 500.84,
+          "Q_mvar": 183.78
+        },
+        "Bus_5": {
+          "voltage_pu": 1.0014,
+          "angle_rad": -0.1965,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_6": {
+          "voltage_pu": 1.0039,
+          "angle_rad": -0.1827,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_7": {
+          "voltage_pu": 0.9932,
+          "angle_rad": -0.224,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 233.27,
+          "Q_mvar": 84.08
+        },
+        "Bus_8": {
+          "voltage_pu": 0.9923,
+          "angle_rad": -0.2342,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 522.02,
+          "Q_mvar": 176.71
+        },
+        "Bus_9": {
+          "voltage_pu": 1.0264,
+          "angle_rad": -0.249,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 6.47,
+          "Q_mvar": 0.0
+        },
+        "Bus_10": {
+          "voltage_pu": 1.0143,
+          "angle_rad": -0.1435,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_11": {
+          "voltage_pu": 1.0096,
+          "angle_rad": -0.1569,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_12": {
+          "voltage_pu": 0.997,
+          "angle_rad": -0.1579,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 8.34,
+          "Q_mvar": 87.46
+        },
+        "Bus_13": {
+          "voltage_pu": 1.011,
+          "angle_rad": -0.1568,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_14": {
+          "voltage_pu": 1.0075,
+          "angle_rad": -0.1881,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_15": {
+          "voltage_pu": 1.0092,
+          "angle_rad": -0.1989,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 318.99,
+          "Q_mvar": 153.24
+        },
+        "Bus_16": {
+          "voltage_pu": 1.0246,
+          "angle_rad": -0.1756,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 327.86,
+          "Q_mvar": 32.4
+        },
+        "Bus_17": {
+          "voltage_pu": 1.028,
+          "angle_rad": -0.195,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_18": {
+          "voltage_pu": 1.0261,
+          "angle_rad": -0.2107,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 159.64,
+          "Q_mvar": 30.8
+        },
+        "Bus_19": {
+          "voltage_pu": 1.0472,
+          "angle_rad": -0.0942,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_20": {
+          "voltage_pu": 0.9894,
+          "angle_rad": -0.1188,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 678.56,
+          "Q_mvar": 102.74
+        },
+        "Bus_21": {
+          "voltage_pu": 1.0265,
+          "angle_rad": -0.1331,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 273.06,
+          "Q_mvar": 114.24
+        },
+        "Bus_22": {
+          "voltage_pu": 1.0466,
+          "angle_rad": -0.0548,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 0.0,
+          "Q_mvar": 0.0
+        },
+        "Bus_23": {
+          "voltage_pu": 1.0409,
+          "angle_rad": -0.0583,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 248.12,
+          "Q_mvar": 84.6
+        },
+        "Bus_24": {
+          "voltage_pu": 1.0261,
+          "angle_rad": -0.1733,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 309.25,
+          "Q_mvar": 0.0
+        },
+        "Bus_25": {
+          "voltage_pu": 1.056,
+          "angle_rad": -0.1478,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 225.34,
+          "Q_mvar": 47.6
+        },
+        "Bus_26": {
+          "voltage_pu": 1.0495,
+          "angle_rad": -0.166,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 138.52,
+          "Q_mvar": 17.3
+        },
+        "Bus_27": {
+          "voltage_pu": 1.0338,
+          "angle_rad": -0.1996,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 279.38,
+          "Q_mvar": 75.36
+        },
+        "Bus_28": {
+          "voltage_pu": 1.0488,
+          "angle_rad": -0.1046,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 205.84,
+          "Q_mvar": 27.55
+        },
+        "Bus_29": {
+          "voltage_pu": 1.0491,
+          "angle_rad": -0.0565,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.04,
+          "P_mw": 284.02,
+          "Q_mvar": 26.99
+        },
+        "Bus_30": {
+          "voltage_pu": 1.0499,
+          "angle_rad": -0.1303,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -250.0,
+          "Q_mvar": -172.38
+        },
+        "Bus_31": {
+          "voltage_pu": 0.982,
+          "angle_rad": 0.0,
+          "is_load": true,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": 9.74,
+          "Q_mvar": 5.38
+        },
+        "Bus_32": {
+          "voltage_pu": 0.9841,
+          "angle_rad": -0.0036,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -650.0,
+          "Q_mvar": -223.23
+        },
+        "Bus_33": {
+          "voltage_pu": 0.9972,
+          "angle_rad": -0.003,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -632.0,
+          "Q_mvar": -127.31
+        },
+        "Bus_34": {
+          "voltage_pu": 1.0123,
+          "angle_rad": -0.0282,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -508.0,
+          "Q_mvar": -175.34
+        },
+        "Bus_35": {
+          "voltage_pu": 1.0494,
+          "angle_rad": 0.032,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -650.0,
+          "Q_mvar": -236.17
+        },
+        "Bus_36": {
+          "voltage_pu": 1.0636,
+          "angle_rad": 0.0792,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -560.0,
+          "Q_mvar": -116.86
+        },
+        "Bus_37": {
+          "voltage_pu": 1.0275,
+          "angle_rad": -0.0293,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -540.0,
+          "Q_mvar": -5.9
+        },
+        "Bus_38": {
+          "voltage_pu": 1.0265,
+          "angle_rad": 0.0669,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": -830.0,
+          "Q_mvar": -28.78
+        },
+        "Bus_39": {
+          "voltage_pu": 1.03,
+          "angle_rad": -0.2559,
+          "is_load": true,
+          "is_gen": true,
+          "frequency_hz": 60.04,
+          "P_mw": 1104.16,
+          "Q_mvar": 250.26
+        }
+      },
+      "lines": {
+        "L_line_0": {
+          "current_ka": 0.2873,
+          "current_loading_pu": 0.09575,
+          "current_pu": 0.2873,
+          "current_amp": 143.62,
+          "P_mw": -174.3,
+          "Q_mvar": -37.41,
+          "capacity_pct": 9.5,
+          "overcurrent": false
+        },
+        "L_line_1": {
+          "current_ka": 0.1691,
+          "current_loading_pu": 0.056352,
+          "current_pu": 0.1691,
+          "current_amp": 84.53,
+          "P_mw": 75.69,
+          "Q_mvar": -7.19,
+          "capacity_pct": 5.7,
+          "overcurrent": false
+        },
+        "L_line_2": {
+          "current_ka": 0.5514,
+          "current_loading_pu": 0.183784,
+          "current_pu": 0.5514,
+          "current_amp": 275.67,
+          "P_mw": 319.5,
+          "Q_mvar": 103.27,
+          "capacity_pct": 18.4,
+          "overcurrent": false
+        },
+        "L_line_3": {
+          "current_ka": 0.4207,
+          "current_loading_pu": 0.140237,
+          "current_pu": 0.4207,
+          "current_amp": 210.35,
+          "P_mw": -244.79,
+          "Q_mvar": 80.93,
+          "capacity_pct": 14.0,
+          "overcurrent": false
+        },
+        "L_line_4": {
+          "current_ka": 0.2332,
+          "current_loading_pu": 0.077731,
+          "current_pu": 0.2332,
+          "current_amp": 116.59,
+          "P_mw": 36.25,
+          "Q_mvar": 115.37,
+          "capacity_pct": 7.8,
+          "overcurrent": false
+        },
+        "L_line_5": {
+          "current_ka": 0.0745,
+          "current_loading_pu": 0.02484,
+          "current_pu": 0.0745,
+          "current_amp": 37.26,
+          "P_mw": -41.53,
+          "Q_mvar": -3.3,
+          "capacity_pct": 2.5,
+          "overcurrent": false
+        },
+        "L_line_6": {
+          "current_ka": 0.3323,
+          "current_loading_pu": 0.110762,
+          "current_pu": 0.3323,
+          "current_amp": 166.15,
+          "P_mw": -198.47,
+          "Q_mvar": -4.15,
+          "capacity_pct": 11.1,
+          "overcurrent": false
+        },
+        "L_line_7": {
+          "current_ka": 0.4521,
+          "current_loading_pu": 0.150692,
+          "current_pu": 0.4521,
+          "current_amp": 226.04,
+          "P_mw": -266.33,
+          "Q_mvar": -45.05,
+          "capacity_pct": 15.0,
+          "overcurrent": false
+        },
+        "L_line_8": {
+          "current_ka": 0.9033,
+          "current_loading_pu": 0.301078,
+          "current_pu": 0.9033,
+          "current_amp": 451.62,
+          "P_mw": -537.94,
+          "Q_mvar": -52.86,
+          "capacity_pct": 30.1,
+          "overcurrent": false
+        },
+        "L_line_9": {
+          "current_ka": 0.5788,
+          "current_loading_pu": 0.192946,
+          "current_pu": 0.5788,
+          "current_amp": 289.42,
+          "P_mw": 339.14,
+          "Q_mvar": 57.11,
+          "capacity_pct": 19.3,
+          "overcurrent": false
+        },
+        "L_line_10": {
+          "current_ka": 0.7752,
+          "current_loading_pu": 0.258394,
+          "current_pu": 0.7752,
+          "current_amp": 387.59,
+          "P_mw": 453.82,
+          "Q_mvar": 91.27,
+          "capacity_pct": 25.8,
+          "overcurrent": false
+        },
+        "L_line_11": {
+          "current_ka": 0.5429,
+          "current_loading_pu": 0.180974,
+          "current_pu": 0.5429,
+          "current_amp": 271.46,
+          "P_mw": -322.64,
+          "Q_mvar": -44.61,
+          "capacity_pct": 18.2,
+          "overcurrent": false
+        },
+        "L_line_12": {
+          "current_ka": 0.3696,
+          "current_loading_pu": 0.123185,
+          "current_pu": 0.3696,
+          "current_amp": 184.78,
+          "P_mw": 219.28,
+          "Q_mvar": -1.2,
+          "capacity_pct": 12.3,
+          "overcurrent": false
+        },
+        "L_line_13": {
+          "current_ka": 0.2012,
+          "current_loading_pu": 0.06708,
+          "current_pu": 0.2012,
+          "current_amp": 100.62,
+          "P_mw": 35.26,
+          "Q_mvar": -113.99,
+          "capacity_pct": 6.7,
+          "overcurrent": false
+        },
+        "L_line_14": {
+          "current_ka": 0.137,
+          "current_loading_pu": 0.045668,
+          "current_pu": 0.137,
+          "current_amp": 68.5,
+          "P_mw": 28.54,
+          "Q_mvar": -79.03,
+          "capacity_pct": 4.6,
+          "overcurrent": false
+        },
+        "L_line_15": {
+          "current_ka": 0.5594,
+          "current_loading_pu": 0.186468,
+          "current_pu": 0.5594,
+          "current_amp": 279.7,
+          "P_mw": 327.81,
+          "Q_mvar": 79.35,
+          "capacity_pct": 18.6,
+          "overcurrent": false
+        },
+        "L_line_16": {
+          "current_ka": 0.5388,
+          "current_loading_pu": 0.179612,
+          "current_pu": 0.5388,
+          "current_amp": 269.42,
+          "P_mw": 322.19,
+          "Q_mvar": 46.34,
+          "capacity_pct": 17.9,
+          "overcurrent": false
+        },
+        "L_line_17": {
+          "current_ka": 0.5259,
+          "current_loading_pu": 0.175322,
+          "current_pu": 0.5259,
+          "current_amp": 262.99,
+          "P_mw": 317.36,
+          "Q_mvar": 3.11,
+          "capacity_pct": 17.5,
+          "overcurrent": false
+        },
+        "L_line_18": {
+          "current_ka": 0.096,
+          "current_loading_pu": 0.032019,
+          "current_pu": 0.096,
+          "current_amp": 48.03,
+          "P_mw": 49.57,
+          "Q_mvar": -29.77,
+          "capacity_pct": 3.2,
+          "overcurrent": false
+        },
+        "L_line_19": {
+          "current_ka": 0.5085,
+          "current_loading_pu": 0.169513,
+          "current_pu": 0.5085,
+          "current_amp": 254.27,
+          "P_mw": -269.46,
+          "Q_mvar": -146.36,
+          "capacity_pct": 16.9,
+          "overcurrent": false
+        },
+        "L_line_20": {
+          "current_ka": 0.3831,
+          "current_loading_pu": 0.127691,
+          "current_pu": 0.3831,
+          "current_amp": 191.54,
+          "P_mw": 226.28,
+          "Q_mvar": -61.7,
+          "capacity_pct": 12.8,
+          "overcurrent": false
+        },
+        "L_line_21": {
+          "current_ka": 0.7505,
+          "current_loading_pu": 0.250154,
+          "current_pu": 0.7505,
+          "current_amp": 375.24,
+          "P_mw": -452.58,
+          "Q_mvar": -79.37,
+          "capacity_pct": 25.0,
+          "overcurrent": false
+        },
+        "L_line_22": {
+          "current_ka": 0.5408,
+          "current_loading_pu": 0.180245,
+          "current_pu": 0.5408,
+          "current_amp": 270.37,
+          "P_mw": -330.65,
+          "Q_mvar": -1.21,
+          "capacity_pct": 18.0,
+          "overcurrent": false
+        },
+        "L_line_23": {
+          "current_ka": 0.0807,
+          "current_loading_pu": 0.026893,
+          "current_pu": 0.0807,
+          "current_amp": 40.34,
+          "P_mw": -41.19,
+          "Q_mvar": -27.25,
+          "capacity_pct": 2.7,
+          "overcurrent": false
+        },
+        "L_line_24": {
+          "current_ka": 0.3287,
+          "current_loading_pu": 0.109563,
+          "current_pu": 0.3287,
+          "current_amp": 164.34,
+          "P_mw": 201.46,
+          "Q_mvar": 1.04,
+          "capacity_pct": 10.9,
+          "overcurrent": false
+        },
+        "L_line_25": {
+          "current_ka": 0.0954,
+          "current_loading_pu": 0.031778,
+          "current_pu": 0.0954,
+          "current_amp": 47.67,
+          "P_mw": 24.46,
+          "Q_mvar": -53.2,
+          "capacity_pct": 3.2,
+          "overcurrent": false
+        },
+        "L_line_26": {
+          "current_ka": 0.9997,
+          "current_loading_pu": 0.333232,
+          "current_pu": 0.9997,
+          "current_amp": 499.85,
+          "P_mw": -604.55,
+          "Q_mvar": -102.73,
+          "capacity_pct": 33.4,
+          "overcurrent": false
+        },
+        "L_line_27": {
+          "current_ka": 0.1303,
+          "current_loading_pu": 0.04342,
+          "current_pu": 0.1303,
+          "current_amp": 65.13,
+          "P_mw": 42.62,
+          "Q_mvar": 49.28,
+          "capacity_pct": 4.3,
+          "overcurrent": false
+        },
+        "L_line_28": {
+          "current_ka": 0.5725,
+          "current_loading_pu": 0.190836,
+          "current_pu": 0.5725,
+          "current_amp": 286.26,
+          "P_mw": 353.02,
+          "Q_mvar": 22.49,
+          "capacity_pct": 19.1,
+          "overcurrent": false
+        },
+        "L_line_29": {
+          "current_ka": 0.9001,
+          "current_loading_pu": 0.300029,
+          "current_pu": 0.9001,
+          "current_amp": 450.04,
+          "P_mw": -558.55,
+          "Q_mvar": -38.16,
+          "capacity_pct": 30.0,
+          "overcurrent": false
+        },
+        "L_line_30": {
+          "current_ka": 0.1231,
+          "current_loading_pu": 0.041042,
+          "current_pu": 0.1231,
+          "current_amp": 61.56,
+          "P_mw": 63.89,
+          "Q_mvar": -14.04,
+          "capacity_pct": 4.2,
+          "overcurrent": false
+        },
+        "L_line_31": {
+          "current_ka": 0.4402,
+          "current_loading_pu": 0.146749,
+          "current_pu": 0.4402,
+          "current_amp": 220.12,
+          "P_mw": 255.89,
+          "Q_mvar": 78.56,
+          "capacity_pct": 14.7,
+          "overcurrent": false
+        },
+        "L_line_32": {
+          "current_ka": 0.241,
+          "current_loading_pu": 0.080339,
+          "current_pu": 0.241,
+          "current_amp": 120.51,
+          "P_mw": -140.69,
+          "Q_mvar": -24.29,
+          "capacity_pct": 8.0,
+          "overcurrent": false
+        },
+        "L_line_33": {
+          "current_ka": 0.3228,
+          "current_loading_pu": 0.107609,
+          "current_pu": 0.3228,
+          "current_amp": 161.41,
+          "P_mw": -189.96,
+          "Q_mvar": -28.01,
+          "capacity_pct": 10.8,
+          "overcurrent": false
+        },
+        "L_line_34": {
+          "current_ka": 0.5595,
+          "current_loading_pu": 0.186505,
+          "current_pu": 0.5595,
+          "current_amp": 279.76,
+          "P_mw": -347.33,
+          "Q_mvar": 25.36,
+          "capacity_pct": 18.7,
+          "overcurrent": false
+        },
+        "L_trafo_0": {
+          "current_ka": 0.4722,
+          "current_loading_pu": 0.157408,
+          "current_pu": 0.4722,
+          "current_amp": 236.11,
+          "P_mw": -250.0,
+          "Q_mvar": -157.24,
+          "capacity_pct": 15.7,
+          "overcurrent": false
+        },
+        "L_trafo_1": {
+          "current_ka": 1.1293,
+          "current_loading_pu": 0.376458,
+          "current_pu": 1.1293,
+          "current_amp": 564.69,
+          "P_mw": -669.7,
+          "Q_mvar": -102.73,
+          "capacity_pct": 37.6,
+          "overcurrent": false
+        },
+        "L_trafo_2": {
+          "current_ka": 1.0922,
+          "current_loading_pu": 0.364081,
+          "current_pu": 1.0922,
+          "current_amp": 546.13,
+          "P_mw": -650.0,
+          "Q_mvar": -125.67,
+          "capacity_pct": 36.4,
+          "overcurrent": false
+        },
+        "L_trafo_3": {
+          "current_ka": 0.071,
+          "current_loading_pu": 0.023675,
+          "current_pu": 0.071,
+          "current_amp": 35.51,
+          "P_mw": -3.96,
+          "Q_mvar": -42.12,
+          "capacity_pct": 2.4,
+          "overcurrent": false
+        },
+        "L_trafo_4": {
+          "current_ka": 0.0765,
+          "current_loading_pu": 0.025489,
+          "current_pu": 0.0765,
+          "current_amp": 38.23,
+          "P_mw": -4.37,
+          "Q_mvar": -45.34,
+          "capacity_pct": 2.5,
+          "overcurrent": false
+        },
+        "L_trafo_5": {
+          "current_ka": 0.2784,
+          "current_loading_pu": 0.092796,
+          "current_pu": 0.2784,
+          "current_amp": 139.19,
+          "P_mw": 173.32,
+          "Q_mvar": -17.57,
+          "capacity_pct": 9.3,
+          "overcurrent": false
+        },
+        "L_trafo_6": {
+          "current_ka": 1.0111,
+          "current_loading_pu": 0.337044,
+          "current_pu": 1.0111,
+          "current_amp": 505.57,
+          "P_mw": -629.07,
+          "Q_mvar": -67.96,
+          "capacity_pct": 33.7,
+          "overcurrent": false
+        },
+        "L_trafo_7": {
+          "current_ka": 0.8805,
+          "current_loading_pu": 0.293496,
+          "current_pu": 0.8805,
+          "current_amp": 440.25,
+          "P_mw": -505.46,
+          "Q_mvar": -124.6,
+          "capacity_pct": 29.4,
+          "overcurrent": false
+        },
+        "L_trafo_8": {
+          "current_ka": 1.076,
+          "current_loading_pu": 0.358653,
+          "current_pu": 1.076,
+          "current_amp": 537.98,
+          "P_mw": -650.0,
+          "Q_mvar": -174.06,
+          "capacity_pct": 35.9,
+          "overcurrent": false
+        },
+        "L_trafo_9": {
+          "current_ka": 0.8581,
+          "current_loading_pu": 0.286031,
+          "current_pu": 0.8581,
+          "current_amp": 429.05,
+          "P_mw": -538.34,
+          "Q_mvar": 58.19,
+          "capacity_pct": 28.6,
+          "overcurrent": false
+        },
+        "L_trafo_10": {
+          "current_ka": 1.3209,
+          "current_loading_pu": 0.440307,
+          "current_pu": 1.3209,
+          "current_amp": 660.46,
+          "P_mw": -824.76,
+          "Q_mvar": 73.34,
+          "capacity_pct": 44.0,
+          "overcurrent": false
+        }
+      },
+      "breakers": {
+        "L_line_0": "CLOSED",
+        "L_line_1": "CLOSED",
+        "L_line_2": "CLOSED",
+        "L_line_3": "CLOSED",
+        "L_line_4": "CLOSED",
+        "L_line_5": "CLOSED",
+        "L_line_6": "CLOSED",
+        "L_line_7": "CLOSED",
+        "L_line_8": "CLOSED",
+        "L_line_9": "CLOSED",
+        "L_line_10": "CLOSED",
+        "L_line_11": "CLOSED",
+        "L_line_12": "CLOSED",
+        "L_line_13": "CLOSED",
+        "L_line_14": "CLOSED",
+        "L_line_15": "CLOSED",
+        "L_line_16": "CLOSED",
+        "L_line_17": "CLOSED",
+        "L_line_18": "CLOSED",
+        "L_line_19": "CLOSED",
+        "L_line_20": "CLOSED",
+        "L_line_21": "CLOSED",
+        "L_line_22": "CLOSED",
+        "L_line_23": "CLOSED",
+        "L_line_24": "CLOSED",
+        "L_line_25": "CLOSED",
+        "L_line_26": "CLOSED",
+        "L_line_27": "CLOSED",
+        "L_line_28": "CLOSED",
+        "L_line_29": "CLOSED",
+        "L_line_30": "CLOSED",
+        "L_line_31": "CLOSED",
+        "L_line_32": "CLOSED",
+        "L_line_33": "CLOSED",
+        "L_line_34": "CLOSED",
+        "L_trafo_0": "CLOSED",
+        "L_trafo_1": "CLOSED",
+        "L_trafo_2": "CLOSED",
+        "L_trafo_3": "CLOSED",
+        "L_trafo_4": "CLOSED",
+        "L_trafo_5": "CLOSED",
+        "L_trafo_6": "CLOSED",
+        "L_trafo_7": "CLOSED",
+        "L_trafo_8": "CLOSED",
+        "L_trafo_9": "CLOSED",
+        "L_trafo_10": "CLOSED"
+      },
+      "generators_online": {
+        "Bus_30": true,
+        "Bus_32": true,
+        "Bus_33": true,
+        "Bus_34": true,
+        "Bus_35": true,
+        "Bus_36": true,
+        "Bus_37": true,
+        "Bus_38": true,
+        "Bus_39": true,
+        "Bus_31": true
+      }
+    },
+    "experiment_id": null,
+    "scenario_id": null,
+    "telemetry_id": "runtime:1788970039538",
+    "correlation_id": "runtime:1788970039538",
+    "attack_status": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0.0,
+      "compromised_nodes": {},
+      "stages": []
+    }
+  },
+  "grid/threat": {
+    "evaluation_mode": "experiment_aware",
+    "timestamp": 1788970039540,
+    "source_telemetry_timestamp": 1788970039538,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "threat_score": 30,
+    "severity": "MEDIUM",
+    "confidence": 0.65,
+    "cascade_probability": 0.1,
+    "affected_node_count": 0,
+    "affected_nodes": [],
+    "propagation_risk": "LOW",
+    "recommendations": [],
+    "auto_defense_active": false,
+    "ai_evidence": {
+      "fusion_used": true,
+      "fused_risk": 0.014582,
+      "trust_used": true,
+      "trust_degradation": 1.2e-05
+    }
+  },
+  "grid/ai/fusion": {
+    "timestamp": 1788970039572,
+    "source_telemetry_timestamp": 1788970039538,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "component": "fusion",
+    "calibrated": true,
+    "calibration_policy": "nominal-converged-all-breakers-closed",
+    "fused_risk": 0.02996,
+    "confidence": 0.950814,
+    "component_evidence": {
+      "lstm": 3.99547381102483e-06,
+      "gnn": 2.1279521977835003e-06,
+      "stgnn": 0.005616788006013285,
+      "pinn": 0.11534124062571416
+    },
+    "raw_model_outputs": {
+      "lstm": 0.9999983314623933,
+      "gnn": 0.9999995085493083,
+      "stgnn": 0.3396261930465698,
+      "pinn": 1.3309879302978516
+    },
+    "baselines": {
+      "lstm": {
+        "median": 0.9999982115981538,
+        "robust_scale": 0.009999982115981538,
+        "samples": 200
+      },
+      "gnn": {
+        "median": 0.9999994447107099,
+        "robust_scale": 0.0099999944471071,
+        "samples": 200
+      },
+      "stgnn": {
+        "median": 0.3396835923194885,
+        "robust_scale": 0.0033968359231948855,
+        "samples": 200
+      },
+      "pinn": {
+        "median": 1.3205854296684265,
+        "robust_scale": 0.02829381555318832,
+        "samples": 200
+      }
+    },
+    "input_age_seconds": {
+      "lstm": 0.026955366134643555,
+      "gnn": 3.218650817871094e-05,
+      "stgnn": 0.015440225601196289,
+      "pinn": 0.022748470306396484
+    }
+  },
+  "grid/orchestrator/pipeline": {
+    "state": "MONITORING",
+    "step": 7,
+    "target": "None",
+    "timestamp": 1788970039540
+  },
+  "grid/ai_orchestrator": {
+    "timestamp": 1788970039540,
+    "global_state": "NORMAL",
+    "global_risk_level": "LOW",
+    "stability_score": 97.06,
+    "restoration_confidence": 100.0,
+    "active_subsystems_reasoning": {
+      "ai_forecaster": "Forecasting model warming up...",
+      "physics_validator": "Kirchhoff state is NORMAL. KCL Error: 0.0 MW. KVL Error: 0.0000 p.u.",
+      "trust_engine": "Telemetry channels verified healthy. Average bus trust: 100%.",
+      "flisr_state": "Grid topology nominal. Healing automation idle.",
+      "predictive_stability": "Stability Horizon: 999.0s. Collapse Prob: 0.0%. Preservation Policy: NOMINAL.",
+      "resilience_hardening": "Resilience and hardening monitors initializing..."
+    },
+    "defense_mode": "ADVISORY",
+    "active_modules": [
+      "LSTM",
+      "GNN",
+      "STGNN",
+      "PINN",
+      "FUSION",
+      "TRUST",
+      "THREAT"
+    ],
+    "dominant_decision_source": "LSTM",
+    "ai_coordination_confidence": 100.0,
+    "emergency_override_state": false,
+    "coordinated_recovery_state": "STABLE",
+    "escalation_mode": "NORMAL"
+  },
+  "grid/recommended_actions": {
+    "timestamp": 1788970039540,
+    "recommendations": []
+  },
+  "grid/l6_recovery": {
+    "timestamp": 1788970038548,
+    "state": "NORMAL",
+    "timeline": [
+      {
+        "timestamp": 1788954639989,
+        "event": "Autonomous Restoration System online. Monitoring grid state...",
+        "severity": "INFO"
+      }
+    ],
+    "action_logs": [],
+    "confidence": 90,
+    "isolated_segments": [],
+    "active_sequence": [],
+    "rollback_guard_status": {
+      "lockout_breakers": [],
+      "rollback_count": 0
+    }
+  },
+  "grid/l6_containment": {
+    "timestamp": 1788970038548,
+    "propagation_zones": [],
+    "instability_spread_risk": 0.0,
+    "isolation_boundary": []
+  },
+  "grid/l6_degraded_mode": {
+    "timestamp": 1788970038548,
+    "active_degraded_mode": false,
+    "critical_buses_secured": [
+      "Bus_5",
+      "Bus_8",
+      "Bus_6"
+    ],
+    "load_shedding_active": false,
+    "load_shed_summary": {},
+    "survival_commands": []
+  },
+  "grid/l6_adaptive_recovery": {
+    "timestamp": 1788970038548,
+    "optimization_score": 99.98,
+    "scores": {
+      "optimization_score": 99.98,
+      "voltage_stability_score": 99.86,
+      "thermal_loading_score": 100.0,
+      "restoration_speed_score": 100.0,
+      "switching_operations_score": 100.0,
+      "cascading_risk_score": 100.0,
+      "rollback_probability_score": 100.0,
+      "isolated_load_count_score": 100.0,
+      "instability_risk_score": 100.0
+    },
+    "historical_confidence": 1.0,
+    "total_successful_runs": 0,
+    "total_failed_runs": 0
+  },
+  "grid/l6_blackstart": {
+    "timestamp": 1788970038548,
+    "active_blackstart": false,
+    "blackstart_state": "UNAVAILABLE_FOR_IEEE39",
+    "step_description": "IEEE-39 blackstart sequence is not configured.",
+    "progress_percentage": 0.0
+  },
+  "grid/l6_islanding": {
+    "timestamp": 1788970038548,
+    "active_islands": [
+      {
+        "island_id": "ISLAND_1",
+        "buses": [
+          "Bus_1",
+          "Bus_2",
+          "Bus_39",
+          "Bus_3",
+          "Bus_25",
+          "Bus_30",
+          "Bus_9",
+          "Bus_4",
+          "Bus_18",
+          "Bus_26",
+          "Bus_37",
+          "Bus_8",
+          "Bus_5",
+          "Bus_14",
+          "Bus_17",
+          "Bus_27",
+          "Bus_28",
+          "Bus_29",
+          "Bus_7",
+          "Bus_6",
+          "Bus_13",
+          "Bus_15",
+          "Bus_16",
+          "Bus_38",
+          "Bus_11",
+          "Bus_31",
+          "Bus_10",
+          "Bus_12",
+          "Bus_19",
+          "Bus_21",
+          "Bus_24",
+          "Bus_32",
+          "Bus_20",
+          "Bus_33",
+          "Bus_22",
+          "Bus_23",
+          "Bus_34",
+          "Bus_35",
+          "Bus_36"
+        ],
+        "generators": [
+          "Bus_39",
+          "Bus_30",
+          "Bus_37",
+          "Bus_38",
+          "Bus_31",
+          "Bus_32",
+          "Bus_33",
+          "Bus_34",
+          "Bus_35",
+          "Bus_36"
+        ],
+        "loads": [
+          "Bus_1",
+          "Bus_39",
+          "Bus_3",
+          "Bus_25",
+          "Bus_9",
+          "Bus_4",
+          "Bus_18",
+          "Bus_26",
+          "Bus_8",
+          "Bus_27",
+          "Bus_28",
+          "Bus_29",
+          "Bus_7",
+          "Bus_15",
+          "Bus_16",
+          "Bus_31",
+          "Bus_12",
+          "Bus_21",
+          "Bus_24",
+          "Bus_20",
+          "Bus_23"
+        ],
+        "has_generation": true,
+        "is_islanded": false,
+        "generation_mw": -3505.42,
+        "load_mw": 6253.779999999999,
+        "is_deficient": true,
+        "balance_ratio": -0.56,
+        "is_unstable": false,
+        "reasons": [],
+        "survival_mode": "SURVIVAL_CRITICAL"
+      }
+    ],
+    "unstable_zones": [],
+    "healthy_zones": [
+      {
+        "island_id": "ISLAND_1",
+        "buses": [
+          "Bus_1",
+          "Bus_2",
+          "Bus_39",
+          "Bus_3",
+          "Bus_25",
+          "Bus_30",
+          "Bus_9",
+          "Bus_4",
+          "Bus_18",
+          "Bus_26",
+          "Bus_37",
+          "Bus_8",
+          "Bus_5",
+          "Bus_14",
+          "Bus_17",
+          "Bus_27",
+          "Bus_28",
+          "Bus_29",
+          "Bus_7",
+          "Bus_6",
+          "Bus_13",
+          "Bus_15",
+          "Bus_16",
+          "Bus_38",
+          "Bus_11",
+          "Bus_31",
+          "Bus_10",
+          "Bus_12",
+          "Bus_19",
+          "Bus_21",
+          "Bus_24",
+          "Bus_32",
+          "Bus_20",
+          "Bus_33",
+          "Bus_22",
+          "Bus_23",
+          "Bus_34",
+          "Bus_35",
+          "Bus_36"
+        ],
+        "generators": [
+          "Bus_39",
+          "Bus_30",
+          "Bus_37",
+          "Bus_38",
+          "Bus_31",
+          "Bus_32",
+          "Bus_33",
+          "Bus_34",
+          "Bus_35",
+          "Bus_36"
+        ],
+        "loads": [
+          "Bus_1",
+          "Bus_39",
+          "Bus_3",
+          "Bus_25",
+          "Bus_9",
+          "Bus_4",
+          "Bus_18",
+          "Bus_26",
+          "Bus_8",
+          "Bus_27",
+          "Bus_28",
+          "Bus_29",
+          "Bus_7",
+          "Bus_15",
+          "Bus_16",
+          "Bus_31",
+          "Bus_12",
+          "Bus_21",
+          "Bus_24",
+          "Bus_20",
+          "Bus_23"
+        ],
+        "has_generation": true,
+        "is_islanded": false,
+        "generation_mw": -3505.42,
+        "load_mw": 6253.779999999999,
+        "is_deficient": true,
+        "balance_ratio": -0.56,
+        "is_unstable": false,
+        "reasons": [],
+        "survival_mode": "SURVIVAL_CRITICAL"
+      }
+    ],
+    "splitting_commands": []
+  },
+  "grid/l6_balancing": {
+    "timestamp": 1788970038548,
+    "frequencies": {},
+    "mismatches": {},
+    "balancing_commands": []
+  },
+  "grid/l6_survival": {
+    "timestamp": 1788970038548,
+    "survivability_score": 98.69,
+    "load_retention_pct": 100.0,
+    "strategy_ranking": [
+      {
+        "strategy": "NOMINAL",
+        "score": 100.0,
+        "reason": "Grid operations stable. Maintain configuration."
+      },
+      {
+        "strategy": "DEGRADED",
+        "score": 60.0,
+        "reason": "Nominal state. Degraded load shedding is suboptimal."
+      },
+      {
+        "strategy": "ISLANDING",
+        "score": 50.0,
+        "reason": "Nominal state. Splitting would isolate healthy nodes unnecessarily."
+      },
+      {
+        "strategy": "BLACKSTART",
+        "score": 0.0,
+        "reason": "Grid active. Blackstart not required."
+      }
+    ]
+  },
+  "grid/l6_predictive_stability": {
+    "timestamp": 1788970038549,
+    "collapse_probability": 0.0,
+    "survivability_horizon": 999.0,
+    "predicted_overloads": [],
+    "propagation_trajectory": []
+  },
+  "grid/l6_proactive_actions": {
+    "timestamp": 1788970038549,
+    "proactive_rerouting_active": false,
+    "preemptive_isolation_active": false,
+    "proactive_actions": [],
+    "side_effects": {}
+  },
+  "grid/l6_self_preservation": {
+    "timestamp": 1788970038549,
+    "active_policy": "NOMINAL",
+    "preservation_rules": [
+      "Longevity Priority: Nominal operations. Suppress overrides."
+    ],
+    "proactive_commands": []
+  },
+  "grid/l6_survival_forecast": {
+    "timestamp": 1788970038549,
+    "do_nothing_curve": [
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0
+    ],
+    "mitigated_curve": [
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0,
+      88.0
+    ],
+    "recovery_success_prob": 95.0,
+    "degraded_operation_duration": 999.0
+  },
+  "grid/l6_agents": {
+    "timestamp": 1788970038549,
+    "agents": [
+      {
+        "agent_name": "CyberDefenseAgent",
+        "confidence": 1.0,
+        "trust": 1.0,
+        "weight": 1.0
+      },
+      {
+        "agent_name": "RestorationAgent",
+        "confidence": 1.0,
+        "trust": 1.0,
+        "weight": 1.0
+      },
+      {
+        "agent_name": "StabilizationAgent",
+        "confidence": 0.94,
+        "trust": 1.0,
+        "weight": 1.0
+      },
+      {
+        "agent_name": "SurvivalAgent",
+        "confidence": 1.0,
+        "trust": 1.0,
+        "weight": 1.0
+      },
+      {
+        "agent_name": "PredictionAgent",
+        "confidence": 0.95,
+        "trust": 1.0,
+        "weight": 1.0
+      }
+    ],
+    "proposals": []
+  },
+  "grid/l6_agent_consensus": {
+    "timestamp": 1788970038549,
+    "consensus_results": []
+  },
+  "grid/l6_agent_conflicts": {
+    "timestamp": 1788970038549,
+    "conflicts": []
+  },
+  "grid/l6_distributed_state": {
+    "timestamp": 1788970038549,
+    "distributed_state": "STANDBY",
+    "active_coordination_mode": "NOMINAL"
+  },
+  "grid/l6_agent_confidence": {
+    "timestamp": 1788970038549,
+    "confidences": {
+      "CyberDefenseAgent": 1.0,
+      "RestorationAgent": 1.0,
+      "StabilizationAgent": 0.94,
+      "SurvivalAgent": 1.0,
+      "PredictionAgent": 0.95
+    }
+  },
+  "grid/ai/pinn": {
+    "reconstruction_mse": 9293.0458984375,
+    "physics_loss": 1.3309879302978516,
+    "physics_consistency_score": 0.264216105223534,
+    "physics_violation": true,
+    "max_voltage_violation_pu": 0.0,
+    "loss_breakdown": {
+      "loss_volt_bound": 0.0,
+      "loss_angle_bound": 0.0,
+      "loss_bal_P": 0.5587995052337646,
+      "loss_bal_Q": 0.7721884250640869,
+      "loss_power_balance": 1.3309879302978516,
+      "total_physics_loss": 1.3309879302978516
+    },
+    "timestamp": 1788970039549,
+    "source_telemetry_timestamp": 1788970039538.0,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "component": "pinn",
+    "model_loaded": true,
+    "checkpoint": "/app/core/pinn/trained_pinn_model.pt",
+    "inference_latency_ms": 0.978
+  },
+  "grid/ai/recovery_policy": {
+    "timestamp": 1788970039542,
+    "component": "recovery_policy",
+    "grid_name": "ieee39",
+    "coverage": {
+      "buses": 39,
+      "branches": 46,
+      "pooling_bins": 9
+    },
+    "compatibility_adapter": true,
+    "retrained_on_ieee39": false,
+    "model_decisions": {
+      "ppo": {
+        "model": "ppo",
+        "action_id": 0,
+        "action": "NO_ACTION",
+        "target": "SYSTEM",
+        "score": -0.07902058959007263
+      },
+      "dqn": {
+        "model": "dqn",
+        "action_id": 0,
+        "action": "NO_ACTION",
+        "target": "SYSTEM",
+        "score": -0.06230158358812332
+      }
+    },
+    "consensus": false,
+    "target": "SYSTEM",
+    "sandbox": null,
+    "source_telemetry_timestamp": 1788970039538,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "topology_stable_seconds": 274.1156708339986,
+    "actuator_guard_satisfied": true
+  },
+  "grid/ai/recovery/ppo": {
+    "model": "ppo",
+    "action_id": 0,
+    "action": "NO_ACTION",
+    "target": "SYSTEM",
+    "score": -0.07902058959007263,
+    "source_telemetry_timestamp": 1788970039538,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538"
+  },
+  "grid/physics_validation": {
+    "timestamp": 1788970039568,
+    "source_telemetry_timestamp": 1788970039538,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "physics_anomaly_score": 0,
+    "kcl_error": 0.0,
+    "kvl_error": 0.0,
+    "physics_state": "NORMAL",
+    "impossible_state": false,
+    "impossible_violations": [],
+    "ai_threat_prob": 0.014582,
+    "global_grid_confidence": 98.54,
+    "final_operational_confidence_index": 98.54,
+    "trusted_state": true,
+    "degraded_observability": false
+  },
+  "grid/trust_scores": {
+    "timestamp": 1788970039568,
+    "source_telemetry_timestamp": 1788970039538,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "bus_trust": {
+      "Bus_1": 100.0,
+      "Bus_2": 100.0,
+      "Bus_3": 100.0,
+      "Bus_4": 100.0,
+      "Bus_5": 100.0,
+      "Bus_6": 100.0,
+      "Bus_7": 100.0,
+      "Bus_8": 100.0,
+      "Bus_9": 100.0,
+      "Bus_10": 100.0,
+      "Bus_11": 100.0,
+      "Bus_12": 100.0,
+      "Bus_13": 100.0,
+      "Bus_14": 100.0,
+      "Bus_15": 100.0,
+      "Bus_16": 100.0,
+      "Bus_17": 100.0,
+      "Bus_18": 100.0,
+      "Bus_19": 100.0,
+      "Bus_20": 100.0,
+      "Bus_21": 100.0,
+      "Bus_22": 100.0,
+      "Bus_23": 100.0,
+      "Bus_24": 100.0,
+      "Bus_25": 100.0,
+      "Bus_26": 100.0,
+      "Bus_27": 100.0,
+      "Bus_28": 100.0,
+      "Bus_29": 100.0,
+      "Bus_30": 100.0,
+      "Bus_31": 100.0,
+      "Bus_32": 100.0,
+      "Bus_33": 100.0,
+      "Bus_34": 100.0,
+      "Bus_35": 100.0,
+      "Bus_36": 100.0,
+      "Bus_37": 100.0,
+      "Bus_38": 100.0,
+      "Bus_39": 100.0
+    },
+    "line_trust": {
+      "L_line_0": 100.0,
+      "L_line_1": 100.0,
+      "L_line_2": 100.0,
+      "L_line_3": 100.0,
+      "L_line_4": 100.0,
+      "L_line_5": 100.0,
+      "L_line_6": 100.0,
+      "L_line_7": 100.0,
+      "L_line_8": 100.0,
+      "L_line_9": 100.0,
+      "L_line_10": 100.0,
+      "L_line_11": 100.0,
+      "L_line_12": 100.0,
+      "L_line_13": 100.0,
+      "L_line_14": 100.0,
+      "L_line_15": 100.0,
+      "L_line_16": 100.0,
+      "L_line_17": 100.0,
+      "L_line_18": 100.0,
+      "L_line_19": 100.0,
+      "L_line_20": 100.0,
+      "L_line_21": 100.0,
+      "L_line_22": 100.0,
+      "L_line_23": 100.0,
+      "L_line_24": 100.0,
+      "L_line_25": 100.0,
+      "L_line_26": 100.0,
+      "L_line_27": 100.0,
+      "L_line_28": 100.0,
+      "L_line_29": 100.0,
+      "L_line_30": 100.0,
+      "L_line_31": 100.0,
+      "L_line_32": 100.0,
+      "L_line_33": 100.0,
+      "L_line_34": 100.0,
+      "L_trafo_0": 100.0,
+      "L_trafo_1": 99.9,
+      "L_trafo_2": 100.0,
+      "L_trafo_3": 100.0,
+      "L_trafo_4": 100.0,
+      "L_trafo_5": 100.0,
+      "L_trafo_6": 100.0,
+      "L_trafo_7": 100.0,
+      "L_trafo_8": 100.0,
+      "L_trafo_9": 100.0,
+      "L_trafo_10": 100.0
+    },
+    "details": {
+      "Bus_1": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_2": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_3": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_4": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_5": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_6": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_7": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_8": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_9": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_10": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_11": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_12": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_13": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_14": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_15": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_16": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_17": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_18": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_19": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_20": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_21": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_22": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_23": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_24": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_25": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_26": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_27": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_28": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_29": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_30": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_31": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_32": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_33": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_34": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_35": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_36": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_37": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_38": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "Bus_39": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_0": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_1": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_2": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_3": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_4": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_5": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_6": {
+        "trust_score": 99.99,
+        "stability_score": 99.99,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_7": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_8": {
+        "trust_score": 99.99,
+        "stability_score": 99.99,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_9": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_10": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_11": {
+        "trust_score": 99.99,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_12": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_13": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_14": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_15": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_16": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_17": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_18": {
+        "trust_score": 99.99,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_19": {
+        "trust_score": 99.99,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_20": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_21": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_22": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_23": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_24": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_25": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_26": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_27": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_28": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_29": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_30": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_31": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_32": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_33": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_line_34": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_0": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_1": {
+        "trust_score": 99.94,
+        "stability_score": 99.95,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_2": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_3": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_4": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_5": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_6": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_7": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_8": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_9": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      },
+      "L_trafo_10": {
+        "trust_score": 100.0,
+        "stability_score": 100.0,
+        "physics_consistency_score": 100.0,
+        "cyber_suspicion_score": 0.0,
+        "anomaly_frequency": 0.0
+      }
+    }
+  },
+  "grid/adaptive_filter": {
+    "timestamp": 1788970039568,
+    "filter_actions": {
+      "Bus_1": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0386,
+        "filtered_voltage": 1.0386
+      },
+      "Bus_2": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0466,
+        "filtered_voltage": 1.0466
+      },
+      "Bus_3": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0267,
+        "filtered_voltage": 1.0267
+      },
+      "Bus_4": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.9999,
+        "filtered_voltage": 0.9999
+      },
+      "Bus_5": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0014,
+        "filtered_voltage": 1.0014
+      },
+      "Bus_6": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0039,
+        "filtered_voltage": 1.0039
+      },
+      "Bus_7": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.9932,
+        "filtered_voltage": 0.9932
+      },
+      "Bus_8": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.9923,
+        "filtered_voltage": 0.9923
+      },
+      "Bus_9": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0264,
+        "filtered_voltage": 1.0264
+      },
+      "Bus_10": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0143,
+        "filtered_voltage": 1.0143
+      },
+      "Bus_11": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0096,
+        "filtered_voltage": 1.0096
+      },
+      "Bus_12": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.997,
+        "filtered_voltage": 0.997
+      },
+      "Bus_13": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.011,
+        "filtered_voltage": 1.011
+      },
+      "Bus_14": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0075,
+        "filtered_voltage": 1.0075
+      },
+      "Bus_15": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0092,
+        "filtered_voltage": 1.0092
+      },
+      "Bus_16": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0246,
+        "filtered_voltage": 1.0246
+      },
+      "Bus_17": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.028,
+        "filtered_voltage": 1.028
+      },
+      "Bus_18": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0261,
+        "filtered_voltage": 1.0261
+      },
+      "Bus_19": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0472,
+        "filtered_voltage": 1.0472
+      },
+      "Bus_20": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.9894,
+        "filtered_voltage": 0.9894
+      },
+      "Bus_21": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0265,
+        "filtered_voltage": 1.0265
+      },
+      "Bus_22": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0466,
+        "filtered_voltage": 1.0466
+      },
+      "Bus_23": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0409,
+        "filtered_voltage": 1.0409
+      },
+      "Bus_24": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0261,
+        "filtered_voltage": 1.0261
+      },
+      "Bus_25": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.056,
+        "filtered_voltage": 1.056
+      },
+      "Bus_26": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0495,
+        "filtered_voltage": 1.0495
+      },
+      "Bus_27": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0338,
+        "filtered_voltage": 1.0338
+      },
+      "Bus_28": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0488,
+        "filtered_voltage": 1.0488
+      },
+      "Bus_29": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0491,
+        "filtered_voltage": 1.0491
+      },
+      "Bus_30": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0499,
+        "filtered_voltage": 1.0499
+      },
+      "Bus_31": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.982,
+        "filtered_voltage": 0.982
+      },
+      "Bus_32": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.9841,
+        "filtered_voltage": 0.9841
+      },
+      "Bus_33": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 0.9972,
+        "filtered_voltage": 0.9972
+      },
+      "Bus_34": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0123,
+        "filtered_voltage": 1.0123
+      },
+      "Bus_35": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0494,
+        "filtered_voltage": 1.0494
+      },
+      "Bus_36": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0636,
+        "filtered_voltage": 1.0636
+      },
+      "Bus_37": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0275,
+        "filtered_voltage": 1.0275
+      },
+      "Bus_38": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.0265,
+        "filtered_voltage": 1.0265
+      },
+      "Bus_39": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_voltage": 1.03,
+        "filtered_voltage": 1.03
+      },
+      "L_line_0": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -174.3,
+        "filtered_flow_mw": -174.22
+      },
+      "L_line_1": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 75.69,
+        "filtered_flow_mw": 75.81
+      },
+      "L_line_2": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 319.5,
+        "filtered_flow_mw": 319.49
+      },
+      "L_line_3": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -244.79,
+        "filtered_flow_mw": -244.7
+      },
+      "L_line_4": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 36.25,
+        "filtered_flow_mw": 36.29
+      },
+      "L_line_5": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -41.53,
+        "filtered_flow_mw": -41.46
+      },
+      "L_line_6": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -198.47,
+        "filtered_flow_mw": -198.44
+      },
+      "L_line_7": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -266.33,
+        "filtered_flow_mw": -266.26
+      },
+      "L_line_8": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -537.94,
+        "filtered_flow_mw": -537.85
+      },
+      "L_line_9": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 339.14,
+        "filtered_flow_mw": 339.08
+      },
+      "L_line_10": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 453.82,
+        "filtered_flow_mw": 453.8
+      },
+      "L_line_11": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -322.64,
+        "filtered_flow_mw": -322.66
+      },
+      "L_line_12": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 219.28,
+        "filtered_flow_mw": 219.14
+      },
+      "L_line_13": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 35.26,
+        "filtered_flow_mw": 35.24
+      },
+      "L_line_14": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 28.54,
+        "filtered_flow_mw": 28.54
+      },
+      "L_line_15": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 327.81,
+        "filtered_flow_mw": 327.8
+      },
+      "L_line_16": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 322.19,
+        "filtered_flow_mw": 322.2
+      },
+      "L_line_17": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 317.36,
+        "filtered_flow_mw": 317.39
+      },
+      "L_line_18": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 49.57,
+        "filtered_flow_mw": 49.67
+      },
+      "L_line_19": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -269.46,
+        "filtered_flow_mw": -269.48
+      },
+      "L_line_20": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 226.28,
+        "filtered_flow_mw": 226.12
+      },
+      "L_line_21": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -452.58,
+        "filtered_flow_mw": -452.51
+      },
+      "L_line_22": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -330.65,
+        "filtered_flow_mw": -330.69
+      },
+      "L_line_23": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -41.19,
+        "filtered_flow_mw": -41.32
+      },
+      "L_line_24": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 201.46,
+        "filtered_flow_mw": 201.25
+      },
+      "L_line_25": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 24.46,
+        "filtered_flow_mw": 24.51
+      },
+      "L_line_26": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -604.55,
+        "filtered_flow_mw": -604.6
+      },
+      "L_line_27": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 42.62,
+        "filtered_flow_mw": 42.57
+      },
+      "L_line_28": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 353.02,
+        "filtered_flow_mw": 353.05
+      },
+      "L_line_29": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -558.55,
+        "filtered_flow_mw": -558.55
+      },
+      "L_line_30": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 63.89,
+        "filtered_flow_mw": 63.98
+      },
+      "L_line_31": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 255.89,
+        "filtered_flow_mw": 255.88
+      },
+      "L_line_32": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -140.69,
+        "filtered_flow_mw": -140.78
+      },
+      "L_line_33": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -189.96,
+        "filtered_flow_mw": -190.05
+      },
+      "L_line_34": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -347.33,
+        "filtered_flow_mw": -347.41
+      },
+      "L_trafo_0": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -250.0,
+        "filtered_flow_mw": -250.0
+      },
+      "L_trafo_1": {
+        "action": "PASSED",
+        "trust_score": 99.9,
+        "raw_flow_mw": -669.7,
+        "filtered_flow_mw": -669.57
+      },
+      "L_trafo_2": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -650.0,
+        "filtered_flow_mw": -650.0
+      },
+      "L_trafo_3": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -3.96,
+        "filtered_flow_mw": -3.94
+      },
+      "L_trafo_4": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -4.37,
+        "filtered_flow_mw": -4.35
+      },
+      "L_trafo_5": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": 173.32,
+        "filtered_flow_mw": 173.39
+      },
+      "L_trafo_6": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -629.07,
+        "filtered_flow_mw": -629.07
+      },
+      "L_trafo_7": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -505.46,
+        "filtered_flow_mw": -505.46
+      },
+      "L_trafo_8": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -650.0,
+        "filtered_flow_mw": -650.0
+      },
+      "L_trafo_9": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -538.34,
+        "filtered_flow_mw": -538.34
+      },
+      "L_trafo_10": {
+        "action": "PASSED",
+        "trust_score": 100.0,
+        "raw_flow_mw": -824.76,
+        "filtered_flow_mw": -824.76
+      }
+    },
+    "global_grid_confidence": 98.54,
+    "trusted_state": true,
+    "degraded_observability": false,
+    "filtered_telemetry": {
+      "timestamp": 1788970039538,
+      "grid_name": "ieee39",
+      "solver_status": {
+        "converged": true,
+        "mode": "converged",
+        "iterations": 2
+      },
+      "state": {
+        "buses": {
+          "Bus_1": {
+            "voltage_pu": 1.0386,
+            "angle_rad": -0.2383,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 98.41,
+            "Q_mvar": 44.59
+          },
+          "Bus_2": {
+            "voltage_pu": 1.0466,
+            "angle_rad": -0.1724,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_3": {
+            "voltage_pu": 1.0267,
+            "angle_rad": -0.2159,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 323.3,
+            "Q_mvar": 2.83
+          },
+          "Bus_4": {
+            "voltage_pu": 0.9999,
+            "angle_rad": -0.2219,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 500.77,
+            "Q_mvar": 183.71
+          },
+          "Bus_5": {
+            "voltage_pu": 1.0014,
+            "angle_rad": -0.1965,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_6": {
+            "voltage_pu": 1.0039,
+            "angle_rad": -0.1827,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_7": {
+            "voltage_pu": 0.9932,
+            "angle_rad": -0.224,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 233.39,
+            "Q_mvar": 83.99
+          },
+          "Bus_8": {
+            "voltage_pu": 0.9923,
+            "angle_rad": -0.2341,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 521.84,
+            "Q_mvar": 176.62
+          },
+          "Bus_9": {
+            "voltage_pu": 1.0264,
+            "angle_rad": -0.2489,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 6.45,
+            "Q_mvar": 0.0
+          },
+          "Bus_10": {
+            "voltage_pu": 1.0143,
+            "angle_rad": -0.1434,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_11": {
+            "voltage_pu": 1.0096,
+            "angle_rad": -0.1568,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_12": {
+            "voltage_pu": 0.997,
+            "angle_rad": -0.1579,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 8.29,
+            "Q_mvar": 87.61
+          },
+          "Bus_13": {
+            "voltage_pu": 1.011,
+            "angle_rad": -0.1568,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_14": {
+            "voltage_pu": 1.0075,
+            "angle_rad": -0.1881,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_15": {
+            "voltage_pu": 1.0092,
+            "angle_rad": -0.1989,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 319.11,
+            "Q_mvar": 153.26
+          },
+          "Bus_16": {
+            "voltage_pu": 1.0246,
+            "angle_rad": -0.1756,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 328.1,
+            "Q_mvar": 32.25
+          },
+          "Bus_17": {
+            "voltage_pu": 1.028,
+            "angle_rad": -0.195,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_18": {
+            "voltage_pu": 1.0261,
+            "angle_rad": -0.2106,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 159.51,
+            "Q_mvar": 30.71
+          },
+          "Bus_19": {
+            "voltage_pu": 1.0472,
+            "angle_rad": -0.0942,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_20": {
+            "voltage_pu": 0.9894,
+            "angle_rad": -0.1188,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 678.63,
+            "Q_mvar": 102.76
+          },
+          "Bus_21": {
+            "voltage_pu": 1.0265,
+            "angle_rad": -0.1331,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 273.06,
+            "Q_mvar": 114.32
+          },
+          "Bus_22": {
+            "voltage_pu": 1.0466,
+            "angle_rad": -0.0548,
+            "is_load": false,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 0.0,
+            "Q_mvar": 0.0
+          },
+          "Bus_23": {
+            "voltage_pu": 1.0409,
+            "angle_rad": -0.0583,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 248.04,
+            "Q_mvar": 84.54
+          },
+          "Bus_24": {
+            "voltage_pu": 1.0261,
+            "angle_rad": -0.1733,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 309.15,
+            "Q_mvar": 0.0
+          },
+          "Bus_25": {
+            "voltage_pu": 1.056,
+            "angle_rad": -0.1478,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 225.34,
+            "Q_mvar": 47.58
+          },
+          "Bus_26": {
+            "voltage_pu": 1.0495,
+            "angle_rad": -0.166,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 138.8,
+            "Q_mvar": 17.29
+          },
+          "Bus_27": {
+            "voltage_pu": 1.0338,
+            "angle_rad": -0.1996,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 279.42,
+            "Q_mvar": 75.42
+          },
+          "Bus_28": {
+            "voltage_pu": 1.0488,
+            "angle_rad": -0.1045,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 205.83,
+            "Q_mvar": 27.53
+          },
+          "Bus_29": {
+            "voltage_pu": 1.0491,
+            "angle_rad": -0.0564,
+            "is_load": true,
+            "is_gen": false,
+            "frequency_hz": 60.04,
+            "P_mw": 283.84,
+            "Q_mvar": 27.03
+          },
+          "Bus_30": {
+            "voltage_pu": 1.0499,
+            "angle_rad": -0.1302,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -250.0,
+            "Q_mvar": -172.32
+          },
+          "Bus_31": {
+            "voltage_pu": 0.982,
+            "angle_rad": 0.0,
+            "is_load": true,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": 9.75,
+            "Q_mvar": 5.31
+          },
+          "Bus_32": {
+            "voltage_pu": 0.9841,
+            "angle_rad": -0.0036,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -650.0,
+            "Q_mvar": -223.19
+          },
+          "Bus_33": {
+            "voltage_pu": 0.9972,
+            "angle_rad": -0.003,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -632.0,
+            "Q_mvar": -127.28
+          },
+          "Bus_34": {
+            "voltage_pu": 1.0123,
+            "angle_rad": -0.0282,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -508.0,
+            "Q_mvar": -175.34
+          },
+          "Bus_35": {
+            "voltage_pu": 1.0494,
+            "angle_rad": 0.032,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -650.0,
+            "Q_mvar": -236.14
+          },
+          "Bus_36": {
+            "voltage_pu": 1.0636,
+            "angle_rad": 0.0792,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -560.0,
+            "Q_mvar": -116.83
+          },
+          "Bus_37": {
+            "voltage_pu": 1.0275,
+            "angle_rad": -0.0292,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -540.0,
+            "Q_mvar": -5.88
+          },
+          "Bus_38": {
+            "voltage_pu": 1.0265,
+            "angle_rad": 0.067,
+            "is_load": false,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": -830.0,
+            "Q_mvar": -28.8
+          },
+          "Bus_39": {
+            "voltage_pu": 1.03,
+            "angle_rad": -0.2558,
+            "is_load": true,
+            "is_gen": true,
+            "frequency_hz": 60.04,
+            "P_mw": 1104.28,
+            "Q_mvar": 250.37
+          }
+        },
+        "lines": {
+          "L_line_0": {
+            "current_ka": 0.2873,
+            "current_loading_pu": 0.09575,
+            "current_pu": 0.2872,
+            "current_amp": 143.56,
+            "P_mw": -174.22,
+            "Q_mvar": -37.43,
+            "capacity_pct": 9.5,
+            "overcurrent": false
+          },
+          "L_line_1": {
+            "current_ka": 0.1691,
+            "current_loading_pu": 0.056352,
+            "current_pu": 0.1693,
+            "current_amp": 84.61,
+            "P_mw": 75.81,
+            "Q_mvar": -7.16,
+            "capacity_pct": 5.7,
+            "overcurrent": false
+          },
+          "L_line_2": {
+            "current_ka": 0.5514,
+            "current_loading_pu": 0.183784,
+            "current_pu": 0.5513,
+            "current_amp": 275.64,
+            "P_mw": 319.49,
+            "Q_mvar": 103.2,
+            "capacity_pct": 18.4,
+            "overcurrent": false
+          },
+          "L_line_3": {
+            "current_ka": 0.4207,
+            "current_loading_pu": 0.140237,
+            "current_pu": 0.4206,
+            "current_amp": 210.29,
+            "P_mw": -244.7,
+            "Q_mvar": 80.94,
+            "capacity_pct": 14.0,
+            "overcurrent": false
+          },
+          "L_line_4": {
+            "current_ka": 0.2332,
+            "current_loading_pu": 0.077731,
+            "current_pu": 0.2332,
+            "current_amp": 116.59,
+            "P_mw": 36.29,
+            "Q_mvar": 115.37,
+            "capacity_pct": 7.8,
+            "overcurrent": false
+          },
+          "L_line_5": {
+            "current_ka": 0.0745,
+            "current_loading_pu": 0.02484,
+            "current_pu": 0.0744,
+            "current_amp": 37.2,
+            "P_mw": -41.46,
+            "Q_mvar": -3.32,
+            "capacity_pct": 2.5,
+            "overcurrent": false
+          },
+          "L_line_6": {
+            "current_ka": 0.3323,
+            "current_loading_pu": 0.110762,
+            "current_pu": 0.3322,
+            "current_amp": 166.12,
+            "P_mw": -198.44,
+            "Q_mvar": -4.14,
+            "capacity_pct": 11.1,
+            "overcurrent": false
+          },
+          "L_line_7": {
+            "current_ka": 0.4521,
+            "current_loading_pu": 0.150692,
+            "current_pu": 0.4519,
+            "current_amp": 225.97,
+            "P_mw": -266.26,
+            "Q_mvar": -44.99,
+            "capacity_pct": 15.0,
+            "overcurrent": false
+          },
+          "L_line_8": {
+            "current_ka": 0.9033,
+            "current_loading_pu": 0.301078,
+            "current_pu": 0.9031,
+            "current_amp": 451.53,
+            "P_mw": -537.85,
+            "Q_mvar": -52.79,
+            "capacity_pct": 30.1,
+            "overcurrent": false
+          },
+          "L_line_9": {
+            "current_ka": 0.5788,
+            "current_loading_pu": 0.192946,
+            "current_pu": 0.5787,
+            "current_amp": 289.36,
+            "P_mw": 339.08,
+            "Q_mvar": 57.05,
+            "capacity_pct": 19.3,
+            "overcurrent": false
+          },
+          "L_line_10": {
+            "current_ka": 0.7752,
+            "current_loading_pu": 0.258394,
+            "current_pu": 0.7751,
+            "current_amp": 387.55,
+            "P_mw": 453.8,
+            "Q_mvar": 91.18,
+            "capacity_pct": 25.8,
+            "overcurrent": false
+          },
+          "L_line_11": {
+            "current_ka": 0.5429,
+            "current_loading_pu": 0.180974,
+            "current_pu": 0.5429,
+            "current_amp": 271.45,
+            "P_mw": -322.66,
+            "Q_mvar": -44.49,
+            "capacity_pct": 18.2,
+            "overcurrent": false
+          },
+          "L_line_12": {
+            "current_ka": 0.3696,
+            "current_loading_pu": 0.123185,
+            "current_pu": 0.3693,
+            "current_amp": 184.66,
+            "P_mw": 219.14,
+            "Q_mvar": -1.2,
+            "capacity_pct": 12.3,
+            "overcurrent": false
+          },
+          "L_line_13": {
+            "current_ka": 0.2012,
+            "current_loading_pu": 0.06708,
+            "current_pu": 0.2011,
+            "current_amp": 100.58,
+            "P_mw": 35.24,
+            "Q_mvar": -113.95,
+            "capacity_pct": 6.7,
+            "overcurrent": false
+          },
+          "L_line_14": {
+            "current_ka": 0.137,
+            "current_loading_pu": 0.045668,
+            "current_pu": 0.1369,
+            "current_amp": 68.46,
+            "P_mw": 28.54,
+            "Q_mvar": -78.98,
+            "capacity_pct": 4.6,
+            "overcurrent": false
+          },
+          "L_line_15": {
+            "current_ka": 0.5594,
+            "current_loading_pu": 0.186468,
+            "current_pu": 0.5594,
+            "current_amp": 279.68,
+            "P_mw": 327.8,
+            "Q_mvar": 79.31,
+            "capacity_pct": 18.6,
+            "overcurrent": false
+          },
+          "L_line_16": {
+            "current_ka": 0.5388,
+            "current_loading_pu": 0.179612,
+            "current_pu": 0.5388,
+            "current_amp": 269.42,
+            "P_mw": 322.2,
+            "Q_mvar": 46.35,
+            "capacity_pct": 17.9,
+            "overcurrent": false
+          },
+          "L_line_17": {
+            "current_ka": 0.5259,
+            "current_loading_pu": 0.175322,
+            "current_pu": 0.5259,
+            "current_amp": 263.01,
+            "P_mw": 317.39,
+            "Q_mvar": 3.04,
+            "capacity_pct": 17.5,
+            "overcurrent": false
+          },
+          "L_line_18": {
+            "current_ka": 0.096,
+            "current_loading_pu": 0.032019,
+            "current_pu": 0.0962,
+            "current_amp": 48.1,
+            "P_mw": 49.67,
+            "Q_mvar": -29.77,
+            "capacity_pct": 3.2,
+            "overcurrent": false
+          },
+          "L_line_19": {
+            "current_ka": 0.5085,
+            "current_loading_pu": 0.169513,
+            "current_pu": 0.5085,
+            "current_amp": 254.29,
+            "P_mw": -269.48,
+            "Q_mvar": -146.38,
+            "capacity_pct": 16.9,
+            "overcurrent": false
+          },
+          "L_line_20": {
+            "current_ka": 0.3831,
+            "current_loading_pu": 0.127691,
+            "current_pu": 0.3829,
+            "current_amp": 191.42,
+            "P_mw": 226.12,
+            "Q_mvar": -61.71,
+            "capacity_pct": 12.8,
+            "overcurrent": false
+          },
+          "L_line_21": {
+            "current_ka": 0.7505,
+            "current_loading_pu": 0.250154,
+            "current_pu": 0.7504,
+            "current_amp": 375.17,
+            "P_mw": -452.51,
+            "Q_mvar": -79.33,
+            "capacity_pct": 25.0,
+            "overcurrent": false
+          },
+          "L_line_22": {
+            "current_ka": 0.5408,
+            "current_loading_pu": 0.180245,
+            "current_pu": 0.5409,
+            "current_amp": 270.41,
+            "P_mw": -330.69,
+            "Q_mvar": -1.13,
+            "capacity_pct": 18.0,
+            "overcurrent": false
+          },
+          "L_line_23": {
+            "current_ka": 0.0807,
+            "current_loading_pu": 0.026893,
+            "current_pu": 0.0809,
+            "current_amp": 40.42,
+            "P_mw": -41.32,
+            "Q_mvar": -27.23,
+            "capacity_pct": 2.7,
+            "overcurrent": false
+          },
+          "L_line_24": {
+            "current_ka": 0.3287,
+            "current_loading_pu": 0.109563,
+            "current_pu": 0.3283,
+            "current_amp": 164.17,
+            "P_mw": 201.25,
+            "Q_mvar": 0.96,
+            "capacity_pct": 10.9,
+            "overcurrent": false
+          },
+          "L_line_25": {
+            "current_ka": 0.0954,
+            "current_loading_pu": 0.031778,
+            "current_pu": 0.0953,
+            "current_amp": 47.63,
+            "P_mw": 24.51,
+            "Q_mvar": -53.12,
+            "capacity_pct": 3.2,
+            "overcurrent": false
+          },
+          "L_line_26": {
+            "current_ka": 0.9997,
+            "current_loading_pu": 0.333232,
+            "current_pu": 0.9998,
+            "current_amp": 499.89,
+            "P_mw": -604.6,
+            "Q_mvar": -102.73,
+            "capacity_pct": 33.4,
+            "overcurrent": false
+          },
+          "L_line_27": {
+            "current_ka": 0.1303,
+            "current_loading_pu": 0.04342,
+            "current_pu": 0.1302,
+            "current_amp": 65.08,
+            "P_mw": 42.57,
+            "Q_mvar": 49.24,
+            "capacity_pct": 4.3,
+            "overcurrent": false
+          },
+          "L_line_28": {
+            "current_ka": 0.5725,
+            "current_loading_pu": 0.190836,
+            "current_pu": 0.5725,
+            "current_amp": 286.28,
+            "P_mw": 353.05,
+            "Q_mvar": 22.48,
+            "capacity_pct": 19.1,
+            "overcurrent": false
+          },
+          "L_line_29": {
+            "current_ka": 0.9001,
+            "current_loading_pu": 0.300029,
+            "current_pu": 0.9001,
+            "current_amp": 450.03,
+            "P_mw": -558.55,
+            "Q_mvar": -38.13,
+            "capacity_pct": 30.0,
+            "overcurrent": false
+          },
+          "L_line_30": {
+            "current_ka": 0.1231,
+            "current_loading_pu": 0.041042,
+            "current_pu": 0.1232,
+            "current_amp": 61.62,
+            "P_mw": 63.98,
+            "Q_mvar": -14.03,
+            "capacity_pct": 4.2,
+            "overcurrent": false
+          },
+          "L_line_31": {
+            "current_ka": 0.4402,
+            "current_loading_pu": 0.146749,
+            "current_pu": 0.4402,
+            "current_amp": 220.11,
+            "P_mw": 255.88,
+            "Q_mvar": 78.54,
+            "capacity_pct": 14.7,
+            "overcurrent": false
+          },
+          "L_line_32": {
+            "current_ka": 0.241,
+            "current_loading_pu": 0.080339,
+            "current_pu": 0.2411,
+            "current_amp": 120.58,
+            "P_mw": -140.78,
+            "Q_mvar": -24.28,
+            "capacity_pct": 8.0,
+            "overcurrent": false
+          },
+          "L_line_33": {
+            "current_ka": 0.3228,
+            "current_loading_pu": 0.107609,
+            "current_pu": 0.3229,
+            "current_amp": 161.48,
+            "P_mw": -190.05,
+            "Q_mvar": -27.99,
+            "capacity_pct": 10.8,
+            "overcurrent": false
+          },
+          "L_line_34": {
+            "current_ka": 0.5595,
+            "current_loading_pu": 0.186505,
+            "current_pu": 0.5596,
+            "current_amp": 279.83,
+            "P_mw": -347.41,
+            "Q_mvar": 25.38,
+            "capacity_pct": 18.7,
+            "overcurrent": false
+          },
+          "L_trafo_0": {
+            "current_ka": 0.4722,
+            "current_loading_pu": 0.157408,
+            "current_pu": 0.4722,
+            "current_amp": 236.08,
+            "P_mw": -250.0,
+            "Q_mvar": -157.18,
+            "capacity_pct": 15.7,
+            "overcurrent": false
+          },
+          "L_trafo_1": {
+            "current_ka": 1.1293,
+            "current_loading_pu": 0.376458,
+            "current_pu": 1.1291,
+            "current_amp": 564.56,
+            "P_mw": -669.57,
+            "Q_mvar": -102.69,
+            "capacity_pct": 37.6,
+            "overcurrent": false
+          },
+          "L_trafo_2": {
+            "current_ka": 1.0922,
+            "current_loading_pu": 0.364081,
+            "current_pu": 1.0922,
+            "current_amp": 546.12,
+            "P_mw": -650.0,
+            "Q_mvar": -125.64,
+            "capacity_pct": 36.4,
+            "overcurrent": false
+          },
+          "L_trafo_3": {
+            "current_ka": 0.071,
+            "current_loading_pu": 0.023675,
+            "current_pu": 0.0711,
+            "current_amp": 35.57,
+            "P_mw": -3.94,
+            "Q_mvar": -42.2,
+            "capacity_pct": 2.4,
+            "overcurrent": false
+          },
+          "L_trafo_4": {
+            "current_ka": 0.0765,
+            "current_loading_pu": 0.025489,
+            "current_pu": 0.0766,
+            "current_amp": 38.29,
+            "P_mw": -4.35,
+            "Q_mvar": -45.41,
+            "capacity_pct": 2.5,
+            "overcurrent": false
+          },
+          "L_trafo_5": {
+            "current_ka": 0.2784,
+            "current_loading_pu": 0.092796,
+            "current_pu": 0.2785,
+            "current_amp": 139.24,
+            "P_mw": 173.39,
+            "Q_mvar": -17.55,
+            "capacity_pct": 9.3,
+            "overcurrent": false
+          },
+          "L_trafo_6": {
+            "current_ka": 1.0111,
+            "current_loading_pu": 0.337044,
+            "current_pu": 1.0111,
+            "current_amp": 505.56,
+            "P_mw": -629.07,
+            "Q_mvar": -67.93,
+            "capacity_pct": 33.7,
+            "overcurrent": false
+          },
+          "L_trafo_7": {
+            "current_ka": 0.8805,
+            "current_loading_pu": 0.293496,
+            "current_pu": 0.8805,
+            "current_amp": 440.25,
+            "P_mw": -505.46,
+            "Q_mvar": -124.6,
+            "capacity_pct": 29.4,
+            "overcurrent": false
+          },
+          "L_trafo_8": {
+            "current_ka": 1.076,
+            "current_loading_pu": 0.358653,
+            "current_pu": 1.076,
+            "current_amp": 537.97,
+            "P_mw": -650.0,
+            "Q_mvar": -174.03,
+            "capacity_pct": 35.9,
+            "overcurrent": false
+          },
+          "L_trafo_9": {
+            "current_ka": 0.8581,
+            "current_loading_pu": 0.286031,
+            "current_pu": 0.8581,
+            "current_amp": 429.05,
+            "P_mw": -538.34,
+            "Q_mvar": 58.21,
+            "capacity_pct": 28.6,
+            "overcurrent": false
+          },
+          "L_trafo_10": {
+            "current_ka": 1.3209,
+            "current_loading_pu": 0.440307,
+            "current_pu": 1.3209,
+            "current_amp": 660.46,
+            "P_mw": -824.76,
+            "Q_mvar": 73.32,
+            "capacity_pct": 44.0,
+            "overcurrent": false
+          }
+        },
+        "breakers": {
+          "L_line_0": "CLOSED",
+          "L_line_1": "CLOSED",
+          "L_line_2": "CLOSED",
+          "L_line_3": "CLOSED",
+          "L_line_4": "CLOSED",
+          "L_line_5": "CLOSED",
+          "L_line_6": "CLOSED",
+          "L_line_7": "CLOSED",
+          "L_line_8": "CLOSED",
+          "L_line_9": "CLOSED",
+          "L_line_10": "CLOSED",
+          "L_line_11": "CLOSED",
+          "L_line_12": "CLOSED",
+          "L_line_13": "CLOSED",
+          "L_line_14": "CLOSED",
+          "L_line_15": "CLOSED",
+          "L_line_16": "CLOSED",
+          "L_line_17": "CLOSED",
+          "L_line_18": "CLOSED",
+          "L_line_19": "CLOSED",
+          "L_line_20": "CLOSED",
+          "L_line_21": "CLOSED",
+          "L_line_22": "CLOSED",
+          "L_line_23": "CLOSED",
+          "L_line_24": "CLOSED",
+          "L_line_25": "CLOSED",
+          "L_line_26": "CLOSED",
+          "L_line_27": "CLOSED",
+          "L_line_28": "CLOSED",
+          "L_line_29": "CLOSED",
+          "L_line_30": "CLOSED",
+          "L_line_31": "CLOSED",
+          "L_line_32": "CLOSED",
+          "L_line_33": "CLOSED",
+          "L_line_34": "CLOSED",
+          "L_trafo_0": "CLOSED",
+          "L_trafo_1": "CLOSED",
+          "L_trafo_2": "CLOSED",
+          "L_trafo_3": "CLOSED",
+          "L_trafo_4": "CLOSED",
+          "L_trafo_5": "CLOSED",
+          "L_trafo_6": "CLOSED",
+          "L_trafo_7": "CLOSED",
+          "L_trafo_8": "CLOSED",
+          "L_trafo_9": "CLOSED",
+          "L_trafo_10": "CLOSED"
+        },
+        "generators_online": {
+          "Bus_30": true,
+          "Bus_32": true,
+          "Bus_33": true,
+          "Bus_34": true,
+          "Bus_35": true,
+          "Bus_36": true,
+          "Bus_37": true,
+          "Bus_38": true,
+          "Bus_39": true,
+          "Bus_31": true
+        }
+      },
+      "experiment_id": null,
+      "scenario_id": null,
+      "telemetry_id": "runtime:1788970039538",
+      "correlation_id": "runtime:1788970039538",
+      "attack_status": {
+        "active_attack": null,
+        "active_scenario_name": null,
+        "scenario_time": 0.0,
+        "compromised_nodes": {},
+        "stages": []
+      }
+    }
+  },
+  "grid/ai/recovery/dqn": {
+    "model": "dqn",
+    "action_id": 0,
+    "action": "NO_ACTION",
+    "target": "SYSTEM",
+    "score": -0.06230158358812332,
+    "source_telemetry_timestamp": 1788970039538,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538"
+  },
+  "grid/ai/gnn": {
+    "classification": "N2",
+    "anomaly_score": 0.9999995085493083,
+    "max_node_risk": 0.26277780532836914,
+    "max_edge_risk": 0.42694297432899475,
+    "critical_buses": [
+      "Bus_22",
+      "Bus_35",
+      "Bus_1",
+      "Bus_23",
+      "Bus_28"
+    ],
+    "critical_branches": [
+      "L_trafo_10",
+      "L_trafo_1",
+      "L_trafo_8",
+      "L_trafo_2",
+      "L_trafo_6"
+    ],
+    "timestamp": 1788970039572,
+    "source_telemetry_timestamp": 1788970039538.0,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "component": "gnn",
+    "model_loaded": true,
+    "checkpoint": "/app/core/gnn/trained_gnn_model.pt",
+    "inference_latency_ms": 27.704
+  },
+  "grid/ai/stgnn": {
+    "forecast_horizon_steps": 5,
+    "max_future_node_risk": 0.3396261930465698,
+    "max_future_edge_risk": 0.45435819029808044,
+    "critical_buses": [
+      "Bus_36",
+      "Bus_35",
+      "Bus_29",
+      "Bus_22",
+      "Bus_30"
+    ],
+    "critical_branches": [
+      "L_trafo_10",
+      "L_line_26",
+      "L_trafo_1",
+      "L_trafo_2",
+      "L_trafo_6"
+    ],
+    "timestamp": 1788970039556,
+    "source_telemetry_timestamp": 1788970039538.0,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "component": "stgnn",
+    "model_loaded": true,
+    "checkpoint": "/app/core/gnn/trained_stgnn_model.pt",
+    "inference_latency_ms": 12.037
+  },
+  "grid/ai/lstm": {
+    "classification": "N1_LINE",
+    "anomaly_score": 0.9999983314623933,
+    "probabilities": {
+      "NORMAL": 1.6685376067471225e-06,
+      "N1_LINE": 0.9998570680618286,
+      "N1_GENERATOR": 2.065957858121692e-07,
+      "N2": 4.057269187285328e-09,
+      "VOLTAGE_INSTABILITY": 6.218397174961865e-05,
+      "FDIA": 1.7940317775355652e-05,
+      "REPLAY": 3.1212533940561116e-05,
+      "DOS": 2.9629260097863153e-05
+    },
+    "window_size": 20,
+    "timestamp": 1788970039541,
+    "source_telemetry_timestamp": 1788970039538.0,
+    "source_telemetry_id": "runtime:1788970039538",
+    "experiment_id": null,
+    "scenario_id": null,
+    "correlation_id": "runtime:1788970039538",
+    "component": "lstm",
+    "model_loaded": true,
+    "checkpoint": "/app/core/lstm/trained_lstm_model.pt",
+    "inference_latency_ms": 1.154
+  },
+  "grid/telemetry": {
+    "timestamp": 1788970039704,
+    "state": {
+      "buses": {
+        "Bus_1": {
+          "voltage_pu": 0.982,
+          "angle_rad": 0.0,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.0,
+          "P_mw": -672.26,
+          "Q_mvar": -234.39
+        },
+        "Bus_2": {
+          "voltage_pu": 0.9841,
+          "angle_rad": -0.0044,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.0,
+          "P_mw": -650.0,
+          "Q_mvar": -223.79
+        },
+        "Bus_3": {
+          "voltage_pu": 0.9972,
+          "angle_rad": -0.0038,
+          "is_load": false,
+          "is_gen": true,
+          "frequency_hz": 60.0,
+          "P_mw": -632.0,
+          "Q_mvar": -127.63
+        },
+        "Bus_4": {
+          "voltage_pu": 0.9997,
+          "angle_rad": -0.2228,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.0,
+          "P_mw": 501.33,
+          "Q_mvar": 184.4
+        },
+        "Bus_5": {
+          "voltage_pu": 1.009,
+          "angle_rad": -0.1997,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.0,
+          "P_mw": 318.35,
+          "Q_mvar": 153.2
+        },
+        "Bus_6": {
+          "voltage_pu": 1.0245,
+          "angle_rad": -0.1765,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.0,
+          "P_mw": 326.28,
+          "Q_mvar": 33.67
+        },
+        "Bus_7": {
+          "voltage_pu": 0.992,
+          "angle_rad": -0.2351,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.0,
+          "P_mw": 523.57,
+          "Q_mvar": 177.51
+        },
+        "Bus_8": {
+          "voltage_pu": 1.056,
+          "angle_rad": -0.1488,
+          "is_load": true,
+          "is_gen": false,
+          "frequency_hz": 60.0,
+          "P_mw": 225.27,
+          "Q_mvar": 47.56
+        },
+        "Bus_9": {
+          "voltage_pu": 1.0263,
+          "angle_rad": -0.25,
+          "is_load": false,
+          "is_gen": false,
+          "frequency_hz": 60.0,
+          "P_mw": 6.82,
+          "Q_mvar": 0.0
+        }
+      },
+      "lines": {
+        "L1_4": {
+          "current_pu": 2.9526,
+          "current_amp": 1476.29,
+          "P_mw": -250.0,
+          "Q_mvar": -157.09,
+          "capacity_pct": 32.13,
+          "overcurrent": false
+        },
+        "L2_7": {
+          "current_pu": 6.6843,
+          "current_amp": 3342.13,
+          "P_mw": -660.49,
+          "Q_mvar": -102.7,
+          "capacity_pct": 39.56,
+          "overcurrent": false
+        },
+        "L3_9": {
+          "current_pu": 6.6173,
+          "current_amp": 3308.66,
+          "P_mw": -650.0,
+          "Q_mvar": -124.05,
+          "capacity_pct": 77.53,
+          "overcurrent": false
+        },
+        "L4_5": {
+          "current_pu": 3.3591,
+          "current_amp": 1679.56,
+          "P_mw": 320.02,
+          "Q_mvar": 102.1,
+          "capacity_pct": 65.9,
+          "overcurrent": false
+        },
+        "L4_9": {
+          "current_pu": 1.2015,
+          "current_amp": 600.74,
+          "P_mw": 38.0,
+          "Q_mvar": 113.98,
+          "capacity_pct": 27.69,
+          "overcurrent": false
+        },
+        "L5_6": {
+          "current_pu": 5.3629,
+          "current_amp": 2681.46,
+          "P_mw": -533.69,
+          "Q_mvar": -52.77,
+          "capacity_pct": 44.6,
+          "overcurrent": false
+        },
+        "L6_7": {
+          "current_pu": 4.6131,
+          "current_amp": 2306.56,
+          "P_mw": 452.44,
+          "Q_mvar": 90.04,
+          "capacity_pct": 51.26,
+          "overcurrent": false
+        },
+        "L7_8": {
+          "current_pu": 3.393,
+          "current_amp": 1696.5,
+          "P_mw": 330.21,
+          "Q_mvar": 78.01,
+          "capacity_pct": 56.02,
+          "overcurrent": false
+        },
+        "L8_9": {
+          "current_pu": 0.5526,
+          "current_amp": 276.29,
+          "P_mw": 46.85,
+          "Q_mvar": -29.3,
+          "capacity_pct": 9.14,
+          "overcurrent": false
+        }
+      },
+      "breakers": {
+        "L1_4": "CLOSED",
+        "L2_7": "CLOSED",
+        "L3_9": "CLOSED",
+        "L4_5": "CLOSED",
+        "L4_9": "CLOSED",
+        "L5_6": "CLOSED",
+        "L6_7": "CLOSED",
+        "L7_8": "CLOSED",
+        "L8_9": "CLOSED"
+      },
+      "generators_online": {
+        "Bus_1": true,
+        "Bus_2": true,
+        "Bus_3": true
+      }
+    },
+    "attack_status": {
+      "active_attack": null,
+      "compromised_nodes": {},
+      "stages": []
+    }
+  }
+}

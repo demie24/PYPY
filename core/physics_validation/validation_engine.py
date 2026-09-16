@@ -113,6 +113,11 @@ class PhysicsValidationEngine:
             # A. Publish grid/physics_validation (for backward compatibility)
             payload_validation = {
                 "timestamp": timestamp_ms,
+                "source_telemetry_timestamp": telemetry.get("timestamp"),
+                "source_telemetry_id": telemetry.get("telemetry_id"),
+                "experiment_id": telemetry.get("experiment_id"),
+                "scenario_id": telemetry.get("scenario_id"),
+                "correlation_id": telemetry.get("correlation_id") or telemetry.get("telemetry_id"),
                 "physics_anomaly_score": phys_score,
                 "kcl_error": raw_report["kcl_error"],
                 "kvl_error": raw_report["kvl_error"],
@@ -130,6 +135,11 @@ class PhysicsValidationEngine:
             # B. Publish grid/trust_scores
             trust_payload = {
                 "timestamp": timestamp_ms,
+                "source_telemetry_timestamp": telemetry.get("timestamp"),
+                "source_telemetry_id": telemetry.get("telemetry_id"),
+                "experiment_id": telemetry.get("experiment_id"),
+                "scenario_id": telemetry.get("scenario_id"),
+                "correlation_id": telemetry.get("correlation_id") or telemetry.get("telemetry_id"),
                 "bus_trust": trust_report["bus_trust"],
                 "line_trust": trust_report["line_trust"],
                 "details": trust_report["details"]

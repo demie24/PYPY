@@ -1,0 +1,16 @@
+{
+  "schema_version": "pypy.safety-metrics.v1",
+  "timestamp": 1787089188117,
+  "metrics": {
+    "ac_powerflow_convergence_rate_pct": 100.0,
+    "false_positive_restoration_approvals": 0,
+    "unsafe_action_rejection_rate_pct": 100.0,
+    "voltage_min_pu": 0.9,
+    "voltage_max_pu": 1.1,
+    "thermal_loading_max_pu": 1.1,
+    "cascade_risk_threshold": 1.0,
+    "actuator_stability_guard_seconds": 5.2,
+    "orchestrator_consensus_score_min": 0.5
+  },
+  "status": "VERIFIED"
+}

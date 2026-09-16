@@ -1,0 +1,5 @@
+{
+  "gateway_stop": "CONNECTION LOST; launch disabled",
+  "error": "locator.isDisabled: Error: strict mode violation: locator('.ex-launch') resolved to 2 elements:\n    1) <button disabled class=\"ex-launch\">…</button> aka getByRole('button', { name: 'LAUNCH CYBER ATTACK' })\n    2) <button disabled type=\"submit\" class=\"ex-launch\">…</button> aka getByText('Launch selected attack')\n\nCall log:\n\u001b[2m  - waiting for locator('.ex-launch')\u001b[22m\n",
+  "page_errors": []
+}

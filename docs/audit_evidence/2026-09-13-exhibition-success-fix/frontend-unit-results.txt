@@ -1,0 +1,92 @@
+TAP version 13
+# Subtest: IEEE39 safety envelope permits healthy >1.05 buses and an evidenced restoration
+ok 1 - IEEE39 safety envelope permits healthy >1.05 buses and an evidenced restoration
+  ---
+  duration_ms: 6.889939
+  type: 'test'
+  ...
+# Subtest: timestamp-less dispatch freezes receipt time without changing the control payload
+ok 2 - timestamp-less dispatch freezes receipt time without changing the control payload
+  ---
+  duration_ms: 5.526642
+  type: 'test'
+  ...
+# Subtest: stale, disconnected, active attacker, OPEN and unconverged states cannot succeed
+ok 3 - stale, disconnected, active attacker, OPEN and unconverged states cannot succeed
+  ---
+  duration_ms: 9.238359
+  type: 'test'
+  ...
+# Subtest: STOP/FDIA detection and rejected isolation are not autonomous restoration
+ok 4 - STOP/FDIA detection and rejected isolation are not autonomous restoration
+  ---
+  duration_ms: 1.124375
+  type: 'test'
+  ...
+# Subtest: approval, safe PPO/DQN proposal, observed OPEN, correlation and recent dispatch are mandatory
+ok 5 - approval, safe PPO/DQN proposal, observed OPEN, correlation and recent dispatch are mandatory
+  ---
+  duration_ms: 4.828596
+  type: 'test'
+  ...
+# Subtest: CLOSE followed by OPEN stays unverified; legacy or missing canonical frames cannot certify recovery
+ok 6 - CLOSE followed by OPEN stays unverified; legacy or missing canonical frames cannot certify recovery
+  ---
+  duration_ms: 3.332001
+  type: 'test'
+  ...
+# Subtest: refresh without original OPEN evidence fails closed despite declared initial_state OPEN
+ok 7 - refresh without original OPEN evidence fails closed despite declared initial_state OPEN
+  ---
+  duration_ms: 1.480201
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 58.788216
+TAP version 13
+# Subtest: success requires a later matching telemetry frame
+ok 1 - success requires a later matching telemetry frame
+  ---
+  duration_ms: 3.46023
+  type: 'test'
+  ...
+# Subtest: a later disagreeing frame is actuation not verified
+ok 2 - a later disagreeing frame is actuation not verified
+  ---
+  duration_ms: 0.520248
+  type: 'test'
+  ...
+# Subtest: consecutive experiments retain independent correlation
+ok 3 - consecutive experiments retain independent correlation
+  ---
+  duration_ms: 2.136504
+  type: 'test'
+  ...
+# Subtest: duplicate suppression is informational
+ok 4 - duplicate suppression is informational
+  ---
+  duration_ms: 0.678436
+  type: 'test'
+  ...
+# Subtest: receipt time is fixed once; source telemetry time cannot stand in for dispatch
+ok 5 - receipt time is fixed once; source telemetry time cannot stand in for dispatch
+  ---
+  duration_ms: 1.814365
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 34.002531

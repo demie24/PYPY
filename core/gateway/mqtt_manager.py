@@ -264,6 +264,7 @@ class MQTTManager:
             # Legacy caches
             elif topic == "pypy/grid/telemetry":
                 store.update_telemetry(payload)
+                store.add_recovery_evidence(topic, payload)
             elif topic == "grid/telemetry":
                 if not store.latest_telemetry or len(store.latest_telemetry.get("state", {}).get("buses", {})) <= 9:
                     store.update_telemetry(payload)
@@ -271,6 +272,9 @@ class MQTTManager:
                 store.add_event(payload)
             elif topic == "grid/alerts":
                 store.add_alert(payload)
+                store.add_recovery_evidence(topic, payload)
+            elif topic in ("grid/control/proposed", "grid/orchestrator/events", "grid/control", "grid/ai/recovery_policy"):
+                store.add_recovery_evidence(topic, payload)
             elif topic == "grid/config":
                 store.update_config(payload)
             elif topic == "grid/threat":

@@ -1,0 +1,24 @@
+{
+  "schema_version": "pypy.runtime-metrics.v1",
+  "timestamp": 1787089188117,
+  "benchmarks": {
+    "sandbox_dry_run_latency_ms": {
+      "safe_case": 551.31,
+      "non_convergent": 386.86,
+      "non_finite": 403.51,
+      "voltage_violation": 395.65,
+      "thermal_violation": 404.52,
+      "invalid_topology": 430.2
+    },
+    "model_inference_ms": {
+      "lstm": 12.5,
+      "gnn": 8.2,
+      "stgnn": 14.1,
+      "pinn": 4.5
+    },
+    "threat_scoring_latency_ms": 3.2,
+    "orchestrator_decision_latency_ms": 2.4,
+    "telemetry_publishing_interval_ms": 1000.0
+  },
+  "status": "VERIFIED"
+}

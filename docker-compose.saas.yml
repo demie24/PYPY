@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_DB: pypy_saas
       POSTGRES_USER: pypy_admin
-      POSTGRES_PASSWORD: pypy_db_secure_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
     ports:
       - "5432:5432"
     volumes:
@@ -43,7 +43,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
       - MQTT_BROKER=mosquitto
     depends_on:
@@ -61,7 +61,7 @@ services:
       dockerfile: core/Dockerfile
     container_name: pypy-sim-worker
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
       - MQTT_BROKER=mosquitto
     depends_on:
@@ -75,7 +75,7 @@ services:
       dockerfile: core/Dockerfile
     container_name: pypy-billing-worker
     environment:
-      - DATABASE_URL=postgresql://pypy_admin:pypy_db_secure_password@postgres:5432/pypy_saas
+      - DATABASE_URL=postgresql://pypy_admin:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/pypy_saas
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       redis:

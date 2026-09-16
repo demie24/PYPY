@@ -1,0 +1,145 @@
+{
+  "accuracy": 0.8660256410256411,
+  "precision_macro": 0.8007513752584994,
+  "recall_macro": 0.862890512430903,
+  "f1_macro": 0.820763728458218,
+  "precision_weighted": 0.806687046206992,
+  "recall_weighted": 0.8660256410256411,
+  "f1_weighted": 0.8257391160239355,
+  "confusion_matrix": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      189,
+      1
+    ],
+    [
+      0,
+      189,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      202,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      14,
+      2,
+      179,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      193,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      204,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      187,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      197
+    ]
+  ],
+  "node_risk_mse": 0.0012222457713864493,
+  "edge_risk_mse": 0.00025502957171088744,
+  "evaluation_mode": "pure_model_output",
+  "prediction_difference_count": 0,
+  "per_class": {
+    "NORMAL": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 190
+    },
+    "N1_LINE": {
+      "precision": 0.9310344827586207,
+      "recall": 0.9947368421052631,
+      "f1_score": 0.9618320610687023,
+      "support": 190
+    },
+    "N1_GENERATOR": {
+      "precision": 0.9901960784313726,
+      "recall": 1.0,
+      "f1_score": 0.9950738916256158,
+      "support": 202
+    },
+    "N2": {
+      "precision": 1.0,
+      "recall": 0.9132653061224489,
+      "f1_score": 0.9546666666666667,
+      "support": 196
+    },
+    "VOLTAGE_INSTABILITY": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 193
+    },
+    "FDIA": {
+      "precision": 0.9951219512195122,
+      "recall": 0.9951219512195122,
+      "f1_score": 0.9951219512195122,
+      "support": 205
+    },
+    "REPLAY": {
+      "precision": 0.4947089947089947,
+      "recall": 1.0,
+      "f1_score": 0.6619469026548672,
+      "support": 187
+    },
+    "DOS": {
+      "precision": 0.9949494949494949,
+      "recall": 1.0,
+      "f1_score": 0.9974683544303797,
+      "support": 197
+    }
+  }
+}

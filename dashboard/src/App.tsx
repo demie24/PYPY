@@ -34,11 +34,12 @@ import { AiCopilot } from "./components/AiCopilot.tsx";
 import { SaaSAdmin } from "./components/SaaSAdmin.tsx";
 import OperationsCenter from "./components/OperationsCenter.tsx";
 import { MainOperationsDashboard } from "./components/MainOperationsDashboard.tsx";
+import { PypyControlCenter } from "./components/PypyControlCenter.tsx";
 import { SimulationQueueMonitor } from "./components/SimulationQueueMonitor.tsx";
 import LandingPage from "./components/LandingPage.tsx";
 import AuthPages from "./components/AuthPages.tsx";
-import UserDashboard from "./components/UserDashboard.tsx";
 import WorkspaceSetupWizard from "./components/WorkspaceSetupWizard.tsx";
+import { emptyRecoveryEvidence, reduceRecoveryEvidence } from "./recoveryEvidence.ts";
 
 
 
@@ -94,8 +95,8 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<
     "landing" | "overview" | "analytics" | "reports" | "settings" | "bcm_center" | "research_workspace" | "scenario_marketplace" | "ai_copilot" | "saas_admin" | "cloud_ops" | "operations_center"
     | "login" | "register" | "forgot_password" | "reset_password" | "verify_email" | "resend_verification"
-    | "user_dashboard" | "setup_wizard"
-  >("landing");
+    | "setup_wizard"
+  >("overview");
 
   // V11.9 Auth state
   const [authToken, setAuthToken] = useState<string>(localStorage.getItem('pypy_token') || '');
@@ -108,7 +109,7 @@ export default function App() {
     setAuthToken(token);
     setAuthUser(user);
     const firstLogin = !localStorage.getItem('pypy_setup_done');
-    setCurrentPage(firstLogin ? 'setup_wizard' : 'user_dashboard');
+    setCurrentPage(firstLogin ? 'setup_wizard' : 'overview');
   };
 
   const handleLogout = () => {
@@ -121,7 +122,7 @@ export default function App() {
 
   const handleSetupComplete = () => {
     localStorage.setItem('pypy_setup_done', 'true');
-    setCurrentPage('user_dashboard');
+    setCurrentPage('overview');
   };
 
   const handleNavFromLanding = (page: string) => {
@@ -248,6 +249,7 @@ export default function App() {
   const [controlProposal, setControlProposal] = useState<any>(null);
   const [orchestratorEvent, setOrchestratorEvent] = useState<any>(null);
   const [lastControl, setLastControl] = useState<any>(null);
+  const [recoveryEvidence, setRecoveryEvidence] = useState(emptyRecoveryEvidence);
   const [threatData, setThreatData] = useState<any>(null);
   const [aiPrediction, setAiPrediction] = useState<any>(null);
   const [predictionHistory, setPredictionHistory] = useState<any[]>([]);
@@ -631,11 +633,13 @@ export default function App() {
 
   const telemTimesRef = useRef<number[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
+  const completeIeee39Ref = useRef<any>(null);
   const reconnectTimeoutRef = useRef<any>(null);
 
   const connectWebSocket = () => {
     const wsHost = window.location.hostname || "localhost";
-    const wsUrl = `ws://${wsHost}:8000/ws`;
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${wsProtocol}://${wsHost}:8000/ws`;
     
     console.log(`Connecting to WebSocket: ${wsUrl}`);
     const ws = new WebSocket(wsUrl);
@@ -659,11 +663,17 @@ export default function App() {
         // Handle initial cache load (Bootstrap)
         if (data.type === "BOOTSTRAP") {
           if (data.telemetry) {
-            setTelemetry(data.telemetry);
+            const busCount = Object.keys(data.telemetry?.state?.buses || {}).length;
+            const branchCount = Object.keys(data.telemetry?.state?.lines || {}).length;
+            if (busCount === 39 && branchCount === 46) completeIeee39Ref.current = data.telemetry;
+            setTelemetry(busCount === 39 && branchCount === 46 ? data.telemetry : completeIeee39Ref.current || data.telemetry);
             setHistory([data.telemetry]);
             if (data.telemetry.grid_name) {
               setSelectedGrid(data.telemetry.grid_name.toLowerCase());
             }
+          }
+          if (Array.isArray(data.recovery_evidence)) {
+            setRecoveryEvidence(data.recovery_evidence.reduce((state: any, item: any) => reduceRecoveryEvidence(state, item.topic, item.payload), emptyRecoveryEvidence()));
           }
           if (data.events) {
             setEvents([...data.events].reverse());
@@ -1066,7 +1076,12 @@ export default function App() {
               setMsgRate(avgDiff > 0 ? 1000 / avgDiff : 0);
             }
 
-            setTelemetry(payload);
+            const busCount = Object.keys(payload?.state?.buses || {}).length;
+            const branchCount = Object.keys(payload?.state?.lines || {}).length;
+            const completeIeee39 = busCount === 39 && branchCount === 46;
+            if (completeIeee39) completeIeee39Ref.current = payload;
+            setTelemetry(completeIeee39 ? payload : completeIeee39Ref.current || payload);
+            setRecoveryEvidence((state) => reduceRecoveryEvidence(state, topic, payload));
             setHistory((prev) => {
               const next = [...prev, payload];
               if (next.length > 50) next.shift();
@@ -1240,6 +1255,7 @@ export default function App() {
               setAttackTarget(null);
             }
           } else if (topic === "grid/alerts") {
+            setRecoveryEvidence((state) => reduceRecoveryEvidence(state, topic, payload));
             setAlerts((prev) => {
               // Ingestion-level deduplication: drop alerts where an identical
               // type+suspect_node already exists within a 15-second window.
@@ -1279,10 +1295,15 @@ export default function App() {
             setThreatData(payload);
           } else if (topic === "grid/control/proposed") {
             setControlProposal(payload);
+            setRecoveryEvidence((state) => reduceRecoveryEvidence(state, topic, payload));
           } else if (topic === "grid/orchestrator/events") {
             setOrchestratorEvent(payload);
+            setRecoveryEvidence((state) => reduceRecoveryEvidence(state, topic, payload));
           } else if (topic === "grid/control") {
             setLastControl(payload);
+            setRecoveryEvidence((state) => reduceRecoveryEvidence(state, topic, payload));
+          } else if (topic === "grid/ai/recovery_policy") {
+            setRecoveryEvidence((state) => reduceRecoveryEvidence(state, topic, payload));
           } else if (topic.startsWith("grid/ai/status/")) {
             const component = topic.split("/").pop();
             if (component) setAiRuntimeStatuses((previous) => ({ ...previous, [component]: payload }));
@@ -1701,7 +1722,7 @@ export default function App() {
   const getSumLoadPower = () => {
     if (!dispTelemetry?.state?.buses) return 0;
     return Object.values(dispTelemetry.state.buses)
-      .filter((b: any) => b.is_load)
+      .filter((b: any) => b.is_load === true)
       .reduce((sum: number, b: any) => sum + (b.P_mw || 0), 0);
   };
 
@@ -2764,17 +2785,6 @@ export default function App() {
     );
   }
 
-  if (currentPage === "user_dashboard" && authToken) {
-    return (
-      <UserDashboard
-        token={authToken}
-        user={authUser as any}
-        onLogout={handleLogout}
-        onNavigate={(p: string) => setCurrentPage(p as any)}
-      />
-    );
-  }
-
   if (currentPage === "setup_wizard" && authToken) {
     return (
       <WorkspaceSetupWizard
@@ -2785,7 +2795,64 @@ export default function App() {
     );
   }
 
+  // The production control-centre shell deliberately reuses the established
+  // WebSocket state and command functions above. Backend topics and payloads
+  // remain unchanged; only presentation and page composition are replaced.
+  return (
+      <PypyControlCenter
+        connected={connected}
+        telemetry={dispTelemetry}
+        totalLoadMw={dispTelemetry?.state?.buses ? getSumLoadPower() : null}
+        threat={dispThreatData}
+        alerts={_alerts}
+        events={_events}
+        activeAttack={dispActiveAttack}
+        recovery={dispL6Recovery}
+        proposal={controlProposal}
+        orchestratorEvent={orchestratorEvent}
+        lastControl={lastControl}
+        recoveryEvidence={recoveryEvidence}
+        aiStatuses={aiRuntimeStatuses}
+        aiFusion={aiFusion}
+        physicsValidation={physicsValidation}
+        trustScores={trustScores}
+        recommendedActions={recommendedActions}
+        preRl={preRlData}
+        flisrState={dispFlisrState}
+        flisrAuto={flisrAuto}
+        lastUpdate={currentTime}
+        messageRate={msgRate}
+        wsLatency={wsLatency}
+        selectedGrid={selectedGrid}
+        onToggleBreaker={toggleBreaker}
+        onSendControl={sendControl}
+        onSendMessage={sendDirectMqtt}
+        onSelectGrid={(grid) => {
+          setSelectedGrid(grid);
+          sendConfig({ grid_name: grid });
+        }}
+        onLogout={authToken ? handleLogout : undefined}
+        topology={(
+          <GridDiagram
+            key={selectedGrid}
+            selectedGrid={selectedGrid}
+            telemetry={dispTelemetry}
+            onToggleBreaker={toggleBreaker}
+            attackStatus={dispTelemetry?.attack_status}
+            flisrState={dispFlisrState}
+            flisrIsolated={dispFlisrIsolated}
+            flisrReconfigured={dispFlisrReconfigured}
+            flisrTripped={dispFlisrTripped}
+          />
+        )}
+      />
+  );
 
+
+  /* Legacy operational presentation retained below only as inert reference
+     while its integration logic is migrated. Runtime rendering cannot reach
+     this point: every non-public/authenticated application state returns the
+     production PypyControlCenter above. */
   return (
     <div className={`h-screen w-screen flex bg-scada-bg text-scada-text relative select-none overflow-hidden transition-all duration-300 ${currentPage === "overview" ? "operations-light" : ""} ${
       crtEnabled ? "scada-crt" : ""

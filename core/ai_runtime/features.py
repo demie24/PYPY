@@ -36,6 +36,10 @@ class IEEE39FeatureFrame:
     edges: np.ndarray
     branch_ids: tuple[str, ...]
     solver_status: Mapping[str, Any]
+    telemetry_id: str | None = None
+    experiment_id: str | None = None
+    scenario_id: str | None = None
+    correlation_id: str | None = None
 
 
 def _finite_float(value: Any, field: str) -> float:
@@ -139,4 +143,8 @@ def extract_ieee39_features(
         edges=edges,
         branch_ids=ordered_branches,
         solver_status=solver_status,
+        telemetry_id=telemetry.get("telemetry_id"),
+        experiment_id=telemetry.get("experiment_id"),
+        scenario_id=telemetry.get("scenario_id"),
+        correlation_id=telemetry.get("correlation_id"),
     )

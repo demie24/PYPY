@@ -82,6 +82,10 @@ class CalibratedFusionEngine:
         ages = {name: current - self.latest[name][0] for name in COMPONENTS}
         if any(age > self.freshness_seconds or age < 0 for age in ages.values()):
             return None
+        source_ids = {self.latest[name][1].get("source_telemetry_id") for name in COMPONENTS}
+        source_ids.discard(None)
+        if len(source_ids) > 1:
+            return None
 
         evidence: dict[str, float] = {}
         raw: dict[str, float] = {}
@@ -106,6 +110,10 @@ class CalibratedFusionEngine:
         return {
             "timestamp": int(current * 1000),
             "source_telemetry_timestamp": (self.latest_telemetry or {}).get("timestamp"),
+            "source_telemetry_id": (self.latest_telemetry or {}).get("telemetry_id"),
+            "experiment_id": (self.latest_telemetry or {}).get("experiment_id"),
+            "scenario_id": (self.latest_telemetry or {}).get("scenario_id"),
+            "correlation_id": (self.latest_telemetry or {}).get("correlation_id") or (self.latest_telemetry or {}).get("telemetry_id"),
             "component": "fusion",
             "calibrated": True,
             "calibration_policy": "nominal-converged-all-breakers-closed",

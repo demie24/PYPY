@@ -1,0 +1,47 @@
+@startuml
+skinparam backgroundcolor #FFFFFF
+skinparam defaultFontName Arial
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #003366
+skinparam RectangleFontColor #003366
+skinparam RectangleFontStyle bold
+
+package "Presentation Layer" {
+  [User / Operator] as User
+  [React Dashboard] as Dashboard
+}
+
+package "Application Layer" {
+  [FastAPI Gateway] as Gateway
+  [MQTT Broker] as MQTT
+}
+
+package "Intelligence Layer" {
+  [Digital Twin Engine (Pandapower)] as DigitalTwin
+  package "AI Layer" {
+    [Physics-Informed Neural Network (PINN)] as PINN
+    [Spatial-Temporal Graph Neural Net (ST-GNN)] as STGNN
+    [PPO Reinforcement Learning Agent] as PPO
+  }
+}
+
+package "Infrastructure Layer" {
+  database "PostgreSQL Database" as Postgres
+  database "Redis" as Redis
+  node "Docker Containers" as Docker
+}
+
+User --> Dashboard : Interactions
+Dashboard --> Gateway : REST API
+Dashboard --> MQTT : WS Stream
+Gateway <--> MQTT : Event Bus
+MQTT --> DigitalTwin : Telemetry
+DigitalTwin --> PINN : Features
+DigitalTwin --> STGNN : Graph Topo
+DigitalTwin --> PPO : State Vector
+Gateway --> Postgres : Persistence
+PPO --> Redis : Memory State
+Intelligence Layer ..> Docker : Container Runtime
+
+caption Figure M.1 Complete PYPY microservices architecture.
+@enduml

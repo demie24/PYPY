@@ -1,0 +1,22 @@
+@startuml
+skinparam backgroundcolor #FFFFFF
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #003366
+skinparam ActivityFontColor #003366
+skinparam ActivityFontStyle bold
+
+start
+repeat
+  :Grid State (s_t);
+  :Observation;
+  :Policy Network (π_θ);
+  :Action Selection (a_t);
+  :Breaker Control;
+  :Grid Response;
+  :Reward Calculation;
+  :Policy Update;
+repeat while (Repeat Loop)
+
+caption Figure R.1 PPO self-healing decision loop.
+@enduml

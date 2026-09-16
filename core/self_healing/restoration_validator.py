@@ -68,6 +68,16 @@ class RestorationValidator:
                 
         return {
             "is_safe": is_safe,
+            "solver_converged": bool(result.get("solver_converged", False)),
+            "finite_state": bool(result.get("finite_state", False)),
+            "voltage_safe": bool(result.get("voltage_safe", False)),
+            "thermal_safe": bool(result.get("thermal_safe", False)),
+            "cascade_safe": bool(result.get("cascade_safe", False)),
+            "topology_valid": bool(result.get("topology_valid", False)),
+            "overall_safe": bool(result.get("overall_safe", False)),
+            "rejection_reason": result.get("rejection_reason"),
+            "solver_method": result.get("solver_method", "unknown"),
+            "timestamp": result.get("timestamp"),
             "violations": violations,
             "safety_score": float(result.get("safety_score", 0.0)),
             "cascade_risk": float(result.get("cascade_risk", 1.0)),

@@ -1,0 +1,14 @@
+**/.git
+**/.env
+**/.env.local
+**/.env.production
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.venv
+**/venv
+**/logs
+**/*.log
+**/dist
+**/.pio
+thesis_assets

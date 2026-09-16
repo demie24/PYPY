@@ -21,6 +21,7 @@ logger = logging.getLogger("ai_detector")
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 TELEMETRY_TOPIC = os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry")
+DEFENCE_EVALUATION_MODE = os.getenv("DEFENCE_EVALUATION_MODE", "experiment_aware").strip().lower()
 
 class NumPyAutoencoderDetector:
     def __init__(self, input_dim=39, hidden_dim=16, lr=0.02):
@@ -185,6 +186,8 @@ def on_message(client, userdata, msg):
         payload = json.loads(msg.payload.decode("utf-8"))
         
         if msg.topic == "grid/attack":
+            if DEFENCE_EVALUATION_MODE == "blind":
+                return
             action = payload.get("action")
             if action == "START":
                 detector.under_attack = True
@@ -280,6 +283,11 @@ def on_message(client, userdata, msg):
                             "loss": round(res["loss"], 6),
                             "threshold": round(res["threshold"], 6),
                             "suspect_node": suspect_bus,
+                            "source_telemetry_timestamp": payload.get("timestamp"),
+                            "source_telemetry_id": payload.get("telemetry_id"),
+                            "experiment_id": payload.get("experiment_id"),
+                            "scenario_id": payload.get("scenario_id"),
+                            "correlation_id": payload.get("correlation_id") or payload.get("telemetry_id"),
                             "msg": f"[{anomaly_class}] Anomalous grid state on {suspect_bus} (reconstruction Δ={round(res['loss'], 5)}, ratio={ratio:.1f}x threshold)."
                         }
                         client.publish("grid/alerts", json.dumps(alert))

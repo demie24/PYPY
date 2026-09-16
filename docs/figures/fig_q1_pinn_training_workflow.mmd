@@ -1,0 +1,19 @@
+graph TD
+    Input["Input Telemetry"] --> Enc["Encoder"]
+    Enc --> Latent["Latent Representation (z)"]
+    Latent --> Dec["Decoder"]
+    Dec --> Pred["Prediction"]
+
+    subgraph LossEngine ["Composite Loss Function Engine"]
+        L_Data["Supervised Loss (L_data)"]
+        L_KCL["KCL Constraint (L_KCL)"]
+        L_KVL["KVL Constraint (L_KVL)"]
+    end
+
+    Pred --> LossEngine
+    L_Data --> WeightBal["Dynamic Weight Balancing"]
+    L_KCL --> WeightBal
+    L_KVL --> WeightBal
+
+    WeightBal --> Backprop["Backpropagation"]
+    Backprop --> ModelUpdate["Updated Model"]

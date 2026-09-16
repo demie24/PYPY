@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 920" width="1100" height="920">
+  <defs>
+    <style>
+      .title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 17px; font-weight: bold; fill: #003366; text-anchor: middle; letter-spacing: 0.5px; }
+      .caption { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 13.5px; font-weight: bold; fill: #1A252C; text-anchor: middle; }
+      .layer-title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 12px; font-weight: bold; fill: #003366; letter-spacing: 0.5px; }
+      .box-title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 12px; font-weight: bold; fill: #003366; text-anchor: middle; }
+      .box-desc { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 10.5px; fill: #1A252C; text-anchor: middle; }
+      .box-muted { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 9.5px; fill: #566573; text-anchor: middle; }
+      .line-label { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 10px; font-weight: bold; fill: #1A5276; text-anchor: middle; }
+      .layer-rect { fill: #F8FAFC; stroke: #CBD5E1; stroke-width: 1.5px; stroke-dasharray: 4,4; rx: 6px; }
+      .node-rect { fill: #FFFFFF; stroke: #003366; stroke-width: 1.75px; rx: 5px; }
+      .node-fill { fill: #F1F5F9; stroke: #003366; stroke-width: 1.75px; rx: 5px; }
+      .node-rhombus { fill: #EBF5FB; stroke: #003366; stroke-width: 1.75px; }
+      .arrow-line { stroke: #2C3E50; stroke-width: 1.75px; fill: none; marker-end: url(#arrow); }
+      .dashed-line { stroke: #1A5276; stroke-width: 1.5px; stroke-dasharray: 4,4; fill: none; marker-end: url(#arrow-blue); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2C3E50" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1A5276" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="920" fill="#FFFFFF" />
+  <rect x="15" y="15" width="1070" height="890" fill="none" stroke="#E2E8F0" stroke-width="1.5" />
+
+  <!-- Header Title -->
+  <text x="550.0" y="45" class="title">COMPLETE PYPY MICROSERVICES ARCHITECTURE</text>
+  <line x1="370.0" y1="54" x2="730.0" y2="54" stroke="#003366" stroke-width="1.5" />
+
+  <!-- Content -->
+
+    <!-- Presentation Layer -->
+    <rect x="50" y="80" width="1000" height="150" class="layer-rect" />
+    <text x="70" y="105" class="layer-title">PRESENTATION LAYER</text>
+
+    <rect x="200" y="120" width="220" height="80" class="node-rect" />
+    <text x="310" y="152" class="box-title">User / Operator</text>
+    <text x="310" y="172" class="box-desc">Grid Dispatcher / Analyst</text>
+
+    <rect x="680" y="120" width="260" height="80" class="node-rect-fill" />
+    <text x="810" y="152" class="box-title">React Dashboard</text>
+    <text x="810" y="172" class="box-desc">Single-Line Diagram &amp; Alerts UI</text>
+
+    <!-- Arrow Presentation -->
+    <path d="M 420 160 L 680 160" class="arrow-line" />
+    <text x="550" y="152" class="line-label">HTTP / WebSocket</text>
+
+    <!-- Application Layer -->
+    <rect x="50" y="270" width="1000" height="170" class="layer-rect" />
+    <text x="70" y="295" class="layer-title">APPLICATION LAYER</text>
+
+    <rect x="200" y="315" width="260" height="90" class="node-rect-fill" />
+    <text x="330" y="350" class="box-title">FastAPI Gateway</text>
+    <text x="330" y="370" class="box-desc">REST Endpoints, WS Router, JWT</text>
+
+    <rect x="680" y="315" width="260" height="90" class="node-rect-fill" />
+    <text x="810" y="350" class="box-title">MQTT Broker</text>
+    <text x="810" y="370" class="box-desc">Eclipse Mosquitto (Pub/Sub Bus)</text>
+
+    <path d="M 460 360 L 680 360" class="arrow-line" />
+    <text x="570" y="352" class="line-label">Internal IPC / Events</text>
+
+    <path d="M 810 200 L 810 315" class="arrow-line" />
+    <text x="825" y="260" class="line-label">WS Stream</text>
+
+    <path d="M 330 200 L 330 315" class="arrow-line" />
+    <text x="345" y="260" class="line-label">REST API Calls</text>
+
+    <!-- Intelligence Layer -->
+    <rect x="50" y="480" width="1000" height="210" class="layer-rect" />
+    <text x="70" y="505" class="layer-title">INTELLIGENCE LAYER</text>
+
+    <rect x="80" y="530" width="260" height="130" class="node-rect" />
+    <text x="210" y="585" class="box-title">Digital Twin Engine</text>
+    <text x="210" y="605" class="box-desc">Pandapower Solver (IEEE 9-Bus)</text>
+
+    <!-- AI Subsystem Box -->
+    <rect x="390" y="515" width="630" height="155" fill="#FFFFFF" stroke="#1A5276" stroke-width="1.5" rx="5" stroke-dasharray="3,3" />
+    <text x="410" y="537" class="layer-title" style="font-size:11px;">AI SUBSYSTEM LAYER</text>
+
+    <rect x="410" y="555" width="180" height="90" class="node-rect-fill" />
+    <text x="500" y="590" class="box-title">PINN Module</text>
+    <text x="500" y="610" class="box-desc">Physics-Informed Neural Net</text>
+
+    <rect x="615" y="555" width="180" height="90" class="node-rect-fill" />
+    <text x="705" y="590" class="box-title">ST-GNN Module</text>
+    <text x="705" y="610" class="box-desc">Spatial-Temporal Graph Net</text>
+
+    <rect x="820" y="555" width="180" height="90" class="node-rect-fill" />
+    <text x="910" y="590" class="box-title">PPO Agent</text>
+    <text x="910" y="610" class="box-desc">RL Self-Healing Logic</text>
+
+    <path d="M 810 405 L 810 480 L 210 480 L 210 530" class="arrow-line" />
+    <path d="M 810 405 L 810 515" class="arrow-line" />
+    <path d="M 340 595 L 410 595" class="arrow-line" />
+    <text x="375" y="587" class="line-label">Telemetry</text>
+
+    <!-- Infrastructure Layer -->
+    <rect x="50" y="720" width="1000" height="140" class="layer-rect" />
+    <text x="70" y="745" class="layer-title">INFRASTRUCTURE LAYER</text>
+
+    <rect x="100" y="760" width="260" height="75" class="node-rect" />
+    <text x="230" y="795" class="box-title">PostgreSQL Database</text>
+    <text x="230" y="815" class="box-desc">Relational Store (Users, Logs, Audit)</text>
+
+    <rect x="420" y="760" width="260" height="75" class="node-rect" />
+    <text x="550" y="795" class="box-title">Redis</text>
+    <text x="550" y="815" class="box-desc">Session Cache &amp; Celery Broker</text>
+
+    <rect x="740" y="760" width="260" height="75" class="node-rect" />
+    <text x="870" y="795" class="box-title">Docker Containers</text>
+    <text x="870" y="815" class="box-desc">Containerization &amp; Deployment</text>
+
+    <path d="M 230 660 L 230 760" class="arrow-line" />
+    <path d="M 550 670 L 550 760" class="arrow-line" />
+    <path d="M 870 670 L 870 760" class="arrow-line" />
+
+
+  <!-- Caption -->
+  <text x="550.0" y="895" class="caption">Figure M.1 Complete PYPY microservices architecture.</text>
+</svg>

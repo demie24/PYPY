@@ -80,7 +80,8 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
   // Fetch dynamic topology on mount or grid name change
   useEffect(() => {
     const host = window.location.hostname || "localhost";
-    fetch(`http://${host}:8000/api/telemetry/topology?grid_name=${gridName}`)
+    const protocol = window.location.protocol === "https:" ? "https" : "http";
+    fetch(`${protocol}://${host}:8000/api/telemetry/topology?grid_name=${gridName}`)
       .then((res) => res.json())
       .then((data) => setTopology(data))
       .catch((err) => {
@@ -281,7 +282,7 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
       <div className="flex justify-between items-center border-b border-scada-border/40 pb-2">
         <h2 className="text-xs font-bold tracking-wider text-scada-dimText uppercase flex items-center gap-1.5">
           <Activity size={14} className="text-scada-nominal animate-pulse" />
-          Interactive {(telemetry?.grid_name || "ieee39").toUpperCase().replace("IEEE", "IEEE ")} Transmission SCADA Diagram
+          Interactive {(telemetry?.grid_name || "ieee39").toUpperCase().replace("IEEE", "IEEE ")} transmission topology
         </h2>
         
         {/* Navigation & Controls */}
@@ -678,10 +679,10 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
                     x={coord.x} 
                     y={coord.y - 15} 
                     textAnchor="middle" 
-                    fill={isComp ? "#EF4444" : "#F3F4F6"}
+                    fill={isComp ? "#EF4444" : "#334155"}
                     fontSize="12.5" 
                     fontWeight="bold"
-                    stroke="#090d16"
+                    stroke="#f8fafc"
                     strokeWidth="3.5"
                     paintOrder="stroke fill"
                     strokeLinejoin="round"
@@ -696,7 +697,7 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
                     y={coord.y + 20} 
                     textAnchor="middle" 
                     fontSize="11.5" 
-                    stroke="#090d16"
+                    stroke="#f8fafc"
                     strokeWidth="3"
                     paintOrder="stroke fill"
                     strokeLinejoin="round"
@@ -713,7 +714,7 @@ export const GridDiagram: React.FC<GridDiagramProps> = ({
                       textAnchor="middle" 
                       fontSize="9.5" 
                       fill="#9CA3AF"
-                      stroke="#090d16"
+                      stroke="#f8fafc"
                       strokeWidth="2.5"
                       paintOrder="stroke fill"
                       strokeLinejoin="round"

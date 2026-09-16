@@ -1,0 +1,35 @@
+{
+  "mode": "baseline",
+  "started_at": 1789241050957,
+  "baseline": {
+    "first_timestamp": 1789241052727,
+    "last_timestamp": 1789241057706,
+    "buses": 9,
+    "branches": 9,
+    "attack": {
+      "active_attack": null,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "open": [],
+    "voltage_min": 0.982,
+    "voltage_max": 1.056,
+    "headline": "GRID REQUIRES ATTENTION"
+  },
+  "topics": {
+    "grid/threat": 6,
+    "grid/ai/fusion": 12,
+    "grid/ai/recovery_policy": 6,
+    "grid/physics_validation": 6,
+    "grid/trust_scores": 6
+  },
+  "alerts": [],
+  "decisions": [],
+  "controls": [],
+  "proposals": [],
+  "commands": [],
+  "page_errors": [],
+  "request_failures": [],
+  "websocket_closes": 0,
+  "completed_at": 1789241058501
+}

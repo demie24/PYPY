@@ -1,0 +1,22 @@
+{
+  "platform": "Linux-7.0.12+kali-amd64-x86_64-with-glibc2.42",
+  "python_version": "3.13.14",
+  "os_name": "Linux",
+  "os_release": "7.0.12+kali-amd64",
+  "cpu_count": 12,
+  "git_branch": "thesis-methodology-hardening",
+  "git_commit": "5f00008a8ece9a13aaaa37d1ce5c91668b7e7b9e",
+  "docker_version": "Docker version 28.5.2+dfsg4, build 9cc6dea35e9a963f281434761c656fba4ac43aed",
+  "docker_compose_version": "Docker Compose version 2.40.3-3",
+  "cwd": "/home/demie/.gemini/antigravity/scratch/smart-grid-cybersecurity",
+  "packages": {
+    "torch": "2.7.1+cu118",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "pandapower": "3.4.0",
+    "paho.mqtt": "INSTALLED",
+    "fastapi": "0.135.3",
+    "scipy": "1.17.1",
+    "docx": "1.2.0"
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "mode": "breaker",
+  "started_at": 1789277170092,
+  "baseline": {
+    "first_timestamp": 1789277171667,
+    "last_timestamp": 1789277176681,
+    "buses": 39,
+    "branches": 46,
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "attack": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "open": [],
+    "voltage_min": 0.982,
+    "voltage_max": 1.0636,
+    "headline": "GRID STABLE · MONITORING"
+  },
+  "attack_confirmed": true,
+  "attack_state": {
+    "timestamp": 1789277179676,
+    "attack": {
+      "active_attack": "BREAKER_MANIPULATION",
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {
+        "L_line_0": {
+          "type": "BREAKER_MANIPULATION",
+          "severity": "CRITICAL"
+        }
+      },
+      "stages": []
+    },
+    "breaker": "OPEN",
+    "bus5": {
+      "voltage_pu": 0.9989,
+      "angle_rad": -0.1974,
+      "is_load": false,
+      "is_gen": false,
+      "frequency_hz": 60.04,
+      "P_mw": 0,
+      "Q_mvar": 0
+    },
+    "headline": "CYBER ATTACK IN PROGRESS"
+  },
+  "stop_confirmed": true,
+  "closed_after_stop": true,
+  "final": {
+    "timestamp": 1789277189710,
+    "attack": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "breaker": "CLOSED",
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "bus5": {
+      "voltage_pu": 1.001,
+      "angle_rad": -0.1972,
+      "is_load": false,
+      "is_gen": false,
+      "frequency_hz": 60.04,
+      "P_mw": 0,
+      "Q_mvar": 0
+    },
+    "headline": "VERIFYING GRID RESPONSE"
+  },
+  "topics": {
+    "grid/ai/fusion": 38,
+    "grid/threat": 19,
+    "grid/ai/recovery_policy": 19,
+    "grid/physics_validation": 19,
+    "grid/trust_scores": 19,
+    "grid/events": 4,
+    "grid/control/proposed": 1,
+    "grid/control": 1,
+    "grid/orchestrator/events": 1
+  },
+  "alerts": [],
+  "decisions": [
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789277184723,
+        "event": "APPROVAL",
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "AI_RL_PPO_DQN_CONSENSUS",
+        "reason": "Passed PPO/DQN actuator consensus, restoration sandbox, and orchestrator safety checks.",
+        "source_telemetry_id": "ui-1789277177791:1789277184681",
+        "experiment_id": "ui-1789277177791",
+        "scenario_id": null,
+        "correlation_id": "ui-1789277177791:L_line_0"
+      },
+      "received_at": 1789277184886
+    }
+  ],
+  "controls": [
+    {
+      "topic": "grid/control",
+      "payload": {
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "ORCHESTRATOR_APPROVED",
+        "original_source": "AI_RL_PPO_DQN_CONSENSUS",
+        "source_telemetry_id": "ui-1789277177791:1789277184681",
+        "experiment_id": "ui-1789277177791",
+        "scenario_id": null,
+        "correlation_id": "ui-1789277177791:L_line_0"
+      },
+      "received_at": 1789277184886
+    }
+  ],
+  "proposals": [
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "CLOSE",
+        "target": "L_line_0",
+        "source": "AI_RL_PPO_DQN_CONSENSUS",
+        "sandbox": {
+          "is_safe": true,
+          "solver_converged": true,
+          "finite_state": true,
+          "voltage_safe": true,
+          "thermal_safe": true,
+          "cascade_safe": true,
+          "topology_valid": true,
+          "overall_safe": true,
+          "rejection_reason": null,
+          "solver_method": "converged",
+          "timestamp": 1789277184716,
+          "violations": [],
+          "safety_score": 1,
+          "cascade_risk": 0.13255025127182235,
+          "confidence": 0.5475041751601974,
+          "predicted_voltages": [
+            1.0386337588828722,
+            1.046714965666081,
+            1.0268642123106078,
+            0.9999514867553331,
+            1.001472002247766,
+            1.0039524409089369,
+            0.9931596922965951,
+            0.9922075394188403,
+            1.0263866698961923,
+            1.0143214782736816,
+            1.0095915598732053,
+            0.9968438259884242,
+            1.0110193404165169,
+            1.0075345878026862,
+            1.0091010590370526,
+            1.024575396575445,
+            1.0280690723574515,
+            1.0262379706653584,
+            1.0471743812417458,
+            0.9893850450271159,
+            1.0263841090782753,
+            1.0465198012468977,
+            1.0408336923703163,
+            1.0260550809111713,
+            1.0561564462445185,
+            1.049619863899678,
+            1.0339190621195895,
+            1.0490149315170534,
+            1.049164290319358,
+            1.0499,
+            0.982,
+            0.9841000000000001,
+            0.9971999999999999,
+            1.0123,
+            1.0494,
+            1.0636,
+            1.0275,
+            1.0265,
+            1.03
+          ],
+          "predicted_loadings": {
+            "L_line_0": 0.2879631070985857,
+            "L_line_1": 0.1706928644015933,
+            "L_line_2": 0.5514104074192028,
+            "L_line_3": 0.4217742858308465,
+            "L_line_4": 0.2352559512540128,
+            "L_line_5": 0.07540546703325265,
+            "L_line_6": 0.32836996516479616,
+            "L_line_7": 0.4511014631242858,
+            "L_line_8": 0.8990216388961524,
+            "L_line_9": 0.5786662184173617,
+            "L_line_10": 0.7745284382559913,
+            "L_line_11": 0.544364164755346,
+            "L_line_12": 0.36805842876550215,
+            "L_line_13": 0.20082302543179356,
+            "L_line_14": 0.13648598853680796,
+            "L_line_15": 0.5610848261633758,
+            "L_line_16": 0.5371714853452934,
+            "L_line_17": 0.5237277085373366,
+            "L_line_18": 0.09477059193666838,
+            "L_line_19": 0.5102771248341434,
+            "L_line_20": 0.37782649982606975,
+            "L_line_21": 0.7465433238446348,
+            "L_line_22": 0.5411199666650752,
+            "L_line_23": 0.08220554472210104,
+            "L_line_24": 0.32369734294594626,
+            "L_line_25": 0.09538092347154435,
+            "L_line_26": 1.001168044116121,
+            "L_line_27": 0.12966453697859892,
+            "L_line_28": 0.5731691622344359,
+            "L_line_29": 0.9001802500920038,
+            "L_line_30": 0.12264688471998353,
+            "L_line_31": 0.4436681435461145,
+            "L_line_32": 0.24255369592663267,
+            "L_line_33": 0.32394644530542754,
+            "L_line_34": 0.5591429205763606,
+            "L_trafo_0": 0.4717478549400738,
+            "L_trafo_1": 1.1230300847789227,
+            "L_trafo_2": 1.09229251441804,
+            "L_trafo_3": 0.07155869362681579,
+            "L_trafo_4": 0.07705503583982737,
+            "L_trafo_5": 0.28242224650114073,
+            "L_trafo_6": 1.011202571831844,
+            "L_trafo_7": 0.880706812991231,
+            "L_trafo_8": 1.0762371841400624,
+            "L_trafo_9": 0.8580821716393212,
+            "L_trafo_10": 1.320869087176061
+          }
+        },
+        "source_telemetry_id": "ui-1789277177791:1789277184681",
+        "experiment_id": "ui-1789277177791",
+        "scenario_id": null,
+        "correlation_id": "ui-1789277177791:L_line_0"
+      },
+      "received_at": 1789277184885
+    }
+  ],
+  "commands": [
+    {
+      "topic": "grid/attack",
+      "payload": {
+        "action": "START",
+        "type": "BREAKER_MANIPULATION",
+        "experiment_id": "ui-1789277177791",
+        "correlation_id": "ui-1789277177791:L_line_0",
+        "config": {
+          "target": "L_line_0",
+          "command": "OPEN"
+        }
+      }
+    },
+    {
+      "topic": "grid/attack",
+      "payload": {
+        "action": "STOP"
+      }
+    }
+  ],
+  "page_errors": [],
+  "request_failures": [],
+  "websocket_closes": 0,
+  "completed_at": 1789277190205
+}

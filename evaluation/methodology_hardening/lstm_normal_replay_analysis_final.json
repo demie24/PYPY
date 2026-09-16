@@ -1,0 +1,24 @@
+{
+  "generated_at_utc": "2026-08-19T07:46:00Z",
+  "source_artifact": "evaluation/methodology_hardening/lstm_corrected_evaluation.json",
+  "extracted_metrics": {
+    "NORMAL": {
+      "f1_score": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 177
+    },
+    "REPLAY": {
+      "f1_score": 0.6666666666666666,
+      "precision": 0.5,
+      "recall": 1.0,
+      "support": 177
+    },
+    "macro_f1": 0.8333333333333333,
+    "weighted_f1": 0.8333333333333334,
+    "accuracy": 0.875
+  },
+  "interpretation": "Under leakage-safe chronological partitioning, static or weakly varying load conditions cause normal baseline sequence windows to resemble stale telemetry replayed during REPLAY attacks. The LSTM over-triggers toward the REPLAY class, resulting in REPLAY recall of 1.0000 and precision of 0.5000 (absorbing normal samples into replay predictions).",
+  "chapter_4_defence_paragraph_valid": true,
+  "warning": "Do not manually alter empirical outputs; standalone temporal detector limitations justify multi-layer cross-validation."
+}

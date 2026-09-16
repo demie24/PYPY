@@ -114,7 +114,12 @@ class RecoveryPolicyRuntime:
         sandbox = None
         if consensus:
             sandbox = self.validator.validate_action(telemetry, "RECONNECT_LINE", target)
-            consensus = sandbox["is_safe"] is True
+            consensus = (
+                sandbox["is_safe"] is True
+                and sandbox.get("solver_converged") is True
+                and sandbox.get("finite_state") is True
+                and sandbox.get("overall_safe") is True
+            )
         return {
             "timestamp": int(time.time() * 1000),
             "component": "recovery_policy",
@@ -126,6 +131,11 @@ class RecoveryPolicyRuntime:
             "consensus": consensus,
             "target": target,
             "sandbox": sandbox,
+            "source_telemetry_timestamp": telemetry.get("timestamp"),
+            "source_telemetry_id": telemetry.get("telemetry_id"),
+            "experiment_id": telemetry.get("experiment_id"),
+            "scenario_id": telemetry.get("scenario_id"),
+            "correlation_id": telemetry.get("correlation_id") or telemetry.get("telemetry_id"),
         }
 
     def _decision(self, name, action_id, scores, target):
@@ -190,12 +200,19 @@ class MQTTRecoveryPolicyService:
             decision["actuator_guard_satisfied"] = topology_stable_seconds >= 5.2
             client.publish("grid/ai/recovery_policy", json.dumps(decision, allow_nan=False))
             for model in ("ppo", "dqn"):
-                client.publish(f"grid/ai/recovery/{model}", json.dumps(decision["model_decisions"][model], allow_nan=False))
+                model_payload = dict(decision["model_decisions"][model])
+                for key in ("source_telemetry_timestamp", "source_telemetry_id", "experiment_id", "scenario_id", "correlation_id"):
+                    model_payload[key] = decision.get(key)
+                client.publish(f"grid/ai/recovery/{model}", json.dumps(model_payload, allow_nan=False))
             signature = (decision["target"], topology)
             if decision["consensus"] and decision["actuator_guard_satisfied"] and signature != self.last_proposal_signature:
                 client.publish("grid/control/proposed", json.dumps({
                     "command": "CLOSE", "target": decision["target"],
                     "source": "AI_RL_PPO_DQN_CONSENSUS", "sandbox": decision["sandbox"],
+                    "source_telemetry_id": decision.get("source_telemetry_id"),
+                    "experiment_id": decision.get("experiment_id"),
+                    "scenario_id": decision.get("scenario_id"),
+                    "correlation_id": decision.get("correlation_id"),
                 }, allow_nan=False))
                 self.last_proposal_signature = signature
             self.readiness.record_inference()

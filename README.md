@@ -1,10 +1,35 @@
-# PYPY: Smart Grid Cybersecurity Research Platform
+# PYPY — AI-Driven Cyber-Physical Immune System for Smart Grid Cybersecurity
 
 PYPY is an event-driven cyber-physical research platform for smart-grid simulation, attack detection, threat assessment, and safety-gated recovery. The default Docker Compose runtime uses the IEEE 39-Bus model.
 
 > Research software: do not connect this stack to live grid infrastructure without an independent security and safety assessment.
 
-## Current Runtime Architecture
+## Project Overview and Problem Statement
+
+Smart-grid attacks can corrupt measurements and control commands. PYPY studies how
+telemetry-based detection, physical validation, evidence fusion, and safety-gated
+response can distinguish threats and verify simulated recovery. It is an academic
+research and demonstration project, not a certified grid protection product.
+
+## Key Features and Dashboard
+
+- IEEE 39-Bus digital twin with live topology, authoritative load totals calculated
+  from buses marked `is_load === true`, and real API/MQTT telemetry.
+- Overview and PYPY Control Center with service readiness, detection evidence,
+  decision pipeline, event timeline, and recovery workflow.
+- Exhibition Mode at `#/exhibition`: attack selector, live topology, attract mode,
+  fullscreen, animations, and optional audio.
+- Recovery verification requires observed OPEN, STOP, approval, CLOSE, and newer
+  CLOSED telemetry, with no active attacker and a converged solver, before
+  **GRID SECURED**. Stopping an attack alone is not proof of autonomous recovery.
+
+See the [operator card](EXHIBITION_STARTUP.md),
+[technical manual](docs/PYPY_COMPLETE_USER_AND_TECHNICAL_MANUAL.md), and
+[demo recovery guide](docs/PYPY_DEMO_FAILURE_RECOVERY.md).
+Existing [dashboard screenshots](docs/screenshots/) and
+[architecture diagrams](docs/figures/) document the interface and design.
+
+## System Architecture
 
 The verified runtime flow is:
 
@@ -57,7 +82,22 @@ The PPO/DQN checkpoints retain a legacy 72-feature tensor shape. Runtime coverag
 
 ## Quick Start
 
-Prerequisites are Docker with Compose support. Start the complete verified runtime with:
+Prerequisites are Git and Docker with Compose support. The release includes the
+six active inference checkpoints and two reference-evaluation checkpoints; see
+[artifact checksums and reproduction notes](docs/RELEASE_PREPARATION.md).
+
+```bash
+git clone https://github.com/demie24/PYPY.git
+cd PYPY
+cp .env.example .env
+```
+
+Set `POSTGRES_PASSWORD` in the local `.env` before starting. For an existing
+PostgreSQL volume, retain its current password; changing an environment variable
+does not rotate a database user's password. The example also documents optional
+services; the default local Compose stack uses its own service configuration.
+
+Start the system with:
 
 ```bash
 docker compose up -d --build --remove-orphans
@@ -77,8 +117,9 @@ Inspect service logs with `docker compose logs --tail=200 SERVICE`.
 
 ## Verification
 
-The current integration baseline is **868 passed, 0 failed, 0 errors**. The
-`verified-baseline-2026-08-18` tag preserves the preceding 835-test runtime baseline.
+Final release validation results are recorded in
+[release preparation](docs/RELEASE_PREPARATION.md). Earlier verification documents
+are dated experimental evidence, not new release measurements.
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python -m pytest -q
@@ -121,7 +162,7 @@ The machine-readable payload contract for the verified topics is in
 core/digital_twin/   IEEE-39 simulator and MQTT control endpoint
 core/ai_detection/   telemetry anomaly and FDIA detection
 core/ai_runtime/     LSTM/GNN/ST-GNN/PINN serving and fusion
-core/physics/        IEEE-39 physics validation and dynamic TRUST scoring
+core/physics_validation/ IEEE-39 physics validation and dynamic TRUST scoring
 core/adversarial/    pathogen–immune co-evolution and evaluation
 core/threat_engine/  alert correlation and threat scoring
 core/self_healing/   safety-gated recovery planning
@@ -130,6 +171,56 @@ core/gateway/        REST, WebSocket, and MQTT bridge
 dashboard/           React/Vite operator interface
 tests/               unit, integration, cyber, and physics regression tests
 ```
+
+## Technology Stack and Development
+
+Python/FastAPI, PyTorch and NumPy support the backend and AI/ML components;
+pandapower supports AC power-flow validation. The dashboard uses React,
+TypeScript and Vite. Docker Compose connects MQTT, PostgreSQL, Redis and the
+application services. InfluxDB appears in historical documentation but is not a
+service in the default Compose stack.
+
+For the Python environment use Python 3.10 and the repository dependency files:
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+pip install -r core/requirements.txt -r core/requirements-ai.txt
+pip install -e . pytest pytest-cov flake8 mock anyio typeguard
+PYTHONDONTWRITEBYTECODE=1 python -m pytest -q
+```
+
+Frontend development and validation use Node.js 22 or later:
+
+```bash
+cd dashboard
+npm ci
+npm test
+npm run build  # includes TypeScript validation
+npm run dev
+```
+
+Browser regression scripts in `dashboard/tests/*.browser.mjs` require Playwright
+and a running dashboard/gateway; `PLAYWRIGHT_MODULE` can point to its installed
+module. See the dashboard QA documents for prerequisites and scope.
+
+## AI/ML Components and Research Scope
+
+The repository includes IDS/anomaly detection, LSTM, GNN/ST-GNN models, PINN
+diagnostics, TRUST/fusion, and PPO/DQN recovery. The runtime pipeline above identifies the active services; source
+presence does not imply every research variant is deployed. FLISR/recovery logic
+is gated by physical evidence, sandbox checks and orchestrator approval.
+
+The simulated benchmark and recorded experiments do not establish field accuracy,
+production readiness, native IEEE-39 RL retraining, or safety certification.
+The manual explains feature contracts, training splits, limitations and the
+separation between active services and experimental modules.
+
+## Academic Project Notice and Author
+
+PYPY is an academic smart-grid cybersecurity project by **demie24** (the repository
+author). Thesis drafts, assessment documents and personal academic materials are
+excluded from the source release.
 
 ## Security
 

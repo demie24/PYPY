@@ -1,0 +1,72 @@
+{
+  "generated_at_utc": "2026-08-19T07:46:00Z",
+  "total_artifacts_audited": 13,
+  "all_valid": true,
+  "artifact_details": {
+    "evaluation/methodology_hardening/temporal_overlap_report.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/lstm_corrected_evaluation.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/gnn_raw_evaluation.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/gnn_postprocessed_evaluation.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/stgnn_corrected_evaluation.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/pinn_physics_audit.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/blind_detection_report.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/sandbox_safety_report.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/runtime_metrics.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/safety_metrics.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/correlation_trace.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/coevolution/verified/report.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    },
+    "evaluation/methodology_hardening/pathogen_immune_expanded/report.json": {
+      "exists": true,
+      "parse_status": "VALID_JSON",
+      "supports_chapter_4": true
+    }
+  }
+}

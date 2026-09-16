@@ -1,0 +1,946 @@
+{
+  "mode": "fdia",
+  "started_at": 1789275353731,
+  "baseline": {
+    "first_timestamp": 1789275355370,
+    "last_timestamp": 1789275360391,
+    "buses": 39,
+    "branches": 46,
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "attack": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "open": [],
+    "voltage_min": 0.982,
+    "voltage_max": 1.0636,
+    "headline": "GRID REQUIRES ATTENTION"
+  },
+  "attack_confirmed": true,
+  "attack_state": {
+    "timestamp": 1789275384419,
+    "attack": {
+      "active_attack": "FDIA",
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {
+        "Bus_5": {
+          "type": "FDIA",
+          "severity": "HIGH"
+        }
+      },
+      "stages": []
+    },
+    "breaker": "CLOSED",
+    "bus5": {
+      "voltage_pu": 1.1515,
+      "angle_rad": -0.1963,
+      "is_load": false,
+      "is_gen": false,
+      "frequency_hz": 60.04,
+      "P_mw": 0,
+      "Q_mvar": 0
+    },
+    "headline": "CYBER ATTACK IN PROGRESS"
+  },
+  "stop_confirmed": true,
+  "final": {
+    "timestamp": 1789275403429,
+    "attack": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "breaker": "CLOSED",
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "bus5": {
+      "voltage_pu": 1.0014,
+      "angle_rad": -0.197,
+      "is_load": false,
+      "is_gen": false,
+      "frequency_hz": 60.04,
+      "P_mw": 0,
+      "Q_mvar": 0
+    },
+    "headline": "ANOMALY DETECTED"
+  },
+  "topics": {
+    "grid/threat": 50,
+    "grid/ai/fusion": 99,
+    "grid/ai/recovery_policy": 50,
+    "grid/physics_validation": 49,
+    "grid/trust_scores": 49,
+    "grid/events": 5,
+    "grid/control/proposed": 36,
+    "grid/orchestrator/events": 36,
+    "grid/alerts": 3
+  },
+  "alerts": [
+    {
+      "topic": "grid/alerts",
+      "payload": {
+        "timestamp": 1789275367405,
+        "type": "GRID_DEVIATION",
+        "severity": "CRITICAL",
+        "loss": 0.02228,
+        "threshold": 0.001,
+        "suspect_node": "Bus_5",
+        "source_telemetry_timestamp": 1789275367395,
+        "source_telemetry_id": "ui-1789275361543:1789275367395",
+        "experiment_id": "ui-1789275361543",
+        "scenario_id": null,
+        "correlation_id": "ui-1789275361543:Bus_5",
+        "msg": "[GRID_DEVIATION] Anomalous grid state on Bus_5 (reconstruction Δ=0.02228, ratio=22.3x threshold)."
+      },
+      "received_at": 1789275367522
+    },
+    {
+      "topic": "grid/alerts",
+      "payload": {
+        "timestamp": 1789275385404,
+        "type": "GRID_DEVIATION",
+        "severity": "WARNING",
+        "loss": 0,
+        "threshold": 0.001,
+        "suspect_node": "Bus_12",
+        "source_telemetry_timestamp": 1789275385400,
+        "source_telemetry_id": "ui-1789275361543:1789275385400",
+        "experiment_id": "ui-1789275361543",
+        "scenario_id": null,
+        "correlation_id": "ui-1789275361543:Bus_5",
+        "msg": "[GRID_DEVIATION] Anomalous grid state on Bus_12 (reconstruction Δ=0.0, ratio=0.0x threshold)."
+      },
+      "received_at": 1789275385463
+    },
+    {
+      "topic": "grid/alerts",
+      "payload": {
+        "timestamp": 1789275387417,
+        "type": "GRID_DEVIATION",
+        "severity": "WARNING",
+        "loss": 0,
+        "threshold": 0.001,
+        "suspect_node": "Bus_5",
+        "source_telemetry_timestamp": 1789275387412,
+        "source_telemetry_id": "ui-1789275361543:1789275387412",
+        "experiment_id": "ui-1789275361543",
+        "scenario_id": null,
+        "correlation_id": "ui-1789275361543:Bus_5",
+        "msg": "[GRID_DEVIATION] Anomalous grid state on Bus_5 (reconstruction Δ=0.0, ratio=0.0x threshold)."
+      },
+      "received_at": 1789275387551
+    }
+  ],
+  "decisions": [
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275362406,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score=0.00, stability=97.0%, veto=False).",
+        "source_telemetry_id": null,
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": null
+      },
+      "received_at": 1789275362479
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275362407,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score=0.00, stability=97.0%, veto=False).",
+        "source_telemetry_id": null,
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": null
+      },
+      "received_at": 1789275362479
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275362408,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Blocked: Action requires OPERATOR_APPROVAL_REQUIRED (consensus_score=0.00, stability=97.0%, veto=False).",
+        "source_telemetry_id": null,
+        "experiment_id": null,
+        "scenario_id": null,
+        "correlation_id": null
+      },
+      "received_at": 1789275362479
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275364414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275364599
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275364414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275364602
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275364414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275364604
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275366414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275366658
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275366414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275366658
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275366415,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275366665
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275368420,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275368661
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275368420,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275368663
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275368420,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275368665
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275370422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275370691
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275370422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275370695
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275370422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275370695
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275372414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275372663
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275372414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275372704
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275372415,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275372704
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275374414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275374489
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275374414,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275374489
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275374415,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275374660
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275376413,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275376496
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275376413,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275376497
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275376413,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275376497
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275378422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275378498
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275378422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275378498
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275378422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275378674
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275380422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275380483
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275380422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275380483
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275380422,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275380484
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275382426,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275382675
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275382426,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275382678
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275382427,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275382680
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275384434,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_6",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275384858
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275384434,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_8",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275384858
+    },
+    {
+      "topic": "grid/orchestrator/events",
+      "payload": {
+        "timestamp": 1789275384434,
+        "event": "REJECTION",
+        "command": "OPEN",
+        "target": "L_line_9",
+        "source": null,
+        "reason": "Duplicate proposal suppressed; breaker state has not changed."
+      },
+      "received_at": 1789275384859
+    }
+  ],
+  "controls": [],
+  "proposals": [
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275362476
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275362476
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275362476
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275364517
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275364517
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275364517
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275366655
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275366655
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275366655
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275368543
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275368543
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275368543
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275370519
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275370519
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275370519
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275372509
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275372509
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275372510
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275374485
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275374485
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275374485
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275376492
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275376492
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275376492
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275378497
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275378498
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275378498
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275380483
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275380483
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275380483
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275382542
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275382542
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275382591
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_6",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275384545
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_8",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275384546
+    },
+    {
+      "topic": "grid/control/proposed",
+      "payload": {
+        "command": "OPEN",
+        "target": "L_line_9",
+        "reason": "Preemptive Isolation: Isolate high-risk Bus_5 due to Active compromise"
+      },
+      "received_at": 1789275384546
+    }
+  ],
+  "commands": [
+    {
+      "topic": "grid/attack",
+      "payload": {
+        "action": "START",
+        "type": "FDIA",
+        "experiment_id": "ui-1789275361543",
+        "correlation_id": "ui-1789275361543:Bus_5",
+        "config": {
+          "target": "Bus_5",
+          "bias": 0.15,
+          "scale": 1
+        }
+      }
+    },
+    {
+      "topic": "grid/attack",
+      "payload": {
+        "action": "STOP"
+      }
+    }
+  ],
+  "page_errors": [],
+  "request_failures": [],
+  "websocket_closes": 0,
+  "completed_at": 1789275404708
+}

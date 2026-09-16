@@ -2,6 +2,7 @@ import os
 import sys
 import copy
 import logging
+import time
 import numpy as np
 from typing import Dict, Any, List, Tuple
 
@@ -124,6 +125,10 @@ class RestorationSandbox:
         # Save pre-dry-run state
         original_breakers = copy.deepcopy(self.breakers)
         
+        topology_valid = target in self.breakers or action_name in ("ISOLATE_BUS", "ENABLE_ISLANDING", "NO_ACTION")
+        if not topology_valid:
+            return self._rejected_result("invalid_topology_target", topology_valid=False)
+
         # Apply hypothetical action changes to local breakers
         if action_name in ["ISOLATE_LINE", "OPEN_BREAKER", "OPEN"] and target in self.breakers:
             self.breakers[target] = "OPEN"
@@ -145,8 +150,22 @@ class RestorationSandbox:
                     self.breakers[lid] = "OPEN"
 
         # Solve power flow on the hypothetical state
-        V, theta, P, Q, line_flows = self.physics.solve(
-            self.breakers, self.loads, self.gen_P, self.gen_Q
+        try:
+            V, theta, P, Q, line_flows = self.physics.solve(
+                self.breakers, self.loads, self.gen_P, self.gen_Q
+            )
+        except Exception as exc:
+            self.breakers = original_breakers
+            logger.warning("Sandbox solver raised %s", exc)
+            return self._rejected_result("solver_exception", topology_valid=topology_valid)
+
+        solver_status = getattr(self.physics, "last_solver_status", {}) or {}
+        solver_converged = bool(solver_status.get("converged", True))
+        solver_method = str(solver_status.get("mode", "legacy_or_mock"))
+        finite_state = bool(
+            np.isfinite(V).all() and np.isfinite(theta).all()
+            and np.isfinite(P).all() and np.isfinite(Q).all()
+            and all(np.isfinite(float(value)) for flow in line_flows.values() for value in flow.values())
         )
 
         # Build mock telemetry payload of the result to evaluate safety constraints
@@ -159,20 +178,55 @@ class RestorationSandbox:
         }
 
         # Check safety of result
-        allowed, violations, safety_score = self.safety.evaluate_constraints(
-            hypothetical_telemetry, "NO_ACTION", "SYSTEM"
-        )
+        if finite_state:
+            allowed, violations, safety_score = self.safety.evaluate_constraints(
+                hypothetical_telemetry, "NO_ACTION", "SYSTEM"
+            )
+        else:
+            allowed, violations, safety_score = False, ["Sandbox produced NaN or Inf."], 0.0
 
         # Estimate cascade risk and confidence
         cascade_risk = self.estimate_cascade_risk(line_flows)
-        islanding = any(v < 0.20 for v in V)
+        islanding = any(v < 0.20 for v in V) if finite_state else True
         confidence = self.get_confidence_score(V, line_flows, islanding)
+
+        voltage_safe = bool(finite_state and all(0.90 <= float(v) <= 1.10 for v in V))
+        if solver_method == "legacy_or_mock":
+            loading_limit = 3.0
+        else:
+            loading_limit = 3.0 if self.topo.num_buses > 9 else 1.10
+        thermal_safe = bool(finite_state and all(float(f["current"]) <= loading_limit for f in line_flows.values()))
+        cascade_safe = bool(finite_state and cascade_risk < 1.0)
+        overall_safe = bool(allowed and solver_converged and finite_state and voltage_safe and thermal_safe and cascade_safe and topology_valid)
+        rejection_reason = None
+        if not solver_converged:
+            rejection_reason = "solver_non_convergence"
+        elif not finite_state:
+            rejection_reason = "non_finite_state"
+        elif not voltage_safe:
+            rejection_reason = "voltage_violation"
+        elif not thermal_safe:
+            rejection_reason = "thermal_violation"
+        elif not cascade_safe:
+            rejection_reason = "cascade_risk"
+        elif not allowed:
+            rejection_reason = "safety_constraint_violation"
 
         # Restore original breaker states
         self.breakers = original_breakers
 
         return {
-            "allowed": allowed,
+            "allowed": overall_safe,
+            "solver_converged": solver_converged,
+            "finite_state": finite_state,
+            "voltage_safe": voltage_safe,
+            "thermal_safe": thermal_safe,
+            "cascade_safe": cascade_safe,
+            "topology_valid": topology_valid,
+            "overall_safe": overall_safe,
+            "rejection_reason": rejection_reason,
+            "solver_method": solver_method,
+            "timestamp": int(time.time() * 1000),
             "violations": violations,
             "safety_score": float(safety_score),
             "cascade_risk": float(cascade_risk),
@@ -180,6 +234,18 @@ class RestorationSandbox:
             "islanding_active": islanding,
             "predicted_voltages": [float(v) for v in V],
             "predicted_loadings": {lid: float(f["current"]) for lid, f in line_flows.items()}
+        }
+
+    @staticmethod
+    def _rejected_result(reason: str, topology_valid: bool = True) -> Dict[str, Any]:
+        return {
+            "allowed": False, "solver_converged": False, "finite_state": False,
+            "voltage_safe": False, "thermal_safe": False, "cascade_safe": False,
+            "topology_valid": topology_valid, "overall_safe": False,
+            "rejection_reason": reason, "solver_method": "not_run",
+            "timestamp": int(time.time() * 1000), "violations": [reason],
+            "safety_score": 0.0, "cascade_risk": 1.0, "confidence": 0.0,
+            "islanding_active": False, "predicted_voltages": [], "predicted_loadings": {},
         }
 
     def rehearse_sequence(self, sequence: List[Tuple[str, str]]) -> Tuple[bool, List[Dict[str, Any]]]:

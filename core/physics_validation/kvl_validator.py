@@ -72,7 +72,7 @@ class KVLValidator:
                 line_metrics = lines_data.get(lid, {})
                 p_flow = float(line_metrics.get("P_mw", 0.0)) / 100.0 # convert to p.u.
                 q_flow = float(line_metrics.get("Q_mvar", 0.0)) / 100.0 # convert to p.u.
-                measured_i = float(line_metrics.get("current_pu", 0.0))
+                measured_i = float(line_metrics.get("current_ka", line_metrics.get("current_pu", 0.0)))
                 
                 # Calculate overcurrent thermal reactance factor
                 prev_factor = self.prev_reactance_factors.get(lid, 1.0)

@@ -17,7 +17,10 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 TELEMETRY_TOPIC = os.getenv("TELEMETRY_TOPIC", "pypy/grid/telemetry")
 
 class ThreatScoringEngine:
-    def __init__(self):
+    def __init__(self, evaluation_mode=None):
+        self.evaluation_mode = (evaluation_mode or os.getenv("DEFENCE_EVALUATION_MODE", "experiment_aware")).strip().lower()
+        if self.evaluation_mode not in ("blind", "experiment_aware"):
+            raise ValueError("DEFENCE_EVALUATION_MODE must be blind or experiment_aware")
         self.flisr_state = "NORMAL"
         self.flisr_auto = True
         self.recent_alerts = []  # List of tuples: (timestamp, alert_dict)
@@ -68,7 +71,7 @@ class ThreatScoringEngine:
         buses = telemetry.get("state", {}).get("buses", {})
         lines = telemetry.get("state", {}).get("lines", {})
         breakers = telemetry.get("state", {}).get("breakers", {})
-        attack_status = telemetry.get("attack_status", {})
+        attack_status = telemetry.get("attack_status", {}) if self.evaluation_mode == "experiment_aware" else {}
 
         # Calculate voltage deviations
         max_voltage_dev = 0.0
@@ -313,7 +316,13 @@ class ThreatScoringEngine:
         self.recommendations = deduped_recs
 
         return {
+            "evaluation_mode": self.evaluation_mode,
             "timestamp": int(now * 1000),
+            "source_telemetry_timestamp": telemetry.get("timestamp"),
+            "source_telemetry_id": telemetry.get("telemetry_id"),
+            "experiment_id": telemetry.get("experiment_id"),
+            "scenario_id": telemetry.get("scenario_id"),
+            "correlation_id": telemetry.get("correlation_id") or telemetry.get("telemetry_id"),
             "threat_score": int(threat_score),
             "severity": severity,
             "confidence": confidence,

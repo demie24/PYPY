@@ -1,0 +1,7 @@
+{
+  "decision": "DO_NOT_PRESENT_AS_COMPLETED",
+  "diploma_scope": "optional",
+  "reason": "No aligned stored component-output dataset exists for a controlled causal ablation, and disabling safety gates would not measure policy quality.",
+  "schema_version": "pypy.ablation-decision.v1",
+  "thesis_action": "Remove ablation experiments from Chapter 3 or label a future leave-one-model-out fusion experiment as proposed work."
+}

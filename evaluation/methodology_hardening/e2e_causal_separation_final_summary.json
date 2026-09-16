@@ -1,0 +1,23 @@
+{
+  "generated_at_utc": "2026-08-19T07:46:00Z",
+  "source_artifact": "evaluation/methodology_hardening/correlation_trace.json",
+  "overall_result": "PASS",
+  "defence_mode": "blind",
+  "experiment_a_fdia_only": {
+    "experiment_id": "fdia-blind-96d856d8e6",
+    "maximum_blind_threat_score": 100,
+    "breaker_outage_injected": false,
+    "control_proposals_count": 0,
+    "control_execution_count": 0,
+    "causal_claim": "Detection evidence only; zero breaker commands executed."
+  },
+  "experiment_b_breaker_recovery": {
+    "experiment_id": "breaker-recovery-46337cc408",
+    "proposal_source": "AI_RL_PPO_DQN_CONSENSUS",
+    "sandbox_dry_run_pass": true,
+    "orchestrator_approval": true,
+    "executed_command": "CLOSE L_line_0",
+    "powerflow_converged": true,
+    "causal_claim": "Strict causal trace preserved from outage to consensus proposal, sandbox rehearsal, approval, execution, and AC powerflow convergence."
+  }
+}

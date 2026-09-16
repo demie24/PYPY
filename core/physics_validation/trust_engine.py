@@ -136,7 +136,9 @@ class TrustEngine:
         # 2. Update Line trust metrics
         for line in self.lines:
             line_data = lines_data.get(line, {})
-            i_pu = float(line_data.get("current_pu", 0.0))
+            # Stability is unit-invariant under a fixed scale; prefer the
+            # correctly named kA field and retain the legacy alias as fallback.
+            i_pu = float(line_data.get("current_ka", line_data.get("current_pu", 0.0)))
             
             # Update history and calculate stability
             history = self.line_current_history[line]

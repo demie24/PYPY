@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1350 480" width="1350" height="480">
+  <defs>
+    <style>
+      .title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 17px; font-weight: bold; fill: #003366; text-anchor: middle; letter-spacing: 0.5px; }
+      .caption { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 13.5px; font-weight: bold; fill: #1A252C; text-anchor: middle; }
+      .layer-title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 12px; font-weight: bold; fill: #003366; letter-spacing: 0.5px; }
+      .box-title { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 12px; font-weight: bold; fill: #003366; text-anchor: middle; }
+      .box-desc { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 10.5px; fill: #1A252C; text-anchor: middle; }
+      .box-muted { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 9.5px; fill: #566573; text-anchor: middle; }
+      .line-label { font-family: 'Arial', 'Helvetica', sans-serif; font-size: 10px; font-weight: bold; fill: #1A5276; text-anchor: middle; }
+      .layer-rect { fill: #F8FAFC; stroke: #CBD5E1; stroke-width: 1.5px; stroke-dasharray: 4,4; rx: 6px; }
+      .node-rect { fill: #FFFFFF; stroke: #003366; stroke-width: 1.75px; rx: 5px; }
+      .node-fill { fill: #F1F5F9; stroke: #003366; stroke-width: 1.75px; rx: 5px; }
+      .node-rhombus { fill: #EBF5FB; stroke: #003366; stroke-width: 1.75px; }
+      .arrow-line { stroke: #2C3E50; stroke-width: 1.75px; fill: none; marker-end: url(#arrow); }
+      .dashed-line { stroke: #1A5276; stroke-width: 1.5px; stroke-dasharray: 4,4; fill: none; marker-end: url(#arrow-blue); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2C3E50" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1A5276" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1350" height="480" fill="#FFFFFF" />
+  <rect x="15" y="15" width="1320" height="450" fill="none" stroke="#E2E8F0" stroke-width="1.5" />
+
+  <!-- Header Title -->
+  <text x="675.0" y="45" class="title">DIGITAL TWIN TELEMETRY STREAMING PIPELINE</text>
+  <line x1="495.0" y1="54" x2="855.0" y2="54" stroke="#003366" stroke-width="1.5" />
+
+  <!-- Content -->
+
+    <!-- Horizontal Linear Pipeline -->
+    <g transform="translate(40, 150)">
+      <!-- Stage 1 -->
+      <rect x="0" y="0" width="135" height="110" class="node-rect-fill" />
+      <text x="67.5" y="45" class="box-title">Digital Twin</text>
+      <text x="67.5" y="63" class="box-title">Solver</text>
+      <text x="67.5" y="82" class="box-desc">Pandapower</text>
+
+      <path d="M 135 55 L 165 55" class="arrow-line" />
+
+      <!-- Stage 2 -->
+      <rect x="165" y="0" width="135" height="110" class="node-rect" />
+      <text x="232.5" y="50" class="box-title">Voltage</text>
+      <text x="232.5" y="68" class="box-title">Calculation</text>
+      <text x="232.5" y="86" class="box-desc">Bus Magnitude V</text>
+
+      <path d="M 300 55 L 330 55" class="arrow-line" />
+
+      <!-- Stage 3 -->
+      <rect x="330" y="0" width="135" height="110" class="node-rect" />
+      <text x="397.5" y="50" class="box-title">Current</text>
+      <text x="397.5" y="68" class="box-title">Calculation</text>
+      <text x="397.5" y="86" class="box-desc">Branch Current I</text>
+
+      <path d="M 465 55 L 495 55" class="arrow-line" />
+
+      <!-- Stage 4 -->
+      <rect x="495" y="0" width="135" height="110" class="node-rect" />
+      <text x="562.5" y="50" class="box-title">Line Loading</text>
+      <text x="562.5" y="68" class="box-title">Calculation</text>
+      <text x="562.5" y="86" class="box-desc">% Capacity</text>
+
+      <path d="M 630 55 L 660 55" class="arrow-line" />
+
+      <!-- Stage 5 -->
+      <rect x="660" y="0" width="135" height="110" class="node-rect-fill" />
+      <text x="727.5" y="50" class="box-title">JSON</text>
+      <text x="727.5" y="68" class="box-title">Formatting</text>
+      <text x="727.5" y="86" class="box-desc">Payload Struct</text>
+
+      <path d="M 795 55 L 825 55" class="arrow-line" />
+
+      <!-- Stage 6 -->
+      <rect x="825" y="0" width="135" height="110" class="node-rect" />
+      <text x="892.5" y="50" class="box-title">MQTT Topic</text>
+      <text x="892.5" y="68" class="box-desc">grid/telemetry</text>
+
+      <path d="M 960 55 L 990 55" class="arrow-line" />
+
+      <!-- Stage 7 -->
+      <rect x="990" y="0" width="135" height="110" class="node-rect-fill" />
+      <text x="1057.5" y="50" class="box-title">FastAPI</text>
+      <text x="1057.5" y="68" class="box-title">Gateway</text>
+      <text x="1057.5" y="86" class="box-desc">WS Router</text>
+
+      <path d="M 1125 55 L 1155 55" class="arrow-line" />
+
+      <!-- Stage 8 -->
+      <rect x="1155" y="0" width="135" height="110" class="node-rect" />
+      <text x="1222.5" y="50" class="box-title">React</text>
+      <text x="1222.5" y="68" class="box-title">Dashboard</text>
+      <text x="1222.5" y="86" class="box-desc">SLD UI Render</text>
+    </g>
+
+
+  <!-- Caption -->
+  <text x="675.0" y="455" class="caption">Figure P.2 Digital Twin telemetry streaming workflow.</text>
+</svg>

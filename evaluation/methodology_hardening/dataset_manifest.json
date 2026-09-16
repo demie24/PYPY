@@ -1,0 +1,23 @@
+{
+  "columns": 160,
+  "label_distribution": {
+    "BLACKOUT": 264,
+    "DOS": 1300,
+    "FDIA": 1300,
+    "INVALID_STATE": 774,
+    "N1_GENERATOR": 1300,
+    "N1_LINE": 1300,
+    "N2": 1300,
+    "NON_CONVERGED": 842,
+    "NORMAL": 1300,
+    "REPLAY": 1300,
+    "VOLTAGE_INSTABILITY": 1300
+  },
+  "path": "core/data_collector/data/ieee39_telemetry_dataset.csv",
+  "rows": 12280,
+  "schema_sha256": "bcdf5b9c4958a023169a69e4ada337770879a0ca63df149daf6e7835d27de127",
+  "schema_version": "pypy.dataset-manifest.v1",
+  "sha256": "3945a80389e26a14d0542945925cf28ee69c7a57dbc70045ab83066c57b27220",
+  "timestamp_max": 1781891751052,
+  "timestamp_min": 1781879472052
+}

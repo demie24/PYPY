@@ -1,0 +1,16 @@
+{
+  "snapshot_files": 822,
+  "unchanged": 820,
+  "changed": [
+    "dashboard/src/exhibitionState.ts",
+    "dashboard/src/recoveryEvidence.ts"
+  ],
+  "added": [],
+  "protected_changes": [],
+  "test_edits_outside_manifest": [
+    "dashboard/tests/exhibitionState.test.ts",
+    "dashboard/tests/recoveryEvidence.test.ts",
+    "dashboard/tests/exhibition.browser.mjs"
+  ],
+  "note": "Existing dirty tracked backend and configuration files were preserved relative to the pre-edit checksum boundary. The ignored routine_memory.json modified by existing repository tests was restored byte-for-byte."
+}

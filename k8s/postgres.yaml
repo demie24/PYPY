@@ -33,7 +33,7 @@ spec:
             - name: POSTGRES_USER
               value: pypy_admin
             - name: POSTGRES_PASSWORD
-              value: pypy_db_secure_password
+              value: CHANGE_ME
           ports:
             - containerPort: 5432
           volumeMounts:

@@ -1,0 +1,452 @@
+{
+  "checkpoint_sha256": "80cb8c061020c2a7a3542ec41ca857bbbe0fbfe7640fc3b02e60bf47d88936c3",
+  "classification": [
+    "model_physics_consistency_failure",
+    "fixed_topology_metric_invalid_for_topology-changing N-1/N-2 states"
+  ],
+  "conclusion": "The 1.0 reconstruction violation rate is genuine at the implemented 0.05 pu threshold even for nominal states; ground-truth nominal states pass. Ground-truth topology-changing states also fail because the checker uses the intact Y-bus.",
+  "ground_truth": {
+    "residuals": {
+      "active_mean": 0.18247677486273997,
+      "active_median": 6.05629450206146e-05,
+      "reactive_mean": 0.35980581218555263,
+      "reactive_median": 5.929729960386118e-05
+    },
+    "violations": {
+      "active_power_balance": {
+        "rate": 0.30512820512820515,
+        "samples": 476
+      },
+      "angle": {
+        "rate": 0.0,
+        "samples": 0
+      },
+      "any": {
+        "rate": 0.3262820512820513,
+        "samples": 509
+      },
+      "reactive_power_balance": {
+        "rate": 0.2743589743589744,
+        "samples": 428
+      },
+      "voltage": {
+        "rate": 0.0,
+        "samples": 0
+      }
+    }
+  },
+  "per_label_full_dataset": {
+    "DOS": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "reactive_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      }
+    },
+    "FDIA": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.8369230769230769,
+          "samples": 1088
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.9869230769230769,
+          "samples": 1283
+        },
+        "reactive_power_balance": {
+          "rate": 0.9869230769230769,
+          "samples": 1283
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      }
+    },
+    "N1_GENERATOR": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "reactive_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      }
+    },
+    "N1_LINE": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.9069230769230769,
+          "samples": 1179
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.9446153846153846,
+          "samples": 1228
+        },
+        "reactive_power_balance": {
+          "rate": 0.6338461538461538,
+          "samples": 824
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 0.9984615384615385,
+          "samples": 1298
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      }
+    },
+    "N2": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.61,
+          "samples": 793
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.6215384615384615,
+          "samples": 808
+        },
+        "reactive_power_balance": {
+          "rate": 0.5192307692307693,
+          "samples": 675
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "voltage": {
+          "rate": 0.0007692307692307692,
+          "samples": 1
+        }
+      }
+    },
+    "NORMAL": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "reactive_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 0.9992307692307693,
+          "samples": 1299
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      }
+    },
+    "REPLAY": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "reactive_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 0.9984615384615385,
+          "samples": 1298
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      }
+    },
+    "VOLTAGE_INSTABILITY": {
+      "ground_truth": {
+        "active_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "reactive_power_balance": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "voltage": {
+          "rate": 0.0,
+          "samples": 0
+        }
+      },
+      "pinn_reconstruction": {
+        "active_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "angle": {
+          "rate": 0.0,
+          "samples": 0
+        },
+        "any": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "reactive_power_balance": {
+          "rate": 1.0,
+          "samples": 1300
+        },
+        "voltage": {
+          "rate": 0.0015384615384615385,
+          "samples": 2
+        }
+      }
+    }
+  },
+  "pinn_reconstruction": {
+    "residuals": {
+      "active_mean": 0.26977515153395704,
+      "active_median": 0.20912514521341236,
+      "reactive_mean": 0.21343373622508605,
+      "reactive_median": 0.10117424217794377
+    },
+    "violations": {
+      "active_power_balance": {
+        "rate": 1.0,
+        "samples": 1560
+      },
+      "angle": {
+        "rate": 0.0,
+        "samples": 0
+      },
+      "any": {
+        "rate": 1.0,
+        "samples": 1560
+      },
+      "reactive_power_balance": {
+        "rate": 0.8737179487179487,
+        "samples": 1363
+      },
+      "voltage": {
+        "rate": 0.0,
+        "samples": 0
+      }
+    }
+  },
+  "schema_version": "pypy.pinn-physics-audit.v1",
+  "test_samples": 1560,
+  "thresholds": {
+    "angle_rad": [
+      -3.141592653589793,
+      3.141592653589793
+    ],
+    "mean_p_mismatch_pu": 0.05,
+    "mean_q_mismatch_pu": 0.05,
+    "voltage_pu": [
+      0.85,
+      1.15
+    ]
+  }
+}

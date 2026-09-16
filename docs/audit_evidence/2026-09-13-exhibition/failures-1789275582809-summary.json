@@ -1,0 +1,9 @@
+{
+  "gateway_stop": "CONNECTION LOST; launch disabled",
+  "gateway_restart": "WebSocket reconnected; fresh telemetry; launch enabled",
+  "unconfirmed_attack": "Real command forwarded while twin paused; 15-second unconfirmed-outcome notice",
+  "frozen_telemetry": "TELEMETRY UNAVAILABLE after source freshness expiry; no false success",
+  "twin_resumed": "Canonical telemetry resumed; no active attack",
+  "error": "The expression evaluated to a falsy value:\n\n  assert.ok(await page.evaluate(()=>!!document.fullscreenElement))\n",
+  "page_errors": []
+}

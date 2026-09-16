@@ -1,0 +1,320 @@
+{
+  "schema_version": "pypy.coevolution-evaluation.v1",
+  "grid": "ieee39",
+  "mode": "checkpoint_selection_and_stochastic_policy_evaluation",
+  "training_performed": false,
+  "policy_selection": {
+    "pathogen": {
+      "path": "checkpoints/ppo_pathogen_coevolved.pt",
+      "sha256": "ccee39836d5b5ac6019347374cc5d211761f1a8cbe06cd18e395e0abe3ee88b9"
+    },
+    "immune": {
+      "path": "checkpoints/ppo_immune.pt",
+      "sha256": "0bcbaf11b9fbdf3d4b98df0d5de5db259635b684448d3962ea8696089bb44390"
+    }
+  },
+  "seeds": [
+    42,
+    123,
+    999,
+    2026,
+    2027,
+    31415,
+    27182,
+    16180,
+    57721,
+    14142
+  ],
+  "episodes_per_seed": 10,
+  "seed_results": [
+    {
+      "seed": 42,
+      "episodes": 10,
+      "mean_red_reward": 365.9008403205535,
+      "mean_blue_reward": 4161.895173056323,
+      "blackout_rate": 0.3,
+      "detection_rate": 0.3,
+      "mean_final_load_served_pct": 0.6957785448359847,
+      "attack_actions": {
+        "DOS": 13,
+        "NO_ACTION": 406,
+        "REPLAY": 5,
+        "TRIP_LINE": 6
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 5,
+        "ISSUE_WARNING": 7,
+        "NO_ACTION": 4,
+        "QUARANTINE_TELEMETRY": 3,
+        "RECONNECT_LINE": 2,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 408
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 123,
+      "episodes": 10,
+      "mean_red_reward": 381.76474859536114,
+      "mean_blue_reward": 4501.9393479901355,
+      "blackout_rate": 0.2,
+      "detection_rate": 0.2,
+      "mean_final_load_served_pct": 0.7998849928880638,
+      "attack_actions": {
+        "DOS": 15,
+        "FDIA": 1,
+        "NO_ACTION": 432,
+        "REPLAY": 6,
+        "TRIP_LINE": 4
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 21,
+        "ISSUE_WARNING": 9,
+        "NO_ACTION": 10,
+        "QUARANTINE_TELEMETRY": 7,
+        "RECONNECT_LINE": 4,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 406
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 999,
+      "episodes": 10,
+      "mean_red_reward": 467.97016102397754,
+      "mean_blue_reward": 4628.206338724347,
+      "blackout_rate": 0.1,
+      "detection_rate": 0.1,
+      "mean_final_load_served_pct": 0.9015945136828861,
+      "attack_actions": {
+        "DOS": 23,
+        "FDIA": 1,
+        "NO_ACTION": 427,
+        "REPLAY": 7,
+        "TRIP_LINE": 8
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 29,
+        "ISSUE_WARNING": 10,
+        "NO_ACTION": 12,
+        "QUARANTINE_TELEMETRY": 7,
+        "RECONNECT_LINE": 4,
+        "REROUTE_POWER": 2,
+        "RESET_TRUST": 402
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 2026,
+      "episodes": 10,
+      "mean_red_reward": 448.70981040241605,
+      "mean_blue_reward": 4555.544540357776,
+      "blackout_rate": 0.1,
+      "detection_rate": 0.1,
+      "mean_final_load_served_pct": 0.8988794217566337,
+      "attack_actions": {
+        "DOS": 13,
+        "FDIA": 3,
+        "NO_ACTION": 432,
+        "REPLAY": 7,
+        "TRIP_LINE": 5
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 18,
+        "ISSUE_WARNING": 9,
+        "NO_ACTION": 4,
+        "QUARANTINE_TELEMETRY": 3,
+        "RECONNECT_LINE": 4,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 421
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 2027,
+      "episodes": 10,
+      "mean_red_reward": 241.6299293257146,
+      "mean_blue_reward": 3614.5274749831274,
+      "blackout_rate": 0.5,
+      "detection_rate": 0.5,
+      "mean_final_load_served_pct": 0.5008099464085551,
+      "attack_actions": {
+        "DOS": 16,
+        "FDIA": 1,
+        "NO_ACTION": 347,
+        "REPLAY": 8,
+        "TRIP_LINE": 7
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 16,
+        "ISSUE_WARNING": 11,
+        "NO_ACTION": 13,
+        "QUARANTINE_TELEMETRY": 1,
+        "RECONNECT_LINE": 2,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 335
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 31415,
+      "episodes": 10,
+      "mean_red_reward": 403.3127461870964,
+      "mean_blue_reward": 4522.155872930017,
+      "blackout_rate": 0.3,
+      "detection_rate": 0.3,
+      "mean_final_load_served_pct": 0.700873870786401,
+      "attack_actions": {
+        "DOS": 20,
+        "NO_ACTION": 429,
+        "REPLAY": 3,
+        "TRIP_LINE": 10
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 10,
+        "ISSUE_WARNING": 11,
+        "NO_ACTION": 5,
+        "QUARANTINE_TELEMETRY": 5,
+        "RECONNECT_LINE": 1,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 429
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 27182,
+      "episodes": 10,
+      "mean_red_reward": 471.47583480109824,
+      "mean_blue_reward": 4675.105398132977,
+      "blackout_rate": 0.1,
+      "detection_rate": 0.1,
+      "mean_final_load_served_pct": 0.9002624421432796,
+      "attack_actions": {
+        "DOS": 21,
+        "NO_ACTION": 434,
+        "REPLAY": 7,
+        "TRIP_LINE": 9
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 26,
+        "ISSUE_WARNING": 15,
+        "NO_ACTION": 14,
+        "QUARANTINE_TELEMETRY": 14,
+        "RECONNECT_LINE": 3,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 398
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 16180,
+      "episodes": 10,
+      "mean_red_reward": 351.38901764336106,
+      "mean_blue_reward": 4234.235158563346,
+      "blackout_rate": 0.2,
+      "detection_rate": 0.2,
+      "mean_final_load_served_pct": 0.8042668423859636,
+      "attack_actions": {
+        "DOS": 13,
+        "FDIA": 1,
+        "NO_ACTION": 400,
+        "REPLAY": 10,
+        "TRIP_LINE": 5
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 19,
+        "ISSUE_WARNING": 9,
+        "NO_ACTION": 8,
+        "QUARANTINE_TELEMETRY": 8,
+        "RECONNECT_LINE": 5,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 379
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 57721,
+      "episodes": 10,
+      "mean_red_reward": 390.15131384891066,
+      "mean_blue_reward": 4365.640868092012,
+      "blackout_rate": 0.2,
+      "detection_rate": 0.2,
+      "mean_final_load_served_pct": 0.7995763417600479,
+      "attack_actions": {
+        "DOS": 14,
+        "FDIA": 2,
+        "NO_ACTION": 418,
+        "REPLAY": 4,
+        "TRIP_LINE": 6
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 15,
+        "ISSUE_WARNING": 6,
+        "NO_ACTION": 5,
+        "QUARANTINE_TELEMETRY": 3,
+        "RECONNECT_LINE": 1,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 413
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    },
+    {
+      "seed": 14142,
+      "episodes": 10,
+      "mean_red_reward": 355.66526553947233,
+      "mean_blue_reward": 4063.2250523556713,
+      "blackout_rate": 0.2,
+      "detection_rate": 0.2,
+      "mean_final_load_served_pct": 0.7964500440048539,
+      "attack_actions": {
+        "DOS": 20,
+        "FDIA": 1,
+        "NO_ACTION": 385,
+        "REPLAY": 5,
+        "TRIP_LINE": 5
+      },
+      "defence_actions": {
+        "ISOLATE_BUS": 13,
+        "ISSUE_WARNING": 8,
+        "NO_ACTION": 10,
+        "QUARANTINE_TELEMETRY": 4,
+        "RECONNECT_LINE": 2,
+        "REROUTE_POWER": 1,
+        "RESET_TRUST": 378
+      },
+      "immune_memories_selected": 0,
+      "nonfinite_observation_values_sanitized": 0,
+      "nonfinite_metric_values_sanitized": 0
+    }
+  ],
+  "aggregate": {
+    "mean_red_reward": 387.79696676879615,
+    "mean_blue_reward": 4332.247522518573,
+    "mean_blackout_rate": 0.22000000000000003,
+    "mean_detection_rate": 0.22000000000000003,
+    "mean_final_load_served_pct": 0.779837696065267
+  },
+  "limitations": [
+    "This run selects existing co-evolved checkpoints; it does not retrain them.",
+    "Results evaluate the isolated IEEE-39 co-evolution environment, not the MQTT production loop."
+  ],
+  "reproducibility_digest": "c5bbc85d598ffa9513417de6e48abd6b78b804069470062808d2ad24c499578e"
+}

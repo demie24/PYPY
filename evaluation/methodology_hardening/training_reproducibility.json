@@ -1,0 +1,36 @@
+{
+  "models": {
+    "GNN": {
+      "dataloader_shuffle": true,
+      "level": "split reproducible; weights not guaranteed",
+      "numpy_split_seed": 42,
+      "python_seed": "NOT_SET",
+      "torch_seed": "NOT_SET_IN_LEGACY_TRAINER"
+    },
+    "LSTM": {
+      "cuda_determinism": "NOT_APPLICABLE_TO_CPU_RUN",
+      "dataloader_generator_seed_hardened": 42,
+      "dataloader_shuffle": true,
+      "numpy_split_seed": 42,
+      "python_seed": "NOT_SET",
+      "torch_seed_hardened": 42
+    },
+    "PINN": {
+      "dataloader_shuffle": true,
+      "level": "split reproducible; weights not guaranteed",
+      "numpy_split_seed": 42,
+      "python_seed": "NOT_SET",
+      "torch_seed": "NOT_SET"
+    },
+    "ST-GNN": {
+      "cuda_determinism": "NOT_APPLICABLE_TO_CPU_RUN",
+      "dataloader_generator_seed_hardened": 42,
+      "dataloader_shuffle": true,
+      "numpy_split_seed": 42,
+      "python_seed": "NOT_SET",
+      "torch_seed_hardened": 42
+    }
+  },
+  "recommendation": "Use the deterministic CPU thesis configuration and record checkpoint hashes; do not claim bitwise GPU reproducibility.",
+  "schema_version": "pypy.training-reproducibility.v1"
+}

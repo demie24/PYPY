@@ -5,6 +5,7 @@ import time
 import random
 import copy
 import numpy as np
+import torch
 
 # Ensure digital_twin is in path for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +16,17 @@ from physics import GridPhysicsEngine
 from scenario_library import GridScenarioLibrary
 from physics_validator import validate_physics
 
-def run_dataset_generation():
+def seed_everything(seed):
+    """Seed all RNGs used by dataset generation."""
+    if seed is None:
+        return
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+
+def run_dataset_generation(seed=None, output_path=None, valid_target=1300, start_timestamp=None):
+    seed_everything(seed)
     print("Initializing IEEE 39-Bus AC Grid for Expanded Dataset Generation...")
     
     # 1. Initialize digital twin grid components
@@ -26,7 +37,7 @@ def run_dataset_generation():
     # 2. Setup output file paths
     data_dir = os.path.abspath(os.path.join(current_dir, "..", "data_collector", "data"))
     os.makedirs(data_dir, exist_ok=True)
-    dataset_path = os.path.join(data_dir, "ieee39_telemetry_dataset.csv")
+    dataset_path = output_path or os.path.join(data_dir, "ieee39_telemetry_dataset.csv")
     print(f"Target dataset storage: {dataset_path}")
     
     # 3. Create flat CSV headers
@@ -54,11 +65,11 @@ def run_dataset_generation():
     }
     
     # Target of exactly 1300 VALID samples per label -> 10,400 valid total
-    valid_target = 1300
+    valid_target = int(valid_target)
     normal_solved_pool = []
     
     # Sequential timestamps
-    start_timestamp = int(time.time() * 1000)
+    start_timestamp = int(time.time() * 1000) if start_timestamp is None else int(start_timestamp)
     current_time_offset = 0
     
     all_rows = []
@@ -226,4 +237,11 @@ def run_dataset_generation():
     print(f"Output columns: {len(headers)} columns.")
     
 if __name__ == "__main__":
-    run_dataset_generation()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", type=int)
+    parser.add_argument("--output-path")
+    parser.add_argument("--valid-target", type=int, default=1300)
+    parser.add_argument("--start-timestamp", type=int)
+    args = parser.parse_args()
+    run_dataset_generation(args.seed, args.output_path, args.valid_target, args.start_timestamp)

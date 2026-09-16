@@ -596,11 +596,15 @@ class AIOrchestrator:
         # to actuate breakers while allowing neutral agents to accept a proven
         # restoration step.
         target_is_open = state_data.get("breakers", {}).get(target) == "OPEN"
-        has_physical_outage = any(
+        has_physical_voltage_outage = any(
             (not math.isfinite(float(bus.get("voltage_pu", 1.0))))
-            or float(bus.get("voltage_pu", 1.0)) < 0.20
+            or float(bus.get("voltage_pu", 1.0)) < 0.85
             for bus in buses.values()
         )
+        has_breaker_outage = any(
+            status == "OPEN" for status in state_data.get("breakers", {}).values()
+        )
+        has_physical_outage = has_physical_voltage_outage or has_breaker_outage
         threat = self.state_cache.get("threat") or {}
         threat_timestamp = float(threat.get("timestamp", 0.0))
         if threat_timestamp > 10_000_000_000:
@@ -612,7 +616,7 @@ class AIOrchestrator:
             and target_is_open
             and bool(threat)
             and threat_is_fresh
-            and has_physical_outage
+            and has_physical_voltage_outage
             and stability >= 70.0
         )
         if source in ("L6_RECOVERY_PARTIAL", "L6_RECOVERY_FULL") and not validated_l6_recovery:
@@ -623,6 +627,9 @@ class AIOrchestrator:
             and cmd in ("CLOSE", "CLOSED")
             and target_is_open
             and sandbox.get("is_safe") is True
+            and sandbox.get("solver_converged") is True
+            and sandbox.get("finite_state") is True
+            and sandbox.get("overall_safe") is True
             and not sandbox.get("violations")
             and bool(threat)
             and threat_is_fresh
@@ -630,7 +637,13 @@ class AIOrchestrator:
         )
         if source == "AI_RL_PPO_DQN_CONSENSUS" and not validated_rl_recovery:
             checks = {
-                "sandbox_safe": sandbox.get("is_safe") is True and not sandbox.get("violations"),
+                "sandbox_safe": (
+                    sandbox.get("is_safe") is True
+                    and sandbox.get("solver_converged") is True
+                    and sandbox.get("finite_state") is True
+                    and sandbox.get("overall_safe") is True
+                    and not sandbox.get("violations")
+                ),
                 "fresh_threat": bool(threat) and threat_is_fresh,
                 "target_open": target_is_open,
                 "physical_outage": has_physical_outage,
@@ -1029,7 +1042,11 @@ def on_message(client, userdata, msg):
                     "command": cmd,
                     "target": target,
                     "source": "ORCHESTRATOR_APPROVED",
-                    "original_source": source
+                    "original_source": source,
+                    "source_telemetry_id": payload.get("source_telemetry_id"),
+                    "experiment_id": payload.get("experiment_id"),
+                    "scenario_id": payload.get("scenario_id"),
+                    "correlation_id": payload.get("correlation_id"),
                 }
                 
                 # Check if hardware daemon is active and has good trust
@@ -1065,7 +1082,11 @@ def on_message(client, userdata, msg):
                     "command": cmd,
                     "target": target,
                     "source": source,
-                    "reason": reason
+                    "reason": reason,
+                    "source_telemetry_id": payload.get("source_telemetry_id"),
+                    "experiment_id": payload.get("experiment_id"),
+                    "scenario_id": payload.get("scenario_id"),
+                    "correlation_id": payload.get("correlation_id"),
                 }))
             else:
                 logger.warning(f"[ORCHESTRATOR REJECTION] REJECTED proposed action {cmd} on {target} from {source}. Reason: {reason}")
@@ -1086,7 +1107,11 @@ def on_message(client, userdata, msg):
                     "command": cmd,
                     "target": target,
                     "source": source,
-                    "reason": reason
+                    "reason": reason,
+                    "source_telemetry_id": payload.get("source_telemetry_id"),
+                    "experiment_id": payload.get("experiment_id"),
+                    "scenario_id": payload.get("scenario_id"),
+                    "correlation_id": payload.get("correlation_id"),
                 }))
                 
         elif topic == "grid/control":

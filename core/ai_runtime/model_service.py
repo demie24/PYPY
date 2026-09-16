@@ -120,6 +120,10 @@ class IEEE39ModelRuntime:
             result.update({
                 "timestamp": int(time.time() * 1000),
                 "source_telemetry_timestamp": frame.timestamp,
+                "source_telemetry_id": frame.telemetry_id,
+                "experiment_id": frame.experiment_id,
+                "scenario_id": frame.scenario_id,
+                "correlation_id": frame.correlation_id or frame.telemetry_id,
                 "component": self.component,
                 "model_loaded": True,
                 "checkpoint": str(self.checkpoint),

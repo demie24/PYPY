@@ -1,0 +1,20 @@
+{
+  "schema_version": "pypy.seeded-generator-verification.v1",
+  "seeded_mode": true,
+  "rngs_seeded": ["python.random", "numpy", "torch"],
+  "fixed_start_timestamp": 1700000000000,
+  "valid_target_per_class": 1,
+  "same_seed": {
+    "seed": 2026,
+    "run_a_sha256": "8284d16b051478493e0dae2ae286c67b752504ff3d79d6048f8ff7d38a0fe31c",
+    "run_b_sha256": "8284d16b051478493e0dae2ae286c67b752504ff3d79d6048f8ff7d38a0fe31c",
+    "identical": true
+  },
+  "different_seed": {
+    "seed": 2027,
+    "sha256": "ee7391d02e165abbe2d1da4a87f1221c1fc01b35f75fd6b98958e51dc796f664",
+    "different_from_seed_2026": true
+  },
+  "production_dataset_overwritten": false,
+  "qualification": "Determinism requires both an explicit seed and fixed start_timestamp because timestamps are part of the CSV digest."
+}

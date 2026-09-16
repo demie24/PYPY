@@ -19,6 +19,7 @@ from stgnn_model import IEEE39STGNN
 from grid_topology import GridTopology
 from gnn_trainer import extract_network_parameters, compute_vectorized_flows
 from stgnn_evaluator import evaluate_stgnn_performance
+from core.ai_training.temporal_split import chronological_label_partitions, window_spans
 
 def create_temporal_sequences(x_nodes, x_edges, node_risks, edge_risks, seq_len=20, future_horizon=5):
     """
@@ -54,7 +55,9 @@ def create_temporal_sequences(x_nodes, x_edges, node_risks, edge_risks, seq_len=
             np.array(base_n, dtype=np.float32),
             np.array(base_e, dtype=np.float32))
 
-def train_stgnn(dataset_path: str, device: str = "cpu"):
+def train_stgnn(dataset_path: str, device: str = "cpu", output_dir: str = None, epochs: int = 20, batch_size: int = 128):
+    torch.manual_seed(42)
+    np.random.seed(42)
     print("=========================================")
     print("STARTING SPATIO-TEMPORAL GNN TRAINING")
     print("=========================================")
@@ -67,7 +70,7 @@ def train_stgnn(dataset_path: str, device: str = "cpu"):
     # 2. Load dataset
     df = pd.read_csv(dataset_path)
     exclude_labels = ["NON_CONVERGED", "BLACKOUT", "INVALID_STATE"]
-    df_valid = df[~df["label"].isin(exclude_labels)].copy()
+    df_valid = df[~df["label"].isin(exclude_labels)].copy().reset_index(drop=True)
     print(f"Loaded valid chronological samples: {len(df_valid)}")
     
     P_data = np.zeros((len(df_valid), 39))
@@ -109,29 +112,24 @@ def train_stgnn(dataset_path: str, device: str = "cpu"):
             max_adj_load = np.max(loading_percent[b, adj_edges]) if len(adj_edges) > 0 else 0.0
             node_risks[b, i] = np.clip(5.0 * v_dev + 0.1 * (max_adj_load / 100.0), 0.0, 1.0)
             
-    # 4. Create sequences (20-step input window, 5-step future prediction target)
-    print("Creating sliding window sequences...")
-    X_node_all, X_edge_all, y_node_all, y_edge_all, base_node_all, base_edge_all = create_temporal_sequences(
-        x_nodes, x_edges, node_risks, edge_risks, seq_len=20, future_horizon=5
-    )
-    n_sequences = len(X_node_all)
-    print(f"Total sequences generated: {n_sequences}")
-    
-    # 5. Split train / validation / test (70/15/15)
-    np.random.seed(42)
-    indices = np.random.permutation(n_sequences)
-    
-    train_end = int(0.70 * n_sequences)
-    val_end = train_end + int(0.15 * n_sequences)
-    
-    train_idx = indices[:train_end]
-    val_idx = indices[train_end:val_end]
-    test_idx = indices[val_end:]
-    
-    # Slice datasets
-    Xn_train, Xe_train, yn_train, ye_train = X_node_all[train_idx], X_edge_all[train_idx], y_node_all[train_idx], y_edge_all[train_idx]
-    Xn_val, Xe_val, yn_val, ye_val = X_node_all[val_idx], X_edge_all[val_idx], y_node_all[val_idx], y_edge_all[val_idx]
-    Xn_test, Xe_test, yn_test, ye_test, bn_test, be_test = X_node_all[test_idx], X_edge_all[test_idx], y_node_all[test_idx], y_edge_all[test_idx], base_node_all[test_idx], base_edge_all[test_idx]
+    # Split raw label blocks first, then construct windows independently.
+    partitions = chronological_label_partitions(df_valid)
+    temporal = {}
+    for name, partition in partitions.items():
+        spans = window_spans(partition.raw_indices, sequence_length=20, future_horizon=5)
+        temporal[name] = (
+            np.asarray([x_nodes[span[:20]] for span in spans], dtype=np.float32),
+            np.asarray([x_edges[span[:20]] for span in spans], dtype=np.float32),
+            np.asarray([node_risks[span[-1]] for span in spans], dtype=np.float32),
+            np.asarray([edge_risks[span[-1]] for span in spans], dtype=np.float32),
+            np.asarray([node_risks[span[19]] for span in spans], dtype=np.float32),
+            np.asarray([edge_risks[span[19]] for span in spans], dtype=np.float32),
+        )
+    Xn_train, Xe_train, yn_train, ye_train, _, _ = temporal["train"]
+    Xn_val, Xe_val, yn_val, ye_val, _, _ = temporal["validation"]
+    Xn_test, Xe_test, yn_test, ye_test, bn_test, be_test = temporal["test"]
+    n_sequences = sum(len(values[0]) for values in temporal.values())
+    print(f"Total leakage-safe sequences generated: {n_sequences}")
     
     # Fit standardisation parameters on training features
     node_mean = Xn_train.mean(axis=(0, 1, 2))
@@ -151,9 +149,10 @@ def train_stgnn(dataset_path: str, device: str = "cpu"):
         torch.tensor(bn_test), torch.tensor(be_test)
     )
     
-    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=128, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
+    generator = torch.Generator().manual_seed(42)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, generator=generator)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     # 6. Initialize model
     model = IEEE39STGNN(edge_index=edge_index, hidden_dim=64).to(device)
@@ -166,7 +165,6 @@ def train_stgnn(dataset_path: str, device: str = "cpu"):
     criterion = nn.MSELoss()
     
     # 7. Training Loop
-    epochs = 20
     history = {
         "train_loss": [],
         "val_loss": [],
@@ -242,12 +240,14 @@ def train_stgnn(dataset_path: str, device: str = "cpu"):
             print(f"  Epoch {epoch:02d}/{epochs:02d} | Train Loss: {train_loss:.5f} Node MSE: {train_node_mse:.5f} | Val Loss: {val_loss:.5f} Node MSE: {val_node_mse:.5f}")
             
     # Serialize model weights
-    model_save_path = os.path.join(current_dir, "trained_stgnn_model.pt")
+    output_dir = output_dir or current_dir
+    os.makedirs(output_dir, exist_ok=True)
+    model_save_path = os.path.join(output_dir, "trained_stgnn_model.pt")
     torch.save(model.state_dict(), model_save_path)
     print(f"Model saved to: {model_save_path}")
     
     # Save training metrics
-    metrics_save_path = os.path.join(current_dir, "stgnn_training_metrics.json")
+    metrics_save_path = os.path.join(output_dir, "stgnn_training_metrics.json")
     with open(metrics_save_path, "w") as f:
         json.dump(history, f, indent=4)
     print(f"Training metrics saved to: {metrics_save_path}")
@@ -256,7 +256,7 @@ def train_stgnn(dataset_path: str, device: str = "cpu"):
     print("\nRunning final ST-GNN test evaluation...")
     eval_results = evaluate_stgnn_performance(model, test_loader, device=device)
     
-    eval_save_path = os.path.join(current_dir, "stgnn_evaluation_results.json")
+    eval_save_path = os.path.join(output_dir, "stgnn_evaluation_results.json")
     with open(eval_save_path, "w") as f:
         json.dump(eval_results, f, indent=4)
     print(f"Evaluation results saved to: {eval_save_path}")

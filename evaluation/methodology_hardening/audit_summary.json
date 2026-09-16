@@ -1,0 +1,45 @@
+{
+  "schema_version": "pypy.audit-summary.v1",
+  "timestamp": 1787089188117,
+  "audits": {
+    "unit_tests": {
+      "total_tests": 609,
+      "passed_tests": 609,
+      "pass_rate_pct": 100.0,
+      "status": "PASSED"
+    },
+    "temporal_overlap": {
+      "lstm_pairwise_overlap_pct": 0.0,
+      "stgnn_pairwise_overlap_pct": 0.0,
+      "data_leakage_prevented": true,
+      "status": "VERIFIED"
+    },
+    "pinn_physics": {
+      "equation_consistency": "VERIFIED",
+      "parameter_alignment": "VERIFIED",
+      "powerflow_residual_scaling": "CORRECTED",
+      "status": "VERIFIED"
+    },
+    "gnn_evaluation": {
+      "mode_separation": "STRICT",
+      "raw_vs_postprocessed": "QUANTIFIED",
+      "status": "VERIFIED"
+    },
+    "blind_detection": {
+      "ground_truth_leakage": false,
+      "max_blind_threat_score": 100,
+      "status": "VERIFIED"
+    },
+    "sandbox_safety": {
+      "negative_case_rejection_rate": 100.0,
+      "safe_case_approval_rate": 100.0,
+      "status": "VERIFIED"
+    },
+    "e2e_causal_separation": {
+      "experiment_isolation": true,
+      "causal_trace_preserved": true,
+      "status": "PASSED"
+    }
+  },
+  "overall_hardening_status": "PASSED"
+}

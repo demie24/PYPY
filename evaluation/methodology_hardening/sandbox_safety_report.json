@@ -1,0 +1,79 @@
+{
+  "schema_version": "pypy.sandbox-safety.v1",
+  "cases": [
+    {
+      "case": "safe",
+      "elapsed_ms": 519.3730530008906,
+      "solver_converged": true,
+      "finite_state": true,
+      "voltage_safe": true,
+      "thermal_safe": true,
+      "cascade_safe": true,
+      "topology_valid": true,
+      "overall_safe": true,
+      "rejection_reason": null
+    },
+    {
+      "case": "non_convergent",
+      "elapsed_ms": 386.88021800044226,
+      "solver_converged": false,
+      "finite_state": true,
+      "voltage_safe": true,
+      "thermal_safe": true,
+      "cascade_safe": true,
+      "topology_valid": true,
+      "overall_safe": false,
+      "rejection_reason": "solver_non_convergence"
+    },
+    {
+      "case": "non_finite",
+      "elapsed_ms": 391.3241230038693,
+      "solver_converged": true,
+      "finite_state": false,
+      "voltage_safe": false,
+      "thermal_safe": false,
+      "cascade_safe": false,
+      "topology_valid": true,
+      "overall_safe": false,
+      "rejection_reason": "non_finite_state"
+    },
+    {
+      "case": "voltage_violation",
+      "elapsed_ms": 403.16637299838476,
+      "solver_converged": true,
+      "finite_state": true,
+      "voltage_safe": false,
+      "thermal_safe": true,
+      "cascade_safe": true,
+      "topology_valid": true,
+      "overall_safe": false,
+      "rejection_reason": "voltage_violation"
+    },
+    {
+      "case": "thermal_violation",
+      "elapsed_ms": 382.0483650051756,
+      "solver_converged": true,
+      "finite_state": true,
+      "voltage_safe": true,
+      "thermal_safe": false,
+      "cascade_safe": false,
+      "topology_valid": true,
+      "overall_safe": false,
+      "rejection_reason": "thermal_violation"
+    },
+    {
+      "case": "invalid_topology",
+      "elapsed_ms": 403.42743300425354,
+      "solver_converged": false,
+      "finite_state": false,
+      "voltage_safe": false,
+      "thermal_safe": false,
+      "cascade_safe": false,
+      "topology_valid": false,
+      "overall_safe": false,
+      "rejection_reason": "invalid_topology_target"
+    }
+  ],
+  "all_negative_cases_rejected": true,
+  "safe_case_accepted": true
+}

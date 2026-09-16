@@ -1,0 +1,57 @@
+{
+  "PYPY_COMPLETE_USER_AND_TECHNICAL_MANUAL.md": {
+    "words": 15852,
+    "mermaid_diagrams": 7,
+    "code_fences_balanced": true
+  },
+  "PYPY_PROJECT_STORY_AND_PRESENTATION_GUIDE.md": {
+    "words": 1701,
+    "mermaid_diagrams": 0,
+    "code_fences_balanced": true
+  },
+  "PYPY_SUPERVISOR_DEMO_SCRIPT.md": {
+    "words": 1494,
+    "mermaid_diagrams": 0,
+    "code_fences_balanced": true
+  },
+  "PYPY_SUPERVISOR_QA_CHEATSHEET.md": {
+    "words": 3021,
+    "mermaid_diagrams": 0,
+    "code_fences_balanced": true
+  },
+  "PYPY_ONE_PAGE_DEMO_CHEATSHEET.md": {
+    "words": 608,
+    "mermaid_diagrams": 0,
+    "code_fences_balanced": true
+  },
+  "PYPY_DEMO_FAILURE_RECOVERY.md": {
+    "words": 1298,
+    "mermaid_diagrams": 0,
+    "code_fences_balanced": true
+  },
+  "PYPY_DOCUMENTATION_AUDIT_REPORT.md": {
+    "words": 2327,
+    "mermaid_diagrams": 0,
+    "code_fences_balanced": true
+  },
+  "manual_numbered_chapters": 30,
+  "qa_questions": 50,
+  "qa_short_answers": 50,
+  "qa_detailed_answers": 50,
+  "broken_links": [],
+  "final_grid": {
+    "grid": "ieee39",
+    "attack": null,
+    "open_branches": [],
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    }
+  },
+  "final_services": {
+    "count": 19,
+    "unhealthy": []
+  },
+  "browser_network_followup": "No failed requests/console errors; direct ws://localhost:8000/ws; 237 SVG line elements after 7-second observation"
+}

@@ -1,0 +1,8 @@
+graph LR
+    Twin["Digital Twin Solver"] --> Volt["Voltage Calculation"]
+    Volt --> Curr["Current Calculation"]
+    Curr --> Load["Line Loading Calculation"]
+    Load --> JSON["JSON Formatting"]
+    JSON --> MQTT["MQTT Topic (grid/telemetry)"]
+    MQTT --> Gateway["FastAPI Gateway"]
+    Gateway --> Dash["React Dashboard"]

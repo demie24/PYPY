@@ -1,0 +1,42 @@
+{
+  "generated_at_utc": "2026-08-19T07:46:00Z",
+  "source_artifact": "evaluation/methodology_hardening/sandbox_safety_report.json",
+  "total_cases_benchmarked": 6,
+  "safe_case_accepted": true,
+  "negative_cases_rejected": 5,
+  "total_negative_cases": 5,
+  "rejection_rate": "5 out of 5 negative cases rejected (100.0%)",
+  "case_breakdown": [
+    {
+      "case": "safe",
+      "overall_safe": true,
+      "rejection_reason": null
+    },
+    {
+      "case": "non_convergent",
+      "overall_safe": false,
+      "rejection_reason": "solver_non_convergence"
+    },
+    {
+      "case": "non_finite",
+      "overall_safe": false,
+      "rejection_reason": "non_finite_state"
+    },
+    {
+      "case": "voltage_violation",
+      "overall_safe": false,
+      "rejection_reason": "voltage_violation"
+    },
+    {
+      "case": "thermal_violation",
+      "overall_safe": false,
+      "rejection_reason": "thermal_violation"
+    },
+    {
+      "case": "invalid_topology",
+      "overall_safe": false,
+      "rejection_reason": "invalid_topology_target"
+    }
+  ],
+  "wording_guardrail": "100% rejection across five evaluated unsafe constraint-violation cases. Do not claim universal safety."
+}

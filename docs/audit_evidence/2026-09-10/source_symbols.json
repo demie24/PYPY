@@ -1,0 +1,8430 @@
+[
+  {
+    "path": "conftest.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/test_v107.py",
+    "classes": [],
+    "functions": [
+      "test_bridge_detection",
+      "test_articulation_points",
+      "test_cutline_discovery",
+      "test_islanding_risk",
+      "test_zero_param_fdia_init",
+      "test_spoof_voltage",
+      "test_spoof_power",
+      "test_spoof_frequency",
+      "test_pinn_residual_proxy",
+      "test_gnn_anomaly_proxy",
+      "test_stealth_optimizer",
+      "test_fdia_islanding_env"
+    ],
+    "imports": [
+      "core.adversarial.cutline_discovery_engine",
+      "core.adversarial.fdia_islanding_env",
+      "core.adversarial.stealth_fdia_optimizer",
+      "core.adversarial.zero_parameter_fdia",
+      "core.digital_twin.multi_grid_topology"
+    ]
+  },
+  {
+    "path": "tests/test_v115.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_experiment_creation_and_quota",
+      "test_experiment_list_and_filters",
+      "test_experiment_shares_access_rules",
+      "test_comparison_engine",
+      "test_exports_formats"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "gateway.routes.experiments",
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v1062.py",
+    "classes": [],
+    "functions": [
+      "test_trainable_encoder_forward",
+      "test_trainable_encoder_backward",
+      "test_criticality_encoder",
+      "test_ptdf_top_k",
+      "test_criticality_embedders",
+      "test_ssl_pretrain_loss_decreases",
+      "test_maml_inner_loop",
+      "test_policy_snapshot_gradient",
+      "test_criticality_vs_random",
+      "test_tsne_embedding",
+      "test_latent_quality_metrics",
+      "test_power_analysis"
+    ],
+    "imports": [
+      "core.adversarial.transfer_pathogen_agent",
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.analytics.verify_v1062",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.criticality_encoder",
+      "core.transfer.maml_meta_learner",
+      "core.transfer.self_supervised_pretrain",
+      "core.transfer.trainable_grid_encoder"
+    ]
+  },
+  {
+    "path": "tests/test_v102.py",
+    "classes": [],
+    "functions": [
+      "test_observation_masking",
+      "test_belief_encoder",
+      "test_reconnaissance_engine",
+      "test_imperfect_env_step",
+      "test_imperfect_agent",
+      "test_agent_update"
+    ],
+    "imports": [
+      "core.adversarial.belief_encoder",
+      "core.adversarial.imperfect_pathogen_agent",
+      "core.adversarial.imperfect_pathogen_env",
+      "core.adversarial.observation_masker",
+      "core.adversarial.reconnaissance_engine"
+    ]
+  },
+  {
+    "path": "tests/conftest.py",
+    "classes": [],
+    "functions": [
+      "pytest_configure",
+      "event_loop",
+      "mock_mqtt_client",
+      "mqtt_broker_config",
+      "grid_config",
+      "sample_grid_state",
+      "sample_normal_telemetry",
+      "sample_attack_telemetry",
+      "fault_scenario",
+      "restoration_action",
+      "sample_websocket_message",
+      "temp_log_dir",
+      "mock_logger"
+    ],
+    "imports": [
+      "pathlib",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v114.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_subscription_access_levels",
+      "test_scenario_templates_seeding",
+      "test_scenarios_listing_and_filtering",
+      "test_favorites_addition_and_deletion",
+      "test_scenario_launch_and_plan_restrictions"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "gateway.routes.scenarios",
+      "services.auth.models",
+      "services.auth.session",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v116.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_copilot_quotas",
+      "test_copilot_chat_rag_and_explainable_ai",
+      "test_autonomous_insight_and_recommendations",
+      "test_thesis_writing_assistant"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "gateway.routes.copilot",
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "tests/test_coevolution.py",
+    "classes": [],
+    "functions": [
+      "test_coevolution_env_reset",
+      "test_coevolution_env_step",
+      "test_coevolution_env_bus_isolation",
+      "test_coevolution_nonfinite_physics_is_explicit_blackout",
+      "test_immune_agent_policy",
+      "test_immune_memory_database"
+    ],
+    "imports": [
+      "core.adversarial.coevolution_env",
+      "core.adversarial.immune_agent",
+      "core.adversarial.immune_memory"
+    ]
+  },
+  {
+    "path": "tests/test_v112.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_payment_provider_agnosticism",
+      "test_coupon_redemption_and_unlocked_experiments",
+      "test_expired_trial_downgrade_and_locking",
+      "test_academic_coupons_redemption"
+    ],
+    "imports": [
+      "contextlib",
+      "datetime",
+      "services.auth.models",
+      "services.billing.billing_service",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "workers.billing.tasks"
+    ]
+  },
+  {
+    "path": "tests/test_v103.py",
+    "classes": [],
+    "functions": [
+      "test_gcn_conv_native",
+      "test_gat_conv_native",
+      "test_telemetry_reconstruction_gae",
+      "test_missing_data_simulator",
+      "test_pinn_physics_validator",
+      "test_trust_fusion_integration",
+      "test_blue_agent_virtualization"
+    ],
+    "imports": [
+      "core.adversarial.mqtt_verification_worker",
+      "core.digital_twin.grid_topology",
+      "core.gnn.missing_data_simulator",
+      "core.gnn.telemetry_reconstruction_gnn"
+    ]
+  },
+  {
+    "path": "tests/test_v117.py",
+    "classes": [
+      "_RL"
+    ],
+    "functions": [
+      "test_jwt_expiry_enforced",
+      "test_jwt_valid_token_round_trip",
+      "test_jwt_tampered_token_rejected",
+      "_build_rate_limit_app",
+      "_rate_limit_requests",
+      "test_rate_limit_middleware_rejects_after_limit",
+      "test_rate_limit_health_check_exempted",
+      "test_security_headers_are_present",
+      "test_k8s_manifests_exist_and_non_empty",
+      "test_github_actions_workflows_exist",
+      "test_deployment_scripts_exist_and_executable",
+      "test_e2e_mock_login_flow",
+      "test_e2e_mock_copilot_flow"
+    ],
+    "imports": [
+      "fastapi",
+      "fastapi.responses",
+      "services.auth.auth_service",
+      "starlette.middleware.base",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v105.py",
+    "classes": [],
+    "functions": [
+      "test_custom_som_logic",
+      "test_som_vulnerability_engine",
+      "test_concurrent_attack_planner",
+      "test_imperfect_pathogen_env_concurrent_mode"
+    ],
+    "imports": [
+      "core.adversarial.concurrent_attack_engine",
+      "core.adversarial.imperfect_pathogen_env",
+      "core.analytics.som_vulnerability_engine",
+      "core.digital_twin.grid_topology"
+    ]
+  },
+  {
+    "path": "tests/test_v113_completion.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_progress_percentage_and_audit_logging",
+      "test_worker_monitor_heartbeat",
+      "test_email_notification_dispatch",
+      "test_celery_task_retry_and_dlq",
+      "contextmanager_mock"
+    ],
+    "imports": [
+      "celery.exceptions",
+      "contextlib",
+      "datetime",
+      "services.auth.models",
+      "services.simulation.audit",
+      "services.simulation.notifications",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock",
+      "workers.health.worker_monitor",
+      "workers.simulation.tasks"
+    ]
+  },
+  {
+    "path": "tests/test_v1061.py",
+    "classes": [],
+    "functions": [
+      "test_domain_randomizer_basic",
+      "test_domain_randomizer_topology_perturbation",
+      "test_stochastic_encoder",
+      "test_temperature_scheduler",
+      "test_stochastic_std_nonzero",
+      "test_extended_training",
+      "test_fine_tuning_stochastic",
+      "test_welch_test_framework",
+      "test_batch_randomization",
+      "test_latent_distance_analysis"
+    ],
+    "imports": [
+      "core.adversarial.transfer_pathogen_agent",
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.analytics.verify_v1061",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.domain_adapter",
+      "core.transfer.domain_randomizer",
+      "core.transfer.unified_grid_encoder"
+    ]
+  },
+  {
+    "path": "tests/test_v113.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_free_concurrency_and_grid_limits",
+      "test_premium_concurrency_limits",
+      "test_stop_grid_scenario"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.simulation.launcher",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v118.py",
+    "classes": [
+      "TestBruteForceProtection",
+      "TestJWTBlacklist",
+      "TestIPBlocking",
+      "TestSecurityAuditTrail",
+      "TestAlertEvaluation",
+      "TestBackupService",
+      "TestMetricsService",
+      "TestV118Models",
+      "TestRouteImports",
+      "TestGrafanaDashboard"
+    ],
+    "functions": [
+      "db",
+      "tenant_and_user"
+    ],
+    "imports": [
+      "datetime",
+      "gateway.routes.operations",
+      "gateway.routes.security_hardening",
+      "services.auth.models",
+      "services.operations",
+      "services.operations.alert_service",
+      "services.operations.metrics_service",
+      "services.operations.security_service",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v119_playwright.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_1_signup_validation_success",
+      "test_2_signup_duplicate_email",
+      "test_3_signup_invalid_subdomain",
+      "test_4_verify_email_success",
+      "test_5_verify_email_invalid_token",
+      "test_6_verify_email_expired",
+      "test_7_login_blocked_unverified",
+      "test_8_login_incorrect_password",
+      "test_9_login_brute_force_lockout",
+      "test_10_login_success",
+      "test_11_run_simulation_free_limit",
+      "test_12_run_simulation_premium_grid_access",
+      "test_13_run_simulation_concurrency_limit",
+      "test_14_checkout_stripe_session",
+      "test_15_checkout_toyyibpay_session",
+      "test_16_stripe_webhook_completion",
+      "test_17_toyyibpay_webhook_completion",
+      "test_18_billing_metrics_retrieval",
+      "test_19_upgrade_plan_via_coupon",
+      "test_20_logout_flow"
+    ],
+    "imports": [
+      "datetime",
+      "gateway.routes.saas_auth",
+      "services.auth.models",
+      "services.billing.billing_service",
+      "services.simulation.launcher",
+      "services.tenant.tenant_service",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v104.py",
+    "classes": [],
+    "functions": [
+      "test_b_matrix_and_islands",
+      "test_ptdf_engine",
+      "test_betweenness_metrics",
+      "test_cascading_failure_simulator",
+      "test_hybrid_score_calculation"
+    ],
+    "imports": [
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.analytics.extended_betweenness_engine",
+      "core.analytics.ptdf_engine",
+      "core.digital_twin.grid_topology"
+    ]
+  },
+  {
+    "path": "tests/test_v106.py",
+    "classes": [],
+    "functions": [
+      "test_multi_grid_topology",
+      "test_unified_grid_encoder",
+      "test_domain_adapter",
+      "test_transfer_pathogen_agent",
+      "test_multigrid_env",
+      "test_zero_padded_attack"
+    ],
+    "imports": [
+      "core.adversarial.multigrid_env",
+      "core.adversarial.transfer_pathogen_agent",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.domain_adapter",
+      "core.transfer.unified_grid_encoder"
+    ]
+  },
+  {
+    "path": "tests/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/test_v119.py",
+    "classes": [
+      "TestV119Models",
+      "TestEmailTemplates",
+      "TestBillingService",
+      "TestAnalyticsRoutes",
+      "TestAdminPortalRoutes",
+      "TestFileIntegrity",
+      "TestDocumentationQuality",
+      "TestLandingPageCompleteness",
+      "TestAuthPagesComponent",
+      "TestEnvFiles"
+    ],
+    "functions": [
+      "db",
+      "seed_tenant_user"
+    ],
+    "imports": [
+      "datetime",
+      "gateway.routes.admin_portal",
+      "gateway.routes.analytics",
+      "services.auth.models",
+      "services.billing",
+      "services.billing.billing_service",
+      "services.email",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/test_v111.py",
+    "classes": [],
+    "functions": [
+      "db_session",
+      "test_password_hashing",
+      "test_jwt_token_generation_and_decoding",
+      "test_tenant_onboarding_and_user_creation",
+      "test_onboard_tenant_validation_rules",
+      "test_tenant_isolation"
+    ],
+    "imports": [
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.tenant.tenant_service",
+      "services.users.user_service",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "scratch/update_eval.py",
+    "classes": [],
+    "functions": [
+      "update"
+    ],
+    "imports": [
+      "generate_risk_report",
+      "gnn_evaluator",
+      "gnn_model",
+      "gnn_trainer",
+      "grid_topology",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "scratch/inspect_memory.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "scratch/check_branch_flow.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "scratch/generate_v2_plots.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "scratch/find_layers.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "scratch/verify_consensus.py",
+    "classes": [],
+    "functions": [
+      "run_verification"
+    ],
+    "imports": [
+      "core.consensus.decision_engine"
+    ]
+  },
+  {
+    "path": "scratch/test_db.py",
+    "classes": [],
+    "functions": [],
+    "imports": [
+      "services.auth.models"
+    ]
+  },
+  {
+    "path": "scratch/analyze_memory_detailed.py",
+    "classes": [],
+    "functions": [],
+    "imports": [
+      "collections",
+      "datetime"
+    ]
+  },
+  {
+    "path": "scratch/summarize_layers.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "scripts/generate_fyp_figures.py",
+    "classes": [],
+    "functions": [
+      "wrap_svg",
+      "make_drawio",
+      "gen_fig_m1",
+      "gen_fig_o1",
+      "gen_fig_p1",
+      "gen_fig_p2",
+      "gen_fig_q1",
+      "gen_fig_r1",
+      "gen_fig_s1",
+      "main"
+    ],
+    "imports": []
+  },
+  {
+    "path": "scripts/assemble_unimap_thesis.py",
+    "classes": [],
+    "functions": [
+      "run",
+      "docx_to_markdown",
+      "split_references",
+      "normalise_chapter_headings",
+      "clean_locked_markdown",
+      "cross_chapter_cleanup",
+      "appendix_body",
+      "front_matter",
+      "add_page_breaks",
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "docx",
+      "docx.enum.text",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "core/mqtt_compat.py",
+    "classes": [],
+    "functions": [
+      "create_client"
+    ],
+    "imports": []
+  },
+  {
+    "path": "core/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/observability/methodology_metrics.py",
+    "classes": [
+      "MethodologyMetrics"
+    ],
+    "functions": [],
+    "imports": [
+      "__future__",
+      "collections",
+      "contextlib"
+    ]
+  },
+  {
+    "path": "core/observability/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/threat_engine/scorer.py",
+    "classes": [
+      "ThreatScoringEngine"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "core.mqtt_compat",
+      "mqtt_compat"
+    ]
+  },
+  {
+    "path": "core/threat_engine/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/attack_simulator/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/gateway/mqtt_manager.py",
+    "classes": [
+      "MQTTManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.mqtt_compat",
+      "gateway.database",
+      "gateway.store",
+      "gateway.translator",
+      "gateway.websocket_manager",
+      "mqtt_compat",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/main.py",
+    "classes": [
+      "RateLimitMiddleware"
+    ],
+    "functions": [
+      "add_security_headers",
+      "check_telemetry_freshness_task",
+      "startup_event",
+      "shutdown_event",
+      "websocket_endpoint"
+    ],
+    "imports": [
+      "fastapi",
+      "fastapi.middleware.cors",
+      "fastapi.responses",
+      "gateway.mqtt_manager",
+      "gateway.routes.admin_portal",
+      "gateway.routes.analytics",
+      "gateway.routes.billing",
+      "gateway.routes.copilot",
+      "gateway.routes.experiments",
+      "gateway.routes.operations",
+      "gateway.routes.saas_auth",
+      "gateway.routes.scenarios",
+      "gateway.routes.security_hardening",
+      "gateway.routes.simulation",
+      "gateway.routes.system",
+      "gateway.routes.telemetry",
+      "gateway.store",
+      "gateway.websocket_manager",
+      "services.auth.session",
+      "starlette.middleware.base"
+    ]
+  },
+  {
+    "path": "core/gateway/notification_service.py",
+    "classes": [
+      "NotificationOrchestrator"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/gateway/store.py",
+    "classes": [
+      "MemoryStore"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/translator.py",
+    "classes": [
+      "TelemetryTranslator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/websocket_manager.py",
+    "classes": [
+      "WebSocketManager"
+    ],
+    "functions": [],
+    "imports": [
+      "fastapi",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/database.py",
+    "classes": [
+      "TelemetryDB"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/lstm/temporal_detector.py",
+    "classes": [
+      "TemporalAnomalyDetector"
+    ],
+    "functions": [
+      "_get_detector",
+      "predict_sequence",
+      "anomaly_score",
+      "classification"
+    ],
+    "imports": [
+      "anomaly_score",
+      "lstm_evaluator",
+      "lstm_model"
+    ]
+  },
+  {
+    "path": "core/lstm/lstm_trainer.py",
+    "classes": [],
+    "functions": [
+      "create_sequences",
+      "_partition_sequences",
+      "train_model_for_window",
+      "run_lstm_pipeline"
+    ],
+    "imports": [
+      "core.ai_training.temporal_split",
+      "lstm_evaluator",
+      "lstm_model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/lstm/lstm_evaluator.py",
+    "classes": [],
+    "functions": [
+      "evaluate_lstm_performance"
+    ],
+    "imports": [
+      "sklearn.metrics"
+    ]
+  },
+  {
+    "path": "core/lstm/anomaly_score.py",
+    "classes": [],
+    "functions": [
+      "compute_anomaly_score"
+    ],
+    "imports": []
+  },
+  {
+    "path": "core/lstm/lstm_model.py",
+    "classes": [
+      "IEEE39LSTMClassifier"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/gnn/stgnn_model.py",
+    "classes": [
+      "TemporalLSTM",
+      "SpatialMPNN",
+      "IEEE39STGNN"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/gnn/topology_analyzer.py",
+    "classes": [
+      "TopologyAnalyzer"
+    ],
+    "functions": [],
+    "imports": [
+      "grid_topology"
+    ]
+  },
+  {
+    "path": "core/gnn/generate_risk_report.py",
+    "classes": [],
+    "functions": [
+      "generate_risk_report"
+    ],
+    "imports": [
+      "graph_detector"
+    ]
+  },
+  {
+    "path": "core/gnn/stgnn_evaluator.py",
+    "classes": [],
+    "functions": [
+      "evaluate_stgnn_performance"
+    ],
+    "imports": [
+      "sklearn.metrics"
+    ]
+  },
+  {
+    "path": "core/gnn/stgnn_trainer.py",
+    "classes": [],
+    "functions": [
+      "create_temporal_sequences",
+      "train_stgnn"
+    ],
+    "imports": [
+      "core.ai_training.temporal_split",
+      "gnn_trainer",
+      "grid_topology",
+      "sklearn.metrics",
+      "stgnn_evaluator",
+      "stgnn_model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/gnn/gnn_evaluator.py",
+    "classes": [],
+    "functions": [
+      "evaluate_gnn_performance"
+    ],
+    "imports": [
+      "sklearn.metrics"
+    ]
+  },
+  {
+    "path": "core/gnn/missing_data_simulator.py",
+    "classes": [
+      "MissingDataSimulator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gnn/telemetry_reconstruction_gnn.py",
+    "classes": [
+      "GCNConvNative",
+      "GATConvNative",
+      "TelemetryReconstructionGAE",
+      "PinnPhysicsValidator"
+    ],
+    "functions": [
+      "integrate_trust_reconstruction",
+      "virtualize_blue_observation"
+    ],
+    "imports": [
+      "gnn_trainer",
+      "grid_topology",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gnn/propagation_detector.py",
+    "classes": [
+      "SpatioTemporalPropagationDetector"
+    ],
+    "functions": [
+      "_get_detector",
+      "future_node_risk",
+      "future_edge_risk",
+      "forecast_next_failures",
+      "propagation_prediction"
+    ],
+    "imports": [
+      "gnn_trainer",
+      "grid_topology",
+      "stgnn_model",
+      "topology_analyzer"
+    ]
+  },
+  {
+    "path": "core/gnn/graph_detector.py",
+    "classes": [
+      "GraphAnomalyDetector"
+    ],
+    "functions": [
+      "_get_detector",
+      "classification",
+      "risk_scores",
+      "critical_components",
+      "propagation_prediction"
+    ],
+    "imports": [
+      "gnn_evaluator",
+      "gnn_model",
+      "gnn_trainer",
+      "grid_topology",
+      "topology_analyzer"
+    ]
+  },
+  {
+    "path": "core/gnn/gnn_model.py",
+    "classes": [
+      "MPNNLayer",
+      "IEEE39GNN"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/gnn/gnn_trainer.py",
+    "classes": [],
+    "functions": [
+      "extract_network_parameters",
+      "compute_vectorized_flows",
+      "train_gnn"
+    ],
+    "imports": [
+      "gnn_evaluator",
+      "gnn_model",
+      "grid_topology",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/physics_validation/adaptive_filter.py",
+    "classes": [
+      "AdaptiveTelemetryFilter"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/physics_validation/validation_engine.py",
+    "classes": [
+      "PhysicsValidationEngine"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "core.ai_runtime.readiness",
+      "core.digital_twin.grid_topology",
+      "core.mqtt_compat",
+      "core.physics_validation.adaptive_filter",
+      "core.physics_validation.kcl_validator",
+      "core.physics_validation.kvl_validator",
+      "core.physics_validation.physics_filter",
+      "core.physics_validation.trust_engine",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "core/physics_validation/kvl_validator.py",
+    "classes": [
+      "KVLValidator"
+    ],
+    "functions": [],
+    "imports": [
+      "collections"
+    ]
+  },
+  {
+    "path": "core/physics_validation/trust_engine.py",
+    "classes": [
+      "TrustEngine"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/physics_validation/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/physics_validation/physics_filter.py",
+    "classes": [
+      "PhysicsFilter"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/physics_validation/kcl_validator.py",
+    "classes": [
+      "KCLValidator"
+    ],
+    "functions": [],
+    "imports": [
+      "collections"
+    ]
+  },
+  {
+    "path": "core/assistant/telemetry_agent.py",
+    "classes": [
+      "TelemetryAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/conversational_planning_engine.py",
+    "classes": [
+      "ConversationalPlanningEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/decision_engine.py",
+    "classes": [
+      "DecisionEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/action_router.py",
+    "classes": [
+      "ActionRouter"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/contextual_memory_engine.py",
+    "classes": [
+      "ContextualMemoryEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/swarm_anomaly_fusion_engine.py",
+    "classes": [
+      "SwarmAnomalyFusionEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/engineering_reasoning_engine.py",
+    "classes": [
+      "EngineeringReasoningEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/relay_health_monitor.py",
+    "classes": [
+      "RelayHealthMonitor"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/relay_agent.py",
+    "classes": [
+      "RelayAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/cyber_physical_reasoning_engine.py",
+    "classes": [
+      "CyberPhysicalReasoningEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/rag_engine.py",
+    "classes": [
+      "RAGEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.assistant.engineering_reasoning_engine",
+      "core.assistant.vector_store",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/vector_store.py",
+    "classes": [
+      "EmbeddingModel",
+      "VectorStore",
+      "NumpyVectorStore",
+      "QdrantVectorStore"
+    ],
+    "functions": [
+      "deterministic_hash"
+    ],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/autonomous_workflow_engine.py",
+    "classes": [
+      "AutonomousWorkflowEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/adaptive_dialogue_engine.py",
+    "classes": [
+      "AdaptiveDialogueEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/synchronization_awareness_manager.py",
+    "classes": [
+      "SynchronizationAwarenessManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/voice_orchestration_engine.py",
+    "classes": [
+      "VoiceOrchestrationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/edge_awareness_engine.py",
+    "classes": [
+      "EdgeAwarenessEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/proactive_assistant_engine.py",
+    "classes": [
+      "ProactiveAssistantEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/cross_system_coordination_manager.py",
+    "classes": [
+      "CrossSystemCoordinationManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/agent_coordination_engine.py",
+    "classes": [
+      "AgentCoordinationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.assistant.relay_agent",
+      "core.assistant.security_agent",
+      "core.assistant.telemetry_agent",
+      "core.assistant.workflow_agent",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/distributed_consensus_engine.py",
+    "classes": [
+      "DistributedConsensusEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/voice_session_memory.py",
+    "classes": [
+      "VoiceSessionMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/n8n_orchestration_bridge.py",
+    "classes": [
+      "N8nOrchestrationBridge"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/automation_hook_manager.py",
+    "classes": [
+      "AutomationHookManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/assistant_reasoning_engine.py",
+    "classes": [
+      "AssistantReasoningEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/workflow_agent.py",
+    "classes": [
+      "WorkflowAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/explainability_engine.py",
+    "classes": [
+      "ExplainabilityEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/semantic_response_engine.py",
+    "classes": [
+      "SemanticResponseEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/condition_monitor_engine.py",
+    "classes": [
+      "ConditionMonitorEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/reporting_engine.py",
+    "classes": [
+      "ReportingEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/assistant_state_manager.py",
+    "classes": [
+      "AssistantStateManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/wake_word_manager.py",
+    "classes": [
+      "WakeWordManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/memory_orchestrator.py",
+    "classes": [
+      "MemoryOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.assistant.vector_store",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/assistant_presence_engine.py",
+    "classes": [
+      "AssistantPresenceEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/assistant_daemon.py",
+    "classes": [
+      "AssistantDaemon"
+    ],
+    "functions": [],
+    "imports": [
+      "core.assistant.action_router",
+      "core.assistant.adaptive_dialogue_engine",
+      "core.assistant.adaptive_routine_engine",
+      "core.assistant.adaptive_workflow_optimizer",
+      "core.assistant.agent_coordination_engine",
+      "core.assistant.assistant_presence_engine",
+      "core.assistant.assistant_reasoning_engine",
+      "core.assistant.assistant_state_manager",
+      "core.assistant.automation_hook_manager",
+      "core.assistant.autonomous_workflow_engine",
+      "core.assistant.condition_monitor_engine",
+      "core.assistant.context_engine",
+      "core.assistant.contextual_memory_engine",
+      "core.assistant.conversational_planning_engine",
+      "core.assistant.cross_system_coordination_manager",
+      "core.assistant.cyber_physical_reasoning_engine",
+      "core.assistant.decision_engine",
+      "core.assistant.distributed_consensus_engine",
+      "core.assistant.edge_awareness_engine",
+      "core.assistant.edge_mesh_orchestrator",
+      "core.assistant.emotion_engine",
+      "core.assistant.explainability_engine",
+      "core.assistant.federated_memory_manager",
+      "core.assistant.intent_engine",
+      "core.assistant.live_conversation_stream",
+      "core.assistant.memory_orchestrator",
+      "core.assistant.n8n_orchestration_bridge",
+      "core.assistant.orchestration_planner_bridge",
+      "core.assistant.pattern_awareness_engine",
+      "core.assistant.persistent_routine_memory",
+      "core.assistant.predictive_coordination_engine",
+      "core.assistant.proactive_assistant_engine",
+      "core.assistant.rag_engine",
+      "core.assistant.relay_agent",
+      "core.assistant.relay_health_monitor",
+      "core.assistant.reminder_manager",
+      "core.assistant.reporting_engine",
+      "core.assistant.response_engine",
+      "core.assistant.security_agent",
+      "core.assistant.semantic_intent_engine",
+      "core.assistant.semantic_response_engine",
+      "core.assistant.swarm_anomaly_fusion_engine",
+      "core.assistant.swarm_coordination_engine",
+      "core.assistant.synchronization_awareness_manager",
+      "core.assistant.task_chain_manager",
+      "core.assistant.telemetry_agent",
+      "core.assistant.telemetry_correlation_engine",
+      "core.assistant.voice_orchestration_engine",
+      "core.assistant.voice_session_memory",
+      "core.assistant.wake_word_manager",
+      "core.assistant.workflow_agent",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/semantic_intent_engine.py",
+    "classes": [
+      "SemanticIntentEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/security_agent.py",
+    "classes": [
+      "SecurityAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/context_engine.py",
+    "classes": [
+      "ContextEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/persistent_routine_memory.py",
+    "classes": [
+      "PersistentRoutineMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "datetime",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/adaptive_workflow_optimizer.py",
+    "classes": [
+      "AdaptiveWorkflowOptimizer"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/edge_mesh_orchestrator.py",
+    "classes": [
+      "EdgeMeshOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/response_engine.py",
+    "classes": [
+      "ResponseEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/reminder_manager.py",
+    "classes": [
+      "ReminderManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/swarm_coordination_engine.py",
+    "classes": [
+      "SwarmCoordinationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.assistant.distributed_consensus_engine",
+      "core.assistant.edge_mesh_orchestrator",
+      "core.assistant.federated_memory_manager",
+      "core.assistant.swarm_anomaly_fusion_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/adaptive_routine_engine.py",
+    "classes": [
+      "AdaptiveRoutineEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/predictive_coordination_engine.py",
+    "classes": [
+      "PredictiveCoordinationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/pattern_awareness_engine.py",
+    "classes": [
+      "PatternAwarenessEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/federated_memory_manager.py",
+    "classes": [
+      "FederatedMemoryManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/live_conversation_stream.py",
+    "classes": [
+      "LiveConversationStream"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/assistant/telemetry_correlation_engine.py",
+    "classes": [
+      "TelemetryCorrelationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/task_chain_manager.py",
+    "classes": [
+      "TaskChainManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/emotion_engine.py",
+    "classes": [
+      "EmotionEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/intent_engine.py",
+    "classes": [
+      "IntentEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/assistant/orchestration_planner_bridge.py",
+    "classes": [
+      "OrchestrationPlannerBridge"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/pinn/pinn_trainer.py",
+    "classes": [],
+    "functions": [
+      "train_val_test_split",
+      "train_pinn"
+    ],
+    "imports": [
+      "physics_loss",
+      "pinn_evaluator",
+      "pinn_model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/pinn/pinn_model.py",
+    "classes": [
+      "IEEE39PINNAutoencoder"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/pinn/pinn_evaluator.py",
+    "classes": [],
+    "functions": [
+      "compute_r2",
+      "evaluate_pinn"
+    ],
+    "imports": [
+      "physics_loss",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/pinn/physics_loss.py",
+    "classes": [
+      "IEEE39PhysicsLoss"
+    ],
+    "functions": [],
+    "imports": [
+      "grid_topology"
+    ]
+  },
+  {
+    "path": "core/adversarial/stealth_fdia_optimizer.py",
+    "classes": [
+      "PINNResidualProxy",
+      "GNNAnomalyProxy",
+      "StealthFDIAOptimizer"
+    ],
+    "functions": [
+      "trust_loss",
+      "trust_loss_gradient_V"
+    ],
+    "imports": [
+      "core.adversarial.zero_parameter_fdia",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/transfer_pathogen_agent.py",
+    "classes": [
+      "PolicyNetwork",
+      "TransferPatogenAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.domain_adapter",
+      "core.transfer.unified_grid_encoder",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/blockchain_integrity.py",
+    "classes": [],
+    "functions": [
+      "compute_packet_hash",
+      "generate_hash",
+      "verify_hash",
+      "verify_chain"
+    ],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/zero_parameter_fdia.py",
+    "classes": [
+      "ZeroParameterFDIA"
+    ],
+    "functions": [],
+    "imports": [
+      "core.analytics.ptdf_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/immune_agent.py",
+    "classes": [
+      "ImmunePolicyNetwork",
+      "ImmuneValueNetwork",
+      "ImmuneAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "torch.distributions",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/baseline_runner.py",
+    "classes": [],
+    "functions": [
+      "run_random_baseline",
+      "run_heuristic_baseline"
+    ],
+    "imports": [
+      "core.adversarial.pathogen_env",
+      "scipy"
+    ]
+  },
+  {
+    "path": "core/adversarial/resilience_scorer.py",
+    "classes": [
+      "ResilienceScorer"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/attack_pattern_generator.py",
+    "classes": [
+      "AttackPatternGenerator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/pathogen_env.py",
+    "classes": [
+      "PathogenEnv"
+    ],
+    "functions": [],
+    "imports": [
+      "collections",
+      "core.consensus.decision_engine",
+      "core.digital_twin.grid_topology",
+      "core.digital_twin.physics",
+      "core.gnn.graph_detector",
+      "core.gnn.propagation_detector",
+      "gymnasium",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/belief_encoder.py",
+    "classes": [
+      "GRUBeliefEncoder"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/run_v1021_validation.py",
+    "classes": [],
+    "functions": [
+      "run_episode_v1021",
+      "run_v1021_validation",
+      "write_report_v1021"
+    ],
+    "imports": [
+      "core.adversarial.imperfect_pathogen_agent",
+      "core.adversarial.imperfect_pathogen_env",
+      "scipy"
+    ]
+  },
+  {
+    "path": "core/adversarial/run_v101_validation.py",
+    "classes": [],
+    "functions": [
+      "run_experiments",
+      "main",
+      "write_technical_audit",
+      "write_validation_report",
+      "write_statistical_report",
+      "write_research_report"
+    ],
+    "imports": [
+      "core.adversarial.blockchain_integrity",
+      "core.adversarial.mqtt_verification_worker",
+      "core.adversarial.quarantine_buffer",
+      "scipy"
+    ]
+  },
+  {
+    "path": "core/adversarial/pathogen_memory.py",
+    "classes": [
+      "AttackGenome",
+      "PathogenMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/run_validation_suite.py",
+    "classes": [],
+    "functions": [
+      "get_rule_based_action",
+      "evaluate_defender",
+      "run_validation_suite"
+    ],
+    "imports": [
+      "core.adversarial.coevolution_env",
+      "core.adversarial.immune_agent",
+      "core.adversarial.pathogen_agent",
+      "scipy"
+    ]
+  },
+  {
+    "path": "core/adversarial/immune_memory.py",
+    "classes": [
+      "VAE",
+      "ImmuneMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/fdia_islanding_env.py",
+    "classes": [
+      "FDIAIslandingEnv"
+    ],
+    "functions": [],
+    "imports": [
+      "core.adversarial.cutline_discovery_engine",
+      "core.adversarial.stealth_fdia_optimizer",
+      "core.adversarial.zero_parameter_fdia",
+      "core.analytics.eb_cascading_failure_simulator",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/observation_masker.py",
+    "classes": [
+      "ObservationMasker"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/adversarial_memory.py",
+    "classes": [
+      "AdversarialMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/coevolution_trainer.py",
+    "classes": [],
+    "functions": [
+      "run_coevolution_training"
+    ],
+    "imports": [
+      "core.adversarial.coevolution_env",
+      "core.adversarial.immune_agent",
+      "core.adversarial.pathogen_agent"
+    ]
+  },
+  {
+    "path": "core/adversarial/pathogen_agent.py",
+    "classes": [
+      "PathogenPolicyNetwork",
+      "PathogenValueNetwork",
+      "PathogenAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "torch.distributions",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/quarantine_buffer.py",
+    "classes": [
+      "QuarantineBuffer"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/imperfect_pathogen_agent.py",
+    "classes": [
+      "PathogenRecurrentPolicyNetwork",
+      "PathogenRecurrentValueNetwork",
+      "ImperfectPathogenAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.adversarial.belief_encoder",
+      "torch.distributions",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/reconnaissance_engine.py",
+    "classes": [
+      "ReconnaissanceEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/adversarial_coordinator.py",
+    "classes": [
+      "AdversarialCoordinator"
+    ],
+    "functions": [],
+    "imports": [
+      "adversarial.adversarial_memory",
+      "adversarial.attack_pattern_generator",
+      "adversarial.campaign_simulator",
+      "adversarial.defense_evaluator",
+      "adversarial.resilience_scorer",
+      "collections",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/coevolution_evaluator.py",
+    "classes": [],
+    "functions": [
+      "sha256",
+      "seed_everything",
+      "evaluate_seed",
+      "run_evaluation",
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "collections",
+      "core.adversarial.coevolution_env",
+      "core.adversarial.immune_agent",
+      "core.adversarial.immune_memory",
+      "core.adversarial.pathogen_agent",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "core/adversarial/run_v102_validation.py",
+    "classes": [],
+    "functions": [
+      "run_episode",
+      "run_v102_validation",
+      "write_report"
+    ],
+    "imports": [
+      "core.adversarial.imperfect_pathogen_agent",
+      "core.adversarial.imperfect_pathogen_env",
+      "scipy"
+    ]
+  },
+  {
+    "path": "core/adversarial/imperfect_pathogen_env.py",
+    "classes": [
+      "ImperfectPathogenEnv"
+    ],
+    "functions": [],
+    "imports": [
+      "core.adversarial.concurrent_attack_engine",
+      "core.adversarial.observation_masker",
+      "core.adversarial.pathogen_env",
+      "core.adversarial.reconnaissance_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/cutline_discovery_engine.py",
+    "classes": [
+      "_GraphContext",
+      "CutLineDiscoveryEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/coevolution_env.py",
+    "classes": [
+      "CoevolutionEnv"
+    ],
+    "functions": [],
+    "imports": [
+      "core.adversarial.immune_memory",
+      "core.adversarial.pathogen_env",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/pathogen_trainer.py",
+    "classes": [
+      "PathogenTrainer"
+    ],
+    "functions": [],
+    "imports": [
+      "pathogen_agent",
+      "pathogen_env",
+      "pathogen_memory"
+    ]
+  },
+  {
+    "path": "core/adversarial/imperfect_pathogen_trainer.py",
+    "classes": [],
+    "functions": [
+      "train_imperfect_pathogen"
+    ],
+    "imports": [
+      "core.adversarial.imperfect_pathogen_agent",
+      "core.adversarial.imperfect_pathogen_env"
+    ]
+  },
+  {
+    "path": "core/adversarial/concurrent_attack_engine.py",
+    "classes": [
+      "ConcurrentAttackEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.analytics.som_vulnerability_engine",
+      "core.digital_twin.grid_topology",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/multigrid_env.py",
+    "classes": [
+      "MultiGridEnv"
+    ],
+    "functions": [],
+    "imports": [
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.digital_twin.multi_grid_topology",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/multiseed_runner.py",
+    "classes": [],
+    "functions": [
+      "train_seed",
+      "run_multiseed"
+    ],
+    "imports": [
+      "core.adversarial.pathogen_agent",
+      "core.adversarial.pathogen_env",
+      "multiprocessing"
+    ]
+  },
+  {
+    "path": "core/adversarial/statistical_validator.py",
+    "classes": [],
+    "functions": [
+      "run_statistical_validation"
+    ],
+    "imports": [
+      "scipy"
+    ]
+  },
+  {
+    "path": "core/adversarial/campaign_simulator.py",
+    "classes": [
+      "CampaignSimulator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/defense_evaluator.py",
+    "classes": [
+      "DefenseEvaluator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/adversarial/mqtt_verification_worker.py",
+    "classes": [
+      "MqttVerificationWorker"
+    ],
+    "functions": [],
+    "imports": [
+      "core.adversarial.blockchain_integrity",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/criticality_encoder.py",
+    "classes": [
+      "PTDFEmbedder",
+      "BetweennessEmbedder",
+      "RiskScoreEmbedder",
+      "CriticalityAwareEncoder"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.trainable_grid_encoder",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/unified_grid_encoder.py",
+    "classes": [
+      "GraphSAGELayer",
+      "UnifiedGridEncoder"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.multi_grid_topology",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/trainable_grid_encoder.py",
+    "classes": [
+      "AdamOptimizer",
+      "TrainableGraphSAGELayer",
+      "TrainableGridEncoder"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.multi_grid_topology",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/domain_randomizer.py",
+    "classes": [
+      "PerturbedGridProxy",
+      "DomainRandomizer",
+      "StochasticEncoder",
+      "TemperatureScheduler"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.unified_grid_encoder",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/self_supervised_pretrain.py",
+    "classes": [
+      "SelfSupervisedPretrainer"
+    ],
+    "functions": [
+      "pretrain_encoder"
+    ],
+    "imports": [
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.criticality_encoder",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/domain_adapter.py",
+    "classes": [
+      "DomainAdapter"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/maml_meta_learner.py",
+    "classes": [
+      "PolicySnapshot",
+      "MAMLMetaLearner"
+    ],
+    "functions": [],
+    "imports": [
+      "core.adversarial.transfer_pathogen_agent",
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.criticality_encoder",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/transfer/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/hardware/edge_reliability_monitor.py",
+    "classes": [
+      "EdgeReliabilityMonitor"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/edge_device_manager.py",
+    "classes": [
+      "EdgeDeviceManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/virtual_esp32.py",
+    "classes": [
+      "VirtualESP32"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.esp32_bridge",
+      "core.hardware.hardware_state_manager",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/hardware_state_manager.py",
+    "classes": [
+      "HardwareStateManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/deployment_profiles.py",
+    "classes": [
+      "DeploymentProfiles"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/distributed_command_bus.py",
+    "classes": [
+      "DistributedCommandBus"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/redundancy_coordinator.py",
+    "classes": [
+      "RedundancyCoordinator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/hardware_orchestrator.py",
+    "classes": [
+      "HardwareOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.distributed_command_bus",
+      "core.hardware.edge_device_manager",
+      "core.hardware.hardware_command_router",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.hardware_synchronization_engine",
+      "core.hardware.relay_execution_planner",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/hardware_fault_orchestrator.py",
+    "classes": [
+      "HardwareFaultOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.virtual_esp32",
+      "core.hardware.virtual_plc",
+      "core.hardware.virtual_relay_faults",
+      "core.hardware.virtual_sensor_faults",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/safe_relay_guard.py",
+    "classes": [
+      "SafeRelayGuard"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/main.py",
+    "classes": [],
+    "functions": [
+      "on_bus_execution",
+      "on_connect",
+      "on_message",
+      "run_relay_transition_loop"
+    ],
+    "imports": [
+      "core.hardware.badusb_payload_manager",
+      "core.hardware.cyber_physical_attack_orchestrator",
+      "core.hardware.deployment_hardening_engine",
+      "core.hardware.deployment_profiles",
+      "core.hardware.digispark_attack_engine",
+      "core.hardware.disaster_recovery_engine",
+      "core.hardware.distributed_resilience_manager",
+      "core.hardware.edge_reliability_monitor",
+      "core.hardware.hardware_command_router",
+      "core.hardware.hardware_execution_gateway",
+      "core.hardware.hardware_fault_orchestrator",
+      "core.hardware.hardware_intrusion_detector",
+      "core.hardware.hardware_orchestrator",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.large_scale_synchronization_manager",
+      "core.hardware.physical_telemetry_validator",
+      "core.hardware.redundancy_coordinator",
+      "core.hardware.rogue_device_monitor",
+      "core.hardware.safe_relay_guard",
+      "core.hardware.virtual_esp32",
+      "core.hardware.virtual_plc",
+      "core.hardware.virtual_relay_faults",
+      "core.hardware.virtual_sensor_faults"
+    ]
+  },
+  {
+    "path": "core/hardware/distributed_resilience_manager.py",
+    "classes": [
+      "DistributedResilienceManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/badusb_payload_manager.py",
+    "classes": [
+      "BadUSBPayloadManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/plc_interface.py",
+    "classes": [
+      "PLCInterface"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.relay_controller",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/large_scale_synchronization_manager.py",
+    "classes": [
+      "LargeScaleSynchronizationManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/digispark_attack_engine.py",
+    "classes": [
+      "DigisparkAttackEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/physical_telemetry_validator.py",
+    "classes": [
+      "PhysicalTelemetryValidator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/virtual_sensor_faults.py",
+    "classes": [
+      "VirtualSensorFaults"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.sensor_interface",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/disaster_recovery_engine.py",
+    "classes": [
+      "DisasterRecoveryEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/sensor_interface.py",
+    "classes": [
+      "SensorInterface"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/relay_controller.py",
+    "classes": [
+      "RelayController"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/hardware_intrusion_detector.py",
+    "classes": [
+      "HardwareIntrusionDetector"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/hardware_command_router.py",
+    "classes": [
+      "HardwareCommandRouter"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.esp32_bridge",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.plc_interface",
+      "core.hardware.relay_controller",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/hardware_synchronization_engine.py",
+    "classes": [
+      "HardwareSynchronizationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/hardware_execution_gateway.py",
+    "classes": [
+      "HardwareExecutionGateway"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.deployment_profiles",
+      "core.hardware.edge_device_manager",
+      "core.hardware.edge_reliability_monitor",
+      "core.hardware.hardware_command_router",
+      "core.hardware.safe_relay_guard",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/relay_execution_planner.py",
+    "classes": [
+      "RelayExecutionPlanner"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/virtual_relay_faults.py",
+    "classes": [
+      "VirtualRelayFaults"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.relay_controller",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/rogue_device_monitor.py",
+    "classes": [
+      "RogueDeviceMonitor"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/hardware/cyber_physical_attack_orchestrator.py",
+    "classes": [
+      "CyberPhysicalAttackOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.badusb_payload_manager",
+      "core.hardware.digispark_attack_engine",
+      "core.hardware.hardware_intrusion_detector",
+      "core.hardware.rogue_device_monitor",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/deployment_hardening_engine.py",
+    "classes": [
+      "DeploymentHardeningEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/esp32_bridge.py",
+    "classes": [
+      "ESP32Bridge"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/hardware/virtual_plc.py",
+    "classes": [
+      "VirtualPLC"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.plc_interface",
+      "core.hardware.relay_controller",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/arena/blue_agent.py",
+    "classes": [
+      "BlueAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/arena/arena_coordinator.py",
+    "classes": [
+      "ArenaCoordinator"
+    ],
+    "functions": [],
+    "imports": [
+      "arena.arena_memory",
+      "arena.arena_simulator",
+      "arena.blue_agent",
+      "arena.red_agent",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/arena/arena_simulator.py",
+    "classes": [
+      "ArenaSimulator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/arena/arena_memory.py",
+    "classes": [
+      "ArenaMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/arena/red_agent.py",
+    "classes": [
+      "RedAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/data_collector/collector.py",
+    "classes": [
+      "DatasetCollector"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "collections"
+    ]
+  },
+  {
+    "path": "core/data_collector/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/strategy/strategic_coordinator.py",
+    "classes": [
+      "StrategicCoordinator"
+    ],
+    "functions": [],
+    "imports": [
+      "collections",
+      "strategy.action_simulator",
+      "strategy.impact_estimator",
+      "strategy.priority_engine",
+      "strategy.resource_allocator",
+      "strategy.strategy_memory"
+    ]
+  },
+  {
+    "path": "core/strategy/strategy_memory.py",
+    "classes": [
+      "StrategyMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/strategy/resource_allocator.py",
+    "classes": [
+      "ResourceAllocator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/strategy/priority_engine.py",
+    "classes": [
+      "PriorityEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/strategy/impact_estimator.py",
+    "classes": [
+      "ImpactEstimator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/strategy/action_simulator.py",
+    "classes": [
+      "ActionSimulator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/consensus/decision_engine.py",
+    "classes": [
+      "DecisionEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "consensus_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/consensus/regional_agent.py",
+    "classes": [
+      "RegionalAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/consensus/leader_agent.py",
+    "classes": [
+      "LeaderAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "trust_fusion",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/consensus/trust_fusion.py",
+    "classes": [
+      "TrustFusionEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/consensus/consensus_engine.py",
+    "classes": [
+      "ConsensusEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.grid_topology",
+      "leader_agent",
+      "regional_agent",
+      "trust_fusion",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/consensus/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": [
+      "consensus_engine",
+      "decision_engine",
+      "leader_agent",
+      "regional_agent",
+      "trust_fusion"
+    ]
+  },
+  {
+    "path": "core/dataset_generator/dataset_validator.py",
+    "classes": [],
+    "functions": [
+      "validate_dataset"
+    ],
+    "imports": [
+      "physics_validator"
+    ]
+  },
+  {
+    "path": "core/dataset_generator/dataset_statistics.py",
+    "classes": [],
+    "functions": [
+      "compute_statistics"
+    ],
+    "imports": []
+  },
+  {
+    "path": "core/dataset_generator/dataset_auditor.py",
+    "classes": [],
+    "functions": [
+      "run_audit"
+    ],
+    "imports": [
+      "physics_validator"
+    ]
+  },
+  {
+    "path": "core/dataset_generator/physics_validator.py",
+    "classes": [],
+    "functions": [
+      "validate_physics"
+    ],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/dataset_generator/scenario_library.py",
+    "classes": [
+      "GridScenarioLibrary"
+    ],
+    "functions": [],
+    "imports": [
+      "grid_topology"
+    ]
+  },
+  {
+    "path": "core/dataset_generator/dataset_generator.py",
+    "classes": [],
+    "functions": [
+      "seed_everything",
+      "run_dataset_generation"
+    ],
+    "imports": [
+      "grid_topology",
+      "physics",
+      "physics_validator",
+      "scenario_library"
+    ]
+  },
+  {
+    "path": "core/scratch/test_ieee57.py",
+    "classes": [],
+    "functions": [],
+    "imports": [
+      "digital_twin.main"
+    ]
+  },
+  {
+    "path": "core/ai_detection/detector.py",
+    "classes": [
+      "NumPyAutoencoderDetector"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "ai_runtime.readiness",
+      "core.ai_runtime.readiness",
+      "core.mqtt_compat",
+      "mqtt_compat",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "core/ai_detection/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/cyber_defense/threat_correlation.py",
+    "classes": [
+      "Incident",
+      "ThreatCorrelationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/incident_lifecycle.py",
+    "classes": [
+      "IncidentLifecycleManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.cyber_defense.threat_correlation",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/autonomous_defense_coordinator.py",
+    "classes": [
+      "AutonomousDefenseCoordinator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/containment_engine.py",
+    "classes": [
+      "ContainmentEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/campaign_timeline.py",
+    "classes": [
+      "CampaignTimeline"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/defense_escalation.py",
+    "classes": [
+      "DefenseEscalator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/trust_fusion.py",
+    "classes": [
+      "TrustFusionEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/attribution_engine.py",
+    "classes": [
+      "AttributionEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/defense_orchestrator.py",
+    "classes": [
+      "DefenseOrchestrator"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message",
+      "main"
+    ],
+    "imports": [
+      "core.cyber_defense.adaptive_defense_engine",
+      "core.cyber_defense.attribution_engine",
+      "core.cyber_defense.autonomous_defense_coordinator",
+      "core.cyber_defense.campaign_response_engine",
+      "core.cyber_defense.campaign_timeline",
+      "core.cyber_defense.containment_engine",
+      "core.cyber_defense.defense_escalation",
+      "core.cyber_defense.defense_memory",
+      "core.cyber_defense.incident_lifecycle",
+      "core.cyber_defense.mitre_mapper",
+      "core.cyber_defense.threat_correlation",
+      "core.cyber_defense.trust_fusion"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/mitre_mapper.py",
+    "classes": [
+      "MitreMapper"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/adaptive_defense_engine.py",
+    "classes": [
+      "AdaptiveDefenseEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/campaign_response_engine.py",
+    "classes": [
+      "CampaignResponseEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/defense_memory.py",
+    "classes": [
+      "DefenseMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/cyber_defense/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/relay_protection/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/topology_recovery_engine.py",
+    "classes": [
+      "TopologyRecoveryEngine",
+      "GridTopology"
+    ],
+    "functions": [],
+    "imports": [
+      "grid_topology",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/survival_forecasting_engine.py",
+    "classes": [
+      "SurvivalForecastingEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/restoration_agent.py",
+    "classes": [
+      "RestorationAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.adaptive_recovery_memory",
+      "core.self_healing.recovery_state_machine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/proactive_rerouting_engine.py",
+    "classes": [
+      "ProactiveReroutingEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.restoration_validator",
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/orchestrator_agent.py",
+    "classes": [
+      "OrchestratorAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.cyber_defense_agent",
+      "core.self_healing.prediction_agent",
+      "core.self_healing.restoration_agent",
+      "core.self_healing.stabilization_agent",
+      "core.self_healing.survival_agent",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/recovery_scoring_engine.py",
+    "classes": [
+      "RecoveryScoringEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/action_rollback.py",
+    "classes": [
+      "RollbackCheckpoint",
+      "ActionRollbackManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/cascading_containment_engine.py",
+    "classes": [
+      "CascadingContainmentEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/restoration_planner.py",
+    "classes": [
+      "RestorationPlanner"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.restoration_validator",
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/adaptive_recovery_memory.py",
+    "classes": [
+      "AdaptiveRecoveryMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/microgrid_manager.py",
+    "classes": [
+      "MicrogridManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/critical_infrastructure_guard.py",
+    "classes": [
+      "CriticalInfrastructureGuard"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/state_vector_debugger.py",
+    "classes": [
+      "StateVectorDebugger"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/main.py",
+    "classes": [],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "core.mqtt_compat",
+      "core.self_healing.adaptive_recovery_memory",
+      "core.self_healing.autonomous_balancer",
+      "core.self_healing.blackstart_engine",
+      "core.self_healing.cascading_containment_engine",
+      "core.self_healing.critical_infrastructure_guard",
+      "core.self_healing.degraded_operation_manager",
+      "core.self_healing.flisr",
+      "core.self_healing.islanding_engine",
+      "core.self_healing.microgrid_manager",
+      "core.self_healing.orchestrator_agent",
+      "core.self_healing.predictive_stability_engine",
+      "core.self_healing.preemptive_isolation_engine",
+      "core.self_healing.proactive_rerouting_engine",
+      "core.self_healing.recovery_scoring_engine",
+      "core.self_healing.recovery_state_machine",
+      "core.self_healing.relay",
+      "core.self_healing.self_preservation_policy_engine",
+      "core.self_healing.survival_forecasting_engine",
+      "core.self_healing.survival_optimizer"
+    ]
+  },
+  {
+    "path": "core/self_healing/blackstart_engine.py",
+    "classes": [
+      "BlackstartEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/recovery_reward_engine.py",
+    "classes": [
+      "RecoveryRewardEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/flisr.py",
+    "classes": [
+      "FLISREngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/prediction_agent.py",
+    "classes": [
+      "PredictionAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.predictive_stability_engine",
+      "core.self_healing.survival_forecasting_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/restoration_policy_engine.py",
+    "classes": [
+      "RestorationPolicyEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/stabilization_agent.py",
+    "classes": [
+      "StabilizationAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/reward_engine.py",
+    "classes": [
+      "RewardEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.recovery_reward_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/state_encoder.py",
+    "classes": [
+      "StateEncoder"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/degraded_operation_manager.py",
+    "classes": [
+      "DegradedOperationManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/restoration_timeline.py",
+    "classes": [
+      "RestorationTimeline"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/restoration_validator.py",
+    "classes": [
+      "RestorationValidator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.restoration_sandbox",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/cyber_defense_agent.py",
+    "classes": [
+      "CyberDefenseAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/predictive_stability_engine.py",
+    "classes": [
+      "PredictiveStabilityEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/self_preservation_policy_engine.py",
+    "classes": [
+      "SelfPreservationPolicyEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/survival_agent.py",
+    "classes": [
+      "SurvivalAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.critical_infrastructure_guard",
+      "core.self_healing.islanding_engine",
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/trusted_action_filter.py",
+    "classes": [
+      "TrustedActionFilter"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.safety_constraints",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/action_explainer.py",
+    "classes": [
+      "ActionExplainer"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.action_registry",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/islanding_engine.py",
+    "classes": [
+      "IslandingEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/operator_override.py",
+    "classes": [
+      "OperatorOverrideEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/recovery_state_machine.py",
+    "classes": [
+      "RecoveryStateMachine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.operator_override",
+      "core.self_healing.restoration_planner",
+      "core.self_healing.restoration_validator",
+      "core.self_healing.rollback_guard",
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/recovery_policy_service.py",
+    "classes": [
+      "IEEE39RecoveryEncoder",
+      "RecoveryPolicyRuntime",
+      "MQTTRecoveryPolicyService"
+    ],
+    "functions": [
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "core.ai_runtime.readiness",
+      "core.mqtt_compat",
+      "core.self_healing.action_registry",
+      "core.self_healing.restoration_validator",
+      "core.self_healing.rl.dqn_agent",
+      "core.self_healing.rl.ppo_agent",
+      "pathlib",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/rl_environment.py",
+    "classes": [
+      "GridRLEnvironment",
+      "GridTopology",
+      "GridPhysicsEngine",
+      "EnvClass"
+    ],
+    "functions": [
+      "run_live_daemon"
+    ],
+    "imports": [
+      "core.self_healing.action_explainer",
+      "core.self_healing.action_registry",
+      "core.self_healing.action_rollback",
+      "core.self_healing.operator_override",
+      "core.self_healing.restoration_policy_engine",
+      "core.self_healing.restoration_sandbox",
+      "core.self_healing.restoration_timeline",
+      "core.self_healing.reward_engine",
+      "core.self_healing.rl.ppo_agent",
+      "core.self_healing.safety_constraints",
+      "core.self_healing.state_encoder",
+      "core.self_healing.state_vector_debugger",
+      "core.self_healing.trusted_action_filter",
+      "grid_topology",
+      "gymnasium",
+      "physics",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/survival_optimizer.py",
+    "classes": [
+      "SurvivalOptimizer"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/safety_constraints.py",
+    "classes": [
+      "SafetyConstraintEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/preemptive_isolation_engine.py",
+    "classes": [
+      "PreemptiveIsolationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.topology_recovery_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/autonomous_balancer.py",
+    "classes": [
+      "AutonomousBalancer"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/restoration_sandbox.py",
+    "classes": [
+      "RestorationSandbox",
+      "GridTopology",
+      "GridPhysicsEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.safety_constraints",
+      "grid_topology",
+      "physics",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/relay.py",
+    "classes": [
+      "ProtectiveRelay"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/rollback_guard.py",
+    "classes": [
+      "RollbackGuard"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/action_registry.py",
+    "classes": [
+      "ActionRegistry"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/digital_twin/physics.py",
+    "classes": [
+      "GridPhysicsEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.grid_topology",
+      "core.digital_twin.solver",
+      "grid_topology",
+      "solver",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/digital_twin/grid_topology.py",
+    "classes": [
+      "GridTopology"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.grid_loader",
+      "grid_loader"
+    ]
+  },
+  {
+    "path": "core/digital_twin/grid_loader_ieee14.py",
+    "classes": [
+      "IEEE14BusLoader"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/digital_twin/grid_loader_ieee118.py",
+    "classes": [
+      "IEEE118BusLoader"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/digital_twin/telemetry.py",
+    "classes": [
+      "ACTelemetryPipeline"
+    ],
+    "functions": [
+      "safe_get"
+    ],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/digital_twin/main.py",
+    "classes": [
+      "SmartGridDigitalTwin"
+    ],
+    "functions": [
+      "find_gen_idx"
+    ],
+    "imports": [
+      "grid_topology",
+      "multi_grid_topology",
+      "physics",
+      "publisher",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/digital_twin/simulator.py",
+    "classes": [
+      "IEEE9BusSimulator"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": []
+  },
+  {
+    "path": "core/digital_twin/solver.py",
+    "classes": [
+      "GridACSolver"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.grid_loader",
+      "grid_loader"
+    ]
+  },
+  {
+    "path": "core/digital_twin/publisher.py",
+    "classes": [
+      "TelemetryPublisher"
+    ],
+    "functions": [],
+    "imports": [
+      "core.mqtt_compat",
+      "mqtt_compat",
+      "telemetry",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/digital_twin/multi_grid_topology.py",
+    "classes": [
+      "MultiGridTopology"
+    ],
+    "functions": [
+      "create_grid"
+    ],
+    "imports": [
+      "core.digital_twin.grid_loader",
+      "core.digital_twin.grid_loader_ieee118",
+      "core.digital_twin.grid_loader_ieee14",
+      "core.digital_twin.grid_loader_ieee57",
+      "grid_loader",
+      "grid_loader_ieee118",
+      "grid_loader_ieee14",
+      "grid_loader_ieee57"
+    ]
+  },
+  {
+    "path": "core/digital_twin/grid_loader.py",
+    "classes": [
+      "IEEE39BusLoader"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/digital_twin/grid_loader_ieee57.py",
+    "classes": [
+      "IEEE57BusLoader"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/digital_twin/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/models/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/orchestrator/decision_engine.py",
+    "classes": [
+      "OrchestrationDecisionEngine"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/orchestrator/action_recommender.py",
+    "classes": [
+      "ActionRecommender"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/orchestrator/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/orchestrator/ai_orchestrator.py",
+    "classes": [
+      "OrchestratorMemory",
+      "ThreatResponseSequencer",
+      "AIOrchestrator"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "core.mqtt_compat",
+      "core.orchestrator.action_recommender",
+      "core.orchestrator.decision_engine",
+      "core.self_healing.orchestrator_agent",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/ai_runtime/readiness.py",
+    "classes": [
+      "ModelReadiness"
+    ],
+    "functions": [],
+    "imports": [
+      "dataclasses",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/ai_runtime/healthcheck.py",
+    "classes": [],
+    "functions": [],
+    "imports": [
+      "pathlib"
+    ]
+  },
+  {
+    "path": "core/ai_runtime/features.py",
+    "classes": [
+      "TelemetryFeatureError",
+      "IEEE39FeatureFrame"
+    ],
+    "functions": [
+      "_finite_float",
+      "_ordered_branch_ids",
+      "extract_ieee39_features"
+    ],
+    "imports": [
+      "dataclasses",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/ai_runtime/model_service.py",
+    "classes": [
+      "IEEE39ModelRuntime",
+      "MQTTModelService"
+    ],
+    "functions": [
+      "_ensure_finite",
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "collections",
+      "core.ai_runtime.features",
+      "core.ai_runtime.readiness",
+      "core.digital_twin.grid_topology",
+      "core.gnn.gnn_model",
+      "core.gnn.stgnn_model",
+      "core.lstm.lstm_model",
+      "core.mqtt_compat",
+      "core.pinn.physics_loss",
+      "core.pinn.pinn_model",
+      "pathlib",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/ai_runtime/fusion_service.py",
+    "classes": [
+      "CalibratedFusionEngine",
+      "MQTTFusionService"
+    ],
+    "functions": [
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "collections",
+      "core.ai_runtime.readiness",
+      "core.mqtt_compat",
+      "pathlib",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/ai_runtime/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": [
+      "features",
+      "readiness"
+    ]
+  },
+  {
+    "path": "core/ai_training/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/ai_training/temporal_split.py",
+    "classes": [
+      "TemporalPartition"
+    ],
+    "functions": [
+      "chronological_label_partitions",
+      "contiguous_runs",
+      "window_spans",
+      "overlap_report"
+    ],
+    "imports": [
+      "__future__",
+      "dataclasses"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/pinn_training.py",
+    "classes": [],
+    "functions": [
+      "generate_synthetic_dataset",
+      "run_training"
+    ],
+    "imports": [
+      "core.ai_prediction.dataset_loader",
+      "core.ai_prediction.physics_informed_loss",
+      "core.ai_prediction.pinn_model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/predictive_defense_engine.py",
+    "classes": [
+      "PredictiveDefenseEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "collections"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/multi_bus_model.py",
+    "classes": [
+      "MultiBusPredictorLSTM",
+      "ThreatAwarePredictorLSTM"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/ai_prediction/physics_informed_loss.py",
+    "classes": [],
+    "functions": [
+      "compute_pinn_loss"
+    ],
+    "imports": []
+  },
+  {
+    "path": "core/ai_prediction/pinn_model.py",
+    "classes": [
+      "PredictionHead",
+      "PhysicsInformedPredictorLSTM"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/ai_prediction/inference.py",
+    "classes": [
+      "LiveInferenceEngine"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "collections",
+      "model"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/model.py",
+    "classes": [
+      "TelemetryPredictorLSTM"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/ai_prediction/threat_aware_inference.py",
+    "classes": [
+      "ThreatAwareInferenceEngine"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "collections",
+      "multi_bus_model"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/multi_bus_inference.py",
+    "classes": [
+      "MultiBusInferenceEngine"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "collections",
+      "multi_bus_model"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/multi_bus_training.py",
+    "classes": [],
+    "functions": [
+      "generate_synthetic_dataset",
+      "run_training"
+    ],
+    "imports": [
+      "core.ai_prediction.dataset_loader",
+      "multi_bus_model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/training.py",
+    "classes": [],
+    "functions": [
+      "generate_synthetic_dataset",
+      "run_training"
+    ],
+    "imports": [
+      "core.ai_prediction.dataset_loader",
+      "model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/threat_aware_training.py",
+    "classes": [],
+    "functions": [
+      "generate_synthetic_dataset",
+      "run_training"
+    ],
+    "imports": [
+      "core.ai_prediction.dataset_loader",
+      "multi_bus_model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/pinn_inference.py",
+    "classes": [
+      "PinnInferenceEngine"
+    ],
+    "functions": [
+      "on_connect",
+      "on_message"
+    ],
+    "imports": [
+      "collections",
+      "core.ai_prediction.pinn_model"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/dataset_loader.py",
+    "classes": [
+      "TelemetryDataset"
+    ],
+    "functions": [],
+    "imports": [
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/ai_prediction/train.py",
+    "classes": [],
+    "functions": [
+      "generate_synthetic_dataset",
+      "run_training"
+    ],
+    "imports": [
+      "core.ai_prediction.dataset_loader",
+      "lstm_model",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/lstm_model.py",
+    "classes": [
+      "ThreatPredictorLSTM"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/analytics/som_vulnerability_engine.py",
+    "classes": [
+      "CustomSOM",
+      "SomVulnerabilityEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.analytics.extended_betweenness_engine",
+      "core.analytics.ptdf_engine",
+      "core.digital_twin.grid_topology",
+      "core.gnn.graph_detector",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/analytics/eb_cascading_failure_simulator.py",
+    "classes": [
+      "CascadingFailureSimulator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.analytics.ptdf_engine",
+      "core.digital_twin.grid_topology"
+    ]
+  },
+  {
+    "path": "core/analytics/ptdf_engine.py",
+    "classes": [
+      "PtdfEngine"
+    ],
+    "functions": [
+      "build_b_matrix",
+      "get_connected_components",
+      "compute_ptdf"
+    ],
+    "imports": [
+      "core.digital_twin.grid_topology"
+    ]
+  },
+  {
+    "path": "core/analytics/verify_v1061.py",
+    "classes": [],
+    "functions": [
+      "save_fig",
+      "write_report",
+      "smooth",
+      "ep_to_conv",
+      "simulate_attack_stochastic",
+      "random_attack_stochastic",
+      "policy_attack_stochastic",
+      "collect_samples",
+      "welch_test",
+      "train_with_dr",
+      "run_v1061_validation"
+    ],
+    "imports": [
+      "core.adversarial.transfer_pathogen_agent",
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.domain_adapter",
+      "core.transfer.domain_randomizer",
+      "core.transfer.unified_grid_encoder",
+      "scipy"
+    ]
+  },
+  {
+    "path": "core/analytics/verify_v1062.py",
+    "classes": [],
+    "functions": [
+      "save_fig",
+      "write_report",
+      "smooth",
+      "welch_test",
+      "cohen_d",
+      "power_at_n",
+      "simulate_cascade",
+      "random_attack",
+      "criticality_attack",
+      "policy_attack",
+      "snapshot_attack",
+      "collect_n",
+      "train_ppo_e2e",
+      "train_ppo_scratch",
+      "finetune_ppo",
+      "tsne_2d",
+      "silhouette_score",
+      "cluster_purity",
+      "run_v1062_validation"
+    ],
+    "imports": [
+      "core.adversarial.transfer_pathogen_agent",
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.criticality_encoder",
+      "core.transfer.domain_adapter",
+      "core.transfer.domain_randomizer",
+      "core.transfer.maml_meta_learner",
+      "core.transfer.self_supervised_pretrain",
+      "core.transfer.unified_grid_encoder",
+      "scipy",
+      "scipy.stats",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/analytics/extended_betweenness_engine.py",
+    "classes": [
+      "ExtendedBetweennessEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.analytics.ptdf_engine",
+      "core.digital_twin.grid_topology"
+    ]
+  },
+  {
+    "path": "core/ai_prediction/data/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/ai_prediction/models/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/services/email/email_service.py",
+    "classes": [
+      "EmailProvider",
+      "SMTPProvider",
+      "GmailSMTPProvider",
+      "SendGridProvider",
+      "MailgunProvider"
+    ],
+    "functions": [
+      "get_email_provider"
+    ],
+    "imports": [
+      "abc",
+      "email.mime.multipart",
+      "email.mime.text",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/services/email/templates.py",
+    "classes": [],
+    "functions": [
+      "_base_email",
+      "welcome_email",
+      "verify_email",
+      "reset_password",
+      "subscription_activated",
+      "subscription_expiring",
+      "invoice_email",
+      "backup_completed",
+      "simulation_finished"
+    ],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/services/billing/billing_service.py",
+    "classes": [
+      "BillingProvider",
+      "ManualBillingProvider",
+      "ToyyibPayProvider",
+      "StripeProvider"
+    ],
+    "functions": [
+      "get_billing_provider",
+      "redeem_promo_coupon"
+    ],
+    "imports": [
+      "abc",
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing",
+      "workers.billing.tasks"
+    ]
+  },
+  {
+    "path": "core/services/simulation/launcher.py",
+    "classes": [],
+    "functions": [
+      "launch_grid_scenario",
+      "stop_grid_scenario"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "workers.simulation.tasks"
+    ]
+  },
+  {
+    "path": "core/services/simulation/audit.py",
+    "classes": [],
+    "functions": [
+      "log_simulation_audit"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/services/simulation/notifications.py",
+    "classes": [],
+    "functions": [
+      "send_simulation_email"
+    ],
+    "imports": [
+      "services.email.email_service"
+    ]
+  },
+  {
+    "path": "core/services/simulation/bcm_service.py",
+    "classes": [],
+    "functions": [
+      "calculate_estimated_loss",
+      "get_bcm_metrics_summary"
+    ],
+    "imports": [
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/services/users/workspace_service.py",
+    "classes": [],
+    "functions": [
+      "get_tenant_experiments",
+      "check_experiment_access",
+      "increment_ai_copilot_usage"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/services/users/user_service.py",
+    "classes": [],
+    "functions": [
+      "create_user",
+      "get_user_by_email",
+      "get_users_by_tenant"
+    ],
+    "imports": [
+      "services.auth.auth_service",
+      "services.auth.models",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/services/tenant/tenant_service.py",
+    "classes": [],
+    "functions": [
+      "onboard_new_tenant"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.users.user_service",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/services/auth/session.py",
+    "classes": [],
+    "functions": [
+      "init_db",
+      "get_db_context",
+      "get_db"
+    ],
+    "imports": [
+      "contextlib",
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/services/auth/models.py",
+    "classes": [
+      "Tenant",
+      "User",
+      "Subscription",
+      "Coupon",
+      "CouponRedemption",
+      "UsageMetric",
+      "Scenario",
+      "SimulatorRun",
+      "Experiment",
+      "ExperimentResult",
+      "SavedReport",
+      "AuditTrail",
+      "ScenarioTemplate",
+      "FavoriteScenario",
+      "ExperimentTag",
+      "ExperimentShare",
+      "CopilotMessage",
+      "SimulationAuditLog",
+      "JWTBlacklist",
+      "IPBlock",
+      "SecurityAuditEvent",
+      "AlertEvent",
+      "BackupRecord",
+      "OperationLog",
+      "SystemMetricSnapshot",
+      "UserNotification",
+      "SupportTicket",
+      "WorkspaceProfile"
+    ],
+    "functions": [],
+    "imports": [
+      "datetime",
+      "sqlalchemy",
+      "sqlalchemy.dialects.postgresql",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/services/auth/auth_service.py",
+    "classes": [],
+    "functions": [
+      "hash_password",
+      "verify_password",
+      "base64url_encode",
+      "base64url_decode",
+      "create_jwt_token",
+      "decode_jwt_token",
+      "get_current_user_claims",
+      "check_rbac_role"
+    ],
+    "imports": [
+      "fastapi",
+      "fastapi.security",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/services/operations/security_service.py",
+    "classes": [],
+    "functions": [
+      "record_failed_login",
+      "reset_failed_login",
+      "is_account_locked",
+      "blacklist_token",
+      "is_token_blacklisted",
+      "purge_expired_blacklist_entries",
+      "block_ip",
+      "unblock_ip",
+      "is_ip_blocked",
+      "list_ip_blocks",
+      "_log_security_event",
+      "log_login_success",
+      "log_login_failure",
+      "log_logout",
+      "log_admin_action",
+      "get_recent_security_events"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/services/operations/alert_service.py",
+    "classes": [],
+    "functions": [
+      "_evaluate_rule",
+      "evaluate_all_rules",
+      "_persist_alert",
+      "send_email_alert",
+      "send_telegram_alert",
+      "dispatch_alerts"
+    ],
+    "imports": [
+      "datetime",
+      "email.mime.text",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/services/operations/metrics_service.py",
+    "classes": [],
+    "functions": [
+      "_run_cmd",
+      "collect_system_metrics",
+      "collect_service_health",
+      "collect_api_metrics",
+      "collect_simulation_metrics",
+      "collect_ai_usage_metrics",
+      "get_full_metrics_snapshot"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/services/operations/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/services/operations/backup_service.py",
+    "classes": [],
+    "functions": [
+      "_ensure_backup_dir",
+      "run_postgres_backup",
+      "run_files_backup",
+      "run_full_backup",
+      "list_backups",
+      "delete_backup",
+      "restore_postgres_backup",
+      "_persist_backup_record"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/digital_twin/src/simulator.py",
+    "classes": [
+      "GridSimulator"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/digital_twin/src/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/src/flisr.py",
+    "classes": [
+      "FLISREngine"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/src/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/models/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/rl/value_network.py",
+    "classes": [
+      "ValueNetwork"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/rl/rl_metrics.py",
+    "classes": [],
+    "functions": [
+      "calculate_grid_survivability",
+      "calculate_blackout_risk",
+      "calculate_recovery_efficiency",
+      "estimate_action_risk",
+      "calculate_containment_efficiency",
+      "calculate_policy_confidence",
+      "compile_comprehensive_metrics"
+    ],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/rl/ppo_agent.py",
+    "classes": [
+      "PPOAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.rl.policy_network",
+      "core.self_healing.rl.value_network",
+      "torch.distributions",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/rl/policy_network.py",
+    "classes": [
+      "PolicyNetwork"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/rl/replay_buffer.py",
+    "classes": [
+      "ReplayBuffer",
+      "PPOMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "collections",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/self_healing/rl/rl_evaluator.py",
+    "classes": [],
+    "functions": [
+      "evaluate_agent"
+    ],
+    "imports": [
+      "core.self_healing.rl.dqn_agent",
+      "core.self_healing.rl.ppo_agent",
+      "core.self_healing.rl.rl_trainer",
+      "core.self_healing.rl_environment"
+    ]
+  },
+  {
+    "path": "core/self_healing/rl/rl_trainer.py",
+    "classes": [],
+    "functions": [
+      "get_target_for_action",
+      "run_training"
+    ],
+    "imports": [
+      "core.self_healing.rl.dqn_agent",
+      "core.self_healing.rl.ppo_agent",
+      "core.self_healing.rl.replay_buffer",
+      "core.self_healing.rl_environment"
+    ]
+  },
+  {
+    "path": "core/self_healing/rl/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/self_healing/rl/dqn_agent.py",
+    "classes": [
+      "QNetwork",
+      "DQNAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "core/relay_protection/src/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/relay_protection/src/relay.py",
+    "classes": [
+      "ProtectionRelay"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/workers/billing/tasks.py",
+    "classes": [],
+    "functions": [
+      "check_expired_trials_task",
+      "check_expired_trials",
+      "lock_excess_experiments",
+      "unlock_tenant_experiments"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.auth.session",
+      "services.email.email_service",
+      "services.email.templates",
+      "sqlalchemy.orm",
+      "workers.simulation.tasks"
+    ]
+  },
+  {
+    "path": "core/workers/simulation/tasks.py",
+    "classes": [],
+    "functions": [
+      "start_monitor_on_ready",
+      "task_prerun_handler",
+      "task_postrun_handler",
+      "run_grid_simulation"
+    ],
+    "imports": [
+      "celery",
+      "celery.exceptions",
+      "celery.signals",
+      "core.digital_twin.main",
+      "datetime",
+      "services.auth.models",
+      "services.auth.session",
+      "services.simulation.audit",
+      "services.simulation.notifications",
+      "workers.health.worker_monitor"
+    ]
+  },
+  {
+    "path": "core/workers/health/worker_monitor.py",
+    "classes": [],
+    "functions": [
+      "increment_active_tasks",
+      "decrement_active_tasks",
+      "get_active_tasks_count",
+      "_heartbeat_loop",
+      "start_heartbeat_monitor"
+    ],
+    "imports": [
+      "datetime"
+    ]
+  },
+  {
+    "path": "core/ai_detection/src/detector.py",
+    "classes": [
+      "AnomalyDetector"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/ai_detection/src/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/gateway/routes/admin_portal.py",
+    "classes": [],
+    "functions": [
+      "_require_admin",
+      "list_users",
+      "get_user_detail",
+      "override_user_plan",
+      "force_password_reset",
+      "deactivate_user",
+      "list_tenants",
+      "get_tenant_detail",
+      "list_subscriptions",
+      "create_coupon",
+      "list_coupons",
+      "deactivate_coupon",
+      "system_statistics",
+      "list_audit_logs",
+      "create_support_ticket",
+      "list_support_tickets",
+      "update_support_ticket"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "services.email.email_service",
+      "services.email.templates",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/analytics.py",
+    "classes": [],
+    "functions": [
+      "require_admin",
+      "_month_label",
+      "_last_n_months",
+      "analytics_overview",
+      "analytics_revenue",
+      "analytics_users",
+      "analytics_simulations",
+      "analytics_ai_usage",
+      "analytics_conversions",
+      "analytics_top_scenarios",
+      "analytics_plan_distribution"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/experiments.py",
+    "classes": [
+      "ExperimentCreateSchema",
+      "ExperimentUpdateSchema",
+      "SharePayload",
+      "ComparePayload"
+    ],
+    "functions": [
+      "list_experiments",
+      "create_experiment",
+      "get_experiment_details",
+      "update_experiment",
+      "delete_experiment",
+      "share_experiment",
+      "get_replay_logs",
+      "compare_experiments",
+      "export_pdf",
+      "export_csv",
+      "export_json"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "fastapi.responses",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/telemetry.py",
+    "classes": [],
+    "functions": [
+      "get_bus_telemetry",
+      "get_line_telemetry",
+      "get_generator_telemetry",
+      "get_latest_telemetry",
+      "get_grid_topology"
+    ],
+    "imports": [
+      "fastapi",
+      "gateway.database",
+      "gateway.store",
+      "multi_grid_topology",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/simulation.py",
+    "classes": [
+      "LaunchSimulationSchema"
+    ],
+    "functions": [
+      "launch_simulation",
+      "cancel_simulation",
+      "get_jobs_by_tenant",
+      "get_queue_status",
+      "get_workers_status",
+      "get_job_progress",
+      "get_job_audit_logs",
+      "get_job_details"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "services.simulation.audit",
+      "services.simulation.launcher",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/copilot.py",
+    "classes": [
+      "ChatPayload",
+      "SummaryPayload",
+      "RecommendationPayload",
+      "ComparePayload",
+      "ReportPayload"
+    ],
+    "functions": [
+      "get_chat_history",
+      "post_copilot_chat",
+      "post_copilot_summary",
+      "post_copilot_recommendations",
+      "post_copilot_compare",
+      "post_copilot_report"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/scenarios.py",
+    "classes": [
+      "FavoritePayload"
+    ],
+    "functions": [
+      "check_subscription_access",
+      "list_scenarios",
+      "list_favorites",
+      "add_favorite",
+      "delete_favorite",
+      "get_scenario",
+      "launch_scenario_template"
+    ],
+    "imports": [
+      "fastapi",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "services.simulation.launcher",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/billing.py",
+    "classes": [
+      "CouponRedeemSchema",
+      "PlanUpgradeSchema"
+    ],
+    "functions": [
+      "redeem_coupon",
+      "create_checkout",
+      "stripe_webhook",
+      "toyyibpay_webhook",
+      "get_billing_metrics"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "services.billing.billing_service",
+      "services.email.email_service",
+      "services.email.templates",
+      "sqlalchemy.orm",
+      "workers.billing.tasks"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/operations.py",
+    "classes": [
+      "LogEntrySchema"
+    ],
+    "functions": [
+      "get_api_metrics_store",
+      "update_api_request_metric",
+      "get_system_metrics",
+      "get_service_health",
+      "get_metrics_snapshot",
+      "get_metrics_history",
+      "save_metric_snapshot",
+      "prometheus_metrics",
+      "list_alerts",
+      "acknowledge_alert",
+      "run_alert_evaluation",
+      "get_operation_logs",
+      "write_operation_log",
+      "get_backups",
+      "trigger_postgres_backup",
+      "trigger_full_backup",
+      "remove_backup",
+      "restore_backup",
+      "get_disaster_recovery_status"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "fastapi.responses",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "services.operations.alert_service",
+      "services.operations.backup_service",
+      "services.operations.metrics_service",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/system.py",
+    "classes": [],
+    "functions": [
+      "health_check",
+      "get_event_history",
+      "get_alert_history",
+      "clear_alert_history"
+    ],
+    "imports": [
+      "fastapi",
+      "gateway.mqtt_manager",
+      "gateway.store"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/saas_auth.py",
+    "classes": [
+      "TenantOnboardSchema",
+      "LoginSchema",
+      "VerifyEmailSchema",
+      "ResendVerificationSchema",
+      "ForgotPasswordSchema",
+      "ResetPasswordSchema"
+    ],
+    "functions": [
+      "auth_rate_limiter",
+      "register_tenant",
+      "login_for_token",
+      "verify_email",
+      "resend_verification",
+      "forgot_password",
+      "reset_password",
+      "get_user_profile",
+      "get_me",
+      "complete_workspace_setup",
+      "get_notifications",
+      "mark_notification_read"
+    ],
+    "imports": [
+      "collections",
+      "datetime",
+      "fastapi",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "services.email.email_service",
+      "services.email.templates",
+      "services.tenant.tenant_service",
+      "services.users.user_service",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/security_hardening.py",
+    "classes": [
+      "LogoutSchema",
+      "IPBlockSchema"
+    ],
+    "functions": [
+      "revoke_jwt_token",
+      "check_jwt_blacklist",
+      "purge_jwt_blacklist",
+      "get_ip_blocks",
+      "add_ip_block",
+      "remove_ip_block",
+      "check_ip_block",
+      "get_security_audit_events",
+      "get_security_health_summary"
+    ],
+    "imports": [
+      "datetime",
+      "fastapi",
+      "pydantic",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.auth.session",
+      "services.operations.security_service",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "core/gateway/routes/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/attack_simulator/src/attack_engine.py",
+    "classes": [
+      "AttackSimulator"
+    ],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "core/attack_simulator/src/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "services/email/email_service.py",
+    "classes": [
+      "EmailProvider",
+      "SMTPProvider",
+      "GmailSMTPProvider",
+      "SendGridProvider",
+      "MailgunProvider"
+    ],
+    "functions": [
+      "get_email_provider"
+    ],
+    "imports": [
+      "abc",
+      "email.mime.multipart",
+      "email.mime.text",
+      "typing"
+    ]
+  },
+  {
+    "path": "services/email/templates.py",
+    "classes": [],
+    "functions": [
+      "_base_email",
+      "welcome_email",
+      "verify_email",
+      "reset_password",
+      "subscription_activated",
+      "subscription_expiring",
+      "invoice_email",
+      "backup_completed",
+      "simulation_finished"
+    ],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "services/billing/billing_service.py",
+    "classes": [
+      "BillingProvider",
+      "ManualBillingProvider",
+      "ToyyibPayProvider",
+      "StripeProvider"
+    ],
+    "functions": [
+      "get_billing_provider",
+      "redeem_promo_coupon"
+    ],
+    "imports": [
+      "abc",
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing",
+      "workers.billing.tasks"
+    ]
+  },
+  {
+    "path": "services/simulation/launcher.py",
+    "classes": [],
+    "functions": [
+      "launch_grid_scenario",
+      "stop_grid_scenario"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "workers.simulation.tasks"
+    ]
+  },
+  {
+    "path": "services/simulation/audit.py",
+    "classes": [],
+    "functions": [
+      "log_simulation_audit"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "services/simulation/notifications.py",
+    "classes": [],
+    "functions": [
+      "send_simulation_email"
+    ],
+    "imports": [
+      "services.email.email_service"
+    ]
+  },
+  {
+    "path": "services/simulation/bcm_service.py",
+    "classes": [],
+    "functions": [
+      "calculate_estimated_loss",
+      "get_bcm_metrics_summary"
+    ],
+    "imports": [
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "services/users/workspace_service.py",
+    "classes": [],
+    "functions": [
+      "get_tenant_experiments",
+      "check_experiment_access",
+      "increment_ai_copilot_usage"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "services/users/user_service.py",
+    "classes": [],
+    "functions": [
+      "create_user",
+      "get_user_by_email",
+      "get_users_by_tenant"
+    ],
+    "imports": [
+      "services.auth.auth_service",
+      "services.auth.models",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "services/tenant/tenant_service.py",
+    "classes": [],
+    "functions": [
+      "onboard_new_tenant"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.users.user_service",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "services/auth/session.py",
+    "classes": [],
+    "functions": [
+      "init_db",
+      "get_db_context",
+      "get_db"
+    ],
+    "imports": [
+      "contextlib",
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "services/auth/models.py",
+    "classes": [
+      "Tenant",
+      "User",
+      "Subscription",
+      "Coupon",
+      "CouponRedemption",
+      "UsageMetric",
+      "Scenario",
+      "SimulatorRun",
+      "SimulationAuditLog",
+      "Experiment",
+      "ExperimentResult",
+      "SavedReport",
+      "AuditTrail",
+      "ScenarioTemplate",
+      "FavoriteScenario",
+      "ExperimentTag",
+      "ExperimentShare",
+      "CopilotMessage",
+      "SimulationAuditLog",
+      "JWTBlacklist",
+      "IPBlock",
+      "SecurityAuditEvent",
+      "AlertEvent",
+      "BackupRecord",
+      "OperationLog",
+      "SystemMetricSnapshot",
+      "UserNotification",
+      "SupportTicket",
+      "WorkspaceProfile"
+    ],
+    "functions": [],
+    "imports": [
+      "datetime",
+      "sqlalchemy",
+      "sqlalchemy.dialects.postgresql",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "services/auth/auth_service.py",
+    "classes": [],
+    "functions": [
+      "hash_password",
+      "verify_password",
+      "base64url_encode",
+      "base64url_decode",
+      "create_jwt_token",
+      "decode_jwt_token",
+      "get_current_user_claims",
+      "check_rbac_role"
+    ],
+    "imports": [
+      "fastapi",
+      "fastapi.security",
+      "typing"
+    ]
+  },
+  {
+    "path": "services/operations/security_service.py",
+    "classes": [],
+    "functions": [
+      "record_failed_login",
+      "reset_failed_login",
+      "is_account_locked",
+      "blacklist_token",
+      "is_token_blacklisted",
+      "purge_expired_blacklist_entries",
+      "block_ip",
+      "unblock_ip",
+      "is_ip_blocked",
+      "list_ip_blocks",
+      "_log_security_event",
+      "log_login_success",
+      "log_login_failure",
+      "log_logout",
+      "log_admin_action",
+      "get_recent_security_events"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "services/operations/alert_service.py",
+    "classes": [],
+    "functions": [
+      "_evaluate_rule",
+      "evaluate_all_rules",
+      "_persist_alert",
+      "send_email_alert",
+      "send_telegram_alert",
+      "dispatch_alerts"
+    ],
+    "imports": [
+      "datetime",
+      "email.mime.text",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "services/operations/metrics_service.py",
+    "classes": [],
+    "functions": [
+      "_run_cmd",
+      "collect_system_metrics",
+      "collect_service_health",
+      "collect_api_metrics",
+      "collect_simulation_metrics",
+      "collect_ai_usage_metrics",
+      "get_full_metrics_snapshot"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy",
+      "typing"
+    ]
+  },
+  {
+    "path": "services/operations/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "services/operations/backup_service.py",
+    "classes": [],
+    "functions": [
+      "_ensure_backup_dir",
+      "run_postgres_backup",
+      "run_files_backup",
+      "run_full_backup",
+      "list_backups",
+      "delete_backup",
+      "restore_postgres_backup",
+      "_persist_backup_record"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "sqlalchemy.orm",
+      "typing"
+    ]
+  },
+  {
+    "path": "scripts/methodology_hardening/run_audits.py",
+    "classes": [],
+    "functions": [
+      "sha256",
+      "write",
+      "old_random_spans",
+      "temporal_audit",
+      "dataset_audit",
+      "physics_flags",
+      "pinn_audit",
+      "unit_audit",
+      "package_version",
+      "command",
+      "environment_audit",
+      "rl_audit",
+      "semantic_audits",
+      "corrected_model_comparisons",
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "collections",
+      "core.ai_training.temporal_split",
+      "core.pinn.physics_loss",
+      "core.pinn.pinn_model",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "scripts/methodology_hardening/evaluate_gnn_modes.py",
+    "classes": [],
+    "functions": [
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "core.digital_twin.grid_topology",
+      "core.gnn.gnn_evaluator",
+      "core.gnn.gnn_model",
+      "core.gnn.gnn_trainer",
+      "pathlib",
+      "torch.utils.data"
+    ]
+  },
+  {
+    "path": "scripts/methodology_hardening/evaluate_sandbox_safety.py",
+    "classes": [
+      "Physics"
+    ],
+    "functions": [
+      "run",
+      "main"
+    ],
+    "imports": [
+      "core.self_healing.restoration_sandbox",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "scripts/methodology_hardening/verify_separated_e2e.py",
+    "classes": [],
+    "functions": [
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "core.mqtt_compat",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "scripts/methodology_hardening/run_runtime_benchmark.py",
+    "classes": [],
+    "functions": [
+      "profile_fn",
+      "main"
+    ],
+    "imports": [
+      "core.digital_twin.grid_topology",
+      "core.gnn.gnn_model",
+      "core.gnn.gnn_trainer",
+      "core.gnn.stgnn_model",
+      "core.lstm.lstm_model",
+      "core.orchestrator.ai_orchestrator",
+      "core.pinn.pinn_model",
+      "core.self_healing.restoration_sandbox",
+      "core.threat_engine.scorer",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "scripts/methodology_hardening/evaluate_blind_detection.py",
+    "classes": [],
+    "functions": [
+      "captured_frame",
+      "confirmation",
+      "evaluate",
+      "main"
+    ],
+    "imports": [
+      "__future__",
+      "core.ai_detection.detector",
+      "core.digital_twin.main",
+      "core.threat_engine.scorer",
+      "pathlib",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_sprint3.py",
+    "classes": [],
+    "functions": [
+      "verify_ac_solver"
+    ],
+    "imports": [
+      "core.digital_twin.grid_topology",
+      "core.digital_twin.physics"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v105.py",
+    "classes": [],
+    "functions": [
+      "write_report",
+      "normalize_dict",
+      "community_aware_restore",
+      "run_cascade_with_restoration",
+      "calculate_path_completion",
+      "calculate_subgrid_balance_index",
+      "run_v105_validation"
+    ],
+    "imports": [
+      "core.adversarial.concurrent_attack_engine",
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.analytics.ptdf_engine",
+      "core.analytics.som_vulnerability_engine",
+      "core.digital_twin.grid_topology",
+      "scipy"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v112.py",
+    "classes": [],
+    "functions": [
+      "run_v112_verification",
+      "generate_certification_report"
+    ],
+    "imports": [
+      "contextlib",
+      "datetime",
+      "services.auth.models",
+      "services.billing.billing_service",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "workers.billing.tasks"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v116.py",
+    "classes": [],
+    "functions": [
+      "run_v116_verification",
+      "generate_certification_report"
+    ],
+    "imports": [
+      "datetime",
+      "gateway.routes.copilot",
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v119.py",
+    "classes": [],
+    "functions": [
+      "run_verification"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.billing.billing_service",
+      "services.email.email_service",
+      "services.tenant.tenant_service",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_pathogen.py",
+    "classes": [],
+    "functions": [
+      "verify_pathogen_subsystem"
+    ],
+    "imports": [
+      "pathogen_agent",
+      "pathogen_env",
+      "pathogen_trainer"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v118.py",
+    "classes": [],
+    "functions": [
+      "check",
+      "section",
+      "main",
+      "_print_summary"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.operations",
+      "services.operations.alert_service",
+      "services.operations.metrics_service",
+      "services.operations.security_service",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_closed_loop.py",
+    "classes": [],
+    "functions": [
+      "main"
+    ],
+    "imports": [
+      "core.mqtt_compat",
+      "pathlib"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_sprint4.py",
+    "classes": [
+      "TelemetryVerifier"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.grid_topology",
+      "core.digital_twin.physics",
+      "core.digital_twin.telemetry",
+      "typing"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v107.py",
+    "classes": [],
+    "functions": [
+      "get_ground_truth_bridges",
+      "get_ground_truth_aps",
+      "save_fig",
+      "write_report",
+      "welch_test",
+      "cohen_d",
+      "power_at_n",
+      "run_v107_validation"
+    ],
+    "imports": [
+      "core.adversarial.cutline_discovery_engine",
+      "core.adversarial.fdia_islanding_env",
+      "core.adversarial.stealth_fdia_optimizer",
+      "core.adversarial.zero_parameter_fdia",
+      "core.digital_twin.multi_grid_topology",
+      "scipy",
+      "scipy.stats",
+      "typing"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v106.py",
+    "classes": [],
+    "functions": [
+      "write_report",
+      "random_attack_baseline",
+      "episodes_to_threshold",
+      "run_v106_validation"
+    ],
+    "imports": [
+      "core.adversarial.multigrid_env",
+      "core.adversarial.transfer_pathogen_agent",
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.digital_twin.multi_grid_topology",
+      "core.transfer.domain_adapter",
+      "core.transfer.unified_grid_encoder",
+      "scipy"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v113.py",
+    "classes": [],
+    "functions": [
+      "run_v113_verification",
+      "generate_certification_report"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.simulation.launcher",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_env.py",
+    "classes": [],
+    "functions": [
+      "run_checks"
+    ],
+    "imports": []
+  },
+  {
+    "path": "scripts/verification/verify_v113_completion.py",
+    "classes": [],
+    "functions": [
+      "run_v113_completion_verification",
+      "generate_completion_report"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.simulation.audit",
+      "services.simulation.launcher",
+      "services.simulation.notifications",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock",
+      "workers.health.worker_monitor"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v117.py",
+    "classes": [],
+    "functions": [
+      "check",
+      "run_v117_verification",
+      "generate_certification_report"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.auth_service"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_sprint2.py",
+    "classes": [],
+    "functions": [
+      "verify_topology"
+    ],
+    "imports": [
+      "core.digital_twin.grid_loader"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v114.py",
+    "classes": [],
+    "functions": [
+      "run_v114_verification",
+      "generate_certification_report"
+    ],
+    "imports": [
+      "datetime",
+      "gateway.routes.scenarios",
+      "services.auth.models",
+      "services.auth.session",
+      "sqlalchemy",
+      "sqlalchemy.orm",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_gt_physics.py",
+    "classes": [],
+    "functions": [
+      "verify_gt_physics"
+    ],
+    "imports": [
+      "physics_loss",
+      "pinn_trainer"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_e2e_v9_1.py",
+    "classes": [],
+    "functions": [
+      "run_cmd",
+      "query_api",
+      "main"
+    ],
+    "imports": []
+  },
+  {
+    "path": "scripts/verification/verify_v104.py",
+    "classes": [],
+    "functions": [
+      "normalize_dict",
+      "write_report",
+      "priority_restore",
+      "grid_search_weights",
+      "run_v104_validation"
+    ],
+    "imports": [
+      "core.analytics.eb_cascading_failure_simulator",
+      "core.analytics.extended_betweenness_engine",
+      "core.analytics.ptdf_engine",
+      "core.digital_twin.grid_topology",
+      "core.gnn.graph_detector",
+      "scipy"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v115.py",
+    "classes": [],
+    "functions": [
+      "run_v115_verification",
+      "generate_certification_report"
+    ],
+    "imports": [
+      "datetime",
+      "gateway.routes.experiments",
+      "services.auth.models",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v111.py",
+    "classes": [],
+    "functions": [
+      "run_v111_verification",
+      "generate_certification_report"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.auth_service",
+      "services.auth.models",
+      "services.tenant.tenant_service",
+      "services.users.user_service",
+      "sqlalchemy",
+      "sqlalchemy.orm"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v102.py",
+    "classes": [],
+    "functions": [
+      "verify_v102_system"
+    ],
+    "imports": [
+      "core.adversarial.imperfect_pathogen_agent",
+      "core.adversarial.imperfect_pathogen_env"
+    ]
+  },
+  {
+    "path": "scripts/verification/verify_v103.py",
+    "classes": [],
+    "functions": [
+      "generate_ieee39_data",
+      "mean_imputation",
+      "linear_interpolation",
+      "train_gae",
+      "run_5step_scenario",
+      "run_v103_validation",
+      "write_report_v103"
+    ],
+    "imports": [
+      "core.adversarial.mqtt_verification_worker",
+      "core.digital_twin.grid_topology",
+      "core.digital_twin.physics",
+      "core.gnn.missing_data_simulator",
+      "core.gnn.telemetry_reconstruction_gnn",
+      "gnn_trainer",
+      "scipy"
+    ]
+  },
+  {
+    "path": "workers/billing/tasks.py",
+    "classes": [],
+    "functions": [
+      "check_expired_trials_task",
+      "check_expired_trials",
+      "lock_excess_experiments",
+      "unlock_tenant_experiments"
+    ],
+    "imports": [
+      "datetime",
+      "services.auth.models",
+      "services.auth.session",
+      "services.email.email_service",
+      "services.email.templates",
+      "sqlalchemy.orm",
+      "workers.simulation.tasks"
+    ]
+  },
+  {
+    "path": "workers/simulation/tasks.py",
+    "classes": [],
+    "functions": [
+      "start_monitor_on_ready",
+      "task_prerun_handler",
+      "task_postrun_handler",
+      "run_grid_simulation"
+    ],
+    "imports": [
+      "celery",
+      "celery.exceptions",
+      "celery.signals",
+      "core.digital_twin.main",
+      "datetime",
+      "services.auth.models",
+      "services.auth.session",
+      "services.simulation.audit",
+      "services.simulation.notifications",
+      "workers.health.worker_monitor"
+    ]
+  },
+  {
+    "path": "scratch/test_symlink/pkg/helper.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "research/deep_rl/training_runner.py",
+    "classes": [
+      "TrainingRunner"
+    ],
+    "functions": [],
+    "imports": [
+      "environment",
+      "state_encoder",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/model_manager.py",
+    "classes": [
+      "ModelManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/reward_engine.py",
+    "classes": [
+      "RewardEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/state_encoder.py",
+    "classes": [
+      "StateEncoder"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/environment.py",
+    "classes": [
+      "SmartGridRLEnv"
+    ],
+    "functions": [],
+    "imports": [
+      "reward_engine",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/experience_buffer.py",
+    "classes": [
+      "ExperienceBuffer"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/ppo/actor_network.py",
+    "classes": [
+      "ActorNetwork"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/ppo/ppo_blue_agent.py",
+    "classes": [
+      "PPOBlueAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "actor_network",
+      "critic_network",
+      "model_manager",
+      "ppo_config",
+      "ppo_memory",
+      "state_encoder",
+      "torch.distributions",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/ppo/ppo_red_agent.py",
+    "classes": [
+      "PPORedAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "actor_network",
+      "critic_network",
+      "model_manager",
+      "ppo_config",
+      "ppo_memory",
+      "state_encoder",
+      "torch.distributions",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/ppo/ppo_config.py",
+    "classes": [
+      "PPOConfig"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/ppo/ppo_memory.py",
+    "classes": [
+      "PPOMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/ppo/critic_network.py",
+    "classes": [
+      "CriticNetwork"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/marl/marl_runner.py",
+    "classes": [
+      "MARLRunner"
+    ],
+    "functions": [],
+    "imports": [
+      "agent_registry",
+      "coordination_manager",
+      "multi_agent_env",
+      "reward_aggregator",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/marl/coordination_manager.py",
+    "classes": [
+      "CoordinationManager"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/marl/agent_registry.py",
+    "classes": [
+      "AgentRegistry"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/marl/multi_agent_env.py",
+    "classes": [
+      "MultiAgentGridEnv"
+    ],
+    "functions": [],
+    "imports": [
+      "environment",
+      "state_encoder",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/marl/reward_aggregator.py",
+    "classes": [
+      "RewardAggregator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/self_play/match_scheduler.py",
+    "classes": [
+      "MatchScheduler"
+    ],
+    "functions": [],
+    "imports": [
+      "opponent_pool",
+      "rating_system",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/self_play/opponent_pool.py",
+    "classes": [
+      "OpponentPool"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/self_play/rating_system.py",
+    "classes": [
+      "RatingSystem"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/self_play/self_play_manager.py",
+    "classes": [
+      "SelfPlayManager"
+    ],
+    "functions": [],
+    "imports": [
+      "dqn_blue_agent",
+      "dqn_red_agent",
+      "model_manager",
+      "opponent_pool",
+      "ppo_blue_agent",
+      "ppo_config",
+      "ppo_red_agent",
+      "rating_system",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/self_play/self_play_runner.py",
+    "classes": [
+      "SelfPlayRunner"
+    ],
+    "functions": [],
+    "imports": [
+      "dqn_blue_agent",
+      "dqn_red_agent",
+      "marl_runner",
+      "match_scheduler",
+      "multi_agent_env",
+      "ppo_blue_agent",
+      "ppo_config",
+      "ppo_red_agent",
+      "self_play_manager",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/dqn/dqn_blue_agent.py",
+    "classes": [
+      "DQNBlueAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "dqn_network",
+      "model_manager",
+      "replay_memory",
+      "state_encoder",
+      "training_config",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/dqn/dqn_red_agent.py",
+    "classes": [
+      "DQNRedAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "dqn_network",
+      "model_manager",
+      "replay_memory",
+      "state_encoder",
+      "training_config",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/dqn/training_config.py",
+    "classes": [
+      "DQNConfig"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/dqn/dqn_network.py",
+    "classes": [
+      "DQNNetwork"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/dqn/replay_memory.py",
+    "classes": [
+      "DQNReplayMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "experience_buffer",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/evolution/evolution_runner.py",
+    "classes": [
+      "EvolutionRunner"
+    ],
+    "functions": [],
+    "imports": [
+      "elite_selection",
+      "fitness_evaluator",
+      "genetic_operator",
+      "population_manager",
+      "self_play_runner",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/evolution/population_manager.py",
+    "classes": [
+      "PopulationManager"
+    ],
+    "functions": [],
+    "imports": [
+      "dqn_blue_agent",
+      "dqn_red_agent",
+      "model_manager",
+      "ppo_blue_agent",
+      "ppo_config",
+      "ppo_red_agent",
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/evolution/genetic_operator.py",
+    "classes": [
+      "GeneticOperator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/evolution/fitness_evaluator.py",
+    "classes": [
+      "FitnessEvaluator"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "research/deep_rl/evolution/elite_selection.py",
+    "classes": [
+      "EliteSelection"
+    ],
+    "functions": [],
+    "imports": [
+      "typing"
+    ]
+  },
+  {
+    "path": "tests/cyber/test_autonomous_defense.py",
+    "classes": [
+      "TestAutonomousDefense"
+    ],
+    "functions": [],
+    "imports": [
+      "core.cyber_defense.adaptive_defense_engine",
+      "core.cyber_defense.autonomous_defense_coordinator",
+      "core.cyber_defense.campaign_response_engine",
+      "core.cyber_defense.campaign_timeline",
+      "core.cyber_defense.containment_engine",
+      "core.cyber_defense.defense_escalation",
+      "core.cyber_defense.defense_memory",
+      "core.self_healing.reward_engine",
+      "core.self_healing.rl_environment",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/cyber/test_cyberattack_realism.py",
+    "classes": [
+      "TestCyberattackRealism"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.main",
+      "core.physics_validation.validation_engine",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/cyber/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/e2e/test_saas_flows.py",
+    "classes": [],
+    "functions": [
+      "mock_page",
+      "test_login_flow_e2e",
+      "test_billing_and_subscription_upgrade_e2e",
+      "test_scenario_marketplace_launch_e2e",
+      "test_research_workspace_analytics_e2e",
+      "test_ai_copilot_assistant_chat_e2e"
+    ],
+    "imports": [
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/ai/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/unit/test_swarm_coordination_engine.py",
+    "classes": [],
+    "functions": [
+      "swarm_setup",
+      "test_swarm_coordinator_initial_state",
+      "test_swarm_coordinator_nominal_tick",
+      "test_swarm_coordinator_loop_prevention",
+      "test_swarm_coordinator_query_intercepts"
+    ],
+    "imports": [
+      "core.assistant.distributed_consensus_engine",
+      "core.assistant.edge_mesh_orchestrator",
+      "core.assistant.federated_memory_manager",
+      "core.assistant.swarm_anomaly_fusion_engine",
+      "core.assistant.swarm_coordination_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_attack_propagation.py",
+    "classes": [
+      "TestAttackPropagation"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.badusb_payload_manager",
+      "core.hardware.cyber_physical_attack_orchestrator",
+      "core.hardware.digispark_attack_engine",
+      "core.hardware.hardware_intrusion_detector",
+      "core.hardware.rogue_device_monitor"
+    ]
+  },
+  {
+    "path": "tests/unit/test_voice_orchestration_engine.py",
+    "classes": [],
+    "functions": [
+      "test_initial_voice_orchestration_state",
+      "test_voice_session_lifecycle",
+      "test_voice_session_timeout",
+      "test_invalid_state_transitions"
+    ],
+    "imports": [
+      "core.assistant.voice_orchestration_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_cyber_defense_maturity.py",
+    "classes": [
+      "TestCyberDefenseMaturity",
+      "MockClient"
+    ],
+    "functions": [],
+    "imports": [
+      "core.cyber_defense.attribution_engine",
+      "core.cyber_defense.defense_orchestrator",
+      "core.cyber_defense.incident_lifecycle",
+      "core.cyber_defense.mitre_mapper",
+      "core.cyber_defense.threat_correlation",
+      "core.cyber_defense.trust_fusion",
+      "typing"
+    ]
+  },
+  {
+    "path": "tests/unit/test_adaptive_workflow_optimizer.py",
+    "classes": [],
+    "functions": [
+      "test_optimization_recommendations",
+      "test_operator_approval_locks"
+    ],
+    "imports": [
+      "core.assistant.adaptive_workflow_optimizer"
+    ]
+  },
+  {
+    "path": "tests/unit/test_dqn_red_agent.py",
+    "classes": [
+      "TestDQNRedAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.dqn.dqn_network",
+      "research.deep_rl.dqn.dqn_red_agent",
+      "research.deep_rl.dqn.replay_memory",
+      "research.deep_rl.dqn.training_config",
+      "research.deep_rl.environment",
+      "research.deep_rl.training_runner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_task_chain_manager.py",
+    "classes": [],
+    "functions": [
+      "test_submit_and_tick_nominal",
+      "test_recursive_chain_prevention",
+      "test_runaway_chain_prevention",
+      "test_chain_step_timeout"
+    ],
+    "imports": [
+      "core.assistant.task_chain_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_telemetry_agent.py",
+    "classes": [],
+    "functions": [
+      "test_telemetry_agent_initial_state",
+      "test_telemetry_agent_voltage_anomalies",
+      "test_telemetry_agent_line_load_anomalies",
+      "test_telemetry_agent_drift_storm",
+      "test_telemetry_agent_priority_events",
+      "test_telemetry_agent_cascading_failures",
+      "test_telemetry_agent_reset"
+    ],
+    "imports": [
+      "core.assistant.telemetry_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_physical_telemetry_validator.py",
+    "classes": [
+      "TestPhysicalTelemetryValidator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.physical_telemetry_validator"
+    ]
+  },
+  {
+    "path": "tests/unit/test_large_scale_synchronization_manager.py",
+    "classes": [
+      "TestLargeScaleSynchronizationManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.large_scale_synchronization_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_digital_twin_solver_recovery.py",
+    "classes": [],
+    "functions": [
+      "test_solver_uses_flat_start_after_previous_non_convergence",
+      "test_solver_fallback_never_reuses_failed_results"
+    ],
+    "imports": [
+      "core.digital_twin.solver",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_preemptive_isolation.py",
+    "classes": [
+      "TestPreemptiveIsolation"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.preemptive_isolation_engine",
+      "core.self_healing.topology_recovery_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_distributed_resilience_manager.py",
+    "classes": [
+      "TestDistributedResilienceManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.distributed_resilience_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_recovery_scoring.py",
+    "classes": [
+      "TestRecoveryScoring"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.recovery_scoring_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_virtual_relay_faults.py",
+    "classes": [
+      "TestVirtualRelayFaults"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.virtual_relay_faults"
+    ]
+  },
+  {
+    "path": "tests/unit/test_coevolution_evaluator.py",
+    "classes": [],
+    "functions": [
+      "test_seed_everything_repeats_numpy_and_torch_streams",
+      "test_multiseed_contract_rejects_single_seed",
+      "test_existing_evaluation_report_digest_is_self_consistent"
+    ],
+    "imports": [
+      "core.adversarial.coevolution_evaluator"
+    ]
+  },
+  {
+    "path": "tests/unit/test_cyber_physical_safety_gate.py",
+    "classes": [],
+    "functions": [
+      "telemetry",
+      "prepare",
+      "test_ai_context_without_physical_outage_cannot_authorize_recovery",
+      "test_l6_recovery_requires_threat_context",
+      "test_l6_recovery_rejects_stale_threat_context",
+      "test_l6_recovery_requires_target_to_be_physically_open",
+      "test_duplicate_breaker_actions_are_guarded",
+      "test_rl_recovery_can_restore_low_current_stability_after_safe_ac_sandbox",
+      "test_rl_recovery_never_bypasses_failed_sandbox"
+    ],
+    "imports": [
+      "core.orchestrator.ai_orchestrator"
+    ]
+  },
+  {
+    "path": "tests/unit/test_automation_hook_manager.py",
+    "classes": [],
+    "functions": [
+      "test_automation_hook_validation_clean",
+      "test_automation_hook_validation_injection",
+      "test_automation_hook_dispatch_success",
+      "test_automation_hook_dispatch_unauthorized",
+      "test_automation_hook_dispatch_blocked"
+    ],
+    "imports": [
+      "core.assistant.automation_hook_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_semantic_response_engine.py",
+    "classes": [],
+    "functions": [
+      "test_semantic_response_engine_tts_cleaning",
+      "test_semantic_response_greetings",
+      "test_semantic_response_actions",
+      "test_semantic_response_grid_critical"
+    ],
+    "imports": [
+      "core.assistant.semantic_response_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_assistant_reasoning_engine.py",
+    "classes": [],
+    "functions": [
+      "test_reasoning_nominal_state",
+      "test_reasoning_safety_override",
+      "test_reasoning_automation_planning",
+      "test_reasoning_followup_recommendation"
+    ],
+    "imports": [
+      "core.assistant.assistant_reasoning_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_wake_word_manager.py",
+    "classes": [],
+    "functions": [
+      "test_wake_word_detection_success",
+      "test_wake_word_false_activation_protection",
+      "test_attention_lockout_and_expiration",
+      "test_extend_and_reset_attention"
+    ],
+    "imports": [
+      "core.assistant.wake_word_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_voice_session_memory.py",
+    "classes": [],
+    "functions": [
+      "test_session_initialization",
+      "test_add_session_interactions",
+      "test_clear_session_and_wipe_all"
+    ],
+    "imports": [
+      "core.assistant.voice_session_memory"
+    ]
+  },
+  {
+    "path": "tests/unit/test_virtual_sensor_faults.py",
+    "classes": [
+      "TestVirtualSensorFaults"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.virtual_sensor_faults"
+    ]
+  },
+  {
+    "path": "tests/unit/test_redundancy_coordinator.py",
+    "classes": [
+      "TestRedundancyCoordinator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.redundancy_coordinator"
+    ]
+  },
+  {
+    "path": "tests/unit/test_cyber_defense_agent.py",
+    "classes": [
+      "TestCyberDefenseAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.cyber_defense_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_adversarial_defense.py",
+    "classes": [
+      "TestAdversarialDefense"
+    ],
+    "functions": [],
+    "imports": [
+      "core.adversarial.adversarial_coordinator",
+      "core.adversarial.adversarial_memory",
+      "core.adversarial.attack_pattern_generator",
+      "core.adversarial.campaign_simulator",
+      "core.adversarial.defense_evaluator",
+      "core.adversarial.resilience_scorer",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_relay_execution_planner.py",
+    "classes": [
+      "TestRelayExecutionPlanner"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.relay_execution_planner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_rag_stage3.py",
+    "classes": [],
+    "functions": [
+      "test_topology_analysis",
+      "test_ontology_translation",
+      "test_temporal_timeline",
+      "test_advanced_hybrid_rag_fusion",
+      "test_safety_supervision_interception"
+    ],
+    "imports": [
+      "core.assistant.engineering_reasoning_engine",
+      "core.assistant.memory_orchestrator",
+      "core.assistant.orchestration_planner_bridge",
+      "core.assistant.rag_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_digispark_attack_engine.py",
+    "classes": [
+      "TestDigisparkAttackEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.digispark_attack_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_copilot_maturity.py",
+    "classes": [],
+    "functions": [
+      "temp_dir",
+      "test_deterministic_embedding_hashing",
+      "test_persistent_memory_and_vector_store",
+      "test_explainability_engine",
+      "test_reporting_engine",
+      "test_copilot_daemon_queries"
+    ],
+    "imports": [
+      "core.assistant.assistant_daemon",
+      "core.assistant.explainability_engine",
+      "core.assistant.memory_orchestrator",
+      "core.assistant.reporting_engine",
+      "core.assistant.vector_store",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_security_agent.py",
+    "classes": [],
+    "functions": [
+      "test_security_agent_initial_state",
+      "test_security_agent_threat_score",
+      "test_security_agent_active_attacks",
+      "test_security_agent_quarantine_confidence_gate",
+      "test_security_agent_reset"
+    ],
+    "imports": [
+      "core.assistant.security_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_quarantine_logic.py",
+    "classes": [
+      "TestQuarantineLogic"
+    ],
+    "functions": [],
+    "imports": [
+      "core.orchestrator.ai_orchestrator",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_hardware_fault_orchestrator.py",
+    "classes": [
+      "TestHardwareFaultOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_fault_orchestrator",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.virtual_esp32",
+      "core.hardware.virtual_plc",
+      "core.hardware.virtual_relay_faults",
+      "core.hardware.virtual_sensor_faults"
+    ]
+  },
+  {
+    "path": "tests/unit/test_adaptive_routine_engine.py",
+    "classes": [],
+    "functions": [
+      "test_record_interaction_and_frequencies",
+      "test_routine_recommendation_trigger",
+      "test_custom_command_recommendation",
+      "test_accept_routine"
+    ],
+    "imports": [
+      "core.assistant.adaptive_routine_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_hardware_execution_gateway.py",
+    "classes": [
+      "TestHardwareExecutionGateway"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.deployment_profiles",
+      "core.hardware.edge_device_manager",
+      "core.hardware.edge_reliability_monitor",
+      "core.hardware.esp32_bridge",
+      "core.hardware.hardware_command_router",
+      "core.hardware.hardware_execution_gateway",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.plc_interface",
+      "core.hardware.relay_controller",
+      "core.hardware.safe_relay_guard"
+    ]
+  },
+  {
+    "path": "tests/unit/test_autonomous_balancer.py",
+    "classes": [
+      "MockGuard",
+      "TestAutonomousBalancer"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.autonomous_balancer"
+    ]
+  },
+  {
+    "path": "tests/unit/test_esp32_bridge.py",
+    "classes": [
+      "TestESP32Bridge"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.esp32_bridge",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.relay_controller"
+    ]
+  },
+  {
+    "path": "tests/unit/test_blackstart_engine.py",
+    "classes": [
+      "TestBlackstartEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.blackstart_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_orchestration_planner_bridge.py",
+    "classes": [],
+    "functions": [
+      "test_confidence_and_safety_nominal",
+      "test_confidence_too_low",
+      "test_stability_too_low_escalation",
+      "test_execute_step_checks"
+    ],
+    "imports": [
+      "core.assistant.orchestration_planner_bridge",
+      "typing",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_stabilization_agent.py",
+    "classes": [
+      "TestStabilizationAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.stabilization_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ai_fusion.py",
+    "classes": [],
+    "functions": [
+      "telemetry",
+      "model_payloads",
+      "calibrate",
+      "test_nominal_checkpoint_bias_is_calibrated_not_treated_as_attack",
+      "test_attack_drift_raises_risk_and_does_not_poison_baseline",
+      "test_missing_or_stale_model_blocks_fusion",
+      "test_non_finite_input_is_rejected"
+    ],
+    "imports": [
+      "core.ai_runtime.fusion_service"
+    ]
+  },
+  {
+    "path": "tests/unit/test_rag_engine.py",
+    "classes": [],
+    "functions": [
+      "temp_kb",
+      "test_rag_engine_initialization",
+      "test_rag_engine_retrieval",
+      "test_rag_engine_telemetry_grounding",
+      "test_rag_engine_handle_query"
+    ],
+    "imports": [
+      "core.assistant.rag_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_prediction_agent.py",
+    "classes": [
+      "TestPredictionAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.prediction_agent",
+      "core.self_healing.predictive_stability_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ai_orchestrator.py",
+    "classes": [
+      "TestAIOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.orchestrator.action_recommender",
+      "core.orchestrator.decision_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_workflow_agent.py",
+    "classes": [],
+    "functions": [
+      "test_workflow_agent_initial_state",
+      "test_workflow_agent_workflow_failure",
+      "test_workflow_agent_chain_failure",
+      "test_workflow_agent_chain_timeout",
+      "test_workflow_agent_chain_stalled",
+      "test_workflow_agent_reset"
+    ],
+    "imports": [
+      "core.assistant.workflow_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_edge_awareness_engine.py",
+    "classes": [],
+    "functions": [
+      "test_edge_awareness_engine_initialization",
+      "test_update_edge_state_and_health",
+      "test_get_worst_node_and_tie_breaker",
+      "test_get_status_summary",
+      "test_reset_engine"
+    ],
+    "imports": [
+      "core.assistant.edge_awareness_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_population_evolution.py",
+    "classes": [
+      "TestPopulationEvolution"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.dqn.dqn_red_agent",
+      "research.deep_rl.evolution.elite_selection",
+      "research.deep_rl.evolution.evolution_runner",
+      "research.deep_rl.evolution.fitness_evaluator",
+      "research.deep_rl.evolution.genetic_operator",
+      "research.deep_rl.evolution.population_manager",
+      "research.deep_rl.marl.multi_agent_env",
+      "research.deep_rl.ppo.ppo_config",
+      "research.deep_rl.ppo.ppo_red_agent",
+      "research.deep_rl.self_play.opponent_pool",
+      "research.deep_rl.self_play.rating_system",
+      "research.deep_rl.self_play.self_play_manager",
+      "research.deep_rl.self_play.self_play_runner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_badusb_payload_manager.py",
+    "classes": [
+      "TestBadUSBPayloadManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.badusb_payload_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_cascading_containment.py",
+    "classes": [
+      "TestCascadingContainment"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.cascading_containment_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_agent_coordination_engine.py",
+    "classes": [],
+    "functions": [
+      "create_engine",
+      "test_coordination_engine_initial_state",
+      "test_coordination_engine_delegation_flow",
+      "test_coordination_engine_loop_prevention",
+      "test_coordination_engine_consensus_arbitration",
+      "test_coordination_engine_malay_queries",
+      "test_coordination_engine_reset"
+    ],
+    "imports": [
+      "core.assistant.agent_coordination_engine",
+      "core.assistant.relay_agent",
+      "core.assistant.security_agent",
+      "core.assistant.telemetry_agent",
+      "core.assistant.workflow_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ai_orchestration_maturity.py",
+    "classes": [
+      "TestAIOrchestrationMaturity",
+      "MockClient",
+      "MockClient",
+      "MockClient",
+      "MockMsg"
+    ],
+    "functions": [],
+    "imports": [
+      "core.orchestrator.ai_orchestrator",
+      "core.orchestrator.decision_engine",
+      "core.self_healing.reward_engine",
+      "core.self_healing.rl.rl_metrics",
+      "core.self_healing.rl_environment"
+    ]
+  },
+  {
+    "path": "tests/unit/test_rogue_device_monitor.py",
+    "classes": [
+      "TestRogueDeviceMonitor"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.rogue_device_monitor"
+    ]
+  },
+  {
+    "path": "tests/unit/test_multi_agent_rl.py",
+    "classes": [
+      "TestMultiAgentRL"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.dqn.dqn_blue_agent",
+      "research.deep_rl.dqn.dqn_red_agent",
+      "research.deep_rl.marl.agent_registry",
+      "research.deep_rl.marl.coordination_manager",
+      "research.deep_rl.marl.marl_runner",
+      "research.deep_rl.marl.multi_agent_env",
+      "research.deep_rl.marl.reward_aggregator",
+      "research.deep_rl.ppo.ppo_blue_agent",
+      "research.deep_rl.ppo.ppo_config",
+      "research.deep_rl.ppo.ppo_red_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_dqn_blue_agent.py",
+    "classes": [
+      "TestDQNBlueAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.dqn.dqn_blue_agent",
+      "research.deep_rl.dqn.dqn_network",
+      "research.deep_rl.dqn.dqn_red_agent",
+      "research.deep_rl.dqn.replay_memory",
+      "research.deep_rl.dqn.training_config",
+      "research.deep_rl.environment",
+      "research.deep_rl.training_runner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_edge_device_manager.py",
+    "classes": [
+      "TestEdgeDeviceManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.edge_device_manager",
+      "core.hardware.hardware_state_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_rollback_guard.py",
+    "classes": [
+      "TestRollbackGuard"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.rollback_guard"
+    ]
+  },
+  {
+    "path": "tests/unit/test_predictive_coordination_engine.py",
+    "classes": [],
+    "functions": [
+      "test_predictive_engine_initial_state",
+      "test_add_latency_and_timing_prediction",
+      "test_trend_forecasting_and_cooldown"
+    ],
+    "imports": [
+      "core.assistant.predictive_coordination_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_predictive_defense.py",
+    "classes": [
+      "TestPredictiveDefense"
+    ],
+    "functions": [],
+    "imports": [
+      "core.ai_prediction.predictive_defense_engine",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_relay_health_monitor.py",
+    "classes": [],
+    "functions": [
+      "test_relay_health_monitor_initialization",
+      "test_update_relay_state_wear",
+      "test_oscillation_chattering_detection",
+      "test_recovery_recommendations",
+      "test_get_status_summary_and_reset"
+    ],
+    "imports": [
+      "core.assistant.relay_health_monitor"
+    ]
+  },
+  {
+    "path": "tests/unit/test_self_play_framework.py",
+    "classes": [
+      "TestSelfPlayFramework"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.dqn.dqn_blue_agent",
+      "research.deep_rl.dqn.dqn_red_agent",
+      "research.deep_rl.marl.multi_agent_env",
+      "research.deep_rl.ppo.ppo_blue_agent",
+      "research.deep_rl.ppo.ppo_config",
+      "research.deep_rl.ppo.ppo_red_agent",
+      "research.deep_rl.self_play.match_scheduler",
+      "research.deep_rl.self_play.opponent_pool",
+      "research.deep_rl.self_play.rating_system",
+      "research.deep_rl.self_play.self_play_manager",
+      "research.deep_rl.self_play.self_play_runner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ieee39_numpy_detector.py",
+    "classes": [],
+    "functions": [
+      "telemetry",
+      "test_runtime_detector_covers_all_39_buses",
+      "test_non_convergence_never_emits_nan_loss"
+    ],
+    "imports": [
+      "core.ai_detection.detector"
+    ]
+  },
+  {
+    "path": "tests/unit/test_lstm_validation.py",
+    "classes": [
+      "TestLSTMValidation"
+    ],
+    "functions": [],
+    "imports": [
+      "core.ai_prediction.dataset_loader",
+      "core.ai_prediction.pinn_inference",
+      "core.ai_prediction.pinn_model",
+      "core.ai_prediction.pinn_training"
+    ]
+  },
+  {
+    "path": "tests/unit/test_methodology_hardening.py",
+    "classes": [
+      "PhysicsStub"
+    ],
+    "functions": [
+      "test_corrected_temporal_split_has_no_raw_overlap",
+      "test_sandbox_rejects_non_converged_solution",
+      "test_sandbox_rejects_nonfinite_solution",
+      "test_sandbox_rejects_voltage_thermal_and_invalid_topology",
+      "test_blind_threat_mode_ignores_attack_ground_truth",
+      "test_ieee39_current_contract_exposes_canonical_units"
+    ],
+    "imports": [
+      "core.ai_training.temporal_split",
+      "core.self_healing.restoration_sandbox",
+      "core.threat_engine.scorer"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ai_model_runtime.py",
+    "classes": [],
+    "functions": [
+      "test_model_runtime_branch_ids_match_ieee39_contract",
+      "test_model_runtime_rejects_non_finite_nested_output",
+      "test_all_trained_runtime_checkpoints_load_with_ieee39_shapes"
+    ],
+    "imports": [
+      "core.ai_runtime.model_service"
+    ]
+  },
+  {
+    "path": "tests/unit/test_disaster_recovery_engine.py",
+    "classes": [
+      "TestDisasterRecoveryEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.disaster_recovery_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_response_engine.py",
+    "classes": [],
+    "functions": [
+      "test_response_engine_identity",
+      "test_response_engine_system_status",
+      "test_response_engine_open_youtube_serious",
+      "test_response_engine_greetings"
+    ],
+    "imports": [
+      "core.assistant.response_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_sensor_interface.py",
+    "classes": [
+      "TestSensorInterface"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.sensor_interface"
+    ]
+  },
+  {
+    "path": "tests/unit/test_islanding_engine.py",
+    "classes": [
+      "TestIslandingEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.islanding_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_reminder_manager.py",
+    "classes": [],
+    "functions": [
+      "test_add_and_tick_reminder",
+      "test_reminder_spam_cooldown",
+      "test_cancel_reminder",
+      "test_clear_all"
+    ],
+    "imports": [
+      "core.assistant.reminder_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_survival_optimizer.py",
+    "classes": [
+      "TestSurvivalOptimizer"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.survival_optimizer"
+    ]
+  },
+  {
+    "path": "tests/unit/test_threat_ai_fusion.py",
+    "classes": [],
+    "functions": [
+      "nominal_telemetry",
+      "test_calibrated_fusion_and_trust_contribute_bounded_evidence",
+      "test_uncalibrated_fusion_is_not_used_as_threat_evidence"
+    ],
+    "imports": [
+      "core.threat_engine.scorer"
+    ]
+  },
+  {
+    "path": "tests/unit/test_edge_reliability_monitor.py",
+    "classes": [
+      "TestEdgeReliabilityMonitor"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.edge_reliability_monitor"
+    ]
+  },
+  {
+    "path": "tests/unit/test_degraded_operation.py",
+    "classes": [
+      "TestDegradedOperation"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.degraded_operation_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_cyber_physical_orchestrator.py",
+    "classes": [
+      "TestCampaignLifecycle",
+      "TestPropagationChain",
+      "TestEscalationStateMachine",
+      "TestQuarantineManagement",
+      "TestOrchestrationPayload",
+      "TestReset"
+    ],
+    "functions": [
+      "make_orchestrator"
+    ],
+    "imports": [
+      "core.hardware.badusb_payload_manager",
+      "core.hardware.cyber_physical_attack_orchestrator",
+      "core.hardware.digispark_attack_engine",
+      "core.hardware.hardware_intrusion_detector",
+      "core.hardware.rogue_device_monitor"
+    ]
+  },
+  {
+    "path": "tests/unit/test_assistant_presence_engine.py",
+    "classes": [],
+    "functions": [
+      "test_initial_presence_state",
+      "test_attention_focus_states",
+      "test_breathing_frequencies_by_state",
+      "test_pacing_delay_modulation"
+    ],
+    "imports": [
+      "core.assistant.assistant_presence_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_telemetry_correlation_engine.py",
+    "classes": [],
+    "functions": [
+      "test_telemetry_correlation_engine_initialization",
+      "test_rolling_history_window",
+      "test_pearson_correlation_computation",
+      "test_cascading_events_and_linkage_logs"
+    ],
+    "imports": [
+      "core.assistant.telemetry_correlation_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_topology_recovery.py",
+    "classes": [
+      "TestTopologyRecovery"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.topology_recovery_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_strategic_coordination.py",
+    "classes": [
+      "TestStrategicCoordination"
+    ],
+    "functions": [],
+    "imports": [
+      "core.strategy.action_simulator",
+      "core.strategy.impact_estimator",
+      "core.strategy.priority_engine",
+      "core.strategy.resource_allocator",
+      "core.strategy.strategic_coordinator",
+      "core.strategy.strategy_memory",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_semantic_intent_engine.py",
+    "classes": [],
+    "functions": [
+      "test_semantic_intent_engine_empty_input",
+      "test_semantic_intent_engine_jaccard_fuzzy",
+      "test_semantic_intent_engine_followup_continuity",
+      "test_semantic_intent_engine_parameter_parsing",
+      "test_semantic_intent_engine_greetings_and_generic"
+    ],
+    "imports": [
+      "core.assistant.semantic_intent_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_emotion_engine.py",
+    "classes": [],
+    "functions": [
+      "test_emotion_engine_initial_state",
+      "test_emotion_engine_detect_user_emotion",
+      "test_emotion_engine_modulate_assistant_emotion_nominal",
+      "test_emotion_engine_modulate_assistant_emotion_critical_override"
+    ],
+    "imports": [
+      "core.assistant.emotion_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_intent_engine.py",
+    "classes": [],
+    "functions": [
+      "test_intent_engine_empty_input",
+      "test_intent_engine_direct_command",
+      "test_intent_engine_utilities",
+      "test_intent_engine_greetings_and_fallback",
+      "test_intent_engine_parameters"
+    ],
+    "imports": [
+      "core.assistant.intent_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_adaptive_recovery_memory.py",
+    "classes": [
+      "TestAdaptiveRecoveryMemory"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.adaptive_recovery_memory"
+    ]
+  },
+  {
+    "path": "tests/unit/test_critical_guard.py",
+    "classes": [
+      "TestCriticalInfrastructureGuard"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.critical_infrastructure_guard"
+    ]
+  },
+  {
+    "path": "tests/unit/test_live_conversation_stream.py",
+    "classes": [],
+    "functions": [
+      "test_stream_chunks_pacing",
+      "test_stream_interruption"
+    ],
+    "imports": [
+      "core.assistant.live_conversation_stream"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ieee39_physics_calibration.py",
+    "classes": [],
+    "functions": [
+      "frame",
+      "test_ieee_residuals_calibrate_nominal_and_freeze_during_attack"
+    ],
+    "imports": [
+      "core.physics_validation.kcl_validator",
+      "core.physics_validation.kvl_validator",
+      "types"
+    ]
+  },
+  {
+    "path": "tests/unit/test_persistent_routine_memory.py",
+    "classes": [],
+    "functions": [
+      "test_persistent_memory_io"
+    ],
+    "imports": [
+      "core.assistant.persistent_routine_memory",
+      "datetime"
+    ]
+  },
+  {
+    "path": "tests/unit/test_relay_agent.py",
+    "classes": [],
+    "functions": [
+      "test_relay_agent_initial_state",
+      "test_relay_agent_wear_tear",
+      "test_relay_agent_slow_breaker",
+      "test_relay_agent_breaker_oscillation",
+      "test_relay_agent_safety_confidence_gate",
+      "test_relay_agent_reset"
+    ],
+    "imports": [
+      "core.assistant.relay_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_action_router.py",
+    "classes": [],
+    "functions": [
+      "test_action_router_open_youtube",
+      "test_action_router_open_browser",
+      "test_action_router_get_time",
+      "test_action_router_get_system_status_nominal",
+      "test_action_router_get_system_status_critical",
+      "test_action_router_n8n_and_unsupported"
+    ],
+    "imports": [
+      "core.assistant.action_router"
+    ]
+  },
+  {
+    "path": "tests/unit/test_hardware_synchronization_engine.py",
+    "classes": [
+      "TestHardwareSynchronizationEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_synchronization_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_arena_coevolution.py",
+    "classes": [
+      "TestArenaCoevolution"
+    ],
+    "functions": [],
+    "imports": [
+      "core.arena.arena_coordinator",
+      "core.arena.arena_memory",
+      "core.arena.arena_simulator",
+      "core.arena.blue_agent",
+      "core.arena.red_agent",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/unit/test_decision_engine.py",
+    "classes": [],
+    "functions": [
+      "test_decision_engine_conversational_route",
+      "test_decision_engine_command_route",
+      "test_decision_engine_low_confidence_blocks_execution",
+      "test_decision_engine_safety_override"
+    ],
+    "imports": [
+      "core.assistant.decision_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_autonomous_workflow_engine.py",
+    "classes": [],
+    "functions": [
+      "test_workflow_cooldown",
+      "test_recursive_loop_prevention",
+      "test_max_call_depth_exceeded",
+      "test_confidence_gate",
+      "test_schedule_and_tick_delayed_tasks"
+    ],
+    "imports": [
+      "core.assistant.autonomous_workflow_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_restoration_agent.py",
+    "classes": [
+      "TestRestorationAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.adaptive_recovery_memory",
+      "core.self_healing.recovery_state_machine",
+      "core.self_healing.restoration_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_safe_relay_guard.py",
+    "classes": [
+      "TestSafeRelayGuard"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.safe_relay_guard"
+    ]
+  },
+  {
+    "path": "tests/unit/test_assistant_state_manager.py",
+    "classes": [],
+    "functions": [
+      "test_assistant_state_manager_initial_state",
+      "test_assistant_state_manager_valid_transitions",
+      "test_assistant_state_manager_invalid_transitions"
+    ],
+    "imports": [
+      "core.assistant.assistant_state_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_hardware_orchestrator.py",
+    "classes": [
+      "TestHardwareOrchestrator"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.esp32_bridge",
+      "core.hardware.hardware_command_router",
+      "core.hardware.hardware_orchestrator",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.plc_interface",
+      "core.hardware.relay_controller"
+    ]
+  },
+  {
+    "path": "tests/unit/test_distributed_command_bus.py",
+    "classes": [
+      "TestDistributedCommandBus"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.distributed_command_bus"
+    ]
+  },
+  {
+    "path": "tests/unit/test_distributed_consensus_engine.py",
+    "classes": [],
+    "functions": [
+      "test_consensus_engine_initial_state",
+      "test_consensus_engine_unanimous_approval",
+      "test_consensus_engine_conflict_blocked",
+      "test_consensus_engine_low_confidence",
+      "test_consensus_engine_simulation_instability",
+      "test_consensus_engine_reset"
+    ],
+    "imports": [
+      "core.assistant.distributed_consensus_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_cross_system_coordination_manager.py",
+    "classes": [],
+    "functions": [
+      "test_sync_state_and_clock_drift",
+      "test_optimization_conflict_prevention"
+    ],
+    "imports": [
+      "core.assistant.cross_system_coordination_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_adaptive_dialogue_engine.py",
+    "classes": [],
+    "functions": [
+      "test_ambiguity_latency_target",
+      "test_ambiguity_relay_breaker",
+      "test_ambiguity_workflow_name",
+      "test_clear_dialogue"
+    ],
+    "imports": [
+      "core.assistant.adaptive_dialogue_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_virtual_esp32.py",
+    "classes": [
+      "TestVirtualESP32"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.virtual_esp32",
+      "core.hardware.virtual_relay_faults"
+    ]
+  },
+  {
+    "path": "tests/unit/test_deployment_profiles.py",
+    "classes": [
+      "TestDeploymentProfiles"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.deployment_profiles"
+    ]
+  },
+  {
+    "path": "tests/unit/test_contextual_memory_engine.py",
+    "classes": [],
+    "functions": [
+      "test_contextual_memory_basic_tracking",
+      "test_contextual_memory_timeout",
+      "test_contextual_memory_consolidation",
+      "test_contextual_memory_reference_caching",
+      "test_contextual_memory_clear"
+    ],
+    "imports": [
+      "core.assistant.contextual_memory_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_rag_stage2.py",
+    "classes": [],
+    "functions": [
+      "temp_kb",
+      "test_embedding_model_vectors",
+      "test_vector_store_operations",
+      "test_qdrant_vector_store_fallback",
+      "test_rag_engine_hybrid_search",
+      "test_memory_orchestrator_stage2"
+    ],
+    "imports": [
+      "core.assistant.memory_orchestrator",
+      "core.assistant.rag_engine",
+      "core.assistant.vector_store"
+    ]
+  },
+  {
+    "path": "tests/unit/test_context_engine.py",
+    "classes": [],
+    "functions": [
+      "test_context_engine_initial_state",
+      "test_context_engine_update_context",
+      "test_context_engine_depth_increments",
+      "test_context_engine_reset"
+    ],
+    "imports": [
+      "core.assistant.context_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_orchestrator_agent.py",
+    "classes": [
+      "MockClient",
+      "TestOrchestratorAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.orchestrator_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_self_healing_maturity.py",
+    "classes": [
+      "TestSelfHealingMaturity",
+      "MockClient"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.cascading_containment_engine",
+      "core.self_healing.degraded_operation_manager",
+      "core.self_healing.islanding_engine",
+      "core.self_healing.proactive_rerouting_engine",
+      "core.self_healing.recovery_reward_engine",
+      "core.self_healing.recovery_state_machine",
+      "core.self_healing.restoration_planner",
+      "core.self_healing.reward_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_synchronization_awareness_manager.py",
+    "classes": [],
+    "functions": [
+      "test_sync_manager_initialization",
+      "test_update_drift_validation",
+      "test_get_skewed_nodes",
+      "test_get_status_summary_and_reset"
+    ],
+    "imports": [
+      "core.assistant.synchronization_awareness_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_hardware_router.py",
+    "classes": [
+      "TestHardwareRouter"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.esp32_bridge",
+      "core.hardware.hardware_command_router",
+      "core.hardware.hardware_state_manager",
+      "core.hardware.plc_interface",
+      "core.hardware.relay_controller"
+    ]
+  },
+  {
+    "path": "tests/unit/test_pattern_awareness_engine.py",
+    "classes": [],
+    "functions": [
+      "test_voltage_oscillation_detection",
+      "test_workflow_failure_loop_detection"
+    ],
+    "imports": [
+      "core.assistant.pattern_awareness_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_hardware_state_manager.py",
+    "classes": [
+      "TestHardwareStateManager"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_deployment_hardening_engine.py",
+    "classes": [
+      "TestDeploymentHardeningEngine"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.deployment_hardening_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_predictive_stability.py",
+    "classes": [
+      "TestPredictiveStability"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.predictive_stability_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_proactive_rerouting.py",
+    "classes": [
+      "TestProactiveRerouting"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.proactive_rerouting_engine",
+      "core.self_healing.topology_recovery_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ieee39_recovery_policy.py",
+    "classes": [],
+    "functions": [
+      "telemetry",
+      "test_encoder_covers_last_ieee39_bus_and_branch",
+      "test_encoder_maps_non_convergence_to_explicit_failure_state_without_nan",
+      "test_ppo_and_dqn_emit_sandbox_gated_ieee39_recovery_intent"
+    ],
+    "imports": [
+      "core.self_healing.recovery_policy_service"
+    ]
+  },
+  {
+    "path": "tests/unit/test_cyber_physical_reasoning_engine.py",
+    "classes": [],
+    "functions": [
+      "test_cyber_physical_reasoning_engine_initialization",
+      "test_evaluate_state_severity_fusing",
+      "test_evaluate_state_recommendations",
+      "test_handle_query_in_malay"
+    ],
+    "imports": [
+      "core.assistant.cyber_physical_reasoning_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_virtual_plc.py",
+    "classes": [
+      "TestVirtualPLC"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.virtual_plc",
+      "core.hardware.virtual_relay_faults"
+    ]
+  },
+  {
+    "path": "tests/unit/test_pre_rl_foundation.py",
+    "classes": [
+      "TestPreRlFoundation"
+    ],
+    "functions": [],
+    "imports": [
+      "core.digital_twin.grid_topology",
+      "core.self_healing.action_explainer",
+      "core.self_healing.action_rollback",
+      "core.self_healing.restoration_sandbox",
+      "core.self_healing.restoration_timeline",
+      "core.self_healing.reward_engine",
+      "core.self_healing.rl_environment",
+      "core.self_healing.safety_constraints",
+      "core.self_healing.state_encoder",
+      "core.self_healing.state_vector_debugger",
+      "core.self_healing.trusted_action_filter"
+    ]
+  },
+  {
+    "path": "tests/unit/test_swarm_anomaly_fusion_engine.py",
+    "classes": [],
+    "functions": [
+      "test_anomaly_fusion_initial_state",
+      "test_anomaly_fusion_combining_findings",
+      "test_anomaly_fusion_correlation_matrix",
+      "test_anomaly_fusion_simulation_overload",
+      "test_anomaly_fusion_reset"
+    ],
+    "imports": [
+      "core.assistant.swarm_anomaly_fusion_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ai_runtime_contract.py",
+    "classes": [],
+    "functions": [
+      "_telemetry",
+      "test_ieee39_feature_contract_has_model_training_shapes_and_units",
+      "test_ieee39_feature_contract_rejects_non_finite_values",
+      "test_ieee39_feature_contract_rejects_non_converged_power_flow",
+      "test_model_readiness_requires_loaded_model_and_fresh_successful_inference"
+    ],
+    "imports": [
+      "core.ai_runtime.features",
+      "core.ai_runtime.readiness"
+    ]
+  },
+  {
+    "path": "tests/unit/test_edge_mesh_orchestrator.py",
+    "classes": [],
+    "functions": [
+      "test_edge_mesh_initial_state",
+      "test_edge_mesh_tick_nominal",
+      "test_edge_mesh_partition_simulation",
+      "test_edge_mesh_cascade_risk_path",
+      "test_edge_mesh_reset"
+    ],
+    "imports": [
+      "core.assistant.edge_mesh_orchestrator"
+    ]
+  },
+  {
+    "path": "tests/unit/test_relay_controller.py",
+    "classes": [
+      "TestRelayController"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.relay_controller"
+    ]
+  },
+  {
+    "path": "tests/unit/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/unit/test_federated_memory_manager.py",
+    "classes": [],
+    "functions": [
+      "test_federated_memory_initial_state",
+      "test_federated_memory_update_local",
+      "test_federated_memory_sync_resolution",
+      "test_federated_memory_sync_tie_resolution",
+      "test_federated_memory_sync_storm_prevention",
+      "test_federated_memory_reset"
+    ],
+    "imports": [
+      "core.assistant.federated_memory_manager"
+    ]
+  },
+  {
+    "path": "tests/unit/test_hardware_intrusion_detector.py",
+    "classes": [
+      "TestHardwareIntrusionDetector"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_intrusion_detector"
+    ]
+  },
+  {
+    "path": "tests/unit/test_mqtt_contract.py",
+    "classes": [],
+    "functions": [
+      "test_verified_mqtt_contract_is_machine_readable_and_complete"
+    ],
+    "imports": [
+      "pathlib"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ppo_blue_agent.py",
+    "classes": [
+      "TestPPOBlueAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.environment",
+      "research.deep_rl.ppo.actor_network",
+      "research.deep_rl.ppo.critic_network",
+      "research.deep_rl.ppo.ppo_blue_agent",
+      "research.deep_rl.ppo.ppo_config",
+      "research.deep_rl.ppo.ppo_memory",
+      "research.deep_rl.ppo.ppo_red_agent",
+      "research.deep_rl.training_runner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_agent_consensus.py",
+    "classes": [
+      "MockClient",
+      "TestAgentConsensus"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.orchestrator_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_self_preservation_policy.py",
+    "classes": [
+      "TestSelfPreservationPolicy"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.self_preservation_policy_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_survival_forecasting.py",
+    "classes": [
+      "TestSurvivalForecasting"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.survival_forecasting_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_survival_agent.py",
+    "classes": [
+      "TestSurvivalAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.survival_agent"
+    ]
+  },
+  {
+    "path": "tests/unit/test_deep_rl_foundation.py",
+    "classes": [
+      "DummyAgent",
+      "TestDeepRLFoundation"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.environment",
+      "research.deep_rl.experience_buffer",
+      "research.deep_rl.model_manager",
+      "research.deep_rl.reward_engine",
+      "research.deep_rl.state_encoder",
+      "research.deep_rl.training_runner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_proactive_assistant_engine.py",
+    "classes": [],
+    "functions": [
+      "test_proactive_confidence_threshold_rejection",
+      "test_proactive_alert_triggers_malay_messages",
+      "test_cooldown_lockout_period",
+      "test_critical_grid_threat_override"
+    ],
+    "imports": [
+      "core.assistant.proactive_assistant_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_plc_interface.py",
+    "classes": [
+      "TestPLCInterface"
+    ],
+    "functions": [],
+    "imports": [
+      "core.hardware.hardware_state_manager",
+      "core.hardware.plc_interface",
+      "core.hardware.relay_controller"
+    ]
+  },
+  {
+    "path": "tests/unit/test_ppo_red_agent.py",
+    "classes": [
+      "TestPPORedAgent"
+    ],
+    "functions": [],
+    "imports": [
+      "research.deep_rl.environment",
+      "research.deep_rl.ppo.actor_network",
+      "research.deep_rl.ppo.critic_network",
+      "research.deep_rl.ppo.ppo_config",
+      "research.deep_rl.ppo.ppo_memory",
+      "research.deep_rl.ppo.ppo_red_agent",
+      "research.deep_rl.training_runner"
+    ]
+  },
+  {
+    "path": "tests/unit/test_condition_monitor_engine.py",
+    "classes": [],
+    "functions": [
+      "test_register_and_remove_watch",
+      "test_scan_and_cooldown"
+    ],
+    "imports": [
+      "core.assistant.condition_monitor_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_conversational_planning_engine.py",
+    "classes": [],
+    "functions": [
+      "test_plan_decomposition_latency",
+      "test_plan_decomposition_dashboard",
+      "test_runaway_chain_prevention",
+      "test_plan_step_status_updates"
+    ],
+    "imports": [
+      "core.assistant.conversational_planning_engine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_autonomous_restoration.py",
+    "classes": [
+      "MockMQTTClient",
+      "TestAutonomousRestoration"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.recovery_state_machine"
+    ]
+  },
+  {
+    "path": "tests/unit/test_n8n_orchestration_bridge.py",
+    "classes": [],
+    "functions": [
+      "test_payload_validation_and_injection",
+      "test_dispatch_webhook_success_and_rejection",
+      "test_webhook_retry_backoff_and_failure"
+    ],
+    "imports": [
+      "core.assistant.n8n_orchestration_bridge"
+    ]
+  },
+  {
+    "path": "tests/unit/test_memory_orchestrator.py",
+    "classes": [],
+    "functions": [
+      "test_memory_orchestrator_initial_state",
+      "test_memory_orchestrator_add_interaction",
+      "test_memory_orchestrator_command_history",
+      "test_memory_orchestrator_summarization",
+      "test_memory_orchestrator_preferences_and_clear"
+    ],
+    "imports": [
+      "core.assistant.memory_orchestrator"
+    ]
+  },
+  {
+    "path": "tests/hardware/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/integration/test_conversational_planning_integration.py",
+    "classes": [
+      "MockMQTTMessage"
+    ],
+    "functions": [
+      "test_chained_task_plan_simulation",
+      "test_live_stream_interruption_by_new_request",
+      "test_dialogue_ambiguity_clarification_and_resolution",
+      "test_confidence_safety_gate_blocking"
+    ],
+    "imports": [
+      "core.assistant.assistant_daemon",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/integration/test_rl_maturity_training.py",
+    "classes": [
+      "TestRLMaturityTraining"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.rl.rl_trainer"
+    ]
+  },
+  {
+    "path": "tests/integration/test_pypy_stabilization.py",
+    "classes": [],
+    "functions": [
+      "on_connect",
+      "on_message",
+      "reset_system",
+      "run_tests"
+    ],
+    "imports": []
+  },
+  {
+    "path": "tests/integration/test_adaptive_filtering.py",
+    "classes": [],
+    "functions": [
+      "on_connect",
+      "on_message",
+      "run_direct_unit_tests",
+      "run_test_scenario",
+      "main"
+    ],
+    "imports": []
+  },
+  {
+    "path": "tests/integration/test_predictive_coordination_integration.py",
+    "classes": [
+      "MockMQTTMessage"
+    ],
+    "functions": [
+      "test_daemon_predictive_integration",
+      "test_daemon_persistent_routine_integration"
+    ],
+    "imports": [
+      "core.assistant.assistant_daemon",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/integration/test_assistant_runtime.py",
+    "classes": [
+      "MockMQTTMessage"
+    ],
+    "functions": [
+      "test_assistant_daemon_initialization",
+      "test_assistant_daemon_reset",
+      "test_assistant_daemon_process_request_greeting",
+      "test_assistant_daemon_process_command_youtube_safety_override",
+      "test_assistant_daemon_on_message_routing"
+    ],
+    "imports": [
+      "core.assistant.assistant_daemon",
+      "unittest.mock"
+    ]
+  },
+  {
+    "path": "tests/integration/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/relay/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/self_healing/test_rl_self_healing.py",
+    "classes": [
+      "TestRLSelfHealing"
+    ],
+    "functions": [],
+    "imports": [
+      "core.self_healing.reward_engine",
+      "core.self_healing.rl.dqn_agent",
+      "core.self_healing.rl.policy_network",
+      "core.self_healing.rl.ppo_agent",
+      "core.self_healing.rl.replay_buffer",
+      "core.self_healing.rl.value_network",
+      "core.self_healing.rl_environment"
+    ]
+  },
+  {
+    "path": "tests/self_healing/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/fixtures/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  },
+  {
+    "path": "tests/physics/test_pinn_validation.py",
+    "classes": [
+      "TestPINNValidation"
+    ],
+    "functions": [],
+    "imports": [
+      "core.ai_prediction.physics_informed_loss",
+      "core.ai_prediction.pinn_inference"
+    ]
+  },
+  {
+    "path": "tests/physics/__init__.py",
+    "classes": [],
+    "functions": [],
+    "imports": []
+  }
+]

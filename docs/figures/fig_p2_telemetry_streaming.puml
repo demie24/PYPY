@@ -1,0 +1,21 @@
+@startuml
+skinparam backgroundcolor #FFFFFF
+skinparam defaultFontName Arial
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #003366
+skinparam ActivityFontColor #003366
+skinparam ActivityFontStyle bold
+
+start
+:Digital Twin Solver;
+:Voltage Calculation;
+:Current Calculation;
+:Line Loading Calculation;
+:JSON Formatting;
+:MQTT Topic;
+:FastAPI Gateway;
+:React Dashboard;
+stop
+
+caption Figure P.2 Digital Twin telemetry streaming workflow.
+@enduml

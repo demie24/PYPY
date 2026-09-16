@@ -1,0 +1,11 @@
+graph TD
+    Telemetry["Telemetry Data"] --> DataVal["Data Validation"]
+    DataVal --> KCL["Kirchhoff Current Law (KCL)"]
+    KCL --> KVL["Kirchhoff Voltage Law (KVL)"]
+    KVL --> PowerBal["Power Balance Verification"]
+    PowerBal --> TrustScore["Trust Score Calculation"]
+    TrustScore --> Decision{"Trust Score ≥ Threshold?"}
+
+    Decision -->|YES| Normal["Normal Grid State"]
+    Decision -->|NO| Suspicious["Suspicious / Anomaly Detected"]
+    Suspicious --> AIAnalysis["AI Analysis (PINN & ST-GNN)"]

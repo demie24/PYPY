@@ -1,0 +1,8 @@
+graph TD
+    Init["Initialize IEEE Network"] --> Breaker["Update Breaker Status"]
+    Breaker --> Load["Update Load Demand"]
+    Load --> Ybus["Construct Admittance Matrix (Y_bus)"]
+    Ybus --> NR["Newton-Raphson Iteration"]
+    NR --> Decision{"Converged? (|ΔP|, |ΔQ| < ε)"}
+    Decision -->|YES| Telemetry["Generate Telemetry"]
+    Decision -->|NO| NR

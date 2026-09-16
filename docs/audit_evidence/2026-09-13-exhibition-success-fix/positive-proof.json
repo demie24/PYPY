@@ -1,0 +1,47 @@
+{
+  "result": "PASS — REAL LIVE UI AND RUNTIME",
+  "recording": "docs/audit_evidence/2026-09-13-exhibition/breaker-1789277545201.jsonl",
+  "screenshot": "docs/audit_evidence/2026-09-13-exhibition/breaker-1789277545201-after-stop.png",
+  "correlation_id": "ui-1789277553116:L_line_0",
+  "source_telemetry_id": "ui-1789277553116:1789277560068",
+  "open_source_timestamp": 1789277554065,
+  "stop_sent_receipt_time": 1789277555481,
+  "safe_proposal_source_timestamp": 1789277560136,
+  "approval_source_timestamp": 1789277560140,
+  "control_actual_receipt_time": 1789277560345,
+  "control_has_backend_timestamp": false,
+  "later_closed_source_timestamp": 1789277561077,
+  "later_closed_receipt_time": 1789277561095,
+  "final": {
+    "timestamp": 1789277565071,
+    "attack": {
+      "active_attack": null,
+      "active_scenario_name": null,
+      "scenario_time": 0,
+      "compromised_nodes": {},
+      "stages": []
+    },
+    "breaker": "CLOSED",
+    "solver": {
+      "converged": true,
+      "mode": "converged",
+      "iterations": 2
+    },
+    "bus5": {
+      "voltage_pu": 1.0009,
+      "angle_rad": -0.1992,
+      "is_load": false,
+      "is_gen": false,
+      "frequency_hz": 60.04,
+      "P_mw": 0,
+      "Q_mvar": 0
+    },
+    "headline": "GRID SECURED"
+  },
+  "all_46_breakers_closed": true,
+  "buses": 39,
+  "baseline_voltage_max": 1.0636,
+  "page_errors": [],
+  "request_failures": [],
+  "websocket_closes": 0
+}

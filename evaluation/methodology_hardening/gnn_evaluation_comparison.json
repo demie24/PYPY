@@ -1,0 +1,7 @@
+{
+  "raw_accuracy": 0.8660256410256411,
+  "legacy_accuracy": 0.8641025641025641,
+  "raw_f1_macro": 0.820763728458218,
+  "legacy_f1_macro": 0.8598426374475786,
+  "predictions_changed_by_legacy_heuristic": 193
+}

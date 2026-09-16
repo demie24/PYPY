@@ -1,0 +1,48 @@
+{
+  "chapter": "Chapter 4",
+  "status": "Draft v3 pending Codex verification and final data capture",
+  "timestamp_utc": "2026-08-19T07:46:00Z",
+  "existing_artifacts": [
+    "evaluation/methodology_hardening/temporal_overlap_report.json",
+    "evaluation/methodology_hardening/lstm_corrected_evaluation.json",
+    "evaluation/methodology_hardening/gnn_raw_evaluation.json",
+    "evaluation/methodology_hardening/gnn_postprocessed_evaluation.json",
+    "evaluation/methodology_hardening/stgnn_corrected_evaluation.json",
+    "evaluation/methodology_hardening/pinn_physics_audit.json",
+    "evaluation/methodology_hardening/blind_detection_report.json",
+    "evaluation/methodology_hardening/sandbox_safety_report.json",
+    "evaluation/methodology_hardening/runtime_metrics.json",
+    "evaluation/methodology_hardening/safety_metrics.json",
+    "evaluation/methodology_hardening/correlation_trace.json",
+    "evaluation/coevolution/verified/report.json",
+    "evaluation/methodology_hardening/pathogen_immune_expanded/report.json",
+    "evaluation/methodology_hardening/runtime_metrics_final.json"
+  ],
+  "missing_artifacts": [],
+  "measured_metrics": [
+    "lstm_inference_latency_ms",
+    "gnn_inference_latency_ms",
+    "stgnn_inference_latency_ms",
+    "pinn_residual_evaluation_latency_ms",
+    "threat_scoring_latency_ms",
+    "orchestrator_decision_latency_ms",
+    "restoration_sandbox_dry_run_latency_ms"
+  ],
+  "estimated_metrics": [],
+  "static_configuration_metrics": [
+    "telemetry_publishing_interval_ms",
+    "base_system_mva",
+    "system_frequency_hz",
+    "telemetry_vector_dim"
+  ],
+  "not_verified_metrics": [
+    "mqtt_transport_latency_ms",
+    "dashboard_rendering_frame_rate",
+    "cpu_gpu_memory_overhead_mb",
+    "per_step_telemetry_loop_ac_solver_timer_ms"
+  ],
+  "notes": [
+    "All 7 core computational components benchmarked via time.perf_counter() in run_runtime_benchmark.py.",
+    "Hardware, MQTT delay, and dashboard FPS retained as NOT_VERIFIED due to deployment dependency."
+  ]
+}

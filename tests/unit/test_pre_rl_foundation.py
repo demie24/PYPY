@@ -18,9 +18,11 @@ from core.self_healing.safety_constraints import SafetyConstraintEngine
 from core.self_healing.rl_environment import GridRLEnvironment
 from core.self_healing.state_encoder import StateEncoder
 
+from core.digital_twin.grid_topology import GridTopology
+
 class TestPreRlFoundation(unittest.TestCase):
     def setUp(self):
-        self.sandbox = RestorationSandbox()
+        self.sandbox = RestorationSandbox(topology=GridTopology(use_legacy_9bus=True))
         self.rollback = ActionRollbackManager()
         self.debugger = StateVectorDebugger()
         self.explainer = ActionExplainer()

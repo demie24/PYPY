@@ -1,0 +1,214 @@
+{
+  "classification": "MEASURED",
+  "containers": [
+    {
+      "BlockIO": "98.1MB / 86.3MB",
+      "CPUPerc": "0.36%",
+      "Container": "2a73696931fd26c79276e9ddfd163cb99f6db8f685663e707db29833c7aa3871",
+      "ID": "2a73696931fd",
+      "MemPerc": "0.60%",
+      "MemUsage": "91.53MiB / 14.95GiB",
+      "Name": "smart_grid_ai_orchestrator",
+      "NetIO": "389MB / 19.6MB",
+      "PIDs": "23"
+    },
+    {
+      "BlockIO": "58.1MB / 447MB",
+      "CPUPerc": "0.43%",
+      "Container": "b5a5e9b289a9cb487e70631d328f93fa01fcbc7721890eac5b2c92e524f419bb",
+      "ID": "b5a5e9b289a9",
+      "MemPerc": "0.31%",
+      "MemUsage": "47.62MiB / 14.95GiB",
+      "Name": "smart_grid_recovery_policy",
+      "NetIO": "299MB / 34.8MB",
+      "PIDs": "23"
+    },
+    {
+      "BlockIO": "14.1MB / 52.8MB",
+      "CPUPerc": "1.42%",
+      "Container": "3118fc19a7507001eced9fa195fd57aed73ced0d21afe5b83625389427a86ab3",
+      "ID": "3118fc19a750",
+      "MemPerc": "0.53%",
+      "MemUsage": "80.71MiB / 14.95GiB",
+      "Name": "smart_grid_physics_validation",
+      "NetIO": "160MB / 351MB",
+      "PIDs": "23"
+    },
+    {
+      "BlockIO": "37MB / 89.8MB",
+      "CPUPerc": "4.72%",
+      "Container": "0289382137ce62c542217cb3f6a8b1b691a8fedefd0b367294225f104f709b17",
+      "ID": "0289382137ce",
+      "MemPerc": "0.09%",
+      "MemUsage": "13.98MiB / 14.95GiB",
+      "Name": "smart_grid_self_healing",
+      "NetIO": "264MB / 28.6MB",
+      "PIDs": "23"
+    },
+    {
+      "BlockIO": "2.09MB / 2.2MB",
+      "CPUPerc": "0.11%",
+      "Container": "0c7357ea3fd224856d1ddf1aa5b671e04b4ecb9c7a9930ae4606abc391f502f3",
+      "ID": "0c7357ea3fd2",
+      "MemPerc": "0.08%",
+      "MemUsage": "11.95MiB / 14.95GiB",
+      "Name": "smart_grid_threat_scorer",
+      "NetIO": "279MB / 9.1MB",
+      "PIDs": "1"
+    },
+    {
+      "BlockIO": "340kB / 176MB",
+      "CPUPerc": "0.37%",
+      "Container": "8fde7d404196afc1294a18e85a9d16a122073dac54f4e7dabcb8aa060662dd15",
+      "ID": "8fde7d404196",
+      "MemPerc": "0.12%",
+      "MemUsage": "18.12MiB / 14.95GiB",
+      "Name": "smart_grid_ai_fusion",
+      "NetIO": "169MB / 42.7MB",
+      "PIDs": "12"
+    },
+    {
+      "BlockIO": "53.9MB / 223MB",
+      "CPUPerc": "0.27%",
+      "Container": "64d26b61e5ce40da690a34b5a7d734b3728d2ff22ea87cc791500a667238e5a8",
+      "ID": "64d26b61e5ce",
+      "MemPerc": "0.34%",
+      "MemUsage": "52.54MiB / 14.95GiB",
+      "Name": "smart_grid_ai_pinn",
+      "NetIO": "141MB / 11.7MB",
+      "PIDs": "28"
+    },
+    {
+      "BlockIO": "23.1MB / 151MB",
+      "CPUPerc": "17.95%",
+      "Container": "08756646bf8415e8e920cde1a7cf27199b7c6cdf9cf7fe153c106dc2a30ebb25",
+      "ID": "08756646bf84",
+      "MemPerc": "0.26%",
+      "MemUsage": "40.24MiB / 14.95GiB",
+      "Name": "smart_grid_ai_lstm",
+      "NetIO": "141MB / 11.5MB",
+      "PIDs": "17"
+    },
+    {
+      "BlockIO": "53.2MB / 214MB",
+      "CPUPerc": "21.64%",
+      "Container": "fc8a310186586d1f126c32edb30c4d02ea9ad0a1a5554fd56e5ac96435f64012",
+      "ID": "fc8a31018658",
+      "MemPerc": "0.42%",
+      "MemUsage": "63.59MiB / 14.95GiB",
+      "Name": "smart_grid_ai_stgnn",
+      "NetIO": "141MB / 10.7MB",
+      "PIDs": "28"
+    },
+    {
+      "BlockIO": "34.2MB / 221MB",
+      "CPUPerc": "12.31%",
+      "Container": "eaa871fd7b76cce078f0762654d882ffb670a0d3f60d9633c2b693a391381b2b",
+      "ID": "eaa871fd7b76",
+      "MemPerc": "0.36%",
+      "MemUsage": "55.07MiB / 14.95GiB",
+      "Name": "smart_grid_ai_gnn",
+      "NetIO": "141MB / 10.8MB",
+      "PIDs": "28"
+    },
+    {
+      "BlockIO": "5.53MB / 41.7MB",
+      "CPUPerc": "0.11%",
+      "Container": "fe087460ef11ab29776b9f0e96f32e6d0e8f56b8de522ed20b291375e6043d95",
+      "ID": "fe087460ef11",
+      "MemPerc": "0.14%",
+      "MemUsage": "21.34MiB / 14.95GiB",
+      "Name": "smart_grid_ai_detection",
+      "NetIO": "140MB / 4.4MB",
+      "PIDs": "12"
+    },
+    {
+      "BlockIO": "51.4MB / 21.5MB",
+      "CPUPerc": "2.74%",
+      "Container": "408aca11c237ea45be73e371b6cb08b6b2325ab3536a24655f30025095bfd6b0",
+      "ID": "408aca11c237",
+      "MemPerc": "0.83%",
+      "MemUsage": "127.7MiB / 14.95GiB",
+      "Name": "smart_grid_digital_twin",
+      "NetIO": "12.7MB / 308MB",
+      "PIDs": "24"
+    },
+    {
+      "BlockIO": "11.5MB / 27.5GB",
+      "CPUPerc": "14.52%",
+      "Container": "711d66c2e850c38b9f65eb0e6e62e660243974c00668a9c74bdb860b67983c4d",
+      "ID": "711d66c2e850",
+      "MemPerc": "0.44%",
+      "MemUsage": "67.43MiB / 14.95GiB",
+      "Name": "smart_grid_gateway",
+      "NetIO": "830MB / 38MB",
+      "PIDs": "3"
+    },
+    {
+      "BlockIO": "13MB / 41.1MB",
+      "CPUPerc": "0.00%",
+      "Container": "e7dcd58dc7bcf338428d8c07ff36ba7905a1fae99c00c30e1b081b4fc0799b0a",
+      "ID": "e7dcd58dc7bc",
+      "MemPerc": "0.18%",
+      "MemUsage": "28.1MiB / 14.95GiB",
+      "Name": "smart_grid_celery_beat",
+      "NetIO": "9.63kB / 8.03kB",
+      "PIDs": "1"
+    },
+    {
+      "BlockIO": "76.3MB / 376MB",
+      "CPUPerc": "0.14%",
+      "Container": "9456a9bf4d2f357cbbc3cc7c0338b4e53f8c5c2d05e4cea974bd315885f55a82",
+      "ID": "9456a9bf4d2f",
+      "MemPerc": "0.56%",
+      "MemUsage": "85.73MiB / 14.95GiB",
+      "Name": "smart_grid_celery_worker",
+      "NetIO": "9.37MB / 12.6MB",
+      "PIDs": "14"
+    },
+    {
+      "BlockIO": "1.61MB / 2.58MB",
+      "CPUPerc": "0.00%",
+      "Container": "c3a27b7117ddce3b068322a425b81baffdc5acf3ae0d70d875a079178a59bbf7",
+      "ID": "c3a27b7117dd",
+      "MemPerc": "0.05%",
+      "MemUsage": "8.203MiB / 14.95GiB",
+      "Name": "smart_grid_dashboard",
+      "NetIO": "23.1kB / 126B",
+      "PIDs": "13"
+    },
+    {
+      "BlockIO": "41.8MB / 12.7MB",
+      "CPUPerc": "2.47%",
+      "Container": "4a0d600013b27bbde3784b25e6d2106568e0551fb4467d25abf292cfab6f8a93",
+      "ID": "4a0d600013b2",
+      "MemPerc": "0.14%",
+      "MemUsage": "21.05MiB / 14.95GiB",
+      "Name": "smart_grid_postgres",
+      "NetIO": "234kB / 104kB",
+      "PIDs": "8"
+    },
+    {
+      "BlockIO": "8MB / 1.9MB",
+      "CPUPerc": "2.33%",
+      "Container": "a5038e82207faed1d2b2cd8eca3159ee0023ba57309ecbf368a948e181048055",
+      "ID": "a5038e82207f",
+      "MemPerc": "0.06%",
+      "MemUsage": "8.621MiB / 14.95GiB",
+      "Name": "smart_grid_redis",
+      "NetIO": "69.4MB / 51.7MB",
+      "PIDs": "6"
+    },
+    {
+      "BlockIO": "6.98MB / 1.28MB",
+      "CPUPerc": "0.42%",
+      "Container": "0cbb5fbb5d910296ffd5b84bac3d600cae4bb8518f127fe103bc9a62d8282653",
+      "ID": "0cbb5fbb5d91",
+      "MemPerc": "0.02%",
+      "MemUsage": "2.969MiB / 14.95GiB",
+      "Name": "smart_grid_mqtt",
+      "NetIO": "4.23GB / 13.6GB",
+      "PIDs": "2"
+    }
+  ]
+}

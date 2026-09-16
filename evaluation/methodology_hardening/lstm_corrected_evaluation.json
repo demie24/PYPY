@@ -1,0 +1,293 @@
+{
+  "difference": {
+    "accuracy": -0.007541720154043641,
+    "f1_weighted": -0.026881506600280547
+  },
+  "leakage_safe": {
+    "accuracy": 0.875,
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        177,
+        0
+      ],
+      [
+        0,
+        177,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        177,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        177,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        177,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        177,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        177,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        177
+      ]
+    ],
+    "f1_macro": 0.8333333333333333,
+    "f1_weighted": 0.8333333333333334,
+    "per_class": {
+      "DOS": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 177
+      },
+      "FDIA": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 177
+      },
+      "N1_GENERATOR": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 177
+      },
+      "N1_LINE": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 177
+      },
+      "N2": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 177
+      },
+      "NORMAL": {
+        "f1_score": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 177
+      },
+      "REPLAY": {
+        "f1_score": 0.6666666666666666,
+        "precision": 0.5,
+        "recall": 1.0,
+        "support": 177
+      },
+      "VOLTAGE_INSTABILITY": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 177
+      }
+    },
+    "precision_macro": 0.8125,
+    "precision_weighted": 0.8125,
+    "recall_macro": 0.875,
+    "recall_weighted": 0.875
+  },
+  "original": {
+    "accuracy": 0.8825417201540436,
+    "confusion_matrix": [
+      [
+        21,
+        0,
+        0,
+        0,
+        0,
+        0,
+        167,
+        0
+      ],
+      [
+        0,
+        190,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        205,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        194,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        193,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        206,
+        0,
+        0
+      ],
+      [
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+        168,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        198
+      ]
+    ],
+    "f1_macro": 0.8542581888246628,
+    "f1_weighted": 0.8602148399336139,
+    "per_class": {
+      "DOS": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 198
+      },
+      "FDIA": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 206
+      },
+      "N1_GENERATOR": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 205
+      },
+      "N1_LINE": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 190
+      },
+      "N2": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 194
+      },
+      "NORMAL": {
+        "f1_score": 0.18666666666666668,
+        "precision": 0.5675675675675675,
+        "recall": 0.11170212765957446,
+        "support": 188
+      },
+      "REPLAY": {
+        "f1_score": 0.6473988439306358,
+        "precision": 0.5014925373134328,
+        "recall": 0.9130434782608695,
+        "support": 184
+      },
+      "VOLTAGE_INSTABILITY": {
+        "f1_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 193
+      }
+    },
+    "precision_macro": 0.883632513110125,
+    "precision_weighted": 0.888945654408456,
+    "recall_macro": 0.8780932007400555,
+    "recall_weighted": 0.8825417201540436
+  },
+  "production_checkpoint_overwritten": false,
+  "schema_version": "pypy.corrected-lstm.v1",
+  "selected_window": 20,
+  "split": "chronological label blocks before windows",
+  "training_epochs": 15
+}

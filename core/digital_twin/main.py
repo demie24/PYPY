@@ -82,6 +82,9 @@ class SmartGridDigitalTwin:
         
         # Attack states
         self.active_attack = None
+        self.experiment_id = None
+        self.scenario_id = None
+        self.last_control_correlation_id = None
         self.attack_config = {}
         self.recording = False
         self.replay_buffer = []
@@ -198,6 +201,13 @@ class SmartGridDigitalTwin:
             return self._handle_control_cmd_unlocked(target, command, payload)
 
     def _handle_control_cmd_unlocked(self, target: str, command: str, payload: Dict[str, Any] = None):
+        if payload:
+            if payload.get("experiment_id"):
+                self.experiment_id = payload.get("experiment_id")
+            if payload.get("scenario_id"):
+                self.scenario_id = payload.get("scenario_id")
+            if payload.get("correlation_id"):
+                self.last_control_correlation_id = payload.get("correlation_id")
         """
         Callback for remote control command: sets breaker status.
         Bypassed if breaker communication is blocked by active DoS.
@@ -519,6 +529,19 @@ class SmartGridDigitalTwin:
         """
         now = time.time()
         action = payload.get("action")
+        if action in ("START", "START_SCENARIO"):
+            # Every new run owns a fresh session even when a legacy client omits IDs.
+            target = payload.get("config", {}).get("target", "scenario")
+            self.experiment_id = payload.get("experiment_id") or f"runtime-experiment:{int(now * 1000)}"
+            self.scenario_id = payload.get("scenario_id")
+            self.last_control_correlation_id = payload.get("correlation_id") or f"{self.experiment_id}:{target}"
+        else:
+            if payload.get("experiment_id"):
+                self.experiment_id = payload.get("experiment_id")
+            if payload.get("scenario_id"):
+                self.scenario_id = payload.get("scenario_id")
+            if payload.get("correlation_id"):
+                self.last_control_correlation_id = payload.get("correlation_id")
         
         # 1. Duplicate Suppression (identical attack command within 3.0s)
         payload_key = json.dumps({k: v for k, v in payload.items() if k not in ["timestamp", "msg_id"]})
@@ -528,6 +551,14 @@ class SmartGridDigitalTwin:
         self.last_commands[payload_key] = now
 
         if action == "START":
+            # A fresh attack is a fresh evidence session. Never inherit an old
+            # control correlation when callers omit explicit identifiers.
+            if not payload.get("experiment_id"):
+                self.experiment_id = f"experiment:{int(now * 1000)}"
+            if not payload.get("scenario_id"):
+                self.scenario_id = None
+            if not payload.get("correlation_id"):
+                self.last_control_correlation_id = f"{self.experiment_id}:{payload.get('type', 'attack')}"
             # 2. Attack Rate Limiting (max 2 attacks per 10s window)
             self.attack_rate_limit_bucket = [t for t in self.attack_rate_limit_bucket if now - t < 10.0]
             if len(self.attack_rate_limit_bucket) >= 2:
@@ -949,6 +980,10 @@ class SmartGridDigitalTwin:
                 "generators_online": {f"Bus_{k+1}": v for k, v in self.generators_online.items()}
             }
         }
+        telemetry["experiment_id"] = self.experiment_id
+        telemetry["scenario_id"] = self.scenario_id
+        telemetry["telemetry_id"] = f"{self.experiment_id or 'runtime'}:{telemetry['timestamp']}"
+        telemetry["correlation_id"] = self.last_control_correlation_id or telemetry["telemetry_id"]
         
         # Map Bus properties
         for i in range(self.topo.num_buses):
@@ -975,6 +1010,10 @@ class SmartGridDigitalTwin:
             capacity_pct = (flow["current"] / capacity_limit) * 100
             
             telemetry["state"]["lines"][lid] = {
+                # pandapower res_line.i_ka/res_trafo.i_hv_ka is expressed in kA.
+                # current_pu is retained as a deprecated alias for compatibility.
+                "current_ka": round(flow["current"], 4),
+                "current_loading_pu": round(flow["current"] / capacity_limit, 6),
                 "current_pu": round(flow["current"], 4),
                 "current_amp": round(flow["current"] * 500, 2),
                 "P_mw": round(flow["P_flow"] * 100, 2),
@@ -1002,6 +1041,8 @@ class SmartGridDigitalTwin:
             for line_id, line_data in telemetry["state"]["lines"].items():
                 prev_line = self.prev_telemetry["state"]["lines"].get(line_id)
                 if prev_line:
+                    line_data["current_ka"] = round(prev_line.get("current_ka", prev_line["current_pu"]) + alpha * (line_data["current_ka"] - prev_line.get("current_ka", prev_line["current_pu"])), 4)
+                    line_data["current_loading_pu"] = round(prev_line.get("current_loading_pu", prev_line["current_pu"] / capacity_limit) + alpha * (line_data["current_loading_pu"] - prev_line.get("current_loading_pu", prev_line["current_pu"] / capacity_limit)), 6)
                     line_data["current_pu"] = round(prev_line["current_pu"] + alpha * (line_data["current_pu"] - prev_line["current_pu"]), 4)
                     line_data["current_amp"] = round(prev_line["current_amp"] + alpha * (line_data["current_amp"] - prev_line["current_amp"]), 2)
                     line_data["P_mw"] = round(prev_line["P_mw"] + alpha * (line_data["P_mw"] - prev_line["P_mw"]), 2)
@@ -1100,6 +1141,8 @@ class SmartGridDigitalTwin:
                     new_amp = orig_amp * scale + bias * 500
                     telemetry["state"]["lines"][target]["current_amp"] = round(new_amp, 2)
                     telemetry["state"]["lines"][target]["current_pu"] = round(new_amp / 500, 4)
+                    telemetry["state"]["lines"][target]["current_ka"] = round(new_amp / 500, 4)
+                    telemetry["state"]["lines"][target]["current_loading_pu"] = round((new_amp / 500) / 3.0, 6)
             
             # 2. Denial of Service (DoS)
             elif stype == "DOS":
@@ -1114,6 +1157,8 @@ class SmartGridDigitalTwin:
                     
                 elif target in telemetry["state"]["lines"]:
                     telemetry["state"]["lines"][target]["current_pu"] = 0.0
+                    telemetry["state"]["lines"][target]["current_ka"] = 0.0
+                    telemetry["state"]["lines"][target]["current_loading_pu"] = 0.0
                     telemetry["state"]["lines"][target]["current_amp"] = 0.0
                     telemetry["state"]["lines"][target]["P_mw"] = 0.0
                     telemetry["state"]["lines"][target]["Q_mvar"] = 0.0
@@ -1148,6 +1193,8 @@ class SmartGridDigitalTwin:
                     new_amp = orig_amp + (self.sensor_drifts[target] + noise) * 500
                     telemetry["state"]["lines"][target]["current_amp"] = round(new_amp, 2)
                     telemetry["state"]["lines"][target]["current_pu"] = round(new_amp / 500, 4)
+                    telemetry["state"]["lines"][target]["current_ka"] = round(new_amp / 500, 4)
+                    telemetry["state"]["lines"][target]["current_loading_pu"] = round((new_amp / 500) / 3.0, 6)
                     
         return telemetry
 

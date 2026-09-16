@@ -29,7 +29,10 @@ import os
 import sys
 import random
 import numpy as np
-from typing import List, Dict, Tuple, Optional
+from typing import TYPE_CHECKING, List, Dict, Tuple, Optional
+
+if TYPE_CHECKING:
+    from core.transfer.criticality_encoder import CriticalityAwareEncoder
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(current_dir))

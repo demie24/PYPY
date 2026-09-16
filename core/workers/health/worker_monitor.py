@@ -27,7 +27,6 @@ def decrement_active_tasks():
         _active_tasks_count = max(0, _active_tasks_count - 1)
 
 def get_active_tasks_count() -> int:
-    global _active_tasks_count
     with _lock:
         return _active_tasks_count
 

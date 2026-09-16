@@ -3,6 +3,7 @@
 import os
 import time
 import uuid
+import logging
 from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 from fastapi import APIRouter, Depends, HTTPException, status, Request
@@ -15,6 +16,7 @@ from services.users.user_service import get_user_by_email
 from services.auth.models import User
 from services.email.email_service import get_email_provider
 
+logger = logging.getLogger("gateway.routes.saas_auth")
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 IP_REQUESTS = defaultdict(list)

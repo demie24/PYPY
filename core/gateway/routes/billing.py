@@ -7,7 +7,7 @@ from services.auth.session import get_db
 from services.auth.auth_service import get_current_user_claims
 from services.billing.billing_service import redeem_promo_coupon, ManualBillingProvider
 from services.auth.models import UsageMetric, Subscription, Tenant
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
